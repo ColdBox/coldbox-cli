@@ -1,0 +1,37 @@
+{
+    "name":"ColdBox CLI",
+    "version":"1.0.0",
+    "location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/coldbox-cli/@build.version@/coldbox-cli-@build.version@.zip",
+    "slug":"coldbox-cli",
+    "author":"Ortus Solutions, Corp",
+    "homepage":"https://www.ortussolutions.com",
+    "documentation":"https://coldbox.ortusbooks.com",
+    "repository":{
+        "type":"git",
+        "url":"https://github.com/coldbox/coldbox-cli"
+    },
+    "bugs":"https://github.com/coldbox/coldbox-cli/issues",
+    "shortDescription":"The official CLI for the ColdBox Framework",
+    "type":"commandbox-modules",
+    "keywords":"coldbox,cli,mvc,hmvc",
+    "license":[
+        {
+            "type":"Apache2",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
+    "contributors":[
+        "Brad Wood (brad@bradwood.com)"
+    ],
+    "devDependencies":{
+        "commandbox-docbox":"*"
+    },
+    "dependencies":{},
+    "installPaths":{},
+    "scripts":{
+        "release":"recipe build/release.boxr",
+        "format":"cfformat run commands,build,ModuleConfig.cfc ./.cfformat.json --overwrite",
+        "format:watch":"cfformat watch commands,build,ModuleConfig.cfc ./.cfformat.json",
+        "format:check":"cfformat check commands,build,ModuleConfig.cfc ./.cfformat.json"
+    }
+}
