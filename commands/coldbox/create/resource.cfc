@@ -121,9 +121,11 @@ component {
 		print.greenBoldLine( "Generating #arguments.resource# resources..." );
 
 		// Read in Template
-		var hContent = arguments.api ? fileRead( "/coldbox-commands/templates/resources/ApiHandlerContent.txt" ) : fileRead( "/coldbox-commands/templates/resources/HandlerContent.txt" );
+		var hContent = arguments.api ? fileRead( "/coldbox-commands/templates/resources/ApiHandlerContent.txt" ) : fileRead(
+			"/coldbox-commands/templates/resources/HandlerContent.txt"
+		);
 		// Token replacement
-		hContent     = replaceNoCase(
+		hContent = replaceNoCase(
 			hContent,
 			"|resource|",
 			arguments.resource,
