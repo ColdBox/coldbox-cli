@@ -25,6 +25,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @handler    Name of the handler to test
 	 * @actions    A comma-delimited list of actions to generate
@@ -67,9 +71,9 @@ component {
 		}
 
 		// Read in Templates
-		var handlerTestContent     = fileRead( "/coldbox-commands/templates/testing/Handler#stylePrefix#Content.txt" );
+		var handlerTestContent     = fileRead( "#variables.settings.templatesPath#/testing/Handler#stylePrefix#Content.txt" );
 		var handlerTestCaseContent = fileRead(
-			"/coldbox-commands/templates/testing/Handler#stylePrefix#CaseContent.txt"
+			"#variables.settings.templatesPath#/testing/Handler#stylePrefix#CaseContent.txt"
 		);
 
 		// Start text replacements

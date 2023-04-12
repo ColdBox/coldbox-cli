@@ -9,6 +9,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @path           The instantiation path of the interceptor to create the test for
 	 * @points         A comma-delimited list of interception points to generate tests for
@@ -33,8 +37,8 @@ component {
 		print.line();
 
 		// Read in Template
-		var interceptorTestContent = fileRead( "/coldbox-commands/templates/testing/InterceptorBDDContent.txt" );
-		var interceptorTestCase    = fileRead( "/coldbox-commands/templates/testing/InterceptorBDDCaseContent.txt" );
+		var interceptorTestContent = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt" );
+		var interceptorTestCase    = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt" );
 
 		// Start Replacing
 		interceptorTestContent = replaceNoCase(

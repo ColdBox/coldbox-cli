@@ -10,6 +10,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @name      Name of the view to create without the .cfm.
 	 * @helper    Generate a helper file for this view
@@ -47,8 +51,8 @@ component {
 		print.line();
 
 		savecontent variable="local.viewContent" {
-			writeOutput( "<cfoutput>#chr( 13 )##chr( 10 )#" )
-			writeOutput( "<h1>#arguments.name# view</h1>#chr( 13 )##chr( 10 )#" )
+			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
+			writeOutput( "<h1>#arguments.name# view</h1>#variables.utility.BREAK#" )
 			writeOutput( "</cfoutput>" )
 		};
 

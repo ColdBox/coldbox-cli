@@ -12,6 +12,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @name           Name of the interceptor to create without the .cfc
 	 * @points         A comma-delimited list of interception points to generate
@@ -44,10 +48,10 @@ component {
 		print.line();
 
 		// Read in Template
-		var interceptorContent     = fileRead( "/coldbox-commands/templates/InterceptorContent.txt" );
-		var interceptorMethod      = fileRead( "/coldbox-commands/templates/InterceptorMethod.txt" );
-		var interceptorTestContent = fileRead( "/coldbox-commands/templates/testing/InterceptorBDDContent.txt" );
-		var interceptorTestCase    = fileRead( "/coldbox-commands/templates/testing/InterceptorBDDCaseContent.txt" );
+		var interceptorContent     = fileRead( "#variables.settings.templatesPath#/InterceptorContent.txt" );
+		var interceptorMethod      = fileRead( "#variables.settings.templatesPath#/InterceptorMethod.txt" );
+		var interceptorTestContent = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt" );
+		var interceptorTestCase    = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt" );
 
 		// Start Replacing
 		interceptorContent = replaceNoCase(

@@ -14,11 +14,13 @@ component {
 	 * @arguments.name Name of the layout to create without the .cfm.
 	 * @helper         Generate a helper file for this layout
 	 * @directory      The base directory to create your layout in and creates the directory if it does not exist.
+	 * @open           Open the view in your default editor
 	 **/
 	function run(
 		required name,
 		boolean helper = false,
-		directory      = "layouts"
+		directory      = "layouts",
+		boolean open   = false
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -31,8 +33,12 @@ component {
 		// This help readability so the success messages aren't up against the previous command line
 		print.line();
 
-		var layoutContent       = "<h1>#arguments.name# Layout</h1>#CR#<cfoutput>##renderView()##</cfoutput>";
-		var layoutHelperContent = "<!--- #arguments.name# Layout Helper --->";
+		savecontent variable="local.layoutContent" {
+			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
+			writeOutput( "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#" )
+			writeOutput( "<div>#view()#</div>#variables.utility.BREAK#" )
+			writeOutput( "</cfoutput>" )
+		};
 
 		// Write out layout
 		var layoutPath = "#arguments.directory#/#arguments.name#.cfm";
@@ -50,11 +56,21 @@ component {
 		file action="write" file="#layoutPath#" mode="777" output="#layoutContent#";
 		print.greenLine( "Created #layoutPath#" );
 
+		// Open the view?
+		if ( arguments.open ) {
+			openPath( layoutPath );
+		}
+
 		if ( arguments.helper ) {
-			// Write out layout helper
-			var layoutHelperPath= "#arguments.directory#/#arguments.name#Helper.cfm";
-			file action         ="write" file="#layoutHelperPath#" mode="777" output="#layoutHelperContent#";
+			var layoutHelperContent= "<!--- #arguments.name# Layout Helper --->";
+			var layoutHelperPath   = "#arguments.directory#/#arguments.name#Helper.cfm";
+			file action            ="write" file="#layoutHelperPath#" mode="777" output="#layoutHelperContent#";
 			print.greenLine( "Created #layoutHelperPath#" );
+
+			// Open the view helper?
+			if ( arguments.open ) {
+				openPath( layoutHelperPath );
+			}
 		}
 	}
 

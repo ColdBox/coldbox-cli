@@ -9,6 +9,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * Constructor
 	 */
@@ -43,8 +47,8 @@ component {
 		print.line();
 
 		// Read in Template
-		var modelTestContent       = fileRead( "/coldbox-commands/templates/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead( "/coldbox-commands/templates/testing/ModelBDDMethodContent.txt" );
+		var modelTestContent       = fileRead( "#variables.templatesPath#/testing/ModelBDDContent.txt" );
+		var modelTestMethodContent = fileRead( "#variables.templatesPath#/testing/ModelBDDMethodContent.txt" );
 
 		// Basic replacements
 		modelTestContent = replaceNoCase(

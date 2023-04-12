@@ -7,7 +7,11 @@
  * {code}
  *
  **/
-component scope="noscope" {
+component {
+
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
 
 	/**
 	 * @name           Name of the module to create.
@@ -44,7 +48,7 @@ component scope="noscope" {
 		print.line();
 
 		// Read in Module Config
-		var moduleConfig = fileRead( "/coldbox-commands/templates/modules/ModuleConfig.cfc" );
+		var moduleConfig = fileRead( "#variables.templatePath#/modules/ModuleConfig.cfc" );
 
 		// Start Generation Replacing
 		moduleConfig = replaceNoCase( moduleConfig, "@title@", arguments.name, "all" );
@@ -102,7 +106,7 @@ component scope="noscope" {
 
 		// Copy module template
 		directoryCopy(
-			"/coldbox-commands/templates/modules/",
+			"#variables.templatePath#/modules/",
 			arguments.directory & "/#arguments.name#",
 			true
 		);
