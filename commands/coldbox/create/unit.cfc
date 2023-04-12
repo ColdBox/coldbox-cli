@@ -21,6 +21,7 @@ component {
 		directory    = "tests/specs"
 	){
 		// proxy to testbox
+		// TODO: Migrate this to the `testbox-cli` module. Once that's done, add it as a dependency.
 		runCommand(
 			"testbox create unit name=#arguments.name# directory=#arguments.directory# open=#arguments.open#"
 		);

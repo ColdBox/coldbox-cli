@@ -9,6 +9,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @name      Name of the event handler to create without the .cfc. For packages, specify name as 'myPackage/myModel'
 	 * @directory The base directory to create your event handler in and creates the directory if it does not exist.
@@ -33,7 +37,7 @@ component {
 		print.line();
 
 		// Read in Template
-		var modelContent = fileRead( "/coldbox-commands/templates/orm/ORMEventHandler.txt" );
+		var modelContent = fileRead( "#variables.settings.templatePath#/orm/ORMEventHandler.txt" );
 
 		// Write out the model
 		var modelPath = "#directory#/#arguments.name#.cfc";

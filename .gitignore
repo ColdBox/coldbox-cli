@@ -5,3 +5,6 @@
 .tmp/**
 .artifacts/**
 changelog-latest.md
+
+# Test App
+testapp/**

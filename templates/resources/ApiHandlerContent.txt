@@ -1,11 +1,12 @@
 /**
  * Manage |resource| as an API Resource
  * It will be your responsibility to fine tune this template, add validations, try/catch blocks, logging, etc.
+ * https://coldbox.ortusbooks.com/the-basics/routing/routing-dsl/resourceful-routes
  */
 component extends="coldbox.system.RestHandler"{
 
 	// DI
-	property name="|resource|Service" inject="|resource|Service";
+	property name="|resource|Service" inject;
 
 	/**
 	 * Return the collection of |resource|
@@ -21,17 +22,27 @@ component extends="coldbox.system.RestHandler"{
 	 * Create a |singularName|
 	 */
 	function create( event, rc, prc ){
+		// Get and Populate
+		prc.|singularName| = populateModel( |resource|Service.new() );
+		// Validate here
 
+		// Save
+		|resource|Service.save( prc.|singularName| );
+		// Response
+		event.getResponse()
+			.setData(
+				prc.|singularName|.getMemento()
+			);
 	}
 
 	/**
-	 * Show a |singularName|
+	 * Show a |singularName| resource
 	 */
 	function show( event, rc, prc ){
 		event.getResponse()
 			.paramValue( "|parameterName|", 0 )
 			.setData(
-				|resource|Service.get( rc.|parameterName| )
+				|resource|Service.get( rc.|parameterName| ).getMemento()
 			);
 	}
 
@@ -40,7 +51,18 @@ component extends="coldbox.system.RestHandler"{
 	 */
 	function update( event, rc, prc ){
 		event.paramValue( "|parameterName|", 0 );
+		// Get and Populate
+		prc.|singularName| = populateModel( |resource|Service.get( rc.|parameterName| ) );
+		// Validate here
 
+		// Save
+		|resource|Service.save( prc.|singularName| );
+
+		event.getResponse()
+			.paramValue( "|parameterName|", 0 )
+			.setData(
+				prc.|singularName|.getMemento()
+			);
 	}
 
 	/**
@@ -48,7 +70,11 @@ component extends="coldbox.system.RestHandler"{
 	 */
 	function delete( event, rc, prc ){
 		event.paramValue( "|parameterName|", 0 );
-
+		// Delete
+		|resource|Service.delete( rc.|parameterName| );
+		// Response
+		event.getResponse()
+			.addMessage( "|singularName| Deleted!" );
 	}
 
 }

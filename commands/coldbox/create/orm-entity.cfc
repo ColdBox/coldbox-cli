@@ -30,6 +30,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @entityName        The name of the entity without .cfc
 	 * @table             The name of the mapped table or empty to use the same name as the entity
@@ -77,8 +81,8 @@ component {
 		}
 
 		// Read in Template
-		var modelContent     = fileRead( "/coldbox-commands/templates/orm/Entity.txt" );
-		var modelTestContent = fileRead( "/coldbox-commands/templates/testing/ORMEntityBDDContent.txt" );
+		var modelContent     = fileRead( "#variables.settings.templatePath#/orm/Entity.txt" );
+		var modelTestContent = fileRead( "#variables.settings.templatePath#/testing/ORMEntityBDDContent.txt" );
 
 		// Basic replacements
 		modelContent = replaceNoCase(

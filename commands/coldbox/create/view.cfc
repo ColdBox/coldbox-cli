@@ -14,11 +14,13 @@ component {
 	 * @name      Name of the view to create without the .cfm.
 	 * @helper    Generate a helper file for this view
 	 * @directory The base directory to create your view in and creates the directory if it does not exist.
+	 * @open      Open the view in your default editor
 	 **/
 	function run(
 		required name,
 		boolean helper = false,
-		directory      = "views"
+		directory      = "views",
+		boolean open   = false
 	){
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
@@ -44,8 +46,11 @@ component {
 		// This help readability so the success messages aren't up against the previous command line
 		print.line();
 
-		var viewContent       = "<h1>#arguments.name# view</h1>";
-		var viewHelperContent = "<!--- #arguments.name# view Helper --->";
+		savecontent variable="local.viewContent" {
+			writeOutput( "<cfoutput>#chr( 13 )##chr( 10 )#" )
+			writeOutput( "<h1>#arguments.name# view</h1>#chr( 13 )##chr( 10 )#" )
+			writeOutput( "</cfoutput>" )
+		};
 
 		// Write out view
 		var viewPath = "#arguments.directory#/#arguments.name#.cfm";
@@ -63,11 +68,22 @@ component {
 		file action="write" file="#viewPath#" mode="777" output="#viewContent#";
 		print.greenLine( "Created #viewPath#" );
 
+		// Open the view?
+		if ( arguments.open ) {
+			openPath( viewPath );
+		}
+
+		// Write out view helper
 		if ( arguments.helper ) {
-			// Write out view helper
-			var viewHelperPath= "#arguments.directory#/#arguments.name#Helper.cfm";
-			file action       ="write" file="#viewHelperPath#" mode="777" output="#viewHelperContent#";
+			var viewHelperContent= "<!--- #arguments.name# view Helper --->";
+			var viewHelperPath   = "#arguments.directory#/#arguments.name#Helper.cfm";
+			file action          ="write" file="#viewHelperPath#" mode="777" output="#viewHelperContent#";
 			print.greenLine( "Created #viewHelperPath#" );
+
+			// Open the view helper?
+			if ( arguments.open ) {
+				openPath( viewHelperPath );
+			}
 		}
 	}
 

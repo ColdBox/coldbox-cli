@@ -9,6 +9,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @serviceName    The name of this Base ORM service to create
 	 * @directory      The base directory to create your model in and creates the directory if it does not exist.
@@ -41,8 +45,8 @@ component {
 		}
 
 		// Read in Template
-		var modelContent     = fileRead( "/coldbox-commands/templates/orm/TemplatedEntityService.txt" );
-		var modelTestContent = fileRead( "/coldbox-commands/templates/testing/ModelBDDContent.txt" );
+		var modelContent     = fileRead( "#variables.settings.templatePath#/orm/TemplatedEntityService.txt" );
+		var modelTestContent = fileRead( "#variables.settings.templatePath#/testing/ModelBDDContent.txt" );
 
 		// Query cache Region
 		if ( !len( arguments.cacheRegion ) ) {

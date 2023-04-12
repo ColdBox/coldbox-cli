@@ -26,6 +26,10 @@
  */
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	// STATIC Actions we use in the resources
 	variables.ACTIONS = [
 		"index",
@@ -67,7 +71,7 @@ component {
 	function run(
 		required resource,
 		handler              = arguments.resource,
-		singularName         = arguments.resource,
+		singularName         = "",
 		parameterName        = "id",
 		module               = "",
 		appMapping           = "/",
@@ -91,6 +95,11 @@ component {
 		arguments.specsDirectory   = resolvePath( arguments.specsDirectory );
 		arguments.modulesDirectory = resolvePath( arguments.modulesDirectory );
 		var configPath             = resolvePath( "config" );
+
+		// Convert plural to singluar if not passed, resources are always plural
+		if ( !arguments.singularName.len() ) {
+			arguments.singularName = variables.utility.singularize( arguments.resource );
+		}
 
 		/********************** Verify Module pathing or global app pathing ************************/
 
@@ -121,8 +130,8 @@ component {
 		print.greenBoldLine( "Generating #arguments.resource# resources..." );
 
 		// Read in Template
-		var hContent = arguments.api ? fileRead( "/coldbox-commands/templates/resources/ApiHandlerContent.txt" ) : fileRead(
-			"/coldbox-commands/templates/resources/HandlerContent.txt"
+		var hContent = arguments.api ? fileRead( "#variables.settings.templatesPath#/resources/ApiHandlerContent.txt" ) : fileRead(
+			"#variables.settings.templatesPath#/resources/HandlerContent.txt"
 		);
 		// Token replacement
 		hContent = replaceNoCase(
@@ -147,7 +156,7 @@ component {
 		if ( arguments.module.len() ) {
 			hContent = replaceNoCase(
 				hContent,
-				"inject=""#arguments.resource#Service""",
+				"inject",
 				"inject=""#arguments.resource#Service@#arguments.module#""",
 				"all"
 			);
@@ -181,7 +190,7 @@ component {
 			);
 			var views = [ "new", "edit", "show", "index" ];
 			for ( var thisView in views ) {
-				var vContent = fileRead( "/coldbox-commands/templates/resources/#thisView#.txt" );
+				var vContent = fileRead( "#variables.settings.templatesPath#/resources/#thisView#.txt" );
 				vContent     = replaceNoCase(
 					vContent,
 					"|resource|",
@@ -269,34 +278,44 @@ component {
 
 		// ********************** generate resources ************************************//
 
-		variables.print
-			.line()
-			.greenBoldLine(
-				"Generation completed, please add the following to your #arguments.module.len() ? "module" : "application"# router (config/Router.cfc), which we are opening for you as well:"
-			);
-
 		// Generate code
+		var routerCode = "// @app_routes@#variables.utility.BREAK##variables.utility.BREAK#";
 		if ( arguments.resource == arguments.handler ) {
 			if ( arguments.parameterName == "id" ) {
-				print.greenLine( "#arguments.api ? "apiResources" : "resources"#( ""#arguments.resource#"" );" );
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
+					arguments.api ? "apiResources" : "resources"
+				) & "( ""#arguments.resource#"" )";
 			} else {
-				print.greenLine(
-					"#arguments.api ? "apiResources" : "resources"#( resource=""#arguments.resource#"", parameterName=""#arguments.parameterName#"" );"
-				);
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
+					arguments.api ? "apiResources" : "resources"
+				) & "( resource=""#arguments.resource#"", parameterName=""#arguments.parameterName#"" )";
 			}
 		} else {
 			if ( arguments.parameterName == "id" ) {
-				print.greenLine(
-					"#arguments.api ? "apiResources" : "resources"#( resource=""#arguments.resource#"", handler=""#arguments.handler#"" );"
-				);
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
+					arguments.api ? "apiResources" : "resources"
+				) & "( resource=""#arguments.resource#"", handler=""#arguments.handler#"" )";
 			} else {
-				print.greenLine(
-					"#arguments.api ? "apiResources" : "resources"#( resource=""#arguments.resource#"", handler=""#arguments.handler#"", parameterName=""#arguments.parameterName#"" );"
-				);
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
+					arguments.api ? "apiResources" : "resources"
+				) & "( resource=""#arguments.resource#"", handler=""#arguments.handler#"", parameterName=""#arguments.parameterName#"" )";
 			}
 		}
 
-		openPath( ( arguments.module.len() ? modulePath : configPath ) & "Router.cfc" );
+		// Router Path
+		var routerPath = ( arguments.module.len() ? modulePath : configPath ) & "/Router.cfc";
+		if ( fileExists( routerPath ) ) {
+			// Add Resource routes
+			var routerContent = fileRead( routerPath ).replaceNoCase(
+				"// @app_routes@",
+				routerCode & variables.break
+			);
+			fileWrite( routerPath, routerContent );
+			openPath( routerPath );
+		} else {
+			print.redLine( "Router.cfc not found, please add the following to your router:" );
+			print.blueLine( routerCode );
+		}
 	}
 
 }

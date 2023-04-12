@@ -11,4 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- First Import
+- Migration from CommandBox core to a separate module
+- `create view` command now has an `open` attribute to open the created views in the editor
+- Updated all templates to ColdBox 7
+- Updated all `resources` to ColdBox 7 standard code

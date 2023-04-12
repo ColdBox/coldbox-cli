@@ -37,9 +37,9 @@
     "scripts":{
 		"build:module":"task run taskFile=build/Build.cfc :projectName=`package show slug` :version=`package show version`",
 		"build:docs":"task run taskFile=build/Build.cfc target=docs :projectName=`package show slug` :version=`package show version`",
-        "format":"cfformat run commands,build,ModuleConfig.cfc ./.cfformat.json --overwrite",
-        "format:watch":"cfformat watch commands,build,ModuleConfig.cfc ./.cfformat.json",
-        "format:check":"cfformat check commands,build,ModuleConfig.cfc ./.cfformat.json",
+        "format":"cfformat run commands,models,build,ModuleConfig.cfc ./.cfformat.json --overwrite",
+        "format:watch":"cfformat watch commands,models,build,ModuleConfig.cfc ./.cfformat.json",
+        "format:check":"cfformat check commands,models,build,ModuleConfig.cfc ./.cfformat.json",
         "release":"recipe build/release.boxr"
 	}
 }

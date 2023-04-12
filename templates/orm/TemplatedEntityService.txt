@@ -4,8 +4,8 @@
 component extends="cborm.models.BaseORMService" singleton{
 
 	/**
-	* Constructor
-	*/
+	 * Constructor
+	 */
 	function init(){
 
 		// init super class
