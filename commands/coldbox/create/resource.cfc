@@ -130,9 +130,9 @@ component {
 		print.greenBoldLine( "Generating #arguments.resource# resources..." );
 
 		// Read in Template
-		var hContent = arguments.api ? fileRead( "#variables.settings.templatesPath#/resources/ApiHandlerContent.txt" ) : fileRead(
-			"#variables.settings.templatesPath#/resources/HandlerContent.txt"
-		);
+		var hContent = arguments.api ? fileRead(
+			"#variables.settings.templatesPath#/resources/ApiHandlerContent.txt"
+		) : fileRead( "#variables.settings.templatesPath#/resources/HandlerContent.txt" );
 		// Token replacement
 		hContent = replaceNoCase(
 			hContent,
