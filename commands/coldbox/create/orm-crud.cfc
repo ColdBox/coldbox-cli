@@ -10,6 +10,10 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @entity            The name and dot location path of the entity to create the CRUD for, starting from the root of your application. For example: models.Contact, models.security.User
 	 * @pluralName        The plural name of the entity. Used for display purposes. Defaults to 'entityName' + s
@@ -50,7 +54,7 @@ component {
 
 		// argument defaults
 		if ( !len( arguments.pluralname ) ) {
-			arguments.pluralName = entityName & "s";
+			arguments.pluralName = variables.utility.pluralize( entityName );
 		}
 
 		// build property maps
@@ -73,7 +77,7 @@ component {
 			// ********************** generate handler ************************************//
 
 			// Read Handler Content
-			var hContent = fileRead( "/coldbox-commands/templates/crud/HandlerContent.txt" );
+			var hContent = fileRead( "#variables.settings.templatePath#/crud/HandlerContent.txt" );
 			// Token replacement
 			hContent     = replaceNoCase( hContent, "|entity|", entityName, "all" );
 			hContent     = replaceNoCase(
@@ -101,7 +105,7 @@ component {
 			);
 			var views = [ "edit", "editor", "new" ];
 			for ( var thisView in views ) {
-				var vContent = fileRead( "/coldbox-commands/templates/crud/#thisView#.txt" );
+				var vContent = fileRead( "#variables.settings.templatePath#/crud/#thisView#.txt" );
 				vContent     = replaceNoCase( vContent, "|entity|", entityName, "all" );
 				vContent     = replaceNoCase(
 					vContent,
@@ -119,12 +123,12 @@ component {
 
 			// Build table output for index
 			savecontent variable="local.tableData" {
-				include "/coldbox-commands/templates/crud/table.cfm";
+				include "#variables.settings.templatePath#/crud/table.cfm";
 			}
 			tableData    = replaceNoCase( tableData, "%cf", "#chr( 60 )#cf", "all" );
 			tableData    = replaceNoCase( tableData, "%/cf", "#chr( 60 )#/cf", "all" );
 			// index data
-			var vContent = fileRead( "/coldbox-commands/templates/crud/index.txt" );
+			var vContent = fileRead( "#variables.settings.templatePath#/crud/index.txt" );
 			vContent     = replaceNoCase( vContent, "|entity|", entityName, "all" );
 			vContent     = replaceNoCase(
 				vContent,
