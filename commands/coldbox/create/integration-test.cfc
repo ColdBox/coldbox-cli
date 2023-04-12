@@ -71,7 +71,9 @@ component {
 		}
 
 		// Read in Templates
-		var handlerTestContent     = fileRead( "#variables.settings.templatesPath#/testing/Handler#stylePrefix#Content.txt" );
+		var handlerTestContent = fileRead(
+			"#variables.settings.templatesPath#/testing/Handler#stylePrefix#Content.txt"
+		);
 		var handlerTestCaseContent = fileRead(
 			"#variables.settings.templatesPath#/testing/Handler#stylePrefix#CaseContent.txt"
 		);

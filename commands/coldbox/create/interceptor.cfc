@@ -50,8 +50,12 @@ component {
 		// Read in Template
 		var interceptorContent     = fileRead( "#variables.settings.templatesPath#/InterceptorContent.txt" );
 		var interceptorMethod      = fileRead( "#variables.settings.templatesPath#/InterceptorMethod.txt" );
-		var interceptorTestContent = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt" );
-		var interceptorTestCase    = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt" );
+		var interceptorTestContent = fileRead(
+			"#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt"
+		);
+		var interceptorTestCase = fileRead(
+			"#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt"
+		);
 
 		// Start Replacing
 		interceptorContent = replaceNoCase(

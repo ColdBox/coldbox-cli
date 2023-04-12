@@ -37,8 +37,12 @@ component {
 		print.line();
 
 		// Read in Template
-		var interceptorTestContent = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt" );
-		var interceptorTestCase    = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt" );
+		var interceptorTestContent = fileRead(
+			"#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt"
+		);
+		var interceptorTestCase = fileRead(
+			"#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt"
+		);
 
 		// Start Replacing
 		interceptorTestContent = replaceNoCase(
