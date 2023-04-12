@@ -9,9 +9,19 @@ component persistent="true" table="|table|"|activeEntity|{
 	// Properties
 	|properties|
 
-	// Validation
+	// Validation Constraints
 	this.constraints = {
 		// Example: age = { required=true, min="18", type="numeric" }
+	};
+	// Constraint Profiles
+	this.constraintProfiles = {
+		"update" : {}
+	};
+
+	// Population Control
+	this.population = {
+		include : [],
+		exclude : [ "|primaryKey|" ]
 	};
 
 	// Mementifier

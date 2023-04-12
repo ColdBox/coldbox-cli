@@ -9,6 +9,15 @@
 component {
 
 	function configure(){
+		settings = { templatesPath : modulePath & "/templates" }
+	}
+
+	function onLoad(){
+		// log.info('Module loaded successfully.' );
+	}
+
+	function onUnLoad(){
+		// log.info('Module unloaded successfully.' );
 	}
 
 }

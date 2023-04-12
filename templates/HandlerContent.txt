@@ -1,7 +1,7 @@
 /**
  * |Description|
  */
-component{
+component extends="coldbox.system.EventHandler"{
 
 	// OPTIONAL HANDLER PROPERTIES
 	this.prehandler_only 	= "";
