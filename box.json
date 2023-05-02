@@ -27,7 +27,9 @@
 		"commandbox-cfformat":"*",
         "commandbox-docbox":"*"
     },
-    "dependencies":{},
+    "dependencies":{
+		"commandbox-migrations":"^4.0.0"
+	},
     "installPaths":{},
 	"ignore":[
         "**/.*",
