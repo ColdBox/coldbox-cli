@@ -15,3 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `create view` command now has an `open` attribute to open the created views in the editor
 - Updated all templates to ColdBox 7
 - Updated all `resources` to ColdBox 7 standard code
+- Create app new argument: `migrations` to init the migrations on the project
+
+### Fixed
+
+- Was resetting the `scripts` in the templates, which is not needed
+
+### Removed
+
+- Eclipse support

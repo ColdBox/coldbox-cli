@@ -8,23 +8,23 @@
  * {code}
  * .
  *  Here are the basic skeletons that are available for you that come from ForgeBox
- *  - AdvancedScript (default)
+ *  - Default (default)
  *  - Elixir
- *  - ElixirBower
- *  - ElixirVueJS
+ *  - Modern
  *  - rest
  *  - rest-hmvc
- *  - Simple
  *  - SuperSimple
+ *  - Vite
  * .
  * {code:bash}
  * coldbox create app skeleton=rest
  * {code}
  * .
- * The skeleton parameter can also be any valid Endpoint ID, which includes a Git repo or HTTP URL pointing to a package.
+ * The skeleton parameter can also be any valid FORGEBOX Endpoint ID, which includes a Git repo or HTTP URL pointing to a package.
  * .
  * {code:bash}
  * coldbox create app skeleton=http://site.com/myCustomAppTemplate.zip
+ * coldbox create app skeleton=coldbox-templates/modern
  * {code}
  *
  **/
@@ -40,12 +40,11 @@ component {
 		// Map these shortcut names to the actual ForgeBox slugs
 		variables.templateMap = {
 			"AdvancedScript" : "cbtemplate-advanced-script",
+			"Default"        : "cbtemplate-advanced-script",
 			"Elixir"         : "cbtemplate-elixir",
-			"ElixirBower"    : "cbtemplate-elixir-bower",
-			"ElixirVueJS"    : "cbtemplate-elixir-vuejs",
 			"rest"           : "cbtemplate-rest",
 			"rest-hmvc"      : "cbtemplate-rest-hmvc",
-			"Simple"         : "cbtemplate-simple",
+			"Vite"           : "cbtemplate-vite",
 			"SuperSimple"    : "cbtemplate-supersimple"
 		};
 
@@ -62,15 +61,18 @@ component {
 	 * @init                "init" the directory as a package if it isn't already
 	 * @wizard              Run the ColdBox Creation wizard
 	 * @initWizard          Run the init creation package wizard
+	 * @verbose             Verbose output
+	 * @migrations          Run migration init after creation
 	 **/
 	function run(
 		name               = defaultAppName,
-		skeleton           = "AdvancedScript",
+		skeleton           = "default",
 		directory          = getCWD(),
 		boolean init       = true,
 		boolean wizard     = false,
 		boolean initWizard = false,
-		boolean verbose    = false
+		boolean verbose    = false,
+		boolean migrations = false
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
@@ -80,8 +82,8 @@ component {
 
 		job.start( "Creating App [#arguments.name#]" );
 
-		if ( verbose ) {
-			job.setDumpLog( verbose );
+		if ( arguments.verbose ) {
+			job.setDumpLog( arguments.verbose );
 		}
 
 		// This will make the directory canonical and absolute
@@ -100,20 +102,13 @@ component {
 
 		// Install the skeleton
 		packageService.installPackage(
-			ID                      = arguments.skeleton,
-			directory               = arguments.directory,
-			save                    = false,
-			saveDev                 = false,
-			production              = false,
-			currentWorkingDirectory = arguments.directory
+			ID                     : arguments.skeleton,
+			directory              : arguments.directory,
+			save                   : false,
+			saveDev                : false,
+			production             : false,
+			currentWorkingDirectory: arguments.directory
 		);
-
-		// Check for the @appname@ in .project files
-		if ( fileExists( "#arguments.directory#/.project" ) ) {
-			var sProject= fileRead( "#arguments.directory#/.project" );
-			sProject    = replaceNoCase( sProject, "@appName@", arguments.name, "all" );
-			file action ="write" file="#arguments.directory#/.project" mode="755" output="#sProject#";
-		}
 
 		job.start( "Preparing box.json" );
 
@@ -124,9 +119,9 @@ component {
 			shell.cd( arguments.directory );
 			command( "init" )
 				.params(
-					name   = arguments.name,
-					slug   = replace( arguments.name, " ", "", "all" ),
-					wizard = arguments.initWizard
+					name  : arguments.name,
+					slug  : replace( arguments.name, " ", "", "all" ),
+					wizard: arguments.initWizard
 				)
 				.run();
 			shell.cd( originalPath );
@@ -135,11 +130,10 @@ component {
 		// Prepare defaults on box.json so we remove template based ones
 		command( "package set" )
 			.params(
-				name     = arguments.name,
-				slug     = variables.formatterUtil.slugify( arguments.name ),
-				version  = "1.0.0",
-				location = "",
-				scripts  = "{}"
+				name    : arguments.name,
+				slug    : variables.formatterUtil.slugify( arguments.name ),
+				version : "1.0.0",
+				location: ""
 			)
 			.run();
 
@@ -152,7 +146,10 @@ component {
 			job.complete();
 		}
 
-		job.complete();
+		// Run migrations init
+		if ( arguments.migrations ) {
+			command( "migrate init" ).run();
+		}
 	}
 
 	/**
