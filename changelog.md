@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - You can create models with handlers (normal or rest) now: `create model name="myModel" --handler` or `create model name="myModel" --handler --rest`
 - You can create models with a resource handler now: `create model name="myModel" --resource`
 - You can create models will all the things now: `create model name="myModel" --all`
+- New `coldbox docs` command to open the ColdBox docs in your browser
 
 ### Fixed
 
