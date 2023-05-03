@@ -113,7 +113,9 @@ component {
 		var modelContent           = fileRead( "#variables.settings.templatesPath#/ModelContent.txt" );
 		var modelMethodContent     = fileRead( "#variables.settings.templatesPath#/ModelMethodContent.txt" );
 		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt" );
+		var modelTestMethodContent = fileRead(
+			"#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt"
+		);
 
 		// Basic replacements
 		modelContent = replaceNoCase(
