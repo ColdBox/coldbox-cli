@@ -50,7 +50,9 @@ component {
 
 		// Read in Template
 		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt" );
+		var modelTestMethodContent = fileRead(
+			"#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt"
+		);
 
 		// Basic replacements
 		modelTestContent = replaceNoCase(
