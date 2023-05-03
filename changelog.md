@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - You can create models with a resource handler now: `create model name="myModel" --resource`
 - You can create models will all the things now: `create model name="myModel" --all`
 - New `coldbox docs` command to open the ColdBox docs in your browser and search as well: `coldbox docs search="event handlers"`
+- New `coldbox apidocs` command to open the ColdBox API Docs in your browser.
 
 ### Fixed
 
