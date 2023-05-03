@@ -26,7 +26,7 @@ component {
 	// Auto-map models
 	this.autoMapModels      = true;
 	// Module Dependencies
-	this.dependencies       = @dependencies@;
+	this.dependencies       =  @dependencies@;
 	// Application Helpers
 	this.applicationHelper  = [];
 	// Module Awareness : If true, the module's injector will not need @moduleName in the DSL
