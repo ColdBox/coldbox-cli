@@ -198,7 +198,7 @@ component {
 			if ( NOT len( propType ) ) {
 				propType = "string";
 			}
-			buffer.append( "property name=""#propName#"" #arguments.ormTypes ? "ormtype" : "type"#=""#propType#"";#variables.cr & chr( 9 )#" );
+			buffer.append( "property name=""#propName#"" #arguments.ormTypes ? "ormtype" : "type"#=""#propType#"";#variables.cr & variables.utility.TAB#" );
 		}
 		modelContent = replaceNoCase(
 			modelContent,

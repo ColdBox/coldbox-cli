@@ -113,7 +113,7 @@ component {
 				all                 : arguments.all,
 				componentAnnotations: componentAnnotations,
 				ormTypes            : true,
-				propertyContent     : propertyContent & variables.cr & chr( 9 ),
+				propertyContent     : propertyContent & variables.cr & variables.utility.TAB,
 				initContent         : "super.init( useQueryCaching=""false"" );"
 			)
 			.run();
