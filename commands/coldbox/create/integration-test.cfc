@@ -37,6 +37,7 @@ component {
 	 * @xunit      Use xUnit style
 	 * @open       Open the file once it is created
 	 * @directory  The base directory to create your test spec in and creates the directory if it does not exist. Defaults to 'tests/specs/integration'
+	 * @force      Force overwrite of existing files
 	 **/
 	function run(
 		required handler,
@@ -45,7 +46,8 @@ component {
 		boolean bdd   = true,
 		boolean xunit = false,
 		boolean open  = false,
-		directory     = "tests/specs/integration"
+		directory     = "tests/specs/integration",
+		boolean force = false
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -54,21 +56,15 @@ component {
 		if ( !directoryExists( arguments.directory ) ) {
 			directoryCreate( arguments.directory );
 		}
-		// Exit the command if something above failed
-		if ( hasError() ) {
-			return;
-		}
 
 		// Allow dot-delimited paths
 		arguments.handler = replace( arguments.handler, ".", "/", "all" );
+
 		// This help readability so the success messages aren't up against the previous command line
 		print.line();
 
 		// Style?
-		var stylePrefix = "BDD";
-		if ( arguments.xunit OR !arguments.bdd ) {
-			stylePrefix = "Test";
-		}
+		var stylePrefix = ( arguments.xunit OR !arguments.bdd ) ? "Test" : "BDD";
 
 		// Read in Templates
 		var handlerTestContent = fileRead(
@@ -136,9 +132,9 @@ component {
 			true
 		);
 
-		// Confirm it
+		// Confirm it or force it
 		if (
-			fileExists( integrationTestPath ) && !confirm(
+			fileExists( integrationTestPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( integrationTestPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
