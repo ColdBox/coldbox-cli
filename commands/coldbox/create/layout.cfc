@@ -10,17 +10,25 @@
  **/
 component {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
 	/**
 	 * @arguments.name Name of the layout to create without the .cfm.
 	 * @helper         Generate a helper file for this layout
 	 * @directory      The base directory to create your layout in and creates the directory if it does not exist.
 	 * @open           Open the view in your default editor
+	 * @force          Force overwrite of existing files
+	 * @content        The content to put in the layout
 	 **/
 	function run(
 		required name,
 		boolean helper = false,
 		directory      = "layouts",
-		boolean open   = false
+		boolean open   = false,
+		boolean force  = false,
+		content        = "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#"
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -35,7 +43,7 @@ component {
 
 		savecontent variable="local.layoutContent" {
 			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
-			writeOutput( "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#" )
+			writeOutput( arguments.content )
 			writeOutput( "<div>#view()#</div>#variables.utility.BREAK#" )
 			writeOutput( "</cfoutput>" )
 		};
@@ -45,7 +53,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( layoutPath ) && !confirm(
+			fileExists( layoutPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( layoutPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {

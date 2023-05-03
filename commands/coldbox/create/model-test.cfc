@@ -24,16 +24,18 @@ component {
 	}
 
 	/**
-	 * @path           The instantiation path of the model to create the test for without any .cfc
+	 * @path           The instantiation path of the model to create the test for without any .cfc or `models` prefix
 	 * @methods        A comma-delimited list of method to generate tests for
 	 * @testsDirectory Your unit tests directory. Only used if tests is true
 	 * @open           Open the file once generated
+	 * @force          Force overwrite of existing files
 	 **/
 	function run(
 		required path,
 		methods        = "",
 		testsDirectory = "tests/specs/unit",
-		boolean open   = false
+		boolean open   = false,
+		boolean force  = false
 	){
 		// This will make each directory canonical and absolute
 		arguments.testsDirectory = resolvePath( arguments.testsDirectory );
@@ -47,8 +49,8 @@ component {
 		print.line();
 
 		// Read in Template
-		var modelTestContent       = fileRead( "#variables.templatesPath#/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead( "#variables.templatesPath#/testing/ModelBDDMethodContent.txt" );
+		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
+		var modelTestMethodContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt" );
 
 		// Basic replacements
 		modelTestContent = replaceNoCase(
@@ -100,7 +102,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( testPath ) && !confirm(
+			fileExists( testPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( testPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
@@ -110,15 +112,12 @@ component {
 
 		// Create the tests
 		file action="write" file="#testPath#" mode="777" output="#modelTestContent#";
+
 		// open file
 		if ( arguments.open ) {
 			openPath( testPath );
 		}
-		print.greenLine( "Created #testPath#" );
-		// Open file?
-		if ( arguments.open ) {
-			openPath( testPath );
-		}
+		print.greenLine( "Created Test: [#testPath#]" );
 	}
 
 }

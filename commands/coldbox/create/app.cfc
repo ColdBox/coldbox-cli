@@ -32,6 +32,8 @@ component {
 
 	// DI
 	property name="packageService" inject="PackageService";
+	property name="utility"        inject="utility@coldbox-cli";
+	property name="settings"       inject="box:modulesettings:coldbox-cli";
 
 	/**
 	 * Constructor

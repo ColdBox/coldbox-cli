@@ -10,6 +10,7 @@ component |modelPersistence||accessors|{
 	this.constraints = {
 		// Example: age = { required=true, min="18", type="numeric" }
 	};
+
 	// Constraint Profiles
 	this.constraintProfiles = {
 		"update" : {}
@@ -39,8 +40,14 @@ component |modelPersistence||accessors|{
 	 * Constructor
 	 */
 	|modelName| function init(){
-
 		return this;
+	}
+
+	/**
+	 * Verify if the model has been loaded from the database
+	 */
+	function isLoaded(){
+		return isNull( variables.id ) || !len( variables.id );
 	}
 
 |methods|

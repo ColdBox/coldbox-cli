@@ -25,7 +25,9 @@ component {
 	 */
 	function init(){
 		// valid persistences
-		variables.validPersistences = "Transient,Singleton";
+		variables.validPersistences   = "Transient,Singleton";
+		variables.migrationsDirectory = "resources/database/migrations";
+		variables.seedsDirectory      = "resources/database/seeds";
 
 		return this;
 	}
@@ -42,6 +44,13 @@ component {
 	 * @open                Open the file once generated
 	 * @accessors           Setup accessors to be true in the component
 	 * @properties          Enter a list of properties to generate. You can add the type via colon separator. Ex: firstName,age:numeric,wheels:array
+	 * @force               Force overwrite of existing files
+	 * @migration           Generate a migration file for this model
+	 * @seeder              Generate a seeder file for this model
+	 * @handler             Generate a handler for this model
+	 * @rest                Generate a REST handler for this model
+	 * @resource            Generate a resourceful handler with all the actions
+	 * @all                 Generate all the things: handler, resource, migration, seeder, tests
 	 **/
 	function run(
 		required name,
@@ -53,10 +62,25 @@ component {
 		description       = "I am a new Model Object",
 		boolean open      = false,
 		boolean accessors = true,
-		properties        = ""
+		properties        = "id:numeric",
+		boolean force     = false,
+		boolean migration = false,
+		boolean seeder    = false,
+		boolean handler   = false,
+		boolean rest      = false,
+		boolean resource  = false,
+		boolean all       = false
 	){
-		// store incoming relative path for testing purposes
-		var modelTestPath        = arguments.directory;
+		// Prepare arguments
+		var modelTestPath   = arguments.directory;
+		var modelNamePlural = variables.utility.pluralize( arguments.name.lcase() );
+		if ( arguments.all ) {
+			arguments.seeder    = true;
+			arguments.migration = true;
+			arguments.handler   = true;
+			arguments.resource  = true;
+		}
+
 		// This will make each directory canonical and absolute
 		arguments.directory      = resolvePath( arguments.directory );
 		arguments.testsDirectory = resolvePath( arguments.testsDirectory );
@@ -86,11 +110,10 @@ component {
 		print.line();
 
 		// Read in Template
-		var modelContent           = fileRead( "#variables.templatePath#/ModelContent.txt" );
-		var modelMethodContent     = fileRead( "#variables.templatePath#/ModelMethodContent.txt" );
-		var modelTestContent       = fileRead( "#variables.templatePath#/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead( "#variables.templatePath#/testing/ModelBDDMethodContent.txt" );
-
+		var modelContent           = fileRead( "#variables.settings.templatesPath#/ModelContent.txt" );
+		var modelMethodContent     = fileRead( "#variables.settings.templatesPath#/ModelMethodContent.txt" );
+		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
+		var modelTestMethodContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt" );
 
 		// Basic replacements
 		modelContent = replaceNoCase(
@@ -144,7 +167,7 @@ component {
 			modelContent = replaceNoCase( modelContent, "|accessors|", "", "all" );
 		}
 
-		// Properties
+		// Generate Model Properties
 		var properties = listToArray( arguments.properties );
 		var buffer     = createObject( "java", "java.lang.StringBuffer" ).init();
 		for ( var thisProperty in properties ) {
@@ -153,7 +176,7 @@ component {
 			if ( NOT len( propType ) ) {
 				propType = "string";
 			}
-			buffer.append( "property name=""#propName#"" type=""#propType#"";#chr( 13 ) & chr( 9 )#" );
+			buffer.append( "property name=""#propName#"" type=""#propType#"";#variables.cr & chr( 9 )#" );
 		}
 		modelContent = replaceNoCase(
 			modelContent,
@@ -161,7 +184,7 @@ component {
 			buffer.toString()
 		);
 
-		// Handle Methods
+		// Handle Model Methods
 		if ( len( arguments.methods ) ) {
 			var allMethods    = "";
 			var allTestsCases = "";
@@ -209,33 +232,91 @@ component {
 		}
 
 		// Write out the model
-		var modelPath = "#directory#/#arguments.name#.cfc";
+		var modelPath = "#arguments.directory#/#arguments.name#.cfc";
 		// Create dir if it doesn't exist
 		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
+
 		// Prompt for override
 		if (
-			fileExists( modelPath ) && !confirm(
+			fileExists( modelPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
 			print.redLine( "Exiting..." );
 			return;
 		}
-		// Write out file
-		fileWrite( modelPath, trim( modelContent ) );
-		print.greenLine( "Created #modelPath#" );
 
-		if ( arguments.tests ) {
-			var testPath = "#arguments.TestsDirectory#/#arguments.name#Test.cfc";
+		// Write out the model
+		fileWrite( modelPath, trim( modelContent ) );
+		print.greenLine( "Created Model: [#modelPath#]" );
+
+		// Generate migrations
+		if ( arguments.migration ) {
+			var migrationPath    = "#resolvePath( variables.migrationsDirectory )#/#dateTimeFormat( now(), "yyyy_mm_dd_HHnnss" )#_create_#modelNamePlural#_table.cfc";
+			var migrationContent = replaceNoCase(
+				fileRead( "#variables.settings.templatesPath#/ModelMigrationContent.txt" ),
+				"|modelName|",
+				modelNamePlural,
+				"all"
+			);
 			// Create dir if it doesn't exist
-			directoryCreate( getDirectoryFromPath( testPath ), true, true );
-			// Create the tests
-			file action="write" file="#testPath#" mode="777" output="#modelTestContent#";
+			directoryCreate(
+				getDirectoryFromPath( migrationPath ),
+				true,
+				true
+			);
+			// Create the migration
+			file action="write" file="#migrationPath#" mode="777" output="#migrationContent#";
 			// open file
 			if ( arguments.open ) {
-				openPath( testPath );
+				openPath( migrationPath );
 			}
-			print.greenLine( "Created #testPath#" );
+			print.greenLine( "Created Migration: [#migrationPath#]" );
+		}
+
+		// Generate Seeder
+		if ( arguments.seeder ) {
+			var seederPath  = "#resolvePath( variables.seedsDirectory )#/#modelNamePlural#.cfc";
+			var seedContent = replaceNoCase(
+				fileRead( "#variables.settings.templatesPath#/ModelSeederContent.txt" ),
+				"|modelName|",
+				modelNamePlural,
+				"all"
+			);
+			// Create dir if it doesn't exist
+			directoryCreate( getDirectoryFromPath( seederPath ), true, true );
+			// Create the migration
+			file action="write" file="#seederPath#" mode="777" output="#seedContent#";
+			// open file
+			if ( arguments.open ) {
+				openPath( seederPath );
+			}
+			print.greenLine( "Created Seeder: [#seederPath#]" );
+		}
+
+		// Generate Handler
+		if ( arguments.handler ) {
+			command( "coldbox create handler" )
+				.params(
+					name    : modelNamePlural,
+					force   : arguments.force,
+					open    : arguments.open,
+					rest    : arguments.rest,
+					resource: arguments.resource
+				)
+				.run();
+		}
+
+		// Generate Tests
+		if ( arguments.tests ) {
+			command( "coldbox create model-test" )
+				.params(
+					path   : arguments.name,
+					force  : arguments.force,
+					open   : arguments.open,
+					methods: arguments.methods
+				)
+				.run();
 		}
 
 		// Open file?

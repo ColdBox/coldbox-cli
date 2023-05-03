@@ -48,7 +48,7 @@ component {
 		print.line();
 
 		// Read in Module Config
-		var moduleConfig = fileRead( "#variables.templatePath#/modules/ModuleConfig.cfc" );
+		var moduleConfig = fileRead( "#variables.settings.templatesPath#/modules/ModuleConfig.cfc" );
 
 		// Start Generation Replacing
 		moduleConfig = replaceNoCase( moduleConfig, "@title@", arguments.name, "all" );
@@ -106,7 +106,7 @@ component {
 
 		// Copy module template
 		directoryCopy(
-			"#variables.templatePath#/modules/",
+			"#variables.settings.templatesPath#/modules/",
 			arguments.directory & "/#arguments.name#",
 			true
 		);

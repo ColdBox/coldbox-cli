@@ -1,0 +1,14 @@
+component {
+
+    function up( schema, qb ) {
+		schema.create( "|modelName|", function( table ) {
+			table.increments( "id" );
+			table.timestamps();
+		} );
+    }
+
+    function down( schema, qb ) {
+		schema.dropIfExists( "|modelName|" );
+    }
+
+}
