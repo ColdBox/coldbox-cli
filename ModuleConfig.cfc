@@ -8,6 +8,10 @@
  */
 component {
 
+	this.name      = "ColdBox CLI";
+	this.version   = "@build.version@+@build.number@";
+	this.cfmapping = "coldbox-cli";
+
 	function configure(){
 		settings = { templatesPath : modulePath & "/templates" }
 	}

@@ -19,12 +19,16 @@ component {
 	 * @helper    Generate a helper file for this view
 	 * @directory The base directory to create your view in and creates the directory if it does not exist.
 	 * @open      Open the view in your default editor
+	 * @content   The content to put in the view
+	 * @force     Force overwrite of existing view
 	 **/
 	function run(
 		required name,
 		boolean helper = false,
 		directory      = "views",
-		boolean open   = false
+		boolean open   = false,
+		content        = "<h1>#arguments.name# view</h1>",
+		boolean force  = false
 	){
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
@@ -52,7 +56,7 @@ component {
 
 		savecontent variable="local.viewContent" {
 			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
-			writeOutput( "<h1>#arguments.name# view</h1>#variables.utility.BREAK#" )
+			writeOutput( "#arguments.content##variables.utility.BREAK#" )
 			writeOutput( "</cfoutput>" )
 		};
 
@@ -61,7 +65,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( viewPath ) && !confirm(
+			fileExists( viewPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( viewPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {

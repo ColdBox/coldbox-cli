@@ -10,9 +10,25 @@
  **/
 component aliases="coldbox create controller" {
 
+	// DI
+	property name="utility"  inject="utility@coldbox-cli";
+	property name="settings" inject="box:modulesettings:coldbox-cli";
+
+	static {
+		HINTS = {
+			index  : "Display a listing of the resource",
+			new    : "Show the form for creating a new resource",
+			create : "Store a newly created resource in storage",
+			show   : "Display the specified resource",
+			edit   : "Show the form for editing the specified resource",
+			update : "Update the specified resource in storage",
+			delete : "Remove the specified resource from storage"
+		}
+	}
+
 	/**
 	 * @name             Name of the handler to create without the .cfc. For packages, specify name as 'myPackage/myHandler'
-	 * @actions          A comma-delimited list of actions to generate
+	 * @actions          A comma-delimited list of actions to generate, by default we generate just an index action
 	 * @views            Generate a view for each action
 	 * @viewsDirectory   The directory where your views are stored. Only used if views is set to true.
 	 * @appMapping       The root location of the application in the web root: ex: /MyApp or / if in the root
@@ -22,6 +38,8 @@ component aliases="coldbox create controller" {
 	 * @description      The handler hint description
 	 * @open             Open the handler (and test(s) if applicable) once generated
 	 * @rest             Make this a REST handler instead of a normal ColdBox Handler
+	 * @force            Force overwrite of existing handler
+	 * @resource         Generate a resourceful handler with all the actions
 	 **/
 	function run(
 		required name,
@@ -34,7 +52,9 @@ component aliases="coldbox create controller" {
 		directory                = "handlers",
 		description              = "I am a new handler",
 		boolean open             = false,
-		boolean rest             = false
+		boolean rest             = false,
+		boolean force            = false,
+		boolean resource         = false
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory      = resolvePath( arguments.directory );
@@ -57,13 +77,9 @@ component aliases="coldbox create controller" {
 
 		// Rest or Normal
 		var handlerContent = fileRead(
-			arguments.rest ? "/coldbox-commands/templates/RestHandlerContent.txt" : "/coldbox-commands/templates/HandlerContent.txt"
+			arguments.rest ? "#variables.settings.templatesPath#/RestHandlerContent.txt" : "#variables.settings.templatesPath#/HandlerContent.txt"
 		);
-		var actionContent = fileRead(
-			arguments.rest ? "/coldbox-commands/templates/RestActionContent.txt" : "/coldbox-commands/templates/ActionContent.txt"
-		);
-		var handlerTestContent     = fileRead( "/coldbox-commands/templates/testing/HandlerBDDContent.txt" );
-		var handlerTestCaseContent = fileRead( "/coldbox-commands/templates/testing/HandlerBDDCaseContent.txt" );
+		var handlerTestContent = fileRead( "#variables.settings.templatesPath#/testing/HandlerBDDContent.txt" );
 
 		// Start text replacements
 		handlerContent = replaceNoCase(
@@ -91,64 +107,30 @@ component aliases="coldbox create controller" {
 			"all"
 		);
 
-		// Handle Actions if passed
-		if ( len( arguments.actions ) ) {
-			var allActions    = "";
-			var allTestsCases = "";
-			var thisTestCase  = "";
-
-			// Loop Over actions generating their functions
-			for ( var thisAction in listToArray( arguments.actions ) ) {
-				thisAction = trim( thisAction );
-				allActions = allActions & replaceNoCase( actionContent, "|action|", thisAction, "all" ) & cr & cr;
-
-				// Are we creating views? But only if we are NOT in rest mode
-				if ( arguments.views && !arguments.rest ) {
-					var camelCaseHandlerName = arguments.name.left( 1 ).lCase();
-					if ( arguments.name.len() > 1 ) {
-						camelCaseHandlerName &= arguments.name.right( -1 );
-					}
-
-					var viewPath = resolvePath(
-						arguments.viewsDirectory & "/" & camelCaseHandlerName & "/" & thisAction & ".cfm"
-					);
-					// Create dir if it doesn't exist
-					directoryCreate( getDirectoryFromPath( viewPath ), true, true );
-					// Create View Stub
-					fileWrite( viewPath, "<cfoutput>#cr#<h1>#arguments.name#.#thisAction#</h1>#cr#</cfoutput>" );
-					print.greenLine( "Created " & viewPath );
-				}
-
-				// Are we creating tests cases on actions
-				if ( arguments.integrationTests ) {
-					thisTestCase = replaceNoCase(
-						handlerTestCaseContent,
-						"|action|",
-						thisAction,
-						"all"
-					);
-					thisTestCase = replaceNoCase(
-						thisTestCase,
-						"|event|",
-						listChangeDelims( arguments.name, ".", "/\" ) & "." & thisAction,
-						"all"
-					);
-					allTestsCases &= thisTestCase & CR & CR;
-				}
+		// Auto Actions Determination if none passed via resource && rest, else empty handler
+		if ( !len( arguments.actions ) ) {
+			if ( arguments.resource && !arguments.rest ) {
+				arguments.actions = "index,new,create,show,edit,update,delete";
+			} else if ( ( arguments.resource && arguments.rest ) || arguments.rest ) {
+				arguments.actions = "index,create,show,update,delete";
+			} else {
+				arguments.actions = "index";
 			}
+		}
 
-			// final replacements
-			allActions     = replaceNoCase( allActions, "|name|", arguments.name, "all" );
-			handlerContent = replaceNoCase(
+		// Handle Actions
+		if ( len( arguments.actions ) ) {
+			var actionResults = buildActions( argumentCollection = arguments );
+			handlerContent    = replaceNoCase(
 				handlerContent,
 				"|EventActions|",
-				allActions,
+				actionResults.actions,
 				"all"
 			);
 			handlerTestContent = replaceNoCase(
 				handlerTestContent,
 				"|TestCases|",
-				allTestsCases,
+				actionResults.tests,
 				"all"
 			);
 		} else {
@@ -156,17 +138,17 @@ component aliases="coldbox create controller" {
 			handlerTestContent = replaceNoCase( handlerTestContent, "|TestCases|", "", "all" );
 		}
 
-		var handlerPath = resolvePath( "#arguments.directory#/#arguments.name#.cfc" );
 		// Create dir if it doesn't exist
+		var handlerPath = resolvePath( "#arguments.directory#/#arguments.name#.cfc" );
 		directoryCreate(
 			getDirectoryFromPath( handlerPath ),
 			true,
 			true
 		);
 
-		// Confirm it
+		// Confirm it or Force it
 		if (
-			fileExists( handlerPath ) && !confirm(
+			fileExists( handlerPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( handlerPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
@@ -178,6 +160,7 @@ component aliases="coldbox create controller" {
 		file action="write" file="#handlerPath#" mode="777" output="#handlerContent#";
 		print.greenLine( "Created #handlerPath#" );
 
+		// More Tests?
 		if ( arguments.integrationTests ) {
 			var testPath = resolvePath( "#arguments.testsDirectory#/#arguments.name#Test.cfc" );
 			// Create dir if it doesn't exist
@@ -195,6 +178,94 @@ component aliases="coldbox create controller" {
 		if ( arguments.open ) {
 			openPath( handlerPath );
 		}
+	}
+
+	/**
+	 * Build out the actions
+	 *
+	 * @return struct of { actions : "", tests : ""}
+	 */
+	function buildActions(
+		name,
+		actions,
+		boolean views,
+		viewsDirectory,
+		boolean integrationTests,
+		appMapping,
+		testsDirectory,
+		directory,
+		description,
+		boolean open,
+		boolean rest,
+		boolean force,
+		boolean resource
+	){
+		var results       = { actions : "", tests : "" }
+		var actionContent = fileRead(
+			arguments.rest ? "#variables.settings.templatesPath#/RestActionContent.txt" : "#variables.settings.templatesPath#/ActionContent.txt"
+		);
+		var handlerTestCaseContent = fileRead( "#variables.settings.templatesPath#/testing/HandlerBDDCaseContent.txt" );
+
+		// Loop Over actions generating their functions
+		for ( var thisAction in listToArray( arguments.actions ) ) {
+			thisAction = trim( thisAction );
+			// Hint Replacement
+			results.actions &= replaceNoCase(
+				actionContent,
+				"|hint|",
+				static.HINTS[ thisAction ] ?: thisAction,
+				"all"
+			);
+			// Action Replacement
+			results.actions = replaceNoCase( results.actions, "|action|", thisAction, "all" ) & repeatString(
+				variables.cr,
+				1
+			);
+
+			// Are we creating views? But only if we are NOT in rest mode
+			if ( arguments.views && !arguments.rest && listFindNoCase( "create,update,delete", arguments.views ) ) {
+				var camelCaseHandlerName = arguments.name.left( 1 ).lCase();
+				if ( arguments.name.len() > 1 ) {
+					camelCaseHandlerName &= arguments.name.right( -1 );
+				}
+				command( "coldbox create view" )
+					.params(
+						name     : camelCaseHandlerName & "/" & thisAction,
+						content  : "<h1>#camelCaseHandlerName#.#thisAction#</h1>",
+						directory: arguments.viewsDirectory,
+						force    : arguments.force,
+						open     : arguments.open
+					)
+					.run();
+			}
+
+			// Are we creating tests cases on actions
+			if ( arguments.integrationTests ) {
+				var thisTestCase = replaceNoCase(
+					handlerTestCaseContent,
+					"|action|",
+					thisAction,
+					"all"
+				);
+				thisTestCase = replaceNoCase(
+					thisTestCase,
+					"|event|",
+					listChangeDelims( arguments.name, ".", "/\" ) & "." & thisAction,
+					"all"
+				);
+				results.tests &= thisTestCase;
+			}
+		}
+
+		// final replacements
+		results.actions = replaceNoCase(
+			results.actions,
+			"|name|",
+			arguments.name,
+			"all"
+		);
+
+		return results;
 	}
 
 }

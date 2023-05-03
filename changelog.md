@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated all templates to ColdBox 7
 - Updated all `resources` to ColdBox 7 standard code
 - Create app new argument: `migrations` to init the migrations on the project
+- Add `--force` command to several commands for overwriting files
+- You can create views with content now: `create view name="myView" content="my content"`
+- You can now create resourceful handlers: `create handler name="myHandler" --resource`
+- You can now create resourceful rest handlers: `create handler name="myHandler" --resource --rest`
 
 ### Fixed
 
