@@ -204,7 +204,9 @@ component aliases="coldbox create controller" {
 		var actionContent = fileRead(
 			arguments.rest ? "#variables.settings.templatesPath#/RestActionContent.txt" : "#variables.settings.templatesPath#/ActionContent.txt"
 		);
-		var handlerTestCaseContent = fileRead( "#variables.settings.templatesPath#/testing/HandlerBDDCaseContent.txt" );
+		var handlerTestCaseContent = fileRead(
+			"#variables.settings.templatesPath#/testing/HandlerBDDCaseContent.txt"
+		);
 
 		// Loop Over actions generating their functions
 		for ( var thisAction in listToArray( arguments.actions ) ) {
