@@ -41,72 +41,61 @@
 component {
 
 	// Module Properties
-	this.title 				= "@title@";
-	this.author 			= "@author@";
-	this.webURL 			= "@authorURL@";
-	this.description 		= "@description@";
-	this.version			= "@version@";
+	this.title              = "@title@";
+	this.author             = "@author@";
+	this.webURL             = "@authorURL@";
+	this.description        = "@description@";
+	this.version            = "@version@";
 	// If true, looks for views in the parent first, if not found, then in the module. Else vice-versa
-	this.viewParentLookup 	= true;
+	this.viewParentLookup   = true;
 	// If true, looks for layouts in the parent first, if not found, then in module. Else vice-versa
 	this.layoutParentLookup = true;
 	// Module Entry Point
-	this.entryPoint			= "@title@";
+	this.entryPoint         = "@title@";
 	// Inherit Entry Point
-	this.inheritEntryPoint 	= false;
+	this.inheritEntryPoint  = false;
 	// Model Namespace
-	this.modelNamespace		= "@modelNamespace@";
+	this.modelNamespace     = "@modelNamespace@";
 	// CF Mapping
-	this.cfmapping			= "@cfmapping@";
+	this.cfmapping          = "@cfmapping@";
 	// Auto-map models
-	this.autoMapModels		= true;
+	this.autoMapModels      = true;
 	// Module Dependencies
-	this.dependencies 		= @dependencies@;
+	this.dependencies       =   @dependencies@;
 
 	/**
 	 * Configure the module
 	 */
 	function configure(){
-
 		// parent settings
-		parentSettings = {
-		};
+		parentSettings = {};
 
 		// module settings - stored in modules.name.settings
-		settings = {
-		};
+		settings = {};
 
 		// Layout Settings
-		layoutSettings = {
-			defaultLayout = ""
-		};
+		layoutSettings = { defaultLayout : "" };
 
 		// Custom Declared Points
-		interceptorSettings = {
-			customInterceptionPoints = []
-		};
+		interceptorSettings = { customInterceptionPoints : [] };
 
 		// Custom Declared Interceptors
-		interceptors = [
-		];
+		interceptors = [];
 
 		// Binder Mappings
 		// binder.map("Alias").to("#moduleMapping#.models.MyService");
-
 	}
 
 	/**
 	 * Fired when the module is registered and activated.
 	 */
 	function onLoad(){
-
 	}
 
 	/**
 	 * Fired when the module is unregistered and unloaded
 	 */
 	function onUnload(){
-
 	}
 
 }

@@ -16,18 +16,10 @@ component {
 		variables.testRunner   = "http://localhost:60299/tests/runner.cfm";
 
 		// Source Excludes Not Added to final binary: You can use REGEX
-		variables.excludes = [
-			"build",
-			"test\-harness",
-			"tests",
-			"^\..*"
-		];
+		variables.excludes = [ "build", "test\-harness", "tests", "^\..*" ];
 
 		// Cleanup + Init Build Directories
-		[
-			variables.buildDir,
-			variables.artifactsDir
-		].each( function( item ){
+		[ variables.buildDir, variables.artifactsDir ].each( function( item ){
 			if ( directoryExists( item ) ) {
 				directoryDelete( item, true );
 			}
@@ -48,9 +40,9 @@ component {
 	 * Run the build process: test, build source, docs, checksums
 	 *
 	 * @projectName The project name used for resources and slugs
-	 * @version The version you are building
-	 * @buldID The build identifier
-	 * @branch The branch you are building
+	 * @version     The version you are building
+	 * @buldID      The build identifier
+	 * @branch      The branch you are building
 	 */
 	function run(
 		required projectName,
@@ -100,9 +92,9 @@ component {
 	 * Build the source
 	 *
 	 * @projectName The project name used for resources and slugs
-	 * @version The version you are building
-	 * @buldID The build identifier
-	 * @branch The branch you are building
+	 * @version     The version you are building
+	 * @buldID      The build identifier
+	 * @branch      The branch you are building
 	 */
 	function buildSource(
 		required projectName,
@@ -124,18 +116,11 @@ component {
 
 		// Project Build Dir
 		variables.projectBuildDir = variables.buildDir & "/#projectName#";
-		directoryCreate(
-			variables.projectBuildDir,
-			true,
-			true
-		);
+		directoryCreate( variables.projectBuildDir, true, true );
 
 		// Copy source
 		print.blueLine( "+ Copying source to build folder..." ).toConsole();
-		copy(
-			variables.cwd,
-			variables.projectBuildDir
-		);
+		copy( variables.cwd, variables.projectBuildDir );
 
 		// Create build ID
 		fileWrite(
@@ -174,10 +159,7 @@ component {
 		);
 
 		// Copy box.json for convenience
-		fileCopy(
-			"#variables.projectBuildDir#/box.json",
-			variables.exportsDir
-		);
+		fileCopy( "#variables.projectBuildDir#/box.json", variables.exportsDir );
 	}
 
 	/**
