@@ -18,12 +18,14 @@ component {
 	 * @points         A comma-delimited list of interception points to generate tests for
 	 * @testsDirectory Your unit tests directory. Only used if tests is true
 	 * @open           Open the test once generated
+	 * @force          Force overwrite of existing test
 	 **/
 	function run(
 		required path,
 		points         = "",
 		testsDirectory = "tests/specs/interceptors",
-		boolean open   = false
+		boolean open   = false,
+		boolean force  = false
 	){
 		// This will make each directory canonical and absolute
 		arguments.testsDirectory = resolvePath( arguments.testsDirectory );
@@ -88,7 +90,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( testPath ) && !confirm(
+			fileExists( testPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( testPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {

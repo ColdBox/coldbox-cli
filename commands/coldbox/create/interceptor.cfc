@@ -24,6 +24,7 @@ component {
 	 * @testsDirectory Your unit tests directory. Only used if tests is true
 	 * @directory      The base directory to create your interceptor in and creates the directory if it does not exist.
 	 * @open           Open the interceptor once generated
+	 * @force          Force overwrite of the interceptor if it exists
 	 **/
 	function run(
 		required name,
@@ -32,7 +33,8 @@ component {
 		boolean tests  = true,
 		testsDirectory = "tests/specs/interceptors",
 		directory      = "interceptors",
-		boolean open   = false
+		boolean open   = false,
+		boolean force  = false
 	){
 		// This will make each directory canonical and absolute
 		var relativeDirectory    = arguments.directory;
@@ -137,7 +139,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( interceptorPath ) && !confirm(
+			fileExists( interceptorPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( interceptorPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {

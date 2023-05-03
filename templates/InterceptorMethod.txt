@@ -1,6 +1,6 @@
 	/**
 	 * |interceptionPoint|
 	 */
-	function |interceptionPoint|( event, interceptData, buffer, rc, prc ){
+	function |interceptionPoint|( event, data, buffer, rc, prc ){
 
 	}
