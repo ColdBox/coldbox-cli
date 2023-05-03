@@ -47,6 +47,14 @@ component {
 	 * @tests             Generate the unit test BDD component
 	 * @testsDirectory    Your unit tests directory. Only used if tests is true
 	 * @open              Open the file(s) once generated
+	 * @force             Force overwrite of existing files
+	 * @migration         Generate a migration file for this entity
+	 * @seeder            Generate a seeder file for this entity
+	 * @handler           Generate a handler for this entity
+	 * @rest              Generate a REST handler for this entity
+	 * @resource          Generate a REST resource for this entity
+	 * @all               Generate all the things! (tests, migration, seeder, handler, rest, resource)
+	 * @methods           Generate methods for the entity
 	 **/
 	function run(
 		required entityName,
@@ -59,143 +67,56 @@ component {
 		properties           = "",
 		boolean tests        = true,
 		testsDirectory       = "tests/specs/unit",
-		boolean open         = false
+		boolean open         = false,
+		boolean force        = false,
+		boolean migration    = false,
+		boolean seeder       = false,
+		boolean handler      = false,
+		boolean rest         = false,
+		boolean resource     = false,
+		boolean all          = false,
+		methods              = ""
 	){
-		// non-canonical path
-		var nonCanonicalDirectory = arguments.directory;
-		// This will make each directory canonical and absolute
-		arguments.directory       = resolvePath( arguments.directory );
-		arguments.testsDirectory  = resolvePath( arguments.testsDirectory );
+		// Defaults
+		arguments.table = len( arguments.table ) ? arguments.table : variables.utility.pluralize(
+			arguments.entityName.lcase()
+		);
+		arguments.primaryKeyColumn = len( arguments.primaryKeyColumn ) ? arguments.primaryKeyColumn : arguments.primaryKey;
 
-		// Validate directory
-		if ( !directoryExists( arguments.directory ) ) {
-			directoryCreate( arguments.directory );
-		}
-
-		// Argument defaults
-		if ( !len( arguments.table ) ) {
-			arguments.table = arguments.entityName;
-		}
-		if ( !len( arguments.primaryKeyColumn ) ) {
-			arguments.primaryKeyColumn = arguments.primaryKey;
-		}
-
-		// Read in Template
-		var modelContent     = fileRead( "#variables.settings.templatePath#/orm/Entity.txt" );
-		var modelTestContent = fileRead( "#variables.settings.templatePath#/testing/ORMEntityBDDContent.txt" );
-
-		// Basic replacements
-		modelContent = replaceNoCase(
-			modelContent,
-			"|entityName|",
-			arguments.entityName,
-			"all"
-		);
-		modelContent = replaceNoCase(
-			modelContent,
-			"|table|",
-			arguments.table,
-			"all"
-		);
-		modelContent = replaceNoCase(
-			modelContent,
-			"|primaryKey|",
-			arguments.primaryKey,
-			"all"
-		);
-		modelContent = replaceNoCase(
-			modelContent,
-			"|primaryKeyColumn|",
-			arguments.primaryKeyColumn,
-			"all"
-		);
-		modelContent = replaceNoCase(
-			modelContent,
-			"|generator|",
-			arguments.generator,
-			"all"
-		);
+		// Persistence data
+		var componentAnnotations = " table=""#arguments.table#"" persistent=""true""";
 
 		// Active Entity?
 		if ( arguments.activeEntity ) {
-			modelContent = replaceNoCase(
-				modelContent,
-				"|activeEntity|",
-				" extends=""cborm.models.ActiveEntity""",
-				"all"
-			);
-			modelContent = replaceNoCase(
-				modelContent,
-				"|activeEntityInit|",
-				"super.init( useQueryCaching=""false"" );",
-				"all"
-			);
-		} else {
-			modelContent = replaceNoCase( modelContent, "|activeEntity|", "", "all" );
-			modelContent = replaceNoCase( modelContent, "|activeEntityInit|", "", "all" );
+			componentAnnotations &= " extends=""cborm.models.ActiveEntity""";
 		}
 
-		// Test Content Replacement
-		modelTestContent = replaceNoCase(
-			modelTestContent,
-			"|modelName|",
-			"#nonCanonicalDirectory#.#arguments.entityName#",
-			"all"
-		);
-		modelTestContent = replaceNoCase( modelTestContent, "|TestCases|", "", "all" );
+		var propertyContent = "property name=""#arguments.primaryKey#"" fieldtype=""id"" column=""#arguments.primaryKeyColumn#"" generator=""#arguments.generator#"" setter=""false"";";
 
-		// Properties
-		var properties = listToArray( arguments.properties );
-		var buffer     = createObject( "java", "java.lang.StringBuffer" ).init();
-		for ( var thisProperty in properties ) {
-			var propName = getToken( trim( thisProperty ), 1, ":" );
-			var propType = getToken( trim( thisProperty ), 2, ":" );
-			if ( NOT len( propType ) ) {
-				propType = "string";
-			}
-			buffer.append( "property name=""#propName#"" ormtype=""#propType#"";#chr( 13 ) & chr( 9 )#" );
-		}
-		modelContent = replaceNoCase(
-			modelContent,
-			"|properties|",
-			buffer.toString()
-		);
-
-		// Write out the model
-		var modelPath = "#arguments.directory#/#arguments.entityName#.cfc";
-		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
-
-		// Confirm it
-		if (
-			fileExists( modelPath ) && !confirm(
-				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
+		command( "coldbox create model" )
+			.params(
+				name                : ucFirst( arguments.entityName ),
+				methods             : arguments.methods,
+				tests               : arguments.tests,
+				testsDirectory      : arguments.testsDirectory & "/unit",
+				directory           : arguments.directory,
+				description         : "I model a #arguments.entityName#",
+				open                : arguments.open,
+				accessors           : false,
+				properties          : arguments.properties,
+				force               : arguments.force,
+				migration           : arguments.migration,
+				seeder              : arguments.seeder,
+				handler             : arguments.handler,
+				rest                : arguments.rest,
+				resource            : arguments.resource,
+				all                 : arguments.all,
+				componentAnnotations: componentAnnotations,
+				ormTypes            : true,
+				propertyContent     : propertyContent & variables.cr & chr( 9 ),
+				initContent         : "super.init( useQueryCaching=""false"" );"
 			)
-		) {
-			print.redLine( "Exiting..." );
-			return;
-		}
-
-		file action="write" file="#modelPath#" mode="777" output="#modelContent#";
-		print.greenLine( "Created #modelPath#" );
-
-		if ( arguments.tests ) {
-			var testPath = "#arguments.TestsDirectory#/#arguments.entityName#Test.cfc";
-			// Create dir if it doesn't exist
-			directoryCreate( getDirectoryFromPath( testPath ), true, true );
-			// Create the tests
-			file action="write" file="#testPath#" mode="777" output="#modelTestContent#";
-			// open file
-			if ( arguments.open ) {
-				openPath( testPath );
-			}
-			print.greenLine( "Created #testPath#" );
-		}
-
-		// Open file?
-		if ( arguments.open ) {
-			openPath( modelPath );
-		}
+			.run();
 	}
 
 }

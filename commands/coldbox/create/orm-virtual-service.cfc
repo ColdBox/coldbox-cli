@@ -22,6 +22,7 @@ component {
 	 * @tests          Generate the unit test BDD component
 	 * @testsDirectory Your unit tests directory. Only used if tests is true
 	 * @open           Open the file once generated
+	 * @force          Force overwrite of existing files
 	 **/
 	function run(
 		required entityName,
@@ -31,7 +32,8 @@ component {
 		cacheRegion           = "",
 		boolean tests         = true,
 		testsDirectory        = "tests/specs/unit",
-		boolean open          = false
+		boolean open          = false,
+		boolean force         = false
 	){
 		// non-canonical path
 		var nonCanonicalDirectory = arguments.directory;
@@ -93,7 +95,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( modelPath ) && !confirm(
+			fileExists( modelPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {

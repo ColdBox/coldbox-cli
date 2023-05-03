@@ -17,11 +17,13 @@ component {
 	 * @name      Name of the event handler to create without the .cfc. For packages, specify name as 'myPackage/myModel'
 	 * @directory The base directory to create your event handler in and creates the directory if it does not exist.
 	 * @open      Open the file once generated
+	 * @force     Force overwrite of existing files
 	 **/
 	function run(
 		required name,
-		directory    = "models",
-		boolean open = false
+		directory     = "models",
+		boolean open  = false,
+		boolean force = false
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -38,13 +40,24 @@ component {
 
 		// Read in Template
 		var modelContent = fileRead( "#variables.settings.templatePath#/orm/ORMEventHandler.txt" );
-
 		// Write out the model
-		var modelPath = "#directory#/#arguments.name#.cfc";
+		var modelPath    = "#directory#/#arguments.name#.cfc";
 		// Create dir if it doesn't exist
 		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
-		file action="write" file="#modelPath#" mode="777" output="#modelContent#";
-		print.greenLine( "Created #modelPath#" );
+
+		// Prompt for override
+		if (
+			fileExists( modelPath ) && !arguments.force && !confirm(
+				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
+			)
+		) {
+			print.redLine( "Exiting..." );
+			return;
+		}
+
+		// Write out the model
+		fileWrite( modelPath, trim( modelContent ) );
+		print.greenLine( "Created Model: [#modelPath#]" );
 
 		// Open file?
 		if ( arguments.open ) {

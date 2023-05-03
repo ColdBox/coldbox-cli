@@ -33,43 +33,51 @@ component {
 	}
 
 	/**
-	 * @name                Name of the model to create without the .cfc. For packages, specify name as 'myPackage/myModel'
-	 * @methods             A comma-delimited list of method stubs to generate for you
-	 * @persistence         Specify singleton to have only one instance of this model created
-	 * @persistence.options Transient,Singleton
-	 * @tests               Generate the unit test BDD component
-	 * @testsDirectory      Your unit tests directory. Only used if tests is true
-	 * @directory           The base directory to create your model in and creates the directory if it does not exist.
-	 * @description         The model hint description
-	 * @open                Open the file once generated
-	 * @accessors           Setup accessors to be true in the component
-	 * @properties          Enter a list of properties to generate. You can add the type via colon separator. Ex: firstName,age:numeric,wheels:array
-	 * @force               Force overwrite of existing files
-	 * @migration           Generate a migration file for this model
-	 * @seeder              Generate a seeder file for this model
-	 * @handler             Generate a handler for this model
-	 * @rest                Generate a REST handler for this model
-	 * @resource            Generate a resourceful handler with all the actions
-	 * @all                 Generate all the things: handler, resource, migration, seeder, tests
+	 * @name                 Name of the model to create without the .cfc. For packages, specify name as 'myPackage/myModel'
+	 * @methods              A comma-delimited list of method stubs to generate for you
+	 * @persistence          Specify singleton to have only one instance of this model created
+	 * @persistence.options  Transient,Singleton
+	 * @tests                Generate the unit test BDD component
+	 * @testsDirectory       Your unit tests directory. Only used if tests is true
+	 * @directory            The base directory to create your model in and creates the directory if it does not exist.
+	 * @description          The model hint description
+	 * @open                 Open the file once generated
+	 * @accessors            Setup accessors to be true in the component
+	 * @properties           Enter a list of properties to generate. You can add the type via colon separator. Ex: firstName,age:numeric,wheels:array
+	 * @force                Force overwrite of existing files
+	 * @migration            Generate a migration file for this model
+	 * @seeder               Generate a seeder file for this model
+	 * @handler              Generate a handler for this model
+	 * @rest                 Generate a REST handler for this model
+	 * @resource             Generate a resourceful handler with all the actions
+	 * @all                  Generate all the things: handler, resource, migration, seeder, tests
+	 * @componentAnnotations Annotations to add to the component
+	 * @ormTypes             Generate ORM types for the properties or normal ColdFusion types
+	 * @propertyContent      Custom content to add to the properties
+	 * @initContent          Custom content to add to the init method
 	 **/
 	function run(
 		required name,
-		methods           = "",
-		persistence       = "transient",
-		boolean tests     = true,
-		testsDirectory    = "tests/specs/unit",
-		directory         = "models",
-		description       = "I am a new Model Object",
-		boolean open      = false,
-		boolean accessors = true,
-		properties        = "id:numeric",
-		boolean force     = false,
-		boolean migration = false,
-		boolean seeder    = false,
-		boolean handler   = false,
-		boolean rest      = false,
-		boolean resource  = false,
-		boolean all       = false
+		methods                     = "",
+		persistence                 = "transient",
+		boolean tests               = true,
+		testsDirectory              = "tests/specs/unit",
+		directory                   = "models",
+		description                 = "I am a new Model Object",
+		boolean open                = false,
+		boolean accessors           = true,
+		properties                  = "id:numeric",
+		boolean force               = false,
+		boolean migration           = false,
+		boolean seeder              = false,
+		boolean handler             = false,
+		boolean rest                = false,
+		boolean resource            = false,
+		boolean all                 = false,
+		string componentAnnotations = "",
+		boolean ormTypes            = false,
+		string propertyContent      = "",
+		string initContent          = ""
 	){
 		// Prepare arguments
 		var modelTestPath   = arguments.directory;
@@ -118,6 +126,12 @@ component {
 		// Basic replacements
 		modelContent = replaceNoCase(
 			modelContent,
+			"|componentAnnotations|",
+			arguments.componentAnnotations,
+			"all"
+		);
+		modelContent = replaceNoCase(
+			modelContent,
 			"|modelName|",
 			listLast( arguments.name, "/\" ),
 			"all"
@@ -126,6 +140,12 @@ component {
 			modelContent,
 			"|modelDescription|",
 			arguments.description,
+			"all"
+		);
+		modelContent = replaceNoCase(
+			modelContent,
+			"|initContent|",
+			arguments.initContent,
 			"all"
 		);
 		modelTestContent = replaceNoCase(
@@ -169,14 +189,14 @@ component {
 
 		// Generate Model Properties
 		var properties = listToArray( arguments.properties );
-		var buffer     = createObject( "java", "java.lang.StringBuffer" ).init();
+		var buffer     = createObject( "java", "java.lang.StringBuffer" ).init( arguments.propertyContent );
 		for ( var thisProperty in properties ) {
 			var propName = getToken( trim( thisProperty ), 1, ":" );
 			var propType = getToken( trim( thisProperty ), 2, ":" );
 			if ( NOT len( propType ) ) {
 				propType = "string";
 			}
-			buffer.append( "property name=""#propName#"" type=""#propType#"";#variables.cr & chr( 9 )#" );
+			buffer.append( "property name=""#propName#"" #arguments.ormTypes ? "ormtype" : "type"#=""#propType#"";#variables.cr & chr( 9 )#" );
 		}
 		modelContent = replaceNoCase(
 			modelContent,

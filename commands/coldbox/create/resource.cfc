@@ -67,6 +67,7 @@ component {
 	 * @tests             Generate the integration and unit tests for this generation
 	 * @specsDirectory    Your specs directory. Only used if tests is true
 	 * @api               If true, this will generate api resources, else normal html resources
+	 * @force             Force the generation of the resource, even if it exists
 	 */
 	function run(
 		required resource,
@@ -89,7 +90,10 @@ component {
 		modelsDirectory      = "models",
 		boolean tests        = true,
 		specsDirectory       = "tests/specs",
-		boolean api          = false
+		boolean api          = false,
+		boolean force        = false,
+		boolean migration    = false,
+		boolean seeder       = false
 	){
 		// Normalize paths
 		arguments.specsDirectory   = resolvePath( arguments.specsDirectory );
@@ -107,7 +111,7 @@ component {
 		if ( arguments.module.len() ) {
 			// Check if module exists, if not, ask to create it first.
 			if (
-				!directoryExists( modulePath ) && confirm(
+				!directoryExists( modulePath ) && !arguments.force && confirm(
 					"The module '#arguments.module#' does not exist, should we create it for you?"
 				)
 			) {
@@ -169,7 +173,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( hpath ) && !confirm(
+			fileExists( hpath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( hpath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
@@ -182,32 +186,17 @@ component {
 		// ********************** generate views ************************************//
 
 		if ( !arguments.api ) {
-			// Create Views Path
-			directoryCreate(
-				arguments.viewsDirectory & "/#arguments.resource#",
-				true,
-				true
-			);
-			var views = [ "new", "edit", "show", "index" ];
-			for ( var thisView in views ) {
-				var vContent = fileRead( "#variables.settings.templatesPath#/resources/#thisView#.txt" );
-				vContent     = replaceNoCase(
-					vContent,
-					"|resource|",
-					arguments.resource,
-					"all"
-				);
-				vContent = replaceNoCase(
-					vContent,
-					"|singularName|",
-					arguments.singularName,
-					"all"
-				);
-				fileWrite( arguments.viewsDirectory & "/#arguments.resource#/#thisView#.cfm", vContent );
-				print.blueLine(
-					"--> Generated (#thisView#) View: " & arguments.viewsDirectory & "#arguments.resource#/#thisView#.cfm"
-				);
-			}
+			var views = [ "new", "edit", "show", "index" ].each( ( view ) => {
+				command( "coldbox create view" )
+					.params(
+						name     : resource & "/" & arguments.view,
+						content  : "<h1>#resource#.#arguments.view#</h1>",
+						directory: viewsDirectory,
+						force    : force,
+						open     : open
+					)
+					.run();
+			} );
 		}
 
 		// ********************** generate test cases ************************************//
@@ -215,10 +204,11 @@ component {
 		print.blueLine( "--> Generating integration tests..." );
 		command( "coldbox create integration-test" )
 			.params(
-				handler    = arguments.handler,
-				actions    = arguments.api ? variables.API_ACTIONS.toList() : variables.ACTIONS.toList(),
-				appMapping = arguments.appMapping,
-				directory  = arguments.specsDirectory & "/integration"
+				handler   : arguments.handler,
+				actions   : arguments.api ? variables.API_ACTIONS.toList() : variables.ACTIONS.toList(),
+				appMapping: arguments.appMapping,
+				directory : arguments.specsDirectory & "/integration",
+				force     : arguments.force
 			)
 			.run();
 
@@ -229,24 +219,28 @@ component {
 			print.blueLine( "--> Generating ORM resource model (#arguments.singularName#)" );
 			command( "coldbox create orm-entity" )
 				.params(
-					entityName       = ucFirst( arguments.singularName ),
-					table            = arguments.table,
-					activeEntity     = arguments.activeEntity,
-					primaryKey       = arguments.primaryKey,
-					primaryKeyColumn = arguments.primaryKeyColumn,
-					generator        = arguments.generator,
-					properties       = arguments.properties,
-					directory        = arguments.modelsDirectory,
-					testsDirectory   = arguments.specsDirectory & "/unit"
+					entityName      : ucFirst( arguments.singularName ),
+					table           : arguments.table,
+					activeEntity    : arguments.activeEntity,
+					primaryKey      : arguments.primaryKey,
+					primaryKeyColumn: arguments.primaryKeyColumn,
+					generator       : arguments.generator,
+					properties      : arguments.properties,
+					directory       : arguments.modelsDirectory,
+					testsDirectory  : arguments.specsDirectory & "/unit",
+					migration       : arguments.migration,
+					seeder          : arguments.seeder,
+					force           : arguments.force
 				)
 				.run();
 
 			print.blueLine( "--> Generating ORM Virtual Service (#arguments.singularName#)" );
 			command( "coldbox create orm-virtual-service" )
 				.params(
-					entityName     = arguments.singularName,
-					directory      = arguments.modelsDirectory,
-					testsDirectory = arguments.specsDirectory & "/unit"
+					entityName    : arguments.singularName,
+					directory     : arguments.modelsDirectory,
+					testsDirectory: arguments.specsDirectory & "/unit",
+					force         : arguments.force
 				)
 				.run();
 		} else {
@@ -254,11 +248,14 @@ component {
 			// Generate model
 			command( "coldbox create model" )
 				.params(
-					name           = ucFirst( arguments.singularName ),
-					description    = "I model a #arguments.singularName#",
-					properties     = arguments.properties,
-					directory      = arguments.modelsDirectory,
-					testsDirectory = arguments.specsDirectory & "/unit"
+					name          : ucFirst( arguments.singularName ),
+					description   : "I model a #arguments.singularName#",
+					properties    : arguments.properties,
+					directory     : arguments.modelsDirectory,
+					testsDirectory: arguments.specsDirectory & "/unit",
+					migration     : arguments.migration,
+					seeder        : arguments.seeder,
+					force         : arguments.force
 				)
 				.run();
 
@@ -266,12 +263,13 @@ component {
 			print.blueLine( "--> Generating resource service (#arguments.resource#Service)" );
 			command( "coldbox create model" )
 				.params(
-					name           = ucFirst( arguments.resource ) & "Service",
-					persistence    = "singleton",
-					description    = "I manage #arguments.singularName#",
-					methods        = "save,delete,list,get",
-					directory      = arguments.modelsDirectory,
-					testsDirectory = arguments.specsDirectory & "/unit"
+					name          : ucFirst( arguments.resource ) & "Service",
+					persistence   : "singleton",
+					description   : "I manage #arguments.singularName#",
+					methods       : "save,delete,list,get",
+					directory     : arguments.modelsDirectory,
+					testsDirectory: arguments.specsDirectory & "/unit",
+					force         : arguments.force
 				)
 				.run();
 		}

@@ -22,6 +22,7 @@ component {
 	 * @tests          Generate the unit test BDD component
 	 * @testsDirectory Your unit tests directory. Only used if tests is true
 	 * @open           Open the file once generated
+	 * @force          Force overwrite existing files
 	 **/
 	function run(
 		required serviceName,
@@ -31,7 +32,8 @@ component {
 		cacheRegion           = "",
 		boolean tests         = true,
 		testsDirectory        = "tests/specs/unit",
-		boolean open          = false
+		boolean open          = false,
+		boolean force         = false
 	){
 		// non-canonical path
 		var nonCanonicalDirectory = arguments.directory;
@@ -45,8 +47,8 @@ component {
 		}
 
 		// Read in Template
-		var modelContent     = fileRead( "#variables.settings.templatePath#/orm/TemplatedEntityService.txt" );
-		var modelTestContent = fileRead( "#variables.settings.templatePath#/testing/ModelBDDContent.txt" );
+		var modelContent     = fileRead( "#variables.settings.templatesPath#/orm/TemplatedEntityService.txt" );
+		var modelTestContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
 
 		// Query cache Region
 		if ( !len( arguments.cacheRegion ) ) {
@@ -93,7 +95,7 @@ component {
 
 		// Confirm it
 		if (
-			fileExists( modelPath ) && !confirm(
+			fileExists( modelPath ) && !arguments.force && !confirm(
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
@@ -101,20 +103,19 @@ component {
 			return;
 		}
 
-		file action="write" file="#modelPath#" mode="777" output="#modelContent#";
-		print.greenLine( "Created #modelPath#" );
+		// Write out the model
+		fileWrite( modelPath, trim( modelContent ) );
+		print.greenLine( "Created Service: [#modelPath#]" );
 
 		if ( arguments.tests ) {
-			var testPath = "#arguments.TestsDirectory#/#arguments.serviceName#ServiceTest.cfc";
-			// Create dir if it doesn't exist
-			directoryCreate( getDirectoryFromPath( testPath ), true, true );
-			// Create the tests
-			file action="write" file="#testPath#" mode="777" output="#modelTestContent#";
-			// open file
-			if ( arguments.open ) {
-				openPath( testPath );
-			}
-			print.greenLine( "Created #testPath#" );
+			command( "coldbox create model-test" )
+				.params(
+					path          : arguments.serviceName & "Service",
+					testsDirectory: arguments.testsDirectory,
+					force         : arguments.force,
+					open          : arguments.open
+				)
+				.run();
 		}
 
 		// Open file?

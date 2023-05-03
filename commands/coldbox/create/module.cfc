@@ -31,7 +31,7 @@ component {
 		authorURL      = "",
 		description    = "",
 		version        = "1.0.0",
-		cfmapping      = arguments.name,
+		cfmapping      = "",
 		modelNamespace = arguments.name,
 		dependencies   = "",
 		directory      = "modules_app",
