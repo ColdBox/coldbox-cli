@@ -148,6 +148,9 @@ component {
 			job.complete();
 		}
 
+		// Finalize Create app Job
+		job.complete();
+
 		// Run migrations init
 		if ( arguments.migrations ) {
 			command( "migrate init" ).run();
