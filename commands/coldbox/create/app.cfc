@@ -135,7 +135,7 @@ component {
 				name    : arguments.name,
 				slug    : variables.formatterUtil.slugify( arguments.name ),
 				version : "1.0.0",
-				location: ""
+				location: "forgeboxStorage"
 			)
 			.run();
 
