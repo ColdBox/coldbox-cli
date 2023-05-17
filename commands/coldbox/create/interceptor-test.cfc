@@ -7,7 +7,7 @@
  * {code}
  *
  **/
-component extends="coldbox-cli.models.BaseCommand"{
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @path           The instantiation path of the interceptor to create the test for

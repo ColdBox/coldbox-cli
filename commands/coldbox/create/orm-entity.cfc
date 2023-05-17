@@ -28,7 +28,7 @@
  * {code}
  *
  **/
-component extends="coldbox-cli.models.BaseCommand"{
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @entityName        The name of the entity without .cfc
