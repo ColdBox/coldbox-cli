@@ -2,7 +2,7 @@
  * I am a new handler
  * Implicit Functions: preHandler, postHandler, aroundHandler, onMissingAction, onError, onInvalidHTTPMethod
  */
-component extends="coldbox.system.RestHandler"{
+component extends="coldbox.system.EventHandler"{
 
 	this.prehandler_only 	= "";
 	this.prehandler_except 	= "";
@@ -10,47 +10,22 @@ component extends="coldbox.system.RestHandler"{
 	this.posthandler_except = "";
 	this.aroundHandler_only = "";
 	this.aroundHandler_except = "";
+	this.allowedMethods = {};
 
 	/**
-	 * index
+	 * Show the form for creating a new resource
 	 */
-	function index( event, rc, prc ){
-        event.getResponse()
-            .setData( {} )
-            .addMessage( "Calling contacts/index" );
+	function new( event, rc, prc ){
+
 	}
+
 	/**
-	 * create
+	 * editor
 	 */
-	function create( event, rc, prc ){
-        event.getResponse()
-            .setData( {} )
-            .addMessage( "Calling contacts/create" );
+	function editor( event, rc, prc ){
+
 	}
-	/**
-	 * show
-	 */
-	function show( event, rc, prc ){
-        event.getResponse()
-            .setData( {} )
-            .addMessage( "Calling contacts/show" );
-	}
-	/**
-	 * update
-	 */
-	function update( event, rc, prc ){
-        event.getResponse()
-            .setData( {} )
-            .addMessage( "Calling contacts/update" );
-	}
-	/**
-	 * delete
-	 */
-	function delete( event, rc, prc ){
-        event.getResponse()
-            .setData( {} )
-            .addMessage( "Calling contacts/delete" );
-	}
+
 
 
 }

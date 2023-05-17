@@ -59,4 +59,15 @@ component singleton {
 		return result;
 	}
 
+	/**
+	 * Camel case a string using lower case for the first letter
+	 */
+	function camelCase( required target ){
+		var results = arguments.target.left( 1 ).lCase();
+		if ( arguments.target.len() > 1 ) {
+			results &= arguments.target.right( -1 );
+		}
+		return results;
+	}
+
 }

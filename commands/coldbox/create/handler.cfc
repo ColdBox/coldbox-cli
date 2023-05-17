@@ -226,10 +226,7 @@ component aliases="coldbox create controller" {
 
 			// Are we creating views? But only if we are NOT in rest mode
 			if ( arguments.views && !arguments.rest && listFindNoCase( "create,update,delete", arguments.views ) ) {
-				var camelCaseHandlerName = arguments.name.left( 1 ).lCase();
-				if ( arguments.name.len() > 1 ) {
-					camelCaseHandlerName &= arguments.name.right( -1 );
-				}
+				var camelCaseHandlerName = variables.utility.camelCase( arguments.name );
 				command( "coldbox create view" )
 					.params(
 						name     : camelCaseHandlerName & "/" & thisAction,

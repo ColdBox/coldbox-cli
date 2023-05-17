@@ -38,29 +38,14 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/"{
 				setup();
 			});
 
-			it( "index", function(){
+			it( "new", function(){
                 // Execute event or route via GET http method. Spice up accordingly
-				var event = get( "contacts.index" );
+				var event = get( "contacts.new" );
 				// expectations go here.
 				expect( false ).toBeTrue();
-			});			it( "create", function(){
+			});			it( "editor", function(){
                 // Execute event or route via GET http method. Spice up accordingly
-				var event = get( "contacts.create" );
-				// expectations go here.
-				expect( false ).toBeTrue();
-			});			it( "show", function(){
-                // Execute event or route via GET http method. Spice up accordingly
-				var event = get( "contacts.show" );
-				// expectations go here.
-				expect( false ).toBeTrue();
-			});			it( "update", function(){
-                // Execute event or route via GET http method. Spice up accordingly
-				var event = get( "contacts.update" );
-				// expectations go here.
-				expect( false ).toBeTrue();
-			});			it( "delete", function(){
-                // Execute event or route via GET http method. Spice up accordingly
-				var event = get( "contacts.delete" );
+				var event = get( "contacts.editor" );
 				// expectations go here.
 				expect( false ).toBeTrue();
 			});
