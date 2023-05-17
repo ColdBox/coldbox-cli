@@ -281,7 +281,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			var properties = listToArray( arguments.properties );
 			var buffer     = createObject( "java", "java.lang.StringBuffer" ).init();
 			for ( var thisProperty in properties ) {
-				var propName = getToken( trim( thisProperty ), 1, ":" );
+				var propName   = getToken( trim( thisProperty ), 1, ":" );
 				var propMethod = getToken( trim( thisProperty ), 2, ":" );
 				if ( NOT len( propMethod ) ) {
 					propMethod = "string";
