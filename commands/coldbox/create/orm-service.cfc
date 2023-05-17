@@ -7,11 +7,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand"{
 
 	/**
 	 * @serviceName    The name of this Base ORM service to create

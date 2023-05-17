@@ -14,9 +14,6 @@
  **/
 component {
 
-	function init(){
-	}
-
 	/**
 	 * Run the command
 	 *

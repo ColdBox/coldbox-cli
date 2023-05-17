@@ -8,11 +8,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand"{
 
 	/**
 	 * @arguments.name Name of the layout to create without the .cfm.

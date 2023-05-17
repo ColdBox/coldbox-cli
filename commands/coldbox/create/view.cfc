@@ -8,11 +8,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand"{
 
 	/**
 	 * @name      Name of the view to create without the .cfm.

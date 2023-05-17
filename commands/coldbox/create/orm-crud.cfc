@@ -8,11 +8,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand"{
 
 	/**
 	 * @entity            The name and dot location path of the entity to create the CRUD for, starting from the root of your application. For example: models.Contact, models.security.User

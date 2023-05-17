@@ -28,12 +28,10 @@
  * {code}
  *
  **/
-component {
+component extends="coldbox-cli.models.BaseCommand"{
 
 	// DI
 	property name="packageService" inject="PackageService";
-	property name="utility"        inject="utility@coldbox-cli";
-	property name="settings"       inject="box:modulesettings:coldbox-cli";
 
 	/**
 	 * Constructor

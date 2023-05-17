@@ -7,11 +7,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand"{
 
 	/**
 	 * Constructor
@@ -19,6 +15,8 @@ component {
 	function init(){
 		// valid persistences
 		variables.validPersistences = "Transient,Singleton";
+
+		super.init();
 
 		return this;
 	}

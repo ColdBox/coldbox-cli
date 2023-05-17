@@ -24,11 +24,7 @@
  * {code}
  *
  */
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand"{
 
 	// STATIC Actions we use in the resources
 	variables.ACTIONS = [

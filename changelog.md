@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `BaseCommand` hierarchy for all commands to inherit from
+
 ### Fixed
 
 - Version should match major ColdBox version, moved to `7`
