@@ -46,11 +46,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @handler              Generate a handler for this model
 	 * @rest                 Generate a REST handler for this model
 	 * @resource             Generate a resourceful handler with all the actions
-	 * @all                  Generate all the things: handler, resource, migration, seeder, tests
+	 * @all                  Generate all the things: handler, resource, migration, seeder, tests, service
 	 * @componentAnnotations Annotations to add to the component
 	 * @ormTypes             Generate ORM types for the properties or normal ColdFusion types
 	 * @propertyContent      Custom content to add to the properties
 	 * @initContent          Custom content to add to the init method
+	 * @service 			Generate a service layer for this model
 	 **/
 	function run(
 		required name,
@@ -73,7 +74,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		string componentAnnotations = "",
 		boolean ormTypes            = false,
 		string propertyContent      = "",
-		string initContent          = ""
+		string initContent          = "",
+		boolean service = false
 	){
 		// Prepare arguments
 		var modelTestPath   = arguments.directory;
@@ -83,6 +85,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.migration = true;
 			arguments.handler   = true;
 			arguments.resource  = true;
+			arguments.service 	= true;
 		}
 
 		// This will make each directory canonical and absolute
@@ -329,6 +332,17 @@ component extends="coldbox-cli.models.BaseCommand" {
 				openPath( seederPath );
 			}
 			printInfo( "Created Seeder: [#seederPath#]" );
+		}
+
+		// Generate Service
+		if ( arguments.service ) {
+			command( "coldbox create service" )
+				.params(
+					name   : "#arguments.name#Service",
+					force  : arguments.force,
+					open   : arguments.open
+				)
+				.run();
 		}
 
 		// Generate Handler

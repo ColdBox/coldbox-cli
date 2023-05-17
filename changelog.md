@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New print functions for uniformity of info, warning, success and error messages
 - New `coldbox create service` command to create services easily
 - Create model with migration now actually generates the property migrations
+- Create `coldbox create model --service` to create a model with a service
+- Create `coldbox create model --all` to create a model with a service and all the things
 
 ### Fixed
 
