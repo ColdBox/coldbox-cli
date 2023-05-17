@@ -277,6 +277,25 @@ component extends="coldbox-cli.models.BaseCommand" {
 				modelNamePlural,
 				"all"
 			);
+
+			var properties = listToArray( arguments.properties );
+			var buffer     = createObject( "java", "java.lang.StringBuffer" ).init();
+			for ( var thisProperty in properties ) {
+				var propName = getToken( trim( thisProperty ), 1, ":" );
+				var propMethod = getToken( trim( thisProperty ), 2, ":" );
+				if ( NOT len( propMethod ) ) {
+					propMethod = "string";
+				}
+				buffer.append(
+					"table.#propMethod#( ""#propName#"" );#variables.cr & repeatString( variables.utility.TAB, 3 )#"
+				);
+			}
+			migrationContent = replaceNoCase(
+				migrationContent,
+				"|properties|",
+				buffer.toString()
+			);
+
 			// Create dir if it doesn't exist
 			directoryCreate(
 				getDirectoryFromPath( migrationPath ),

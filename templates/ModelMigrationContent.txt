@@ -4,6 +4,7 @@ component {
 		schema.create( "|modelName|", function( table ) {
 			table.increments( "id" );
 			table.timestamps();
+			|properties|
 		} );
     }
 
