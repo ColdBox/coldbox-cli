@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `BaseCommand` hierarchy for all commands to inherit from
-- New print functions for uniformity of info, warning and error messages
+- New print functions for uniformity of info, warning, success and error messages
 
 ### Fixed
 
