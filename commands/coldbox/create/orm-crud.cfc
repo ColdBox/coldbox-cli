@@ -89,7 +89,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 			// Create dir if it doesn't exist
 			directoryCreate( getDirectoryFromPath( hpath ), true, true );
 			file action="write" file="#hpath#" mode="777" output="#hContent#";
-			print.greenLine( "Generated Handler: #hPath#" );
+			printInfo( "Generated Handler: [#hPath#]" );
 
 			// ********************** generate views ************************************//
 
@@ -110,8 +110,8 @@ component extends="coldbox-cli.models.BaseCommand"{
 					"all"
 				);
 				fileWrite( arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm", vContent );
-				print.greenLine(
-					"Generated View: " & arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm"
+				printInfo(
+					"Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm]"
 				);
 			}
 
@@ -134,7 +134,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 			);
 			vContent = replaceNoCase( vContent, "|tableListing|", tableData, "all" );
 			fileWrite( arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm", vContent );
-			print.greenLine( "Generated View: " & arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm" );
+			printInfo( "Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm]" );
 		} else {
 			return error( "The entity: #entityName# has no properties, so I have no clue what to CRUD on dude!" );
 		}

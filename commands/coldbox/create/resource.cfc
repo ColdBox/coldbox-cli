@@ -111,7 +111,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 					"The module '#arguments.module#' does not exist, should we create it for you?"
 				)
 			) {
-				print.greenBoldLine( "Generating #arguments.module# module..." );
+				printInfo( "Generating (#arguments.module#) module..." );
 				command( "coldbox create module" )
 					.params( name = arguments.module, directory = arguments.modulesDirectory )
 					.run();
@@ -127,7 +127,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 
 		/********************** GENERATE HANDLER ************************/
 
-		print.greenBoldLine( "Generating #arguments.resource# resources..." );
+		printInfo( "Generating (#arguments.resource#) resources..." );
 
 		// Read in Template
 		var hContent = arguments.api ? fileRead(
@@ -173,11 +173,11 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( hpath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 		file action="write" file="#hpath#" mode="777" output="#hContent#";
-		print.blueLine( "--> Generated (#arguments.resource#) Handler: #hPath#" );
+		printInfo( "--> Generated (#arguments.resource#) Handler: [#hPath#]" );
 
 		// ********************** generate views ************************************//
 
@@ -197,7 +197,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 
 		// ********************** generate test cases ************************************//
 
-		print.blueLine( "--> Generating integration tests..." );
+		printInfo( "--> Generating integration tests..." );
 		command( "coldbox create integration-test" )
 			.params(
 				handler   : arguments.handler,
@@ -212,7 +212,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 
 		// Generate an ORM Entity
 		if ( arguments.persistent ) {
-			print.blueLine( "--> Generating ORM resource model (#arguments.singularName#)" );
+			printInfo( "--> Generating ORM resource model (#arguments.singularName#)" );
 			command( "coldbox create orm-entity" )
 				.params(
 					entityName      : ucFirst( arguments.singularName ),
@@ -230,7 +230,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 				)
 				.run();
 
-			print.blueLine( "--> Generating ORM Virtual Service (#arguments.singularName#)" );
+			printInfo( "--> Generating ORM Virtual Service (#arguments.singularName#)" );
 			command( "coldbox create orm-virtual-service" )
 				.params(
 					entityName    : arguments.singularName,
@@ -240,7 +240,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 				)
 				.run();
 		} else {
-			print.blueLine( "--> Generating resource model (#arguments.singularName#)" );
+			printInfo( "--> Generating resource model (#arguments.singularName#)" );
 			// Generate model
 			command( "coldbox create model" )
 				.params(
@@ -256,7 +256,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 				.run();
 
 			// Generate Service
-			print.blueLine( "--> Generating resource service (#arguments.resource#Service)" );
+			printInfo( "--> Generating resource service (#arguments.resource#Service)" );
 			command( "coldbox create model" )
 				.params(
 					name          : ucFirst( arguments.resource ) & "Service",
@@ -307,8 +307,8 @@ component extends="coldbox-cli.models.BaseCommand"{
 			fileWrite( routerPath, routerContent );
 			openPath( routerPath );
 		} else {
-			print.redLine( "Router.cfc not found, please add the following to your router:" );
-			print.blueLine( routerCode );
+			printError( "Router.cfc not found, please add the following to your router:" );
+			printInfo( routerCode );
 		}
 	}
 

@@ -53,12 +53,12 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( layoutPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		file action="write" file="#layoutPath#" mode="777" output="#layoutContent#";
-		print.greenLine( "Created #layoutPath#" );
+		printInfo( "Created Layout [#layoutPath#]" );
 
 		// Open the view?
 		if ( arguments.open ) {
@@ -69,7 +69,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 			var layoutHelperContent= "<!--- #arguments.name# Layout Helper --->";
 			var layoutHelperPath   = "#arguments.directory#/#arguments.name#Helper.cfm";
 			file action            ="write" file="#layoutHelperPath#" mode="777" output="#layoutHelperContent#";
-			print.greenLine( "Created #layoutHelperPath#" );
+			printInfo( "Created Layout Helper [#layoutHelperPath#]" );
 
 			// Open the view helper?
 			if ( arguments.open ) {

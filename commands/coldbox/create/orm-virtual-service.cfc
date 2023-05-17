@@ -95,12 +95,12 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		file action="write" file="#modelPath#" mode="777" output="#modelContent#";
-		print.greenLine( "Created #modelPath#" );
+		printInfo( "Created Virtual Service [#modelPath#]" );
 
 		if ( arguments.tests ) {
 			var testPath = "#arguments.TestsDirectory#/#arguments.entityName#ServiceTest.cfc";
@@ -112,7 +112,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 			if ( arguments.open ) {
 				openPath( testPath );
 			}
-			print.greenLine( "Created #testPath#" );
+			printInfo( "Created #testPath#" );
 		}
 
 		// Open file?

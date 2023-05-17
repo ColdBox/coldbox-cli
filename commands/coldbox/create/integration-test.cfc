@@ -134,13 +134,13 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( integrationTestPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the files
 		file action="write" file="#integrationTestPath#" mode="777" output="#handlerTestContent#";
-		print.greenLine( "Created #integrationTestPath#" );
+		printInfo( "Created Test [#integrationTestPath#]" );
 
 		// open file
 		if ( arguments.open ) {

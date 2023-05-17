@@ -43,9 +43,6 @@ component extends="coldbox-cli.models.BaseCommand"{
 			directoryCreate( arguments.testsDirectory );
 		}
 
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
-
 		// Read in Template
 		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
 		var modelTestMethodContent = fileRead(
@@ -82,7 +79,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 				);
 				allTestsCases &= thisTestCase & CR & CR;
 
-				print.yellowLine( "Generated method: #thisMethod#" );
+				printInfo( "Generated Test Method: #thisMethod#()" );
 			}
 
 			// final replacement
@@ -106,7 +103,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( testPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
@@ -117,7 +114,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 		if ( arguments.open ) {
 			openPath( testPath );
 		}
-		print.greenLine( "Created Test: [#testPath#]" );
+		printInfo( "Created Test: [#testPath#]" );
 	}
 
 }

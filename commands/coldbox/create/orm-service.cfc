@@ -95,13 +95,13 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the model
 		fileWrite( modelPath, trim( modelContent ) );
-		print.greenLine( "Created Service: [#modelPath#]" );
+		printInfo( "Created ORM Service: [#modelPath#]" );
 
 		if ( arguments.tests ) {
 			command( "coldbox create model-test" )

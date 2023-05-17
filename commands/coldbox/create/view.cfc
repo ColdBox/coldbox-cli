@@ -47,9 +47,6 @@ component extends="coldbox-cli.models.BaseCommand"{
 			directoryCreate( arguments.directory );
 		}
 
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
-
 		savecontent variable="local.viewContent" {
 			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
 			writeOutput( "#arguments.content##variables.utility.BREAK#" )
@@ -65,12 +62,12 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( viewPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		file action="write" file="#viewPath#" mode="777" output="#viewContent#";
-		print.greenLine( "Created #viewPath#" );
+		printInfo( "Created View [#viewPath#]" );
 
 		// Open the view?
 		if ( arguments.open ) {
@@ -82,7 +79,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 			var viewHelperContent= "<!--- #arguments.name# view Helper --->";
 			var viewHelperPath   = "#arguments.directory#/#arguments.name#Helper.cfm";
 			file action          ="write" file="#viewHelperPath#" mode="777" output="#viewHelperContent#";
-			print.greenLine( "Created #viewHelperPath#" );
+			printInfo( "Created View Helper [#viewHelperPath#]" );
 
 			// Open the view helper?
 			if ( arguments.open ) {

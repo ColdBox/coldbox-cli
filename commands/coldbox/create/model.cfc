@@ -110,8 +110,6 @@ component extends="coldbox-cli.models.BaseCommand"{
 
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		// Read in Template
 		var modelContent           = fileRead( "#variables.settings.templatesPath#/ModelContent.txt" );
@@ -224,7 +222,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 					"all"
 				) & cr & cr;
 
-				print.yellowLine( "Generated method: #thisMethod#" );
+				printInfo( "Generated Method: #thisMethod#()" );
 
 				// Are we creating tests cases on methods
 				if ( arguments.tests ) {
@@ -262,13 +260,13 @@ component extends="coldbox-cli.models.BaseCommand"{
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the model
 		fileWrite( modelPath, trim( modelContent ) );
-		print.greenLine( "Created Model: [#modelPath#]" );
+		printInfo( "Created Model: [#modelPath#]" );
 
 		// Generate migrations
 		if ( arguments.migration ) {
@@ -291,7 +289,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 			if ( arguments.open ) {
 				openPath( migrationPath );
 			}
-			print.greenLine( "Created Migration: [#migrationPath#]" );
+			printInfo( "Created Migration: [#migrationPath#]" );
 		}
 
 		// Generate Seeder
@@ -311,7 +309,7 @@ component extends="coldbox-cli.models.BaseCommand"{
 			if ( arguments.open ) {
 				openPath( seederPath );
 			}
-			print.greenLine( "Created Seeder: [#seederPath#]" );
+			printInfo( "Created Seeder: [#seederPath#]" );
 		}
 
 		// Generate Handler

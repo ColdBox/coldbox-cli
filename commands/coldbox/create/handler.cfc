@@ -64,8 +64,6 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		/*******************************************************************
 		 * Read in Templates
@@ -148,13 +146,13 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 				"The file '#getFileFromPath( handlerPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the files
 		file action="write" file="#handlerPath#" mode="777" output="#handlerContent#";
-		print.greenLine( "Created #handlerPath#" );
+		printInfo( "Created Handler [#handlerPath#]" );
 
 		// More Tests?
 		if ( arguments.integrationTests ) {
@@ -163,7 +161,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 			directoryCreate( getDirectoryFromPath( testPath ), true, true );
 			// Create the tests
 			file action="write" file="#testPath#" mode="777" output="#handlerTestContent#";
-			print.greenLine( "Created #testPath#" );
+			printInfo( "Created Integration Spec [#testPath#]" );
 			// open file
 			if ( arguments.open ) {
 				openPath( testPath );
