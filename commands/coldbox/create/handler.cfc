@@ -219,9 +219,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 			);
 
 			// Are we creating views? But only if we are NOT in rest mode
-			if (
-				arguments.views && !arguments.rest && !listFindNoCase( "create,update,delete", thisAction )
-			) {
+			if ( arguments.views && !arguments.rest && !listFindNoCase( "create,update,delete", thisAction ) ) {
 				var camelCaseHandlerName = variables.utility.camelCase( arguments.name );
 				command( "coldbox create view" )
 					.params(
