@@ -332,7 +332,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Generate Handler
-		if ( arguments.handler ) {
+		if ( arguments.handler || arguments.rest || arguments.resource ) {
 			command( "coldbox create handler" )
 				.params(
 					name    : modelNamePlural,

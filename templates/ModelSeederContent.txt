@@ -1,7 +1,15 @@
+/**
+ * See https://forgebox.io/view/mockdatacfc
+ */
 component {
 
     function run( qb, mockdata ) {
-
+		qb.table( "|modelName|" ).insert(
+            mockdata.mock(
+                $num = 25,
+                "id": "autoincrement"
+            )
+        );
     }
 
 }

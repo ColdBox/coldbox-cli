@@ -220,9 +220,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 
 			// Are we creating views? But only if we are NOT in rest mode
 			if (
-				arguments.views && !arguments.rest || (
-					!arguments.rest && !listFindNoCase( "create,update,delete", arguments.actions )
-				)
+				arguments.views && !arguments.rest && !listFindNoCase( "create,update,delete", thisAction )
 			) {
 				var camelCaseHandlerName = variables.utility.camelCase( arguments.name );
 				command( "coldbox create view" )
@@ -250,7 +248,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 					listChangeDelims( arguments.name, ".", "/\" ) & "." & thisAction,
 					"all"
 				);
-				results.tests &= thisTestCase;
+				results.tests &= thisTestCase & repeatString( variables.cr, 1 );
 			}
 		}
 
