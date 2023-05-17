@@ -28,7 +28,7 @@
  * {code}
  *
  **/
-component extends="coldbox-cli.models.BaseCommand"{
+component extends="coldbox-cli.models.BaseCommand" {
 
 	// DI
 	property name="packageService" inject="PackageService";

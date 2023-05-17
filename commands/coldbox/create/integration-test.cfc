@@ -23,7 +23,7 @@
  * coldbox create integration-test contacts --xunit
  * {code}
  **/
-component extends="coldbox-cli.models.BaseCommand"{
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @handler    Name of the handler to test

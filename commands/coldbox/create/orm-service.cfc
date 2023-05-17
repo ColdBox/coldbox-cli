@@ -7,7 +7,7 @@
  * {code}
  *
  **/
-component extends="coldbox-cli.models.BaseCommand"{
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @serviceName    The name of this Base ORM service to create

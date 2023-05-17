@@ -7,7 +7,7 @@
  * {code}
  *
  **/
-component extends="coldbox-cli.models.BaseCommand"{
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @name           Name of the module to create.

@@ -24,7 +24,7 @@
  * {code}
  *
  */
-component extends="coldbox-cli.models.BaseCommand"{
+component extends="coldbox-cli.models.BaseCommand" {
 
 	// STATIC Actions we use in the resources
 	variables.ACTIONS = [
