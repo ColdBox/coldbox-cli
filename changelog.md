@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `BaseCommand` hierarchy for all commands to inherit from
 - New print functions for uniformity of info, warning, success and error messages
+- New `coldbox create service` command to create services easily
 
 ### Fixed
 
