@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `coldbox create app` command to finalize the create app job
 - Set default location to `forgeboxStorage` for new apps, this was missing
 - `coldbox create handler` was not creating the `views`
+- Models `isLoaded()` was actually wrong
 
 ## [1.0.0] - 2023-05-03
 

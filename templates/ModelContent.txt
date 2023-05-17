@@ -48,7 +48,7 @@ component |modelPersistence||accessors||componentAnnotations|{
 	 * Verify if the model has been loaded from the database
 	 */
 	function isLoaded(){
-		return isNull( variables.id ) || !len( variables.id );
+		return ( !isNull( variables.id ) && len( variables.id ) );
 	}
 
 |methods|
