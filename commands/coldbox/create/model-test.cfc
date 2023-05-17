@@ -7,11 +7,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * Constructor
@@ -19,6 +15,8 @@ component {
 	function init(){
 		// valid persistences
 		variables.validPersistences = "Transient,Singleton";
+
+		super.init();
 
 		return this;
 	}
@@ -44,9 +42,6 @@ component {
 		if ( !directoryExists( arguments.testsDirectory ) ) {
 			directoryCreate( arguments.testsDirectory );
 		}
-
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		// Read in Template
 		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
@@ -84,7 +79,7 @@ component {
 				);
 				allTestsCases &= thisTestCase & CR & CR;
 
-				print.yellowLine( "Generated method: #thisMethod#" );
+				printInfo( "Generated Test Method: #thisMethod#()" );
 			}
 
 			// final replacement
@@ -108,7 +103,7 @@ component {
 				"The file '#getFileFromPath( testPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
@@ -119,7 +114,7 @@ component {
 		if ( arguments.open ) {
 			openPath( testPath );
 		}
-		print.greenLine( "Created Test: [#testPath#]" );
+		printInfo( "Created Test: [#testPath#]" );
 	}
 
 }

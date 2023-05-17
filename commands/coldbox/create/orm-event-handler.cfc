@@ -7,11 +7,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @name      Name of the event handler to create without the .cfc. For packages, specify name as 'myPackage/myModel'
@@ -35,8 +31,6 @@ component {
 
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		// Read in Template
 		var modelContent = fileRead( "#variables.settings.templatePath#/orm/ORMEventHandler.txt" );
@@ -51,13 +45,13 @@ component {
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the model
 		fileWrite( modelPath, trim( modelContent ) );
-		print.greenLine( "Created Model: [#modelPath#]" );
+		printInfo( "Created ORM Event Handler: [#modelPath#]" );
 
 		// Open file?
 		if ( arguments.open ) {

@@ -26,7 +26,6 @@ jobs:
 
       # Not Needed in this module
       #- name: Setup Environment For Testing Process
-      #  working-directory: ./test-harness
       #  run: |
       #    # Setup .env
       #    touch .env

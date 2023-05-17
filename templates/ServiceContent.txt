@@ -1,0 +1,17 @@
+/**
+ * |modelDescription|
+ */
+component singleton |componentAnnotations|{
+
+	// DI
+
+	/**
+	 * Constructor
+	 */
+	|modelName| function init(){
+		|initContent|
+		return this;
+	}
+
+|methods|
+}

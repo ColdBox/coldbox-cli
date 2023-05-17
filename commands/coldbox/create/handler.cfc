@@ -8,11 +8,7 @@
  * {code}
  *
  **/
-component aliases="coldbox create controller" {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCommand" {
 
 	static {
 		HINTS = {
@@ -68,8 +64,6 @@ component aliases="coldbox create controller" {
 
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		/*******************************************************************
 		 * Read in Templates
@@ -152,13 +146,13 @@ component aliases="coldbox create controller" {
 				"The file '#getFileFromPath( handlerPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the files
 		file action="write" file="#handlerPath#" mode="777" output="#handlerContent#";
-		print.greenLine( "Created #handlerPath#" );
+		printInfo( "Created Handler [#handlerPath#]" );
 
 		// More Tests?
 		if ( arguments.integrationTests ) {
@@ -167,7 +161,7 @@ component aliases="coldbox create controller" {
 			directoryCreate( getDirectoryFromPath( testPath ), true, true );
 			// Create the tests
 			file action="write" file="#testPath#" mode="777" output="#handlerTestContent#";
-			print.greenLine( "Created #testPath#" );
+			printInfo( "Created Integration Spec [#testPath#]" );
 			// open file
 			if ( arguments.open ) {
 				openPath( testPath );
@@ -225,11 +219,8 @@ component aliases="coldbox create controller" {
 			);
 
 			// Are we creating views? But only if we are NOT in rest mode
-			if ( arguments.views && !arguments.rest && listFindNoCase( "create,update,delete", arguments.views ) ) {
-				var camelCaseHandlerName = arguments.name.left( 1 ).lCase();
-				if ( arguments.name.len() > 1 ) {
-					camelCaseHandlerName &= arguments.name.right( -1 );
-				}
+			if ( arguments.views && !arguments.rest && !listFindNoCase( "create,update,delete", thisAction ) ) {
+				var camelCaseHandlerName = variables.utility.camelCase( arguments.name );
 				command( "coldbox create view" )
 					.params(
 						name     : camelCaseHandlerName & "/" & thisAction,
@@ -255,7 +246,7 @@ component aliases="coldbox create controller" {
 					listChangeDelims( arguments.name, ".", "/\" ) & "." & thisAction,
 					"all"
 				);
-				results.tests &= thisTestCase;
+				results.tests &= thisTestCase & repeatString( variables.cr, 1 );
 			}
 		}
 

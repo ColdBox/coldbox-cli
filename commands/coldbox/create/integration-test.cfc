@@ -23,11 +23,7 @@
  * coldbox create integration-test contacts --xunit
  * {code}
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @handler    Name of the handler to test
@@ -138,13 +134,13 @@ component {
 				"The file '#getFileFromPath( integrationTestPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the files
 		file action="write" file="#integrationTestPath#" mode="777" output="#handlerTestContent#";
-		print.greenLine( "Created #integrationTestPath#" );
+		printInfo( "Created Test [#integrationTestPath#]" );
 
 		// open file
 		if ( arguments.open ) {

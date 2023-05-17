@@ -7,11 +7,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @path           The instantiation path of the interceptor to create the test for
@@ -34,9 +30,6 @@ component {
 		if ( !directoryExists( arguments.testsDirectory ) ) {
 			directoryCreate( arguments.testsDirectory );
 		}
-
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		// Read in Template
 		var interceptorTestContent = fileRead(
@@ -94,13 +87,13 @@ component {
 				"The file '#getFileFromPath( testPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Create the tests
 		file action="write" file="#testPath#" mode="777" output="#interceptorTestContent#";
-		print.greenLine( "Created #testPath#" );
+		printInfo( "Created Test [#testPath#]" );
 
 		// open file
 		if ( arguments.open ) {

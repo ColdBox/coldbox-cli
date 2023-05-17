@@ -1,7 +1,7 @@
 /**
  * Create a new model CFC in an existing ColdBox application.  Make sure you are running this command in the root
  * of your app for it to find the correct folder.  You can optionally create unit tests for your new model at the same time.
- * By default, your new model will be created in /model but you can override that with the directory param.
+ * By default, your new model will be created in `/models` but you can override that with the directory param.
  * Once you create a model you can add a mapping for it in your WireBox binder, or use ColdBox's default scan location and
  * just reference it with getModel( 'modelName' ).
  * .
@@ -14,11 +14,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * Constructor
@@ -50,11 +46,12 @@ component {
 	 * @handler              Generate a handler for this model
 	 * @rest                 Generate a REST handler for this model
 	 * @resource             Generate a resourceful handler with all the actions
-	 * @all                  Generate all the things: handler, resource, migration, seeder, tests
+	 * @all                  Generate all the things: handler, resource, migration, seeder, tests, service
 	 * @componentAnnotations Annotations to add to the component
 	 * @ormTypes             Generate ORM types for the properties or normal ColdFusion types
 	 * @propertyContent      Custom content to add to the properties
 	 * @initContent          Custom content to add to the init method
+	 * @service              Generate a service layer for this model
 	 **/
 	function run(
 		required name,
@@ -77,7 +74,8 @@ component {
 		string componentAnnotations = "",
 		boolean ormTypes            = false,
 		string propertyContent      = "",
-		string initContent          = ""
+		string initContent          = "",
+		boolean service             = false
 	){
 		// Prepare arguments
 		var modelTestPath   = arguments.directory;
@@ -87,6 +85,7 @@ component {
 			arguments.migration = true;
 			arguments.handler   = true;
 			arguments.resource  = true;
+			arguments.service   = true;
 		}
 
 		// This will make each directory canonical and absolute
@@ -114,8 +113,6 @@ component {
 
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		// Read in Template
 		var modelContent           = fileRead( "#variables.settings.templatesPath#/ModelContent.txt" );
@@ -228,7 +225,7 @@ component {
 					"all"
 				) & cr & cr;
 
-				print.yellowLine( "Generated method: #thisMethod#" );
+				printInfo( "Generated Method: #thisMethod#()" );
 
 				// Are we creating tests cases on methods
 				if ( arguments.tests ) {
@@ -266,13 +263,13 @@ component {
 				"The file '#getFileFromPath( modelPath )#' already exists, overwrite it (y/n)?"
 			)
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
 		// Write out the model
 		fileWrite( modelPath, trim( modelContent ) );
-		print.greenLine( "Created Model: [#modelPath#]" );
+		printInfo( "Created Model: [#modelPath#]" );
 
 		// Generate migrations
 		if ( arguments.migration ) {
@@ -283,6 +280,25 @@ component {
 				modelNamePlural,
 				"all"
 			);
+
+			var properties = listToArray( arguments.properties );
+			var buffer     = createObject( "java", "java.lang.StringBuffer" ).init();
+			for ( var thisProperty in properties ) {
+				var propName   = getToken( trim( thisProperty ), 1, ":" );
+				var propMethod = getToken( trim( thisProperty ), 2, ":" );
+				if ( NOT len( propMethod ) ) {
+					propMethod = "string";
+				}
+				buffer.append(
+					"table.#propMethod#( ""#propName#"" );#variables.cr & repeatString( variables.utility.TAB, 3 )#"
+				);
+			}
+			migrationContent = replaceNoCase(
+				migrationContent,
+				"|properties|",
+				buffer.toString()
+			);
+
 			// Create dir if it doesn't exist
 			directoryCreate(
 				getDirectoryFromPath( migrationPath ),
@@ -295,7 +311,7 @@ component {
 			if ( arguments.open ) {
 				openPath( migrationPath );
 			}
-			print.greenLine( "Created Migration: [#migrationPath#]" );
+			printInfo( "Created Migration: [#migrationPath#]" );
 		}
 
 		// Generate Seeder
@@ -315,11 +331,22 @@ component {
 			if ( arguments.open ) {
 				openPath( seederPath );
 			}
-			print.greenLine( "Created Seeder: [#seederPath#]" );
+			printInfo( "Created Seeder: [#seederPath#]" );
+		}
+
+		// Generate Service
+		if ( arguments.service ) {
+			command( "coldbox create service" )
+				.params(
+					name : "#arguments.name#Service",
+					force: arguments.force,
+					open : arguments.open
+				)
+				.run();
 		}
 
 		// Generate Handler
-		if ( arguments.handler ) {
+		if ( arguments.handler || arguments.rest || arguments.resource ) {
 			command( "coldbox create handler" )
 				.params(
 					name    : modelNamePlural,

@@ -7,11 +7,7 @@
  * {code}
  *
  **/
-component {
-
-	// DI
-	property name="utility"  inject="utility@coldbox-cli";
-	property name="settings" inject="box:modulesettings:coldbox-cli";
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @name           Name of the module to create.
@@ -44,8 +40,6 @@ component {
 		if ( !directoryExists( arguments.directory ) ) {
 			directoryCreate( arguments.directory );
 		}
-		// This help readability so the success messages aren't up against the previous command line
-		print.line();
 
 		// Read in Module Config
 		var moduleConfig = fileRead( "#variables.settings.templatesPath#/modules/ModuleConfig.cfc" );
@@ -100,7 +94,7 @@ component {
 			directoryExists( arguments.directory & "/#arguments.name#" ) &&
 			!confirm( "The module already exists, overwrite it (y/n)?" )
 		) {
-			print.redLine( "Exiting..." );
+			printWarn( "Exiting..." );
 			return;
 		}
 
@@ -120,7 +114,7 @@ component {
 		fileWrite( arguments.directory & "/#arguments.name#/ModuleConfig.cfc", moduleConfig );
 
 		// Output
-		print.blueLine( "Created the (#arguments.name#) module at: " & arguments.directory );
+		printInfo( "Created Module (#arguments.name#) -> [#arguments.directory#]" );
 		directoryList(
 			arguments.directory & "/#arguments.name#",
 			true,

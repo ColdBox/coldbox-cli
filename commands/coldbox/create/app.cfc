@@ -28,12 +28,10 @@
  * {code}
  *
  **/
-component {
+component extends="coldbox-cli.models.BaseCommand" {
 
 	// DI
 	property name="packageService" inject="PackageService";
-	property name="utility"        inject="utility@coldbox-cli";
-	property name="settings"       inject="box:modulesettings:coldbox-cli";
 
 	/**
 	 * Constructor
@@ -135,7 +133,7 @@ component {
 				name    : arguments.name,
 				slug    : variables.formatterUtil.slugify( arguments.name ),
 				version : "1.0.0",
-				location: ""
+				location: "forgeboxStorage"
 			)
 			.run();
 
@@ -147,6 +145,9 @@ component {
 			command( "server set" ).params( name = arguments.name ).run();
 			job.complete();
 		}
+
+		// Finalize Create app Job
+		job.complete();
 
 		// Run migrations init
 		if ( arguments.migrations ) {

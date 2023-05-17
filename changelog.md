@@ -13,6 +13,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `BaseCommand` hierarchy for all commands to inherit from
+- New print functions for uniformity of info, warning, success and error messages
+- New `coldbox create service` command to create services easily
+- Create model with migration now actually generates the property migrations
+- Create `coldbox create model --service` to create a model with a service
+- Create `coldbox create model --all` to create a model with a service and all the things
+
+### Fixed
+
+- Version should match major ColdBox version, moved to `7`
+- Fixed `coldbox create app` command to finalize the create app job
+- Set default location to `forgeboxStorage` for new apps, this was missing
+- `coldbox create handler` was not creating the `views`
+- Models `isLoaded()` was actually wrong
+- Handler test specs carriage returns
+- When creating models with rest or resources, the handler was not being created
+
+## [1.0.0] - 2023-05-03
+
+### Added
+
 - Migration from CommandBox core to a separate module
 - Updated all templates to ColdBox 7
 - Updated all `resources` to ColdBox 7 standard code

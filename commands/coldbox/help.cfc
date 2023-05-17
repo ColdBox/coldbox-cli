@@ -1,6 +1,4 @@
-component excludeFromHelp=true {
-
-	property name="config" inject="box:moduleconfig:coldbox-cli";
+component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 
 	function run(){
 		print.line();
