@@ -51,7 +51,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @ormTypes             Generate ORM types for the properties or normal ColdFusion types
 	 * @propertyContent      Custom content to add to the properties
 	 * @initContent          Custom content to add to the init method
-	 * @service 			Generate a service layer for this model
+	 * @service              Generate a service layer for this model
 	 **/
 	function run(
 		required name,
@@ -75,7 +75,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean ormTypes            = false,
 		string propertyContent      = "",
 		string initContent          = "",
-		boolean service = false
+		boolean service             = false
 	){
 		// Prepare arguments
 		var modelTestPath   = arguments.directory;
@@ -85,7 +85,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.migration = true;
 			arguments.handler   = true;
 			arguments.resource  = true;
-			arguments.service 	= true;
+			arguments.service   = true;
 		}
 
 		// This will make each directory canonical and absolute
@@ -338,9 +338,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		if ( arguments.service ) {
 			command( "coldbox create service" )
 				.params(
-					name   : "#arguments.name#Service",
-					force  : arguments.force,
-					open   : arguments.open
+					name : "#arguments.name#Service",
+					force: arguments.force,
+					open : arguments.open
 				)
 				.run();
 		}
