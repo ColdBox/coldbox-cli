@@ -61,11 +61,14 @@ component singleton {
 
 	/**
 	 * Camel case a string using lower case for the first letter
-	 * @target The string to camel case
+	 *
+	 * @target      The string to camel case
 	 * @capitalized Whether or not to capitalize the first letter, default is false
 	 */
 	function camelCase( required target, boolean capitalized = false ){
-		var results = arguments.capitalized ? arguments.target.left( 1 ).ucase() : arguments.target.left( 1 ).lCase();
+		var results = arguments.capitalized ? arguments.target.left( 1 ).ucase() : arguments.target
+			.left( 1 )
+			.lCase();
 
 		if ( arguments.target.len() > 1 ) {
 			results &= arguments.target.right( -1 );

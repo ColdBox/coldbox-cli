@@ -40,8 +40,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		string initContent          = ""
 	){
 		// Prepare arguments
-		var modelTestPath   = arguments.directory;
-		arguments.name = variables.utility.camelCaseUpper( arguments.name );
+		var modelTestPath = arguments.directory;
+		arguments.name    = variables.utility.camelCaseUpper( arguments.name );
 
 		// This will make each directory canonical and absolute
 		arguments.directory      = resolvePath( arguments.directory );
