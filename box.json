@@ -28,7 +28,8 @@
         "commandbox-docbox":"*"
     },
     "dependencies":{
-        "commandbox-migrations":"^4.0.0"
+        "commandbox-migrations":"^5.0.0",
+		"testbox-cli":"^1.0.0"
     },
     "installPaths":{},
     "ignore":[
