@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.2.0] - 2023-05-18
+
 ### Added
 
 - New version of CommandBox Migrations
@@ -65,7 +67,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.1.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.2.0...HEAD
+
+[7.2.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.1.0...v7.2.0
 
 [7.1.0]: https://github.com/ColdBox/coldbox-cli/compare/v1.0.0...v7.1.0
 
