@@ -13,6 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New version of CommandBox Migrations
+- Added `testbox-cli` as a dependency
+
+## [7.1.0] - 2023-05-18
+
+### Added
+
 - `BaseCommand` hierarchy for all commands to inherit from
 - New print functions for uniformity of info, warning, success and error messages
 - New `coldbox create service` command to create services easily
