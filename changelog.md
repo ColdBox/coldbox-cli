@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.1.0] - 2023-05-18
+
 ### Added
 
 - `BaseCommand` hierarchy for all commands to inherit from
@@ -58,6 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.1.0...HEAD
+
+[7.1.0]: https://github.com/ColdBox/coldbox-cli/compare/v1.0.0...v7.1.0
 
 [1.0.0]: https://github.com/ColdBox/coldbox-cli/compare/94e639a1ba9d10c8d9ad663435233bd115cf8586...v1.0.0
