@@ -1,6 +1,6 @@
 {
     "name":"ColdBox CLI",
-    "version":"7.1.0",
+    "version":"7.2.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/coldbox-cli/@build.version@/coldbox-cli-@build.version@.zip",
     "slug":"coldbox-cli",
     "author":"Ortus Solutions, Corp",
