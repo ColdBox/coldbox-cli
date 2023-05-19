@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed `coldbox create layout` failing due to unescpaed `#view()#` command
+
 ## [7.2.0] - 2023-05-18
 
 ### Added
