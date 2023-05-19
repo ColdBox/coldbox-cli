@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.2.1] - 2023-05-19
+
 ### Fixed
 
 - Fixed `coldbox create layout` failing due to unescpaed `#view()#` command
@@ -71,7 +73,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.2.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.2.1...HEAD
+
+[7.2.1]: https://github.com/ColdBox/coldbox-cli/compare/v7.2.0...v7.2.1
 
 [7.2.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.1.0...v7.2.0
 
