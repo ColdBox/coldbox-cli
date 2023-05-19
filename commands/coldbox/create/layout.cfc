@@ -40,7 +40,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		savecontent variable="local.layoutContent" {
 			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
 			writeOutput( arguments.content )
-			writeOutput( "<div>#view()#</div>#variables.utility.BREAK#" )
+			writeOutput( "<div>##view()##</div>#variables.utility.BREAK#" )
 			writeOutput( "</cfoutput>" )
 		};
 
