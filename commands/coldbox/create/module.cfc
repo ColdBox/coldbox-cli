@@ -14,7 +14,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @author         Whoever wrote this module
 	 * @authorURL      The author's URL
 	 * @description    The description for this module
-	 * @version        The semantic version number: major.minior.patch
+	 * @version        The semantic version number: major.minor.patch
 	 * @cfmapping      A CF app mapping to create that points to the root of this module
 	 * @modelNamespace The namespace to use when mapping the models in this module
 	 * @dependencies   The list of dependencies for this module
