@@ -117,7 +117,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 		} else {
-			handlerTestContent = replaceNoCase( handlerTestContent, "|TestCases|", "", "all" );
+			handlerTestContent = replaceNoCase(
+				handlerTestContent,
+				"|TestCases|",
+				"",
+				"all"
+			);
 		}
 
 		var integrationTestPath = "#arguments.directory#/#arguments.handler#Test.cfc";

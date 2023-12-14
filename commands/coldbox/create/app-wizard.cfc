@@ -107,9 +107,7 @@ component extends="app" aliases="" {
 				print.boldgreenline( ".env is a module that creates a local variables that can be" );
 				print.greenline( "used in many places such as .cfconfig.json, box.json, Coldbox.cfc, etc." );
 				print.greenline( "You will see these used in the template in some of the files above" );
-				print.greenline(
-					"ex. ""${DB_DATABASE}"" or getSystemSetting( ""APPNAME"", ""Your app name here"" )"
-				);
+				print.greenline( "ex. ""${DB_DATABASE}"" or getSystemSetting( ""APPNAME"", ""Your app name here"" )" );
 				print.greenline( "More info at https://github.com/commandbox-modules/commandbox-dotenv" );
 				print.boldgreenline(
 					"----------------------------------------------------------------------------------------"

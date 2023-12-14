@@ -37,7 +37,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Write out the model
 		var modelPath    = "#directory#/#arguments.name#.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( modelPath ),
+			true,
+			true
+		);
 
 		// Prompt for override
 		if (

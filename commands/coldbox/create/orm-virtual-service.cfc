@@ -82,12 +82,21 @@ component extends="coldbox-cli.models.BaseCommand" {
 			"#nonCanonicalDirectory#.#arguments.entityName#",
 			"all"
 		);
-		modelTestContent = replaceNoCase( modelTestContent, "|TestCases|", "", "all" );
+		modelTestContent = replaceNoCase(
+			modelTestContent,
+			"|TestCases|",
+			"",
+			"all"
+		);
 
 		// Write out the model
 		var modelPath = "#arguments.directory#/#arguments.entityName#Service.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( modelPath ),
+			true,
+			true
+		);
 
 		// Confirm it
 		if (
@@ -105,7 +114,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		if ( arguments.tests ) {
 			var testPath = "#arguments.TestsDirectory#/#arguments.entityName#ServiceTest.cfc";
 			// Create dir if it doesn't exist
-			directoryCreate( getDirectoryFromPath( testPath ), true, true );
+			directoryCreate(
+				getDirectoryFromPath( testPath ),
+				true,
+				true
+			);
 			// Create the tests
 			file action="write" file="#testPath#" mode="777" output="#modelTestContent#";
 			// open file

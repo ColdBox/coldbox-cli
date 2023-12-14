@@ -21,9 +21,7 @@ component {
 		directory    = "tests/specs"
 	){
 		// proxy to testbox
-		runCommand(
-			"testbox create bdd name=#arguments.name# directory=#arguments.directory# open=#arguments.open#"
-		);
+		runCommand( "testbox create bdd name=#arguments.name# directory=#arguments.directory# open=#arguments.open#" );
 	}
 
 }

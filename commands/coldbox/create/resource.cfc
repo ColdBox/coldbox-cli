@@ -38,7 +38,13 @@ component extends="coldbox-cli.models.BaseCommand" {
 	];
 
 	// STATIC Actions we use in the resources
-	variables.API_ACTIONS = [ "index", "create", "show", "update", "delete" ];
+	variables.API_ACTIONS = [
+		"index",
+		"create",
+		"show",
+		"update",
+		"delete"
+	];
 
 	/**
 	 * @resource          The name of a single resource or a list of resources to generate
@@ -113,7 +119,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			) {
 				printInfo( "Generating (#arguments.module#) module..." );
 				command( "coldbox create module" )
-					.params( name = arguments.module, directory = arguments.modulesDirectory )
+					.params(
+						name      = arguments.module,
+						directory = arguments.modulesDirectory
+					)
 					.run();
 			}
 			arguments.handlersDirectory = modulePath & "/" & arguments.handlersDirectory & "/";
@@ -130,9 +139,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		printInfo( "Generating (#arguments.resource#) resources..." );
 
 		// Read in Template
-		var hContent = arguments.api ? fileRead(
-			"#variables.settings.templatesPath#/resources/ApiHandlerContent.txt"
-		) : fileRead( "#variables.settings.templatesPath#/resources/HandlerContent.txt" );
+		var hContent = arguments.api ? fileRead( "#variables.settings.templatesPath#/resources/ApiHandlerContent.txt" ) : fileRead(
+			"#variables.settings.templatesPath#/resources/HandlerContent.txt"
+		);
 		// Token replacement
 		hContent = replaceNoCase(
 			hContent,
@@ -165,7 +174,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Write Out Handler
 		var hpath = "#arguments.handlersDirectory#/#arguments.handler#.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( hpath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( hpath ),
+			true,
+			true
+		);
 
 		// Confirm it
 		if (
@@ -276,23 +289,15 @@ component extends="coldbox-cli.models.BaseCommand" {
 		var routerCode = "// @app_routes@#variables.utility.BREAK##variables.utility.BREAK#";
 		if ( arguments.resource == arguments.handler ) {
 			if ( arguments.parameterName == "id" ) {
-				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
-					arguments.api ? "apiResources" : "resources"
-				) & "( ""#arguments.resource#"" )";
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & ( arguments.api ? "apiResources" : "resources" ) & "( ""#arguments.resource#"" )";
 			} else {
-				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
-					arguments.api ? "apiResources" : "resources"
-				) & "( resource=""#arguments.resource#"", parameterName=""#arguments.parameterName#"" )";
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & ( arguments.api ? "apiResources" : "resources" ) & "( resource=""#arguments.resource#"", parameterName=""#arguments.parameterName#"" )";
 			}
 		} else {
 			if ( arguments.parameterName == "id" ) {
-				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
-					arguments.api ? "apiResources" : "resources"
-				) & "( resource=""#arguments.resource#"", handler=""#arguments.handler#"" )";
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & ( arguments.api ? "apiResources" : "resources" ) & "( resource=""#arguments.resource#"", handler=""#arguments.handler#"" )";
 			} else {
-				routerCode &= repeatString( variables.utility.TAB, 2 ) & (
-					arguments.api ? "apiResources" : "resources"
-				) & "( resource=""#arguments.resource#"", handler=""#arguments.handler#"", parameterName=""#arguments.parameterName#"" )";
+				routerCode &= repeatString( variables.utility.TAB, 2 ) & ( arguments.api ? "apiResources" : "resources" ) & "( resource=""#arguments.resource#"", handler=""#arguments.handler#"", parameterName=""#arguments.parameterName#"" )";
 			}
 		}
 
