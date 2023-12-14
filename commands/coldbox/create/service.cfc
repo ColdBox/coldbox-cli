@@ -63,9 +63,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		var modelContent           = fileRead( "#variables.settings.templatesPath#/ServiceContent.txt" );
 		var modelMethodContent     = fileRead( "#variables.settings.templatesPath#/ModelMethodContent.txt" );
 		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead(
-			"#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt"
-		);
+		var modelTestMethodContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt" );
 
 		// Basic replacements
 		modelContent = replaceNoCase(
@@ -140,7 +138,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 			}
 
 			// final replacement
-			modelContent     = replaceNoCase( modelContent, "|methods|", allMethods, "all" );
+			modelContent = replaceNoCase(
+				modelContent,
+				"|methods|",
+				allMethods,
+				"all"
+			);
 			modelTestContent = replaceNoCase(
 				modelTestContent,
 				"|TestCases|",
@@ -149,13 +152,22 @@ component extends="coldbox-cli.models.BaseCommand" {
 			);
 		} else {
 			modelContent     = replaceNoCase( modelContent, "|methods|", "", "all" );
-			modelTestContent = replaceNoCase( modelTestContent, "|TestCases|", "", "all" );
+			modelTestContent = replaceNoCase(
+				modelTestContent,
+				"|TestCases|",
+				"",
+				"all"
+			);
 		}
 
 		// Write out the model
 		var modelPath = "#arguments.directory#/#arguments.name#.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( modelPath ),
+			true,
+			true
+		);
 
 		// Prompt for override
 		if (

@@ -101,9 +101,18 @@ component extends="coldbox-cli.models.BaseCommand" {
 			error( "Cannot scaffold a model with an empty name." );
 		}
 		// Validate persistence
-		if ( !listFindNoCase( variables.validPersistences, arguments.persistence ) ) {
+		if (
+			!listFindNoCase(
+				variables.validPersistences,
+				arguments.persistence
+			)
+		) {
 			error(
-				"The persistence value [#arguments.persistence#] is invalid. Valid values are [#listChangeDelims( variables.validPersistences, ", ", "," )#]"
+				"The persistence value [#arguments.persistence#] is invalid. Valid values are [#listChangeDelims(
+					variables.validPersistences,
+					", ",
+					","
+				)#]"
 			);
 		}
 		// Exit the command if something above failed
@@ -118,9 +127,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		var modelContent           = fileRead( "#variables.settings.templatesPath#/ModelContent.txt" );
 		var modelMethodContent     = fileRead( "#variables.settings.templatesPath#/ModelMethodContent.txt" );
 		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead(
-			"#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt"
-		);
+		var modelTestMethodContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt" );
 
 		// Basic replacements
 		modelContent = replaceNoCase(
@@ -163,7 +170,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Persistence
 		switch ( Persistence ) {
 			case "Transient":
-				modelContent = replaceNoCase( modelContent, "|modelPersistence|", "", "all" );
+				modelContent = replaceNoCase(
+					modelContent,
+					"|modelPersistence|",
+					"",
+					"all"
+				);
 				break;
 			case "Singleton":
 				modelContent = replaceNoCase(
@@ -183,7 +195,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 		} else {
-			modelContent = replaceNoCase( modelContent, "|accessors|", "", "all" );
+			modelContent = replaceNoCase(
+				modelContent,
+				"|accessors|",
+				"",
+				"all"
+			);
 		}
 
 		// Generate Model Properties
@@ -240,7 +257,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 			}
 
 			// final replacement
-			modelContent     = replaceNoCase( modelContent, "|methods|", allMethods, "all" );
+			modelContent = replaceNoCase(
+				modelContent,
+				"|methods|",
+				allMethods,
+				"all"
+			);
 			modelTestContent = replaceNoCase(
 				modelTestContent,
 				"|TestCases|",
@@ -249,13 +271,22 @@ component extends="coldbox-cli.models.BaseCommand" {
 			);
 		} else {
 			modelContent     = replaceNoCase( modelContent, "|methods|", "", "all" );
-			modelTestContent = replaceNoCase( modelTestContent, "|TestCases|", "", "all" );
+			modelTestContent = replaceNoCase(
+				modelTestContent,
+				"|TestCases|",
+				"",
+				"all"
+			);
 		}
 
 		// Write out the model
 		var modelPath = "#arguments.directory#/#arguments.name#.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( modelPath ),
+			true,
+			true
+		);
 
 		// Prompt for override
 		if (
@@ -324,7 +355,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 			// Create dir if it doesn't exist
-			directoryCreate( getDirectoryFromPath( seederPath ), true, true );
+			directoryCreate(
+				getDirectoryFromPath( seederPath ),
+				true,
+				true
+			);
 			// Create the migration
 			file action="write" file="#seederPath#" mode="777" output="#seedContent#";
 			// open file

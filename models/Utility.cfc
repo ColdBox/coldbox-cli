@@ -45,12 +45,22 @@ component singleton {
 				result &= "s";
 			}
 		} else if ( result.endsWith( "y" ) ) {
-			if ( arrayFindNoCase( [ "ay", "ey", "iy", "oy", "uy" ], right( result, 2 ) ) ) {
+			if (
+				arrayFindNoCase(
+					[ "ay", "ey", "iy", "oy", "uy" ],
+					right( result, 2 )
+				)
+			) {
 				result &= "s";
 			} else {
 				result = left( result, len( result ) - 1 ) & "ies";
 			}
-		} else if ( arrayFindNoCase( [ "x", "s", "z", "ch", "sh" ], right( result, 1 ) ) ) {
+		} else if (
+			arrayFindNoCase(
+				[ "x", "s", "z", "ch", "sh" ],
+				right( result, 1 )
+			)
+		) {
 			result &= "es";
 		} else {
 			result &= "s";
@@ -65,10 +75,11 @@ component singleton {
 	 * @target      The string to camel case
 	 * @capitalized Whether or not to capitalize the first letter, default is false
 	 */
-	function camelCase( required target, boolean capitalized = false ){
-		var results = arguments.capitalized ? arguments.target.left( 1 ).ucase() : arguments.target
-			.left( 1 )
-			.lCase();
+	function camelCase(
+		required target,
+		boolean capitalized = false
+	){
+		var results = arguments.capitalized ? arguments.target.left( 1 ).ucase() : arguments.target.left( 1 ).lCase();
 
 		if ( arguments.target.len() > 1 ) {
 			results &= arguments.target.right( -1 );

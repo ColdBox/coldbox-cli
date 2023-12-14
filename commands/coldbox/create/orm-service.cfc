@@ -82,12 +82,21 @@ component extends="coldbox-cli.models.BaseCommand" {
 			"#nonCanonicalDirectory#.#arguments.serviceName#",
 			"all"
 		);
-		modelTestContent = replaceNoCase( modelTestContent, "|TestCases|", "", "all" );
+		modelTestContent = replaceNoCase(
+			modelTestContent,
+			"|TestCases|",
+			"",
+			"all"
+		);
 
 		// Write out the model
 		var modelPath = "#arguments.directory#/#arguments.serviceName#Service.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( modelPath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( modelPath ),
+			true,
+			true
+		);
 
 		// Confirm it
 		if (

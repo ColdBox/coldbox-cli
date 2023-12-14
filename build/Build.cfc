@@ -27,7 +27,10 @@ component {
 		];
 
 		// Cleanup + Init Build Directories
-		[ variables.buildDir, variables.artifactsDir ].each( function( item ){
+		[
+			variables.buildDir,
+			variables.artifactsDir
+		].each( function( item ){
 			if ( directoryExists( item ) ) {
 				directoryDelete( item, true );
 			}
@@ -132,11 +135,18 @@ component {
 
 		// Project Build Dir
 		variables.projectBuildDir = variables.buildDir & "/#projectName#";
-		directoryCreate( variables.projectBuildDir, true, true );
+		directoryCreate(
+			variables.projectBuildDir,
+			true,
+			true
+		);
 
 		// Copy source
 		print.blueLine( "Copying source to build folder..." ).toConsole();
-		copy( variables.cwd, variables.projectBuildDir );
+		copy(
+			variables.cwd,
+			variables.projectBuildDir
+		);
 
 		// Create build ID
 		fileWrite(
@@ -175,7 +185,10 @@ component {
 		);
 
 		// Copy box.json for convenience
-		fileCopy( "#variables.projectBuildDir#/box.json", variables.exportsDir );
+		fileCopy(
+			"#variables.projectBuildDir#/box.json",
+			variables.exportsDir
+		);
 	}
 
 	/**
@@ -285,7 +298,10 @@ component {
 	/**
 	 * Ensure the export directory exists at artifacts/NAME/VERSION/
 	 */
-	private function ensureExportDir( required projectName, version = "1.0.0" ){
+	private function ensureExportDir(
+		required projectName,
+		version = "1.0.0"
+	){
 		if ( structKeyExists( variables, "exportsDir" ) && directoryExists( variables.exportsDir ) ) {
 			return;
 		}

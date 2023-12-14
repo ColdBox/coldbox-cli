@@ -128,8 +128,18 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 				"all"
 			);
 		} else {
-			handlerContent     = replaceNoCase( handlerContent, "|EventActions|", "", "all" );
-			handlerTestContent = replaceNoCase( handlerTestContent, "|TestCases|", "", "all" );
+			handlerContent = replaceNoCase(
+				handlerContent,
+				"|EventActions|",
+				"",
+				"all"
+			);
+			handlerTestContent = replaceNoCase(
+				handlerTestContent,
+				"|TestCases|",
+				"",
+				"all"
+			);
 		}
 
 		// Create dir if it doesn't exist
@@ -158,7 +168,11 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 		if ( arguments.integrationTests ) {
 			var testPath = resolvePath( "#arguments.testsDirectory#/#arguments.name#Test.cfc" );
 			// Create dir if it doesn't exist
-			directoryCreate( getDirectoryFromPath( testPath ), true, true );
+			directoryCreate(
+				getDirectoryFromPath( testPath ),
+				true,
+				true
+			);
 			// Create the tests
 			file action="write" file="#testPath#" mode="777" output="#handlerTestContent#";
 			printInfo( "Created Integration Spec [#testPath#]" );
@@ -198,9 +212,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 		var actionContent = fileRead(
 			arguments.rest ? "#variables.settings.templatesPath#/RestActionContent.txt" : "#variables.settings.templatesPath#/ActionContent.txt"
 		);
-		var handlerTestCaseContent = fileRead(
-			"#variables.settings.templatesPath#/testing/HandlerBDDCaseContent.txt"
-		);
+		var handlerTestCaseContent = fileRead( "#variables.settings.templatesPath#/testing/HandlerBDDCaseContent.txt" );
 
 		// Loop Over actions generating their functions
 		for ( var thisAction in listToArray( arguments.actions ) ) {
@@ -213,10 +225,12 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 				"all"
 			);
 			// Action Replacement
-			results.actions = replaceNoCase( results.actions, "|action|", thisAction, "all" ) & repeatString(
-				variables.cr,
-				1
-			);
+			results.actions = replaceNoCase(
+				results.actions,
+				"|action|",
+				thisAction,
+				"all"
+			) & repeatString( variables.cr, 1 );
 
 			// Are we creating views? But only if we are NOT in rest mode
 			if ( arguments.views && !arguments.rest && !listFindNoCase( "create,update,delete", thisAction ) ) {

@@ -33,9 +33,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// entity defaults
 		var entityName = listLast( arguments.entity, "." );
-		var entityCFC  = fileSystemUtil.makePathRelative(
-			resolvePath( replace( arguments.entity, ".", "/", "all" ) )
-		);
+		var entityCFC  = fileSystemUtil.makePathRelative( resolvePath( replace( arguments.entity, ".", "/", "all" ) ) );
 		var entityPath = entityCFC & ".cfc";
 
 		// verify it
@@ -75,8 +73,13 @@ component extends="coldbox-cli.models.BaseCommand" {
 			// Read Handler Content
 			var hContent = fileRead( "#variables.settings.templatePath#/crud/HandlerContent.txt" );
 			// Token replacement
-			hContent     = replaceNoCase( hContent, "|entity|", entityName, "all" );
 			hContent     = replaceNoCase(
+				hContent,
+				"|entity|",
+				entityName,
+				"all"
+			);
+			hContent = replaceNoCase(
 				hContent,
 				"|entityPlural|",
 				arguments.pluralName,
@@ -87,7 +90,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 			// Write Out Handler
 			var hpath = "#arguments.handlersDirectory#/#arguments.pluralName#.cfc";
 			// Create dir if it doesn't exist
-			directoryCreate( getDirectoryFromPath( hpath ), true, true );
+			directoryCreate(
+				getDirectoryFromPath( hpath ),
+				true,
+				true
+			);
 			file action="write" file="#hpath#" mode="777" output="#hContent#";
 			printInfo( "Generated Handler: [#hPath#]" );
 
@@ -102,17 +109,23 @@ component extends="coldbox-cli.models.BaseCommand" {
 			var views = [ "edit", "editor", "new" ];
 			for ( var thisView in views ) {
 				var vContent = fileRead( "#variables.settings.templatePath#/crud/#thisView#.txt" );
-				vContent     = replaceNoCase( vContent, "|entity|", entityName, "all" );
 				vContent     = replaceNoCase(
+					vContent,
+					"|entity|",
+					entityName,
+					"all"
+				);
+				vContent = replaceNoCase(
 					vContent,
 					"|entityPlural|",
 					arguments.pluralName,
 					"all"
 				);
-				fileWrite( arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm", vContent );
-				printInfo(
-					"Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm]"
+				fileWrite(
+					arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm",
+					vContent
 				);
+				printInfo( "Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm]" );
 			}
 
 			// ********************** generate table output ************************************//
@@ -121,19 +134,42 @@ component extends="coldbox-cli.models.BaseCommand" {
 			savecontent variable="local.tableData" {
 				include "#variables.settings.templatePath#/crud/table.cfm";
 			}
-			tableData    = replaceNoCase( tableData, "%cf", "#chr( 60 )#cf", "all" );
-			tableData    = replaceNoCase( tableData, "%/cf", "#chr( 60 )#/cf", "all" );
+			tableData = replaceNoCase(
+				tableData,
+				"%cf",
+				"#chr( 60 )#cf",
+				"all"
+			);
+			tableData = replaceNoCase(
+				tableData,
+				"%/cf",
+				"#chr( 60 )#/cf",
+				"all"
+			);
 			// index data
 			var vContent = fileRead( "#variables.settings.templatePath#/crud/index.txt" );
-			vContent     = replaceNoCase( vContent, "|entity|", entityName, "all" );
 			vContent     = replaceNoCase(
+				vContent,
+				"|entity|",
+				entityName,
+				"all"
+			);
+			vContent = replaceNoCase(
 				vContent,
 				"|entityPlural|",
 				arguments.pluralName,
 				"all"
 			);
-			vContent = replaceNoCase( vContent, "|tableListing|", tableData, "all" );
-			fileWrite( arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm", vContent );
+			vContent = replaceNoCase(
+				vContent,
+				"|tableListing|",
+				tableData,
+				"all"
+			);
+			fileWrite(
+				arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm",
+				vContent
+			);
 			printInfo( "Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm]" );
 		} else {
 			return error( "The entity: #entityName# has no properties, so I have no clue what to CRUD on dude!" );

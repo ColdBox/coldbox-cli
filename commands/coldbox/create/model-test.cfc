@@ -45,9 +45,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// Read in Template
 		var modelTestContent       = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
-		var modelTestMethodContent = fileRead(
-			"#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt"
-		);
+		var modelTestMethodContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDMethodContent.txt" );
 
 		// Basic replacements
 		modelTestContent = replaceNoCase(
@@ -90,12 +88,21 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 		} else {
-			modelTestContent = replaceNoCase( modelTestContent, "|TestCases|", "", "all" );
+			modelTestContent = replaceNoCase(
+				modelTestContent,
+				"|TestCases|",
+				"",
+				"all"
+			);
 		}
 
 		var testPath = "#arguments.TestsDirectory#/#listLast( arguments.path, "." )#Test.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( testPath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( testPath ),
+			true,
+			true
+		);
 
 		// Confirm it
 		if (
