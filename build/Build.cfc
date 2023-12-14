@@ -48,9 +48,9 @@ component {
 	 * Run the build process: test, build source, docs, checksums
 	 *
 	 * @projectName The project name used for resources and slugs
-	 * @version     The version you are building
-	 * @buldID      The build identifier
-	 * @branch      The branch you are building
+	 * @version The version you are building
+	 * @buldID The build identifier
+	 * @branch The branch you are building
 	 */
 	function run(
 		required projectName,
@@ -113,9 +113,9 @@ component {
 	 * Build the source
 	 *
 	 * @projectName The project name used for resources and slugs
-	 * @version     The version you are building
-	 * @buldID      The build identifier
-	 * @branch      The branch you are building
+	 * @version The version you are building
+	 * @buldID The build identifier
+	 * @branch The branch you are building
 	 */
 	function buildSource(
 		required projectName,
@@ -300,9 +300,9 @@ component {
 	 */
 	private function ensureExportDir(
 		required projectName,
-		version = "1.0.0"
+		version   = "1.0.0"
 	){
-		if ( structKeyExists( variables, "exportsDir" ) && directoryExists( variables.exportsDir ) ) {
+		if ( structKeyExists( variables, "exportsDir" ) && directoryExists( variables.exportsDir ) ){
 			return;
 		}
 		// Prepare exports directory
