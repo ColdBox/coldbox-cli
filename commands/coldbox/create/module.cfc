@@ -14,7 +14,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @author         Whoever wrote this module
 	 * @authorURL      The author's URL
 	 * @description    The description for this module
-	 * @version        The semantic version number: major.minior.patch
+	 * @version        The semantic version number: major.minor.patch
 	 * @cfmapping      A CF app mapping to create that points to the root of this module
 	 * @modelNamespace The namespace to use when mapping the models in this module
 	 * @dependencies   The list of dependencies for this module
@@ -45,7 +45,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 		var moduleConfig = fileRead( "#variables.settings.templatesPath#/modules/ModuleConfig.cfc" );
 
 		// Start Generation Replacing
-		moduleConfig = replaceNoCase( moduleConfig, "@title@", arguments.name, "all" );
+		moduleConfig = replaceNoCase(
+			moduleConfig,
+			"@title@",
+			arguments.name,
+			"all"
+		);
 		moduleConfig = replaceNoCase(
 			moduleConfig,
 			"@author@",
@@ -107,11 +112,17 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// Remove or keep Views?
 		if ( !arguments.views ) {
-			directoryDelete( arguments.directory & "/#arguments.name#/views", true );
+			directoryDelete(
+				arguments.directory & "/#arguments.name#/views",
+				true
+			);
 		}
 
 		// Write Out the New Config
-		fileWrite( arguments.directory & "/#arguments.name#/ModuleConfig.cfc", moduleConfig );
+		fileWrite(
+			arguments.directory & "/#arguments.name#/ModuleConfig.cfc",
+			moduleConfig
+		);
 
 		// Output
 		printInfo( "Created Module (#arguments.name#) -> [#arguments.directory#]" );

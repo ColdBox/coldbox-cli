@@ -60,8 +60,11 @@ component {
 		// Determine watching patterns, either from arguments or boxoptions or defaults
 		var globbingPaths = arguments.paths ?: getOptionsWatchers() ?: variables.PATHS;
 		// handle non numeric config and put a floor of 150ms
-		var delayMs       = max( val( arguments.delay ?: boxOptions.reinitWatchDelay ?: variables.WATCH_DELAY ), 150 );
-		var statusColors  = {
+		var delayMs       = max(
+			val( arguments.delay ?: boxOptions.reinitWatchDelay ?: variables.WATCH_DELAY ),
+			150
+		);
+		var statusColors = {
 			"added"   : "green",
 			"removed" : "red",
 			"changed" : "yellow"
@@ -109,8 +112,14 @@ component {
 					changeData[ status ].map( function( filePath ){
 						print
 							.text( changetime, statusColors[ status ] )
-							.text( filePath, statusColors[ status ] & "Bold" )
-							.text( " " & status & " ", statusColors[ status ] )
+							.text(
+								filePath,
+								statusColors[ status ] & "Bold"
+							)
+							.text(
+								" " & status & " ",
+								statusColors[ status ]
+							)
 							.toConsole();
 					} )
 				}

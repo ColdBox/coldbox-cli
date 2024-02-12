@@ -9,3 +9,6 @@
 
 # Push all branches back out to github
 !git push origin --all
+
+# Check development again
+!git checkout -f development

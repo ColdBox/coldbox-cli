@@ -32,12 +32,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Read in Template
-		var interceptorTestContent = fileRead(
-			"#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt"
-		);
-		var interceptorTestCase = fileRead(
-			"#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt"
-		);
+		var interceptorTestContent = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDContent.txt" );
+		var interceptorTestCase    = fileRead( "#variables.settings.templatesPath#/testing/InterceptorBDDCaseContent.txt" );
 
 		// Start Replacing
 		interceptorTestContent = replaceNoCase(
@@ -79,7 +75,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Write it out.
 		var testPath = "#arguments.testsDirectory#/#listLast( arguments.path, "." )#Test.cfc";
 		// Create dir if it doesn't exist
-		directoryCreate( getDirectoryFromPath( testPath ), true, true );
+		directoryCreate(
+			getDirectoryFromPath( testPath ),
+			true,
+			true
+		);
 
 		// Confirm it
 		if (

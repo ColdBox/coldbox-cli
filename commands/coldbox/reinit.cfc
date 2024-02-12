@@ -21,7 +21,11 @@ component aliases="fwreinit" {
 	 * @name     Name of the CommandBox server to reinit
 	 * @showUrl  Show the Url to reinit
 	 **/
-	function run( password = "1", name = "", showUrl = true ){
+	function run(
+		password = "1",
+		name     = "",
+		showUrl  = true
+	){
 		var serverInfo = serverService.getServerInfoByDiscovery( getCWD(), arguments.name );
 
 		if ( !structCount( serverInfo ) ) {

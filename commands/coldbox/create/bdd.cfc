@@ -8,7 +8,7 @@
  * {code}
  *
  **/
-component {
+ component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @name      Name of the BDD spec to create without the .cfc. For packages, specify name as 'myPackage/myBDDSpec'
@@ -20,10 +20,8 @@ component {
 		boolean open = false,
 		directory    = "tests/specs"
 	){
-		// proxy to testbox
-		runCommand(
-			"testbox create bdd name=#arguments.name# directory=#arguments.directory# open=#arguments.open#"
-		);
+		variables.utility.ensureTestBoxModule();
+		runCommand( "testbox create bdd name=#arguments.name# directory=#arguments.directory# open=#arguments.open#" );
 	}
 
 }

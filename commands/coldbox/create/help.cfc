@@ -10,9 +10,7 @@ component excludeFromHelp=true {
 			.blue( "as you plan your application.  Most commands create a single file, but """ )
 			.boldblue( "coldbox create app" )
 			.blueLine( """" )
-			.blueLine(
-				"will generate an entire, working application into an empty folder for you. Type help before"
-			)
+			.blueLine( "will generate an entire, working application into an empty folder for you. Type help before" )
 			.blueLine( "any command name to get additional information on how to call that specific command." )
 			.line()
 			.line();

@@ -151,6 +151,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// Run migrations init
 		if ( arguments.migrations ) {
+			variables.utility.ensureMigrationsModule();
 			command( "migrate init" ).run();
 		}
 	}
