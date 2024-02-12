@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - New github actions
+- Lazy load `testbox-cli, commandbox-migrations` only when used.
 
 ## [7.2.1] - 2023-05-19
 

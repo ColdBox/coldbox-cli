@@ -1,7 +1,58 @@
 component singleton {
 
+	// DI
+	property name="moduleService" inject="ModuleService";
+	property name="wirebox" inject="wirebox";
+	property name="print" inject="PrintBuffer";
+
 	this.BREAK = chr( 13 ) & chr( 10 );
 	this.TAB   = chr( 9 );
+
+	/**
+	 * Verify that the TestBox module is installed
+	 * else install it
+	 */
+	function ensureTestBoxModule(){
+		if( !isTestBoxModuleInstalled() ){
+			variables.print
+				.redLine( "TestBox-CLI module not installed. Installing it for you, please wait..." )
+				.line()
+				.toConsole();
+			variables.wirebox
+				.getInstance( name : "CommandDSL", initArguments : { name : "install testbox-cli" } )
+				.run();
+		}
+	}
+
+	/**
+	 * Verify that the CommandBox Migrations module is installed
+	 * else install it
+	 */
+	function ensureMigrationsModule(){
+		if( !isMigrationsModuleInstalled() ){
+			variables.print
+				.redLine( "CommandBox-Migrations module not installed. Installing it for you, please wait..." )
+				.line()
+				.toConsole();
+			variables.wirebox
+				.getInstance( name : "CommandDSL", initArguments : { name : "install commandbox-migrations" } )
+				.run();
+		}
+	}
+
+	/**
+	 * Is TestBox module installed
+	 */
+	boolean function isTestBoxModuleInstalled(){
+		return variables.moduleService.getModuleRegistry().keyArray().findNoCase( "testbox-cli" ) > 0 ? true : false;
+	}
+
+	/**
+	 * Is CommandBox Migrations module installed
+	 */
+	boolean function isMigrationsModuleInstalled(){
+		return variables.moduleService.getModuleRegistry().keyArray().findNoCase( "commandbox-migrations" ) > 0 ? true : false;
+	}
 
 	/**
 	 * Convert a plural word to a singular word
