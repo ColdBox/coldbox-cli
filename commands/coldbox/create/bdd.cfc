@@ -8,7 +8,7 @@
  * {code}
  *
  **/
- component extends="coldbox-cli.models.BaseCommand" {
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @name      Name of the BDD spec to create without the .cfc. For packages, specify name as 'myPackage/myBDDSpec'

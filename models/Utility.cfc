@@ -2,8 +2,8 @@ component singleton {
 
 	// DI
 	property name="moduleService" inject="ModuleService";
-	property name="wirebox" inject="wirebox";
-	property name="print" inject="PrintBuffer";
+	property name="wirebox"       inject="wirebox";
+	property name="print"         inject="PrintBuffer";
 
 	this.BREAK = chr( 13 ) & chr( 10 );
 	this.TAB   = chr( 9 );
@@ -13,13 +13,16 @@ component singleton {
 	 * else install it
 	 */
 	function ensureTestBoxModule(){
-		if( !isTestBoxModuleInstalled() ){
+		if ( !isTestBoxModuleInstalled() ) {
 			variables.print
 				.redLine( "TestBox-CLI module not installed. Installing it for you, please wait..." )
 				.line()
 				.toConsole();
 			variables.wirebox
-				.getInstance( name : "CommandDSL", initArguments : { name : "install testbox-cli" } )
+				.getInstance(
+					name         : "CommandDSL",
+					initArguments: { name : "install testbox-cli" }
+				)
 				.run();
 		}
 	}
@@ -29,13 +32,16 @@ component singleton {
 	 * else install it
 	 */
 	function ensureMigrationsModule(){
-		if( !isMigrationsModuleInstalled() ){
+		if ( !isMigrationsModuleInstalled() ) {
 			variables.print
 				.redLine( "CommandBox-Migrations module not installed. Installing it for you, please wait..." )
 				.line()
 				.toConsole();
 			variables.wirebox
-				.getInstance( name : "CommandDSL", initArguments : { name : "install commandbox-migrations" } )
+				.getInstance(
+					name         : "CommandDSL",
+					initArguments: { name : "install commandbox-migrations" }
+				)
 				.run();
 		}
 	}
@@ -44,14 +50,20 @@ component singleton {
 	 * Is TestBox module installed
 	 */
 	boolean function isTestBoxModuleInstalled(){
-		return variables.moduleService.getModuleRegistry().keyArray().findNoCase( "testbox-cli" ) > 0 ? true : false;
+		return variables.moduleService
+			.getModuleRegistry()
+			.keyArray()
+			.findNoCase( "testbox-cli" ) > 0 ? true : false;
 	}
 
 	/**
 	 * Is CommandBox Migrations module installed
 	 */
 	boolean function isMigrationsModuleInstalled(){
-		return variables.moduleService.getModuleRegistry().keyArray().findNoCase( "commandbox-migrations" ) > 0 ? true : false;
+		return variables.moduleService
+			.getModuleRegistry()
+			.keyArray()
+			.findNoCase( "commandbox-migrations" ) > 0 ? true : false;
 	}
 
 	/**
