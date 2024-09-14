@@ -62,13 +62,16 @@ component {
 
 		// Determine watching patterns, either from arguments or boxoptions or defaults
 		var globbingPaths = arguments.paths ?: getOptionsWatchers() ?: variables.PATHS;
-		var globArray = globbingPaths.listToArray();
-		var theDirectory = arguments.directory ?: boxOptions.reinitWatchDirectory ?: getCWD();
-		theDirectory = resolvePath( theDirectory );
+		var globArray     = globbingPaths.listToArray();
+		var theDirectory  = arguments.directory ?: boxOptions.reinitWatchDirectory ?: getCWD();
+		theDirectory      = resolvePath( theDirectory );
 
 		// handle non numeric config
-		var delayMs       = max( val( arguments.delay ?: boxOptions.reinitWatchDelay ?: variables.WATCH_DELAY ), variables.WATCH_DELAY );
-		var statusColors  = {
+		var delayMs = max(
+			val( arguments.delay ?: boxOptions.reinitWatchDelay ?: variables.WATCH_DELAY ),
+			variables.WATCH_DELAY
+		);
+		var statusColors = {
 			"added"   : "green",
 			"removed" : "red",
 			"changed" : "yellow"
@@ -100,7 +103,7 @@ component {
 			.greenLine( "Watching the following files for a framework reinit" )
 			.greenLine( "---------------------------------------------------" )
 			.line();
-		globArray.each( (p) => print.greenLine( " " & p ) );
+		globArray.each( ( p ) => print.greenLine( " " & p ) );
 		print
 			.line()
 			.greenLine( " in directory: #theDirectory#" )
@@ -120,8 +123,14 @@ component {
 					changeData[ status ].map( function( filePath ){
 						print
 							.text( changetime, statusColors[ status ] )
-							.text( filePath, statusColors[ status ] & "Bold" )
-							.text( " " & status & " ", statusColors[ status ] )
+							.text(
+								filePath,
+								statusColors[ status ] & "Bold"
+							)
+							.text(
+								" " & status & " ",
+								statusColors[ status ]
+							)
 							.toConsole();
 					} )
 				}
