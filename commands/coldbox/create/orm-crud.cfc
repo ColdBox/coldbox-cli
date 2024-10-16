@@ -26,7 +26,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean tests     = true,
 		testsDirectory    = "tests/specs/integration"
 	){
-
 		// This will make each directory canonical and absolute
 		arguments.handlersDirectory = resolvePath( arguments.handlersDirectory );
 		arguments.viewsDirectory    = resolvePath( arguments.viewsDirectory );
