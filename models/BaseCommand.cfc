@@ -1,7 +1,7 @@
 /**
  * Base Command Handler
  */
-component {
+component accessors="true" {
 
 	// DI
 	property name="utility"  inject="utility@coldbox-cli";

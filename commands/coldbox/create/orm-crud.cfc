@@ -26,6 +26,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean tests     = true,
 		testsDirectory    = "tests/specs/integration"
 	){
+
 		// This will make each directory canonical and absolute
 		arguments.handlersDirectory = resolvePath( arguments.handlersDirectory );
 		arguments.viewsDirectory    = resolvePath( arguments.viewsDirectory );
@@ -71,7 +72,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			// ********************** generate handler ************************************//
 
 			// Read Handler Content
-			var hContent = fileRead( "#variables.settings.templatePath#/crud/HandlerContent.txt" );
+			var hContent = fileRead( "#variables.settings.templatesPath#/crud/HandlerContent.txt" );
 			// Token replacement
 			hContent     = replaceNoCase(
 				hContent,
@@ -108,7 +109,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			);
 			var views = [ "edit", "editor", "new" ];
 			for ( var thisView in views ) {
-				var vContent = fileRead( "#variables.settings.templatePath#/crud/#thisView#.txt" );
+				var vContent = fileRead( "#variables.settings.templatesPath#/crud/#thisView#.txt" );
 				vContent     = replaceNoCase(
 					vContent,
 					"|entity|",
@@ -132,7 +133,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 			// Build table output for index
 			savecontent variable="local.tableData" {
-				include "#variables.settings.templatePath#/crud/table.cfm";
+				include "#variables.settings.templatesPath#/crud/table.cfm";
 			}
 			tableData = replaceNoCase(
 				tableData,
@@ -147,7 +148,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 			// index data
-			var vContent = fileRead( "#variables.settings.templatePath#/crud/index.txt" );
+			var vContent = fileRead( "#variables.settings.templatesPath#/crud/index.txt" );
 			vContent     = replaceNoCase(
 				vContent,
 				"|entity|",
