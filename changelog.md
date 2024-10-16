@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.5.0] - 2024-10-16
+
 ### Fixed
 
 - watch reinit issues with `coldbox watch` command
@@ -95,7 +97,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.4.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.5.0...HEAD
+
+[7.5.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.4.0...v7.5.0
 
 [7.4.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.3.0...v7.4.0
 
