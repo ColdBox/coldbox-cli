@@ -33,7 +33,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		arguments.name = replace( arguments.name, ".", "/", "all" );
 
 		// Read in Template
-		var modelContent = fileRead( "#variables.settings.templatePath#/orm/ORMEventHandler.txt" );
+		var modelContent = fileRead( "#variables.settings.templatesPath#/orm/ORMEventHandler.txt" );
 		// Write out the model
 		var modelPath    = "#directory#/#arguments.name#.cfc";
 		// Create dir if it doesn't exist

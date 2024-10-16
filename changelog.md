@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- key [TEMPLATEPATH] doesn't exist when doing orm operations. This was a typo, it should have been `templatesPath`
+
 ## [7.4.0] - 2024-03-20
 
 ### Fixed
