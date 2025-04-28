@@ -73,7 +73,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean resource     = false,
 		boolean all          = false,
 		methods              = "",
-		boolean boxlang = isBoxLangProject( getCWD() )
+		boolean boxlang      = isBoxLangProject( getCWD() )
 	){
 		// Defaults
 		arguments.table = len( arguments.table ) ? arguments.table : variables.utility.pluralize(
@@ -113,7 +113,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				ormTypes            : true,
 				propertyContent     : propertyContent & variables.cr & variables.utility.TAB,
 				initContent         : "super.init( useQueryCaching=""false"" );",
-				boxlang 		  : arguments.boxlang
+				boxlang             : arguments.boxlang
 			)
 			.run();
 	}

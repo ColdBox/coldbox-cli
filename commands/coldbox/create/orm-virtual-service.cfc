@@ -31,7 +31,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		testsDirectory        = "tests/specs/unit",
 		boolean open          = false,
 		boolean force         = false,
-		boolean boxlang = isBoxLangProject( getCWD() )
+		boolean boxlang       = isBoxLangProject( getCWD() )
 	){
 		// non-canonical path
 		var nonCanonicalDirectory = arguments.directory;

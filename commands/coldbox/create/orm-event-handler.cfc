@@ -18,9 +18,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required name,
-		directory     = "models",
-		boolean open  = false,
-		boolean force = false,
+		directory       = "models",
+		boolean open    = false,
+		boolean force   = false,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
