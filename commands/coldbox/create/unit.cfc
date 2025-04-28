@@ -18,8 +18,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required name,
-		boolean open = false,
-		directory    = "tests/specs",
+		boolean open    = false,
+		directory       = "tests/specs",
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		variables.utility.ensureTestBoxModule();

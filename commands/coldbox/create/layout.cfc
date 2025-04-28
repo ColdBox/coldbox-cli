@@ -20,11 +20,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required name,
-		boolean helper = false,
-		directory      = "layouts",
-		boolean open   = false,
-		boolean force  = false,
-		content        = "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#",
+		boolean helper  = false,
+		directory       = "layouts",
+		boolean open    = false,
+		boolean force   = false,
+		content         = "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#",
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
@@ -38,7 +38,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// This help readability so the success messages aren't up against the previous command line
 		print.line();
 
-		if( arguments.boxlang ){
+		if ( arguments.boxlang ) {
 			savecontent variable="local.layoutContent" {
 				writeOutput( "<bx:output>#variables.utility.BREAK#" )
 				writeOutput( arguments.content )

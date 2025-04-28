@@ -38,13 +38,13 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required handler,
-		actions       = "",
-		appMapping    = "/",
-		boolean bdd   = true,
-		boolean xunit = false,
-		boolean open  = false,
-		directory     = "tests/specs/integration",
-		boolean force = false,
+		actions         = "",
+		appMapping      = "/",
+		boolean bdd     = true,
+		boolean xunit   = false,
+		boolean open    = false,
+		directory       = "tests/specs/integration",
+		boolean force   = false,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
@@ -85,7 +85,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.handler,
 			"all"
 		);
-		if( arguments.boxlang ) {
+		if ( arguments.boxlang ) {
 			handlerTestContent = toBoxLangClass( handlerTestContent );
 		}
 

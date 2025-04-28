@@ -19,10 +19,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required path,
-		points         = "",
-		testsDirectory = "tests/specs/interceptors",
-		boolean open   = false,
-		boolean force  = false,
+		points          = "",
+		testsDirectory  = "tests/specs/interceptors",
+		boolean open    = false,
+		boolean force   = false,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
@@ -44,7 +44,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.path,
 			"all"
 		);
-		if( arguments.boxlang ) {
+		if ( arguments.boxlang ) {
 			interceptorTestContent = toBoxLangClass( interceptorTestContent );
 		}
 

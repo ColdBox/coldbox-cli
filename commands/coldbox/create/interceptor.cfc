@@ -25,13 +25,13 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required name,
-		points         = "",
-		description    = "I am a new interceptor",
-		boolean tests  = true,
-		testsDirectory = "tests/specs/interceptors",
-		directory      = "interceptors",
-		boolean open   = false,
-		boolean force  = false,
+		points          = "",
+		description     = "I am a new interceptor",
+		boolean tests   = true,
+		testsDirectory  = "tests/specs/interceptors",
+		directory       = "interceptors",
+		boolean open    = false,
+		boolean force   = false,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
@@ -60,7 +60,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.name,
 			"all"
 		);
-		if( arguments.boxlang ) {
+		if ( arguments.boxlang ) {
 			interceptorContent = toBoxLangClass( interceptorContent );
 		}
 		var interceptorPath    = listChangeDelims( relativeDirectory, ".", "/\" ).listAppend( arguments.name, "." );
@@ -70,7 +70,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			interceptorPath,
 			"all"
 		);
-		if( arguments.boxlang ) {
+		if ( arguments.boxlang ) {
 			interceptorTestContent = toBoxLangClass( interceptorTestContent );
 		}
 

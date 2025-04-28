@@ -75,7 +75,7 @@ component extends="app" aliases="" {
 					{
 						accessKey : 2,
 						value     : "cbtemplate-supersimple",
-						display   : "Super simple starting template - no modules, no config, no nothing",
+						display   : "Super simple starting template - no modules, no config, no nothing"
 					},
 					{
 						accessKey : 3,

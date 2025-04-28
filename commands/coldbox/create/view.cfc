@@ -21,11 +21,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required name,
-		boolean helper = false,
-		directory      = "views",
-		boolean open   = false,
-		content        = "<h1>#arguments.name# view</h1>",
-		boolean force  = false,
+		boolean helper  = false,
+		directory       = "views",
+		boolean open    = false,
+		content         = "<h1>#arguments.name# view</h1>",
+		boolean force   = false,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// Allow dot-delimited paths
@@ -49,7 +49,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			directoryCreate( arguments.directory );
 		}
 
-		if( arguments.boxlang ){
+		if ( arguments.boxlang ) {
 			savecontent variable="local.viewContent" {
 				writeOutput( "<bx:output>#variables.utility.BREAK#" )
 				writeOutput( "#arguments.content##variables.utility.BREAK#" )

@@ -101,7 +101,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean migration    = false,
 		boolean seeder       = false,
 		boolean open         = false,
-		boolean boxlang = isBoxLangProject( getCWD() )
+		boolean boxlang      = isBoxLangProject( getCWD() )
 	){
 		// Normalize paths
 		arguments.specsDirectory   = resolvePath( arguments.specsDirectory );
@@ -128,7 +128,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 					.params(
 						name      = arguments.module,
 						directory = arguments.modulesDirectory,
-						boxlang = boxlang
+						boxlang   = boxlang
 					)
 					.run();
 			}
@@ -168,7 +168,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.parameterName,
 			"all"
 		);
-		if( arguments.boxlang ) {
+		if ( arguments.boxlang ) {
 			hContent = toBoxLangClass( hContent );
 		}
 
@@ -214,7 +214,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 						directory: viewsDirectory,
 						force    : force,
 						open     : open,
-						boxlang : boxlang
+						boxlang  : boxlang
 					)
 					.run();
 			} );
@@ -230,7 +230,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				appMapping: arguments.appMapping,
 				directory : arguments.specsDirectory & "/integration",
 				force     : arguments.force,
-				boxlang : boxlang
+				boxlang   : boxlang
 			)
 			.run();
 
@@ -253,7 +253,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 					migration       : arguments.migration,
 					seeder          : arguments.seeder,
 					force           : arguments.force,
-					boxlang: arguments.boxlang
+					boxlang         : arguments.boxlang
 				)
 				.run();
 
@@ -264,7 +264,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 					directory     : arguments.modelsDirectory,
 					testsDirectory: arguments.specsDirectory & "/unit",
 					force         : arguments.force,
-					boxlang: arguments.boxlang
+					boxlang       : arguments.boxlang
 				)
 				.run();
 		} else {
@@ -280,7 +280,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 					migration     : arguments.migration,
 					seeder        : arguments.seeder,
 					force         : arguments.force,
-					boxlang: arguments.boxlang
+					boxlang       : arguments.boxlang
 				)
 				.run();
 
@@ -295,7 +295,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 					directory     : arguments.modelsDirectory,
 					testsDirectory: arguments.specsDirectory & "/unit",
 					force         : arguments.force,
-					boxlang: arguments.boxlang
+					boxlang       : arguments.boxlang
 				)
 				.run();
 		}

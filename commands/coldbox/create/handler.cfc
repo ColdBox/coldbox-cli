@@ -52,7 +52,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 		boolean rest             = false,
 		boolean force            = false,
 		boolean resource         = false,
-		boolean boxlang = isBoxLangProject( getCWD() )
+		boolean boxlang          = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory      = resolvePath( arguments.directory );
@@ -103,8 +103,8 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 			"all"
 		);
 		// BoxLang replacements
-		if( arguments.boxlang ){
-			handlerContent = toBoxLangClass( handlerContent );
+		if ( arguments.boxlang ) {
+			handlerContent     = toBoxLangClass( handlerContent );
 			handlerTestContent = toBoxLangClass( handlerTestContent );
 		}
 

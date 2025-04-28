@@ -130,12 +130,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Prepare language
-		if( arguments.boxlang ) {
-			command( "package set" )
-				.params(
-					language : "BoxLang"
-				)
-				.run();
+		if ( arguments.boxlang ) {
+			command( "package set" ).params( language: "BoxLang" ).run();
 		}
 
 		// Prepare defaults on box.json so we remove template based ones

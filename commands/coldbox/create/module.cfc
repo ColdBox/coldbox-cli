@@ -24,15 +24,15 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required name,
-		author         = "",
-		authorURL      = "",
-		description    = "",
-		version        = "1.0.0",
-		cfmapping      = "",
-		modelNamespace = arguments.name,
-		dependencies   = "",
-		directory      = "modules_app",
-		boolean views  = true,
+		author          = "",
+		authorURL       = "",
+		description     = "",
+		version         = "1.0.0",
+		cfmapping       = "",
+		modelNamespace  = arguments.name,
+		dependencies    = "",
+		directory       = "modules_app",
+		boolean views   = true,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute

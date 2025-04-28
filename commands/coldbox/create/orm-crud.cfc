@@ -26,7 +26,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		viewsDirectory    = "views",
 		boolean tests     = true,
 		testsDirectory    = "tests/specs/integration",
-		boolean boxlang = isBoxLangProject( getCWD() )
+		boolean boxlang   = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.handlersDirectory = resolvePath( arguments.handlersDirectory );
@@ -34,9 +34,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		arguments.testsDirectory    = resolvePath( arguments.testsDirectory );
 
 		// entity defaults
-		var entityName = listLast( arguments.entity, "." );
-		var entityClass  = fileSystemUtil.makePathRelative( resolvePath( replace( arguments.entity, ".", "/", "all" ) ) );
-		var entityPath = entityClass & ".#arguments.boxlang ? "bx" : "cfc"#";
+		var entityName  = listLast( arguments.entity, "." );
+		var entityClass = fileSystemUtil.makePathRelative( resolvePath( replace( arguments.entity, ".", "/", "all" ) ) );
+		var entityPath  = entityClass & ".#arguments.boxlang ? "bx" : "cfc"#";
 
 		// verify it
 		if ( !fileExists( entityPath ) ) {
@@ -88,7 +88,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 			hContent = replaceNoCase( hContent, "|pk|", metadata.pk, "all" );
-			if( arguments.boxlang ) {
+			if ( arguments.boxlang ) {
 				hContent = toBoxLangClass( hContent );
 			}
 

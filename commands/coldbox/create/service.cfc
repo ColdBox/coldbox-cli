@@ -39,7 +39,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean force               = false,
 		string componentAnnotations = "",
 		string initContent          = "",
-		boolean boxlang = isBoxLangProject( getCWD() )
+		boolean boxlang             = isBoxLangProject( getCWD() )
 	){
 		// Prepare arguments
 		var modelTestPath = arguments.directory;
@@ -92,7 +92,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.initContent,
 			"all"
 		);
-		if( arguments.boxlang ) {
+		if ( arguments.boxlang ) {
 			modelContent = toBoxLangClass( modelContent );
 		}
 
@@ -108,7 +108,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			listChangeDelims( modelTestPath, ".", "/\" ) & "." & listChangeDelims( arguments.name, ".", "/\" ),
 			"all"
 		);
-		if( arguments.boxlang ) {
+		if ( arguments.boxlang ) {
 			modelTestContent = toBoxLangClass( modelTestContent );
 		}
 
@@ -201,7 +201,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 					force  : arguments.force,
 					open   : arguments.open,
 					methods: arguments.methods,
-					boxlang : arguments.boxlang
+					boxlang: arguments.boxlang
 				)
 				.run();
 		}
