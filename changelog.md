@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated to the latest Ubuntu images for the GitHub actions
 
+### Fixed
+
+- Fixed resource handler creation.
+
 ## [7.5.0] - 2024-10-16
 
 ### Fixed

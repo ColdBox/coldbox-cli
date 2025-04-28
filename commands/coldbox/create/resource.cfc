@@ -324,7 +324,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			// Add Resource routes
 			var routerContent = fileRead( routerPath ).replaceNoCase(
 				"// @app_routes@",
-				routerCode & variables.break
+				routerCode & chr( 13 )
 			);
 			fileWrite( routerPath, routerContent );
 			openPath( routerPath );
