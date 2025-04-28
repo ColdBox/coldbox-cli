@@ -8,6 +8,7 @@
  * {code}
  * .
  *  Here are the basic skeletons that are available for you that come from ForgeBox
+ *  - BoxLang
  *  - Default (default)
  *  - Elixir
  *  - Modern
@@ -39,9 +40,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 	function init(){
 		// Map these shortcut names to the actual ForgeBox slugs
 		variables.templateMap = {
-			"AdvancedScript" : "cbtemplate-advanced-script",
 			"Default"        : "cbtemplate-advanced-script",
+			"BoxLang" : 	"cbtemplate-bx-default",
 			"Elixir"         : "cbtemplate-elixir",
+			"modern"        : "cbtemplate-modern",
 			"rest"           : "cbtemplate-rest",
 			"rest-hmvc"      : "cbtemplate-rest-hmvc",
 			"Vite"           : "cbtemplate-vite",
