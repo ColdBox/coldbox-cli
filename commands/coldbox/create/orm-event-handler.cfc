@@ -14,12 +14,14 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @directory The base directory to create your event handler in and creates the directory if it does not exist.
 	 * @open      Open the file once generated
 	 * @force     Force overwrite of existing files
+	 * @boxlang  Is this a boxlang project?
 	 **/
 	function run(
 		required name,
 		directory     = "models",
 		boolean open  = false,
-		boolean force = false
+		boolean force = false,
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -35,13 +37,17 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Read in Template
 		var modelContent = fileRead( "#variables.settings.templatesPath#/orm/ORMEventHandler.txt" );
 		// Write out the model
-		var modelPath    = "#directory#/#arguments.name#.cfc";
+		var modelPath    = "#directory#/#arguments.name#.#arguments.boxlang ? "bx" : "cfc"#";
 		// Create dir if it doesn't exist
 		directoryCreate(
 			getDirectoryFromPath( modelPath ),
 			true,
 			true
 		);
+
+		if ( arguments.boxlang ) {
+			modelContent = toBoxLangClass( modelContent );
+		}
 
 		// Prompt for override
 		if (

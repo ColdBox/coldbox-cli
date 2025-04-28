@@ -19,6 +19,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @testsDirectory Your unit tests directory. Only used if tests is true
 	 * @open           Open the file once generated
 	 * @force          Force overwrite existing files
+	 * @boxlang       Is this a boxlang project?
 	 **/
 	function run(
 		required serviceName,
@@ -29,7 +30,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean tests         = true,
 		testsDirectory        = "tests/specs/unit",
 		boolean open          = false,
-		boolean force         = false
+		boolean force         = false,
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// non-canonical path
 		var nonCanonicalDirectory = arguments.directory;
@@ -76,6 +78,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.eventHandling,
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			modelContent = toBoxLangClass( modelContent );
+		}
+
 		modelTestContent = replaceNoCase(
 			modelTestContent,
 			"|modelName|",
@@ -88,9 +94,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 			"",
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			modelTestContent = toBoxLangClass( modelTestContent );
+		}
 
 		// Write out the model
-		var modelPath = "#arguments.directory#/#arguments.serviceName#Service.cfc";
+		var modelPath = "#arguments.directory#/#arguments.serviceName#Service.#arguments.boxlang ? "bx" : "cfc"#";
 		// Create dir if it doesn't exist
 		directoryCreate(
 			getDirectoryFromPath( modelPath ),
@@ -118,7 +127,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					path          : arguments.serviceName & "Service",
 					testsDirectory: arguments.testsDirectory,
 					force         : arguments.force,
-					open          : arguments.open
+					open          : arguments.open,
+					boxlang       : arguments.boxlang
 				)
 				.run();
 		}

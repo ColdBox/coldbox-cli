@@ -51,6 +51,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @resource          Generate a REST resource for this entity
 	 * @all               Generate all the things! (tests, migration, seeder, handler, rest, resource)
 	 * @methods           Generate methods for the entity
+	 * @boxlang          Is this a boxlang project?
 	 **/
 	function run(
 		required entityName,
@@ -71,7 +72,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean rest         = false,
 		boolean resource     = false,
 		boolean all          = false,
-		methods              = ""
+		methods              = "",
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// Defaults
 		arguments.table = len( arguments.table ) ? arguments.table : variables.utility.pluralize(
@@ -110,7 +112,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 				componentAnnotations: componentAnnotations,
 				ormTypes            : true,
 				propertyContent     : propertyContent & variables.cr & variables.utility.TAB,
-				initContent         : "super.init( useQueryCaching=""false"" );"
+				initContent         : "super.init( useQueryCaching=""false"" );",
+				boxlang 		  : arguments.boxlang
 			)
 			.run();
 	}
