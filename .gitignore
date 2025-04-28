@@ -3,6 +3,7 @@
 modules/**
 
 # Build Artifacts
+.DS_Store
 .tmp/**
 .artifacts/**
 changelog-latest.md

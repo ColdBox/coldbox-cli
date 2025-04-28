@@ -43,8 +43,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Read in Template
-		var modelContent     = fileRead( "#variables.settings.templatePath#/orm/VirtualEntityService.txt" );
-		var modelTestContent = fileRead( "#variables.settings.templatePath#/testing/ModelBDDContent.txt" );
+		var modelContent     = fileRead( "#variables.settings.templatesPath#/orm/VirtualEntityService.txt" );
+		var modelTestContent = fileRead( "#variables.settings.templatesPath#/testing/ModelBDDContent.txt" );
 
 		// Query cache Region
 		if ( !len( arguments.cacheRegion ) ) {

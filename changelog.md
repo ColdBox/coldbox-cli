@@ -9,6 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.5.0] - 2024-10-16
+
+### Fixed
+
+- watch reinit issues with `coldbox watch` command
+- key [TEMPLATEPATH] doesn't exist when doing orm operations. This was a typo, it should have been `templatesPath`
+
+## [7.4.0] - 2024-03-20
+
+### Fixed
+
+- Create resources missing `open` param
+
+### Added
+
+- More documentation
+
+## [7.3.0] - 2024-02-12
+
+### Added
+
+- New github actions
+- Lazy load `testbox-cli, commandbox-migrations` only when used.
+
 ## [7.2.1] - 2023-05-19
 
 ### Fixed
@@ -73,7 +97,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.2.1...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.5.0...HEAD
+
+[7.5.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.4.0...v7.5.0
+
+[7.4.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.3.0...v7.4.0
+
+[7.3.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.2.1...v7.3.0
 
 [7.2.1]: https://github.com/ColdBox/coldbox-cli/compare/v7.2.0...v7.2.1
 

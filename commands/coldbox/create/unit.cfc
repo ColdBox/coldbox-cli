@@ -8,7 +8,7 @@
  * {code}
  *
  **/
-component {
+component extends="coldbox-cli.models.BaseCommand" {
 
 	/**
 	 * @name      Name of the xUnit Bundle to create without the .cfc. For packages, specify name as 'myPackage/MyServiceTest'
@@ -20,8 +20,7 @@ component {
 		boolean open = false,
 		directory    = "tests/specs"
 	){
-		// proxy to testbox
-		// TODO: Migrate this to the `testbox-cli` module. Once that's done, add it as a dependency.
+		variables.utility.ensureTestBoxModule();
 		runCommand( "testbox create unit name=#arguments.name# directory=#arguments.directory# open=#arguments.open#" );
 	}
 
