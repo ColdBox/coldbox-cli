@@ -6,6 +6,7 @@ modules/**
 .tmp/**
 .artifacts/**
 changelog-latest.md
+modules/**
 
 # Test App
 testapp/**
