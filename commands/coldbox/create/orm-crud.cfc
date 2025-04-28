@@ -73,7 +73,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			// ********************** generate handler ************************************//
 
 			// Read Handler Content
-			var hContent = fileRead( "#variables.settings.templatesPath#/crud/HandlerContent.txt" );
+			var hContent = fileRead( "#variables.settings.templatesPath#/crud/#arguments.boxlang ? "bx" : "cfml"#/HandlerContent.txt" );
 			// Token replacement
 			hContent     = replaceNoCase(
 				hContent,
@@ -113,7 +113,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			);
 			var views = [ "edit", "editor", "new" ];
 			for ( var thisView in views ) {
-				var vContent = fileRead( "#variables.settings.templatesPath#/crud/#thisView#.txt" );
+				var vContent = fileRead( "#variables.settings.templatesPath#/crud/#arguments.boxlang ? "bx" : "cfml"#/#thisView#.txt" );
 				vContent     = replaceNoCase(
 					vContent,
 					"|entity|",
@@ -127,17 +127,17 @@ component extends="coldbox-cli.models.BaseCommand" {
 					"all"
 				);
 				fileWrite(
-					arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm",
+					arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.#arguments.boxlang ? ".bxm" : "cfm"#",
 					vContent
 				);
-				printInfo( "Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.cfm]" );
+				printInfo( "Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/#thisView#.#arguments.boxlang ? ".bxm" : "cfm"#]" );
 			}
 
 			// ********************** generate table output ************************************//
 
 			// Build table output for index
 			savecontent variable="local.tableData" {
-				include "#variables.settings.templatesPath#/crud/table.cfm";
+				include "#variables.settings.templatesPath#/crud/#arguments.boxlang ? "bx" : "cfml"#/table.#arguments.boxlang ? ".bxm" : "cfm"#";
 			}
 			tableData = replaceNoCase(
 				tableData,
@@ -152,7 +152,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 			// index data
-			var vContent = fileRead( "#variables.settings.templatesPath#/crud/index.txt" );
+			var vContent = fileRead( "#variables.settings.templatesPath#/crud/#arguments.boxlang ? "bx" : "cfml"#/index.txt" );
 			vContent     = replaceNoCase(
 				vContent,
 				"|entity|",
@@ -172,10 +172,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 			fileWrite(
-				arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm",
+				arguments.viewsDirectory & "/#arguments.pluralName#/index.#arguments.boxlang ? ".bxm" : "cfm"#",
 				vContent
 			);
-			printInfo( "Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/index.cfm]" );
+			printInfo( "Generated View: [" & arguments.viewsDirectory & "/#arguments.pluralName#/index.#arguments.boxlang ? ".bxm" : "cfm"#]" );
 		} else {
 			return error( "The entity: #entityName# has no properties, so I have no clue what to CRUD on dude!" );
 		}

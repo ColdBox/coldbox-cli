@@ -1,0 +1,3 @@
+<bx:output>
+#view( view="|entityPlural|/editor", args={ title="Create |entity|" } )#
+</bx:output>
