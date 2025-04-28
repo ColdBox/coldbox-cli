@@ -31,7 +31,7 @@ component
 		describe( "|modelName| Suite", () => {
 
 			it( "can be created", () => {
-				expect( model ).toBeComponent();
+				expect( model ).notToBeNull()
 			} )
 
 |TestCases|

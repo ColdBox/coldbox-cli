@@ -159,6 +159,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		if ( arguments.boxlang ) {
 			modelContent = toBoxLangClass( modelContent );
 		}
+
 		modelTestContent = replaceNoCase(
 			modelTestContent,
 			"|modelName|",

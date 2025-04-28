@@ -7,6 +7,8 @@ component accessors="true" {
 	property name="utility"  inject="utility@coldbox-cli";
 	property name="settings" inject="box:modulesettings:coldbox-cli";
 	property name="config"   inject="box:moduleconfig:coldbox-cli";
+	property name="serverService"  inject="serverService";
+	property name="packageService" inject="PackageService";
 
 	function init(){
 		return this;
@@ -75,10 +77,10 @@ component accessors="true" {
 	}
 
 	function toBoxLangClass( required content ){
-		return replaceNoCase(
+		return reReplaceNoCase(
 			arguments.content,
-			"component ",
-			"class",
+			"component(\s|\n)?",
+			"class #chr( 13 )#",
 			"all"
 		);
 	}
