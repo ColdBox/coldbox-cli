@@ -28,14 +28,14 @@ component
 
 	function run(){
 
-		describe( "|modelName| Suite", function(){
+		describe( "|modelName| Suite", () => {
 
-			it( "can be created", function(){
+			it( "can be created", () => {
 				expect( model ).toBeComponent();
-			} );
+			} )
 
 |TestCases|
-		});
+		} )
 
 	}
 

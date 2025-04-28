@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New `modern` template for creating modern apps with the latest features
 - New `boxlang` template for creating apps with the latest boxlang features
+- Modernization of all templates to use the latest features of ColdBox
 
 ### Changed
 

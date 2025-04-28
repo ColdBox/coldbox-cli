@@ -34,6 +34,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @open       Open the file once it is created
 	 * @directory  The base directory to create your test spec in and creates the directory if it does not exist. Defaults to 'tests/specs/integration'
 	 * @force      Force overwrite of existing files
+	 * @boxlang   Is this a boxlang project?
 	 **/
 	function run(
 		required handler,
@@ -43,7 +44,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean xunit = false,
 		boolean open  = false,
 		directory     = "tests/specs/integration",
-		boolean force = false
+		boolean force = false,
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -83,6 +85,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.handler,
 			"all"
 		);
+		if( arguments.boxlang ) {
+			handlerTestContent = toBoxLangClass( handlerTestContent );
+		}
 
 		// Handle Actions if passed
 		if ( len( arguments.actions ) ) {
@@ -125,7 +130,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			);
 		}
 
-		var integrationTestPath = "#arguments.directory#/#arguments.handler#Test.cfc";
+		var integrationTestPath = "#arguments.directory#/#arguments.handler#Test.#arguments.boxlang ? "bx" : "cfc"#";
 		// Create dir if it doesn't exist
 		directoryCreate(
 			getDirectoryFromPath( integrationTestPath ),

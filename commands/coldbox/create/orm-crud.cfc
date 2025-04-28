@@ -17,6 +17,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @viewsDirectory    The location of the views. Defaults to 'views'
 	 * @tests             Generate the BDD tests for this CRUD operation
 	 * @testsDirectory    Your integration tests directory. Only used if tests is true
+	 * @boxlang         Is this a boxlang project?
 	 **/
 	function run(
 		required entity,
@@ -24,7 +25,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		handlersDirectory = "handlers",
 		viewsDirectory    = "views",
 		boolean tests     = true,
-		testsDirectory    = "tests/specs/integration"
+		testsDirectory    = "tests/specs/integration",
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.handlersDirectory = resolvePath( arguments.handlersDirectory );
@@ -33,8 +35,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// entity defaults
 		var entityName = listLast( arguments.entity, "." );
-		var entityCFC  = fileSystemUtil.makePathRelative( resolvePath( replace( arguments.entity, ".", "/", "all" ) ) );
-		var entityPath = entityCFC & ".cfc";
+		var entityClass  = fileSystemUtil.makePathRelative( resolvePath( replace( arguments.entity, ".", "/", "all" ) ) );
+		var entityPath = entityClass & ".#arguments.boxlang ? "bx" : "cfc"#";
 
 		// verify it
 		if ( !fileExists( entityPath ) ) {
@@ -44,7 +46,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		var entityContent = fileRead( entityPath );
 		// property Map
 		var metadata      = { properties : [], pk : "" };
-		var md            = getComponentMetadata( entityCFC );
+		var md            = getComponentMetadata( entityClass );
 
 		// argument defaults
 		if ( !len( arguments.pluralname ) ) {
@@ -86,9 +88,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 				"all"
 			);
 			hContent = replaceNoCase( hContent, "|pk|", metadata.pk, "all" );
+			if( arguments.boxlang ) {
+				hContent = toBoxLangClass( hContent );
+			}
 
 			// Write Out Handler
-			var hpath = "#arguments.handlersDirectory#/#arguments.pluralName#.cfc";
+			var hpath = "#arguments.handlersDirectory#/#arguments.pluralName#.#arguments.boxlang ? "bx" : "cfc"#";
 			// Create dir if it doesn't exist
 			directoryCreate(
 				getDirectoryFromPath( hpath ),

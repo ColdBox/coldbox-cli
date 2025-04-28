@@ -26,16 +26,16 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="|nam
 
 	function run(){
 
-		describe( "|name|", function(){
+		describe( "|name|", () => {
 
-			it( "should configure correctly", function(){
-				interceptor.configure();
+			it( "should configure correctly", () => {
+				interceptor.configure()
 				// Expectations here.
-				expect( false ).toBeTrue();
-			});
+				expect( false ).toBeTrue()
+			} )
 
 |TestCases|
-		});
+		} )
 
 	}
 

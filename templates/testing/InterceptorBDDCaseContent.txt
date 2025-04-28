@@ -1,11 +1,11 @@
-			it( "should execute |point|", function(){
+			it( "should execute |point|", () => {
 				// mocks
-				var mockEvent = getMockRequestContext();
-				var mockData  = {};
+				var mockEvent = getMockRequestContext()
+				var mockData  = {}
 
 				// execute |point|
-				interceptor.|point|( mockEvent, mockData );
+				interceptor.|point|( mockEvent, mockData )
 
 				// expectations here
-				expect( false ).toBeTrue();
-			});
+				expect( false ).toBeTrue()
+			} )

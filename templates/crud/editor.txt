@@ -15,7 +15,7 @@
 <h1>#args.title#</h1>
 
 <!--- Submit Form --->
-#html.startForm( action='|entityPlural|.save' )#
+#html.startForm( action: '|entityPlural|.save' )#
 
 	<!--- Convert Entity To Fields --->
 	#html.entityFields(

@@ -14,14 +14,16 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @name      Name of the xUnit Bundle to create without the .cfc. For packages, specify name as 'myPackage/MyServiceTest'
 	 * @open      Open the file once it is created
 	 * @directory The base directory to create your BDD spec in, defaults to 'tests/specs'
+	 * @boxlang  Is this a boxlang project?
 	 **/
 	function run(
 		required name,
 		boolean open = false,
-		directory    = "tests/specs"
+		directory    = "tests/specs",
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		variables.utility.ensureTestBoxModule();
-		runCommand( "testbox create unit name=#arguments.name# directory=#arguments.directory# open=#arguments.open#" );
+		runCommand( "testbox create unit name=#arguments.name# directory=#arguments.directory# open=#arguments.open# boxlang=#arguments.boxlang#" );
 	}
 
 }
