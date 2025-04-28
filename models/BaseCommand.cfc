@@ -81,7 +81,7 @@ component accessors="true" {
 			arguments.content,
 			"component(\s|\n)?",
 			"class #chr( 13 )#",
-			"all"
+			"one"
 		);
 	}
 
