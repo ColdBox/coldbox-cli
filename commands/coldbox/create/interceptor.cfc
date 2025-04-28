@@ -21,16 +21,18 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @directory      The base directory to create your interceptor in and creates the directory if it does not exist.
 	 * @open           Open the interceptor once generated
 	 * @force          Force overwrite of the interceptor if it exists
+	 * @boxlang       Is this a boxlang project?
 	 **/
 	function run(
 		required name,
-		points         = "",
-		description    = "I am a new interceptor",
-		boolean tests  = true,
-		testsDirectory = "tests/specs/interceptors",
-		directory      = "interceptors",
-		boolean open   = false,
-		boolean force  = false
+		points          = "",
+		description     = "I am a new interceptor",
+		boolean tests   = true,
+		testsDirectory  = "tests/specs/interceptors",
+		directory       = "interceptors",
+		boolean open    = false,
+		boolean force   = false,
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		var relativeDirectory    = arguments.directory;
@@ -58,6 +60,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.name,
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			interceptorContent = toBoxLangClass( interceptorContent );
+		}
 		var interceptorPath    = listChangeDelims( relativeDirectory, ".", "/\" ).listAppend( arguments.name, "." );
 		interceptorTestContent = replaceNoCase(
 			interceptorTestContent,
@@ -65,6 +70,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 			interceptorPath,
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			interceptorTestContent = toBoxLangClass( interceptorTestContent );
+		}
 
 		// Placeholder in case we add this in
 		interceptorContent = replaceNoCase(
@@ -127,7 +135,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Write it out.
-		var interceptorPath = "#arguments.directory#/#arguments.name#.cfc";
+		var interceptorPath = "#arguments.directory#/#arguments.name#.#arguments.boxlang ? "bx" : "cfc"#";
 
 		// Confirm it
 		if (
@@ -143,7 +151,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		print.greenLine( "#interceptorPath#" );
 
 		if ( tests ) {
-			var testPath = "#TestsDirectory#/#arguments.name#Test.cfc";
+			var testPath = "#TestsDirectory#/#arguments.name#Test.#arguments.boxlang ? "bx" : "cfc"#";
 			// Create dir if it doesn't exist
 			directoryCreate(
 				getDirectoryFromPath( testPath ),

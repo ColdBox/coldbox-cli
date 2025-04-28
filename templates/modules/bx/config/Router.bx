@@ -1,0 +1,13 @@
+/**
+ * Module Router
+ * https://coldbox.ortusbooks.com/the-basics/routing/routing-dsl
+ */
+class{
+
+	function configure(){
+
+		route( "/", "Home.index" );
+
+	}
+
+}

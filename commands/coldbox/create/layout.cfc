@@ -20,11 +20,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required name,
-		boolean helper = false,
-		directory      = "layouts",
-		boolean open   = false,
-		boolean force  = false,
-		content        = "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#"
+		boolean helper  = false,
+		directory       = "layouts",
+		boolean open    = false,
+		boolean force   = false,
+		content         = "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#",
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -37,15 +38,24 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// This help readability so the success messages aren't up against the previous command line
 		print.line();
 
-		savecontent variable="local.layoutContent" {
-			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
-			writeOutput( arguments.content )
-			writeOutput( "<div>##view()##</div>#variables.utility.BREAK#" )
-			writeOutput( "</cfoutput>" )
-		};
+		if ( arguments.boxlang ) {
+			savecontent variable="local.layoutContent" {
+				writeOutput( "<bx:output>#variables.utility.BREAK#" )
+				writeOutput( arguments.content )
+				writeOutput( "<div>##view()##</div>#variables.utility.BREAK#" )
+				writeOutput( "</bx:output>" )
+			};
+		} else {
+			savecontent variable="local.layoutContent" {
+				writeOutput( "<cfoutput>#variables.utility.BREAK#" )
+				writeOutput( arguments.content )
+				writeOutput( "<div>##view()##</div>#variables.utility.BREAK#" )
+				writeOutput( "</cfoutput>" )
+			};
+		}
 
 		// Write out layout
-		var layoutPath = "#arguments.directory#/#arguments.name#.cfm";
+		var layoutPath = "#arguments.directory#/#arguments.name#.#arguments.boxlang ? "bxm" : "cfm"#";
 
 		// Confirm it
 		if (
@@ -67,7 +77,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		if ( arguments.helper ) {
 			var layoutHelperContent= "<!--- #arguments.name# Layout Helper --->";
-			var layoutHelperPath   = "#arguments.directory#/#arguments.name#Helper.cfm";
+			var layoutHelperPath   = "#arguments.directory#/#arguments.name#Helper.#arguments.boxlang ? "bxm" : "cfm"#";
 			file action            ="write" file="#layoutHelperPath#" mode="777" output="#layoutHelperContent#";
 			printInfo( "Created Layout Helper [#layoutHelperPath#]" );
 

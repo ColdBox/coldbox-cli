@@ -11,11 +11,11 @@
 	- showRelations = If true (default) will show one to many and one to one relations as a view table snapshot
 --->
 
-<cfoutput>
+<bx:output>
 <h1>#args.title#</h1>
 
 <!--- Submit Form --->
-#html.startForm( action='|entityPlural|.save' )#
+#html.startForm( action: '|entityPlural|.save' )#
 
 	<!--- Convert Entity To Fields --->
 	#html.entityFields(
@@ -38,4 +38,4 @@
 	</div>
 
 #html.endForm()#
-</cfoutput>
+</bx:output>

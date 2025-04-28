@@ -17,14 +17,16 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @open      Open the view in your default editor
 	 * @content   The content to put in the view
 	 * @force     Force overwrite of existing view
+	 * @boxlang  Is this a boxlang project?
 	 **/
 	function run(
 		required name,
-		boolean helper = false,
-		directory      = "views",
-		boolean open   = false,
-		content        = "<h1>#arguments.name# view</h1>",
-		boolean force  = false
+		boolean helper  = false,
+		directory       = "views",
+		boolean open    = false,
+		content         = "<h1>#arguments.name# view</h1>",
+		boolean force   = false,
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// Allow dot-delimited paths
 		arguments.name = replace( arguments.name, ".", "/", "all" );
@@ -47,14 +49,22 @@ component extends="coldbox-cli.models.BaseCommand" {
 			directoryCreate( arguments.directory );
 		}
 
-		savecontent variable="local.viewContent" {
-			writeOutput( "<cfoutput>#variables.utility.BREAK#" )
-			writeOutput( "#arguments.content##variables.utility.BREAK#" )
-			writeOutput( "</cfoutput>" )
-		};
+		if ( arguments.boxlang ) {
+			savecontent variable="local.viewContent" {
+				writeOutput( "<bx:output>#variables.utility.BREAK#" )
+				writeOutput( "#arguments.content##variables.utility.BREAK#" )
+				writeOutput( "</bx:output>" )
+			};
+		} else {
+			savecontent variable="local.viewContent" {
+				writeOutput( "<cfoutput>#variables.utility.BREAK#" )
+				writeOutput( "#arguments.content##variables.utility.BREAK#" )
+				writeOutput( "</cfoutput>" )
+			};
+		}
 
 		// Write out view
-		var viewPath = "#arguments.directory#/#arguments.name#.cfm";
+		var viewPath = "#arguments.directory#/#arguments.name#.#arguments.boxlang ? "bxm" : "cfm"#";
 
 		// Confirm it
 		if (
@@ -77,7 +87,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Write out view helper
 		if ( arguments.helper ) {
 			var viewHelperContent= "<!--- #arguments.name# view Helper --->";
-			var viewHelperPath   = "#arguments.directory#/#arguments.name#Helper.cfm";
+			var viewHelperPath   = "#arguments.directory#/#arguments.name#Helper.#arguments.boxlang ? "bxm" : "cfm"#";
 			file action          ="write" file="#viewHelperPath#" mode="777" output="#viewHelperContent#";
 			printInfo( "Created View Helper [#viewHelperPath#]" );
 

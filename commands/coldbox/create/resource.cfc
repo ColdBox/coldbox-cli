@@ -73,6 +73,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @migration         Generate the cfmigrations for the entities
 	 * @seeder            Generate a mock data seeder for the entitites
 	 * @open              Open the resources once created
+	 * @boxlang          Is this a boxlang project?
 	 */
 	function run(
 		required resource,
@@ -99,7 +100,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean force        = false,
 		boolean migration    = false,
 		boolean seeder       = false,
-		boolean open         = false
+		boolean open         = false,
+		boolean boxlang      = isBoxLangProject( getCWD() )
 	){
 		// Normalize paths
 		arguments.specsDirectory   = resolvePath( arguments.specsDirectory );
@@ -125,7 +127,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 				command( "coldbox create module" )
 					.params(
 						name      = arguments.module,
-						directory = arguments.modulesDirectory
+						directory = arguments.modulesDirectory,
+						boxlang   = boxlang
 					)
 					.run();
 			}
@@ -165,6 +168,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.parameterName,
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			hContent = toBoxLangClass( hContent );
+		}
+
 		// Module Injection
 		if ( arguments.module.len() ) {
 			hContent = replaceNoCase(
@@ -176,7 +183,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Write Out Handler
-		var hpath = "#arguments.handlersDirectory#/#arguments.handler#.cfc";
+		var hpath = "#arguments.handlersDirectory#/#arguments.handler#.#arguments.boxlang ? "bx" : "cfc"#";
 		// Create dir if it doesn't exist
 		directoryCreate(
 			getDirectoryFromPath( hpath ),
@@ -206,7 +213,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 						content  : "<h1>#resource#.#arguments.view#</h1>",
 						directory: viewsDirectory,
 						force    : force,
-						open     : open
+						open     : open,
+						boxlang  : boxlang
 					)
 					.run();
 			} );
@@ -221,7 +229,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 				actions   : arguments.api ? variables.API_ACTIONS.toList() : variables.ACTIONS.toList(),
 				appMapping: arguments.appMapping,
 				directory : arguments.specsDirectory & "/integration",
-				force     : arguments.force
+				force     : arguments.force,
+				boxlang   : boxlang
 			)
 			.run();
 
@@ -243,7 +252,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					testsDirectory  : arguments.specsDirectory & "/unit",
 					migration       : arguments.migration,
 					seeder          : arguments.seeder,
-					force           : arguments.force
+					force           : arguments.force,
+					boxlang         : arguments.boxlang
 				)
 				.run();
 
@@ -253,7 +263,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					entityName    : arguments.singularName,
 					directory     : arguments.modelsDirectory,
 					testsDirectory: arguments.specsDirectory & "/unit",
-					force         : arguments.force
+					force         : arguments.force,
+					boxlang       : arguments.boxlang
 				)
 				.run();
 		} else {
@@ -268,7 +279,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					testsDirectory: arguments.specsDirectory & "/unit",
 					migration     : arguments.migration,
 					seeder        : arguments.seeder,
-					force         : arguments.force
+					force         : arguments.force,
+					boxlang       : arguments.boxlang
 				)
 				.run();
 
@@ -282,7 +294,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					methods       : "save,delete,list,get",
 					directory     : arguments.modelsDirectory,
 					testsDirectory: arguments.specsDirectory & "/unit",
-					force         : arguments.force
+					force         : arguments.force,
+					boxlang       : arguments.boxlang
 				)
 				.run();
 		}
@@ -306,7 +319,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Router Path
-		var routerPath = ( arguments.module.len() ? modulePath : configPath ) & "/Router.cfc";
+		var routerPath = ( arguments.module.len() ? modulePath : configPath ) & "/Router.#arguments.boxlang ? "bx" : "cfc"#";
 		if ( fileExists( routerPath ) ) {
 			// Add Resource routes
 			var routerContent = fileRead( routerPath ).replaceNoCase(

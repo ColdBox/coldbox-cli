@@ -26,6 +26,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @force                Force overwrite of existing files
 	 * @componentAnnotations Annotations to add to the component
 	 * @initContent          Custom content to add to the init method
+	 * @boxlang             Is this a boxlang project?
 	 **/
 	function run(
 		required name,
@@ -37,7 +38,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean open                = false,
 		boolean force               = false,
 		string componentAnnotations = "",
-		string initContent          = ""
+		string initContent          = "",
+		boolean boxlang             = isBoxLangProject( getCWD() )
 	){
 		// Prepare arguments
 		var modelTestPath = arguments.directory;
@@ -90,6 +92,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.initContent,
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			modelContent = toBoxLangClass( modelContent );
+		}
+
 		modelTestContent = replaceNoCase(
 			modelTestContent,
 			"|modelName|",
@@ -102,6 +108,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			listChangeDelims( modelTestPath, ".", "/\" ) & "." & listChangeDelims( arguments.name, ".", "/\" ),
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			modelTestContent = toBoxLangClass( modelTestContent );
+		}
+
 
 		// Handle Model Methods
 		if ( len( arguments.methods ) ) {
@@ -161,7 +171,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Write out the model
-		var modelPath = "#arguments.directory#/#arguments.name#.cfc";
+		var modelPath = "#arguments.directory#/#arguments.name#.#arguments.boxlang ? "bx" : "cfc"#";
 		// Create dir if it doesn't exist
 		directoryCreate(
 			getDirectoryFromPath( modelPath ),
@@ -190,7 +200,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					path   : arguments.name,
 					force  : arguments.force,
 					open   : arguments.open,
-					methods: arguments.methods
+					methods: arguments.methods,
+					boxlang: arguments.boxlang
 				)
 				.run();
 		}

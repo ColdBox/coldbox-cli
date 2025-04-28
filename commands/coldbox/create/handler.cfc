@@ -36,6 +36,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 	 * @rest             Make this a REST handler instead of a normal ColdBox Handler
 	 * @force            Force overwrite of existing handler
 	 * @resource         Generate a resourceful handler with all the actions
+	 * @boxlang         Is this a boxlang project? else it is a CFML project
 	 **/
 	function run(
 		required name,
@@ -50,7 +51,8 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 		boolean open             = false,
 		boolean rest             = false,
 		boolean force            = false,
-		boolean resource         = false
+		boolean resource         = false,
+		boolean boxlang          = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory      = resolvePath( arguments.directory );
@@ -100,6 +102,11 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 			arguments.description,
 			"all"
 		);
+		// BoxLang replacements
+		if ( arguments.boxlang ) {
+			handlerContent     = toBoxLangClass( handlerContent );
+			handlerTestContent = toBoxLangClass( handlerTestContent );
+		}
 
 		// Auto Actions Determination if none passed via resource && rest, else empty handler
 		if ( !len( arguments.actions ) ) {

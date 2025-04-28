@@ -1,0 +1,3 @@
+<cfoutput>
+#view( view: "|entityPlural|/editor", args: { title : "Update |entity|" } )#
+</cfoutput>

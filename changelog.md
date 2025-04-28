@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New `modern` template for creating modern apps with the latest features
+- New `boxlang` template for creating apps with the latest boxlang features
+- Modernization of all templates to use the latest features of ColdBox
+- New `--boxlang` argument to create content for BoxLang
+- New `language` argument detection for BoxLang
+
+### Changed
+
+- Updated to the latest Ubuntu images for the GitHub actions
+
 ## [7.5.0] - 2024-10-16
 
 ### Fixed

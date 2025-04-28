@@ -69,24 +69,34 @@ component extends="app" aliases="" {
 				.options( [
 					{
 						accessKey : 1,
-						value     : "cbtemplate-simple",
-						display   : "Simple Script - Script based Coldbox App WITHOUT cfconfig & .env settings"
+						value     : "cbtemplate-bx-default",
+						display   : "BoxLang ColdBox Template - Default ColdBox App with BoxLang"
 					},
 					{
 						accessKey : 2,
-						value     : "cbtemplate-advanced-script",
-						display   : "Advanced Script - Script based Coldbox App which uses cfconfig & .env settings",
-						selected  : true
+						value     : "cbtemplate-supersimple",
+						display   : "Super simple starting template - no modules, no config, no nothing"
 					},
 					{
 						accessKey : 3,
+						value     : "cbtemplate-advanced-script",
+						display   : "Default Script based Coldbox App which uses cfconfig & .env settings",
+						selected  : true
+					},
+					{
+						accessKey : 4,
 						value     : "cbtemplate-elixir",
 						display   : "Elixir Template - Advanced Script + ColdBox Elixir: Enable Webpack tasks for your ColdBox applications"
 					},
 					{
-						accessKey : 4,
-						value     : "cbtemplate-elixir-vuejs",
-						display   : "Elixir + Vuejs Template - Elixir Template + pre-installed & configured VueJS"
+						accessKey : 5,
+						value     : "cbtemplate-modern",
+						display   : "A modern ColdBox template with a modern approach to building apps"
+					},
+					{
+						accessKey : 6,
+						value     : "cbtemplate-vite",
+						display   : "A ColdBox template with ViteJS for modern web development"
 					}
 				] )
 				.required()

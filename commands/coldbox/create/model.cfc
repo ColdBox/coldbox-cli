@@ -52,6 +52,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @propertyContent      Custom content to add to the properties
 	 * @initContent          Custom content to add to the init method
 	 * @service              Generate a service layer for this model
+	 * @boxlang             Is this a boxlang project?
 	 **/
 	function run(
 		required name,
@@ -75,7 +76,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean ormTypes            = false,
 		string propertyContent      = "",
 		string initContent          = "",
-		boolean service             = false
+		boolean service             = false,
+		boolean boxlang             = isBoxLangProject( getCWD() )
 	){
 		// Prepare arguments
 		var modelTestPath   = arguments.directory;
@@ -154,6 +156,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.initContent,
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			modelContent = toBoxLangClass( modelContent );
+		}
+
 		modelTestContent = replaceNoCase(
 			modelTestContent,
 			"|modelName|",
@@ -166,6 +172,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 			listChangeDelims( modelTestPath, ".", "/\" ) & "." & listChangeDelims( arguments.name, ".", "/\" ),
 			"all"
 		);
+		if ( arguments.boxlang ) {
+			modelTestContent = toBoxLangClass( modelTestContent );
+		}
 
 		// Persistence
 		switch ( Persistence ) {
@@ -280,7 +289,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Write out the model
-		var modelPath = "#arguments.directory#/#arguments.name#.cfc";
+		var modelPath = "#arguments.directory#/#arguments.name#.#arguments.boxlang ? "bx" : "cfc"#";
 		// Create dir if it doesn't exist
 		directoryCreate(
 			getDirectoryFromPath( modelPath ),
@@ -303,6 +312,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		printInfo( "Created Model: [#modelPath#]" );
 
 		// Generate migrations
+		// No BoxLang here yet, until CommandBox supports it
 		if ( arguments.migration ) {
 			var migrationPath    = "#resolvePath( variables.migrationsDirectory )#/#dateTimeFormat( now(), "yyyy_mm_dd_HHnnss" )#_create_#modelNamePlural#_table.cfc";
 			var migrationContent = replaceNoCase(
@@ -346,6 +356,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Generate Seeder
+		// No BoxLang here yet, until CommandBox supports it
 		if ( arguments.seeder ) {
 			var seederPath  = "#resolvePath( variables.seedsDirectory )#/#modelNamePlural#.cfc";
 			var seedContent = replaceNoCase(
@@ -373,9 +384,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 		if ( arguments.service ) {
 			command( "coldbox create service" )
 				.params(
-					name : "#arguments.name#Service",
-					force: arguments.force,
-					open : arguments.open
+					name   : "#arguments.name#Service",
+					force  : arguments.force,
+					open   : arguments.open,
+					boxlang: arguments.boxlang
 				)
 				.run();
 		}
@@ -388,7 +400,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					force   : arguments.force,
 					open    : arguments.open,
 					rest    : arguments.rest,
-					resource: arguments.resource
+					resource: arguments.resource,
+					boxlang : arguments.boxlang
 				)
 				.run();
 		}
@@ -400,7 +413,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 					path   : arguments.name,
 					force  : arguments.force,
 					open   : arguments.open,
-					methods: arguments.methods
+					methods: arguments.methods,
+					boxlang: arguments.boxlang
 				)
 				.run();
 		}

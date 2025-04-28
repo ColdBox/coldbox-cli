@@ -20,18 +20,20 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @dependencies   The list of dependencies for this module
 	 * @directory      The base directory to create your model in and creates the directory if it does not exist.
 	 * @views          Create the views folder on creatin or remove it. Defaults to true
+	 * @boxlang 	 If this is a boxlang project, defaults to true
 	 **/
 	function run(
 		required name,
-		author         = "",
-		authorURL      = "",
-		description    = "",
-		version        = "1.0.0",
-		cfmapping      = "",
-		modelNamespace = arguments.name,
-		dependencies   = "",
-		directory      = "modules_app",
-		boolean views  = true
+		author          = "",
+		authorURL       = "",
+		description     = "",
+		version         = "1.0.0",
+		cfmapping       = "",
+		modelNamespace  = arguments.name,
+		dependencies    = "",
+		directory       = "modules_app",
+		boolean views   = true,
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -40,9 +42,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 		if ( !directoryExists( arguments.directory ) ) {
 			directoryCreate( arguments.directory );
 		}
+		var modulePrefix = arguments.boxlang ? "bx" : "cfml";
 
 		// Read in Module Config
-		var moduleConfig = fileRead( "#variables.settings.templatesPath#/modules/ModuleConfig.cfc" );
+		var moduleConfig = fileRead( "#variables.settings.templatesPath#/modules/#modulePrefix#/ModuleConfig.cfc" );
 
 		// Start Generation Replacing
 		moduleConfig = replaceNoCase(
@@ -105,7 +108,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// Copy module template
 		directoryCopy(
-			"#variables.settings.templatesPath#/modules/",
+			"#variables.settings.templatesPath#/modules/#modulePrefix#",
 			arguments.directory & "/#arguments.name#",
 			true
 		);
