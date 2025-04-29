@@ -65,6 +65,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @initWizard          Run the init creation package wizard
 	 * @verbose             Verbose output
 	 * @migrations          Run migration init after creation
+	 * @boxlang            Set the language to BoxLang
 	 **/
 	function run(
 		name               = defaultAppName,
@@ -74,7 +75,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean wizard     = false,
 		boolean initWizard = false,
 		boolean verbose    = false,
-		boolean migrations = false
+		boolean migrations = false,
+		boolean boxlang          = isBoxLangProject( getCWD() )
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {

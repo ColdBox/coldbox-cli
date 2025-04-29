@@ -7,8 +7,13 @@ component extends="app" aliases="" {
 	 * @name     The name of the app you want to create
 	 * @skeleton The application skeleton you want to use (AdvancedScript, rest, rest-hmvc, Simple, SuperSimple)
 	 * @init     Init this as a package
+	 * @boxlang  Is this a BoxLang project?
 	 **/
-	function run( required name, skeleton ){
+	function run(
+		required name,
+		skeleton,
+		boolean boxlang          = isBoxLangProject( getCWD() )
+	){
 		arguments.directory = getCWD();
 		if ( !confirm( "Are you currently inside the ""/#name#"" folder (if ""No"" we will create it)? [y/n]" ) ) {
 			arguments.directory = getCWD() & name & "/";

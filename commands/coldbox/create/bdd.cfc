@@ -18,10 +18,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 	function run(
 		required name,
 		boolean open = false,
-		directory    = "tests/specs"
+		directory    = "tests/specs",
+		boolean boxlang          = isBoxLangProject( getCWD() )
 	){
 		variables.utility.ensureTestBoxModule();
-		runCommand( "testbox create bdd name=#arguments.name# directory=#arguments.directory# open=#arguments.open#" );
+		runCommand( "testbox create bdd name=#arguments.name# directory=#arguments.directory# open=#arguments.open# boxlang=#arguments.boxlang#" );
 	}
 
 }
