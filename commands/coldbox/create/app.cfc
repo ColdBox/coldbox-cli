@@ -76,7 +76,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean initWizard = false,
 		boolean verbose    = false,
 		boolean migrations = false,
-		boolean boxlang          = isBoxLangProject( getCWD() )
+		boolean boxlang    = isBoxLangProject( getCWD() )
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
