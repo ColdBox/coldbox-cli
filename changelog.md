@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.7.0] - 2025-04-29
+
 ### Fixed
 
 - More fixes for `boxlang` arguments
@@ -119,7 +121,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.6.0...HEAD
+[Unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.7.0...HEAD
+
+[7.7.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.6.0...v7.7.0
 
 [7.6.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.5.0...v7.6.0
 
