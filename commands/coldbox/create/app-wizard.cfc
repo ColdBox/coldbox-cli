@@ -12,7 +12,7 @@ component extends="app" aliases="" {
 	function run(
 		required name,
 		skeleton,
-		boolean boxlang          = isBoxLangProject( getCWD() )
+		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		arguments.directory = getCWD();
 		if ( !confirm( "Are you currently inside the ""/#name#"" folder (if ""No"" we will create it)? [y/n]" ) ) {

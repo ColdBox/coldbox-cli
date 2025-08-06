@@ -76,7 +76,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean initWizard = false,
 		boolean verbose    = false,
 		boolean migrations = false,
-		boolean boxlang          = isBoxLangProject( getCWD() )
+		boolean boxlang    = isBoxLangProject( getCWD() )
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
@@ -96,6 +96,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Validate directory, if it doesn't exist, create it.
 		if ( !directoryExists( arguments.directory ) ) {
 			directoryCreate( arguments.directory );
+		}
+
+		// If the skeleton = default and this is a boxlang project, then switch the skeleton to BoxLang
+		if ( arguments.skeleton == "default" && arguments.boxlang ) {
+			arguments.skeleton = "BoxLang";
 		}
 
 		// If the skeleton is one of our "shortcut" names
