@@ -98,6 +98,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 			directoryCreate( arguments.directory );
 		}
 
+		// If the skeleton = default and this is a boxlang project, then switch the skeleton to BoxLang
+		if ( arguments.skeleton == "default" && arguments.boxlang ) {
+			arguments.skeleton = "BoxLang";
+		}
+
 		// If the skeleton is one of our "shortcut" names
 		if ( variables.templateMap.keyExists( arguments.skeleton ) ) {
 			// Replace it with the actual ForgeBox slug name.
