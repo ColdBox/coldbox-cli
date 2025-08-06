@@ -25,11 +25,12 @@
     ],
     "devDependencies":{
         "commandbox-cfformat":"*",
-        "commandbox-docbox":"*",
-        "commandbox-migrations":"^5.0.0",
-        "testbox-cli":"^1.0.0"
+        "commandbox-docbox":"*"
     },
-    "dependencies":{},
+    "dependencies":{
+		"testbox-cli":"*",
+		"commandbox-migrations": "*"
+	},
     "installPaths":{},
     "ignore":[
         "**/.*",

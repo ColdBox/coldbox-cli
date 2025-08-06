@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Copilot instructions for AI coding assistance
+- If the skeleton is `default` and this is a BoxLang project, it will switch the skeleton to `BoxLang`.
+- added dependabot
+- Moved `testbox-cli` and `commandbox-migrations` to dependencies so we can use them in the CLI commands
+
 ## [7.7.0] - 2025-04-29
 
 ### Fixed
