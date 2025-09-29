@@ -249,24 +249,78 @@ coldbox apidocs
 
 Most commands support these common options:
 
-- `--force` - Overwrite existing files
+- `--force` - Overwrite existing files without prompting
 - `--open` - Open generated files in your default editor
-- `--boxlang` - Generate BoxLang code instead of CFML
+- `--boxlang` - Force BoxLang code generation (overrides auto-detection)
+- `--!boxlang` - Force CFML code generation (overrides auto-detection)
 - `--help` - Show detailed help for any command
+
+#### Language Generation Control
+
+The CLI supports both automatic detection and manual override of the target language:
+
+- **Automatic**: Uses detection methods (server engine, `box.json` settings)
+- **Force BoxLang**: Use `--boxlang` flag to generate BoxLang code regardless of detection
+- **Force CFML**: Use `--!boxlang` flag to generate CFML code regardless of detection
 
 ### 💡 BoxLang Support
 
-The CLI automatically detects BoxLang projects and generates appropriate code. You can also force BoxLang mode:
+The CLI automatically detects BoxLang projects and generates appropriate code. You can also force BoxLang mode using the `--boxlang` flag.
+
+#### 🔍 Automatic Detection
+
+The CLI detects BoxLang projects using three methods (in order of precedence):
+
+1. **Server Engine Detection**: Running on a BoxLang server
+2. **TestBox Runner Setting**: When `testbox.runner` is set to `"boxlang"` in `box.json`
+3. **Language Property**: When `language` is set to `"boxlang"` in `box.json`
+
+#### ⚙️ Configuration Examples
+
+##### Method 1: Language Property (Recommended)
+
+```json
+{
+    "name": "My BoxLang App",
+    "language": "boxlang",
+    "testbox": {
+        "runner": "/tests/runner.bxm"
+    }
+}
+```
+
+##### Method 2: TestBox Runner Setting
+
+```json
+{
+    "name": "My App",
+    "testbox": {
+        "runner": "boxlang"
+    }
+}
+```
+
+#### 🚀 Usage Examples
 
 ```bash
-# Force BoxLang generation
+# Automatic detection (uses box.json settings)
+coldbox create handler users
+
+# Force BoxLang generation (overrides detection)
 coldbox create handler users --boxlang
 
-# BoxLang project detection based on:
-# - Server engine (BoxLang)
-# - package.json testbox.runner setting
-# - package.json language property
+# Force CFML generation (overrides detection)
+coldbox create handler users --!boxlang
 ```
+
+#### 📝 Generated Code Differences
+
+When BoxLang mode is detected or forced:
+
+- Uses `.bx` file extensions instead of `.cfc`
+- Generates `class` syntax instead of `component`
+- Uses BoxLang-specific template variants
+- Creates BoxLang test files (`.bxm` extensions)
 
 ### 📖 Getting Help
 
