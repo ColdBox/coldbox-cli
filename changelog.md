@@ -9,11 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- BoxLang default template for new projects
-
-## [7.8.0] - 2025-08-06
+## [7.8.0] - 2025-09-29
 
 ### Added
 
@@ -135,7 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Eclipse support
 
 [unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...HEAD
-[7.8.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.7.0...v7.8.0
+[7.8.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...v7.8.0
 [7.7.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.6.0...v7.7.0
 [7.6.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.5.0...v7.6.0
 [7.5.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.4.0...v7.5.0
