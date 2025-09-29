@@ -74,7 +74,7 @@ component extends="app" aliases="" {
 				.options( [
 					{
 						accessKey : 1,
-						value     : "cbtemplate-bx-default",
+						value     : "cbtemplate-boxlang",
 						display   : "BoxLang ColdBox Template - Default ColdBox App with BoxLang"
 					},
 					{
