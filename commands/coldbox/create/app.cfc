@@ -41,7 +41,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Map these shortcut names to the actual ForgeBox slugs
 		variables.templateMap = {
 			"Default"     : "cbtemplate-advanced-script",
-			"BoxLang"     : "cbtemplate-bx-default",
+			"BoxLang"     : "cbtemplate-boxlang",
 			"Elixir"      : "cbtemplate-elixir",
 			"modern"      : "cbtemplate-modern",
 			"rest"        : "cbtemplate-rest",
