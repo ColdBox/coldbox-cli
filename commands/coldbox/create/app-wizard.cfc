@@ -47,14 +47,14 @@ component extends="app" aliases="" {
 				.options( [
 					{
 						accessKey : 1,
-						display   : "Modular (API/REST) Template - provide an ""api"" module with a ""v1"" sub-module within it",
-						value     : "cbtemplate-rest-hmvc",
+						display   : "Modular (API/REST) Template - provides an ""api"" module with a ""v1"" sub-module within it",
+						value     : "rest-hmvc",
 						selected  : true
 					},
 					{
 						accessKey : 2,
-						display   : "Simple (API/REST) Template - proivdes api endpoints via the handlers/ folder",
-						value     : "cbtemplate-rest"
+						display   : "Simple (API/REST) Template - provides api endpoints via the handlers/ folder",
+						value     : "rest"
 					}
 				] )
 				.required()
@@ -74,60 +74,33 @@ component extends="app" aliases="" {
 				.options( [
 					{
 						accessKey : 1,
-						value     : "cbtemplate-boxlang",
-						display   : "BoxLang ColdBox Template - Default ColdBox App with BoxLang"
-					},
-					{
-						accessKey : 2,
-						value     : "cbtemplate-supersimple",
-						display   : "Super simple starting template - no modules, no config, no nothing"
-					},
-					{
-						accessKey : 3,
-						value     : "cbtemplate-advanced-script",
-						display   : "Default Script based Coldbox App which uses cfconfig & .env settings",
+						value     : "boxlang",
+						display   : "BoxLang ColdBox Template - Default ColdBox App with BoxLang",
 						selected  : true
 					},
 					{
+						accessKey : 2,
+						value     : "modern",
+						display   : "Modern Template - Security-first CFML and BoxLang template with /app outside webroot"
+					},
+					{
+						accessKey : 3,
+						value     : "flat",
+						display   : "Flat Template - Traditional flat structure with everything in webroot"
+					},
+					{
 						accessKey : 4,
-						value     : "cbtemplate-elixir",
-						display   : "Elixir Template - Advanced Script + ColdBox Elixir: Enable Webpack tasks for your ColdBox applications"
+						value     : "vite",
+						display   : "Vite Template - Traditional flat structure development with Vite, Vue 3, and Tailwind CSS"
 					},
 					{
 						accessKey : 5,
-						value     : "cbtemplate-modern",
-						display   : "A modern ColdBox template with a modern approach to building apps"
-					},
-					{
-						accessKey : 6,
-						value     : "cbtemplate-vite",
-						display   : "A ColdBox template with ViteJS for modern web development"
+						value     : "supersimple",
+						display   : "Super Simple Template - Bare bones, minimal starting point"
 					}
 				] )
 				.required()
 				.ask();
-
-			if ( arguments.skeleton != "cbtemplate-simple" ) {
-				print.boldgreenline( "" );
-				print.boldgreenline( "This Coldbox Template uses cfconfig & .env ""dotenv"" " );
-				print.boldgreenline(
-					"----------------------------------------------------------------------------------------"
-				);
-				print.boldgreenline( "CFConfig is a module that creates a local settings file" );
-				print.greenline( "in your project directory of all of the ColdFusion Admin Settings" );
-				print.greenline( "Check out more details in the docs: https://cfconfig.ortusbooks.com/" );
-				print.boldgreenline(
-					"----------------------------------------------------------------------------------------"
-				);
-				print.boldgreenline( ".env is a module that creates a local variables that can be" );
-				print.greenline( "used in many places such as .cfconfig.json, box.json, Coldbox.cfc, etc." );
-				print.greenline( "You will see these used in the template in some of the files above" );
-				print.greenline( "ex. ""${DB_DATABASE}"" or getSystemSetting( ""APPNAME"", ""Your app name here"" )" );
-				print.greenline( "More info at https://github.com/commandbox-modules/commandbox-dotenv" );
-				print.boldgreenline(
-					"----------------------------------------------------------------------------------------"
-				);
-			}
 		}
 		print.line( "Creating your site..." ).toConsole();
 
