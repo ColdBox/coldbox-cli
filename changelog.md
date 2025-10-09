@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- BoxLang is now the default engine for new apps
+- Updated all new templates from repos
+- New create app argument for modern or boxlang skeletons: `vite` to create a Vite enabled app: `coldbox create app name="myApp" --vite`
+- New create app argument for modern or boxlang skeletons: `rest` to create a REST enabled app: `coldbox create app name="myApp" --rest`
+- - New create app argument for modern or boxlang skeletons: `docker` to create a Docker enabled app: `coldbox create app name="myApp" --docker`
+- New create app argument for modern or boxlang skeletons: `migrations` to create a Migrations enabled app: `coldbox create app name="myApp" --migrations`
 - BoxLang template skeleton rename
 - Updated docs for BoxLang detection
 
