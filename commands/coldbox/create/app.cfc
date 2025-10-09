@@ -69,8 +69,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @migrations          Run migration init after creation
 	 * @boxlang            Set the language to BoxLang
 	 * @docker              Include Docker files and setup Docker configuration
-	 * @vite 					Setup Vite for frontend asset building (For modern/boxlang apps only)
-	 * @rest        Is this a REST API project? (For modern/boxlang apps only)
+	 * @vite 					Setup Vite for frontend asset building (For BoxLang or Modern apps only)
+	 * @rest        Is this a REST API project? (For BoxLang apps only)
 	 **/
 	function run(
 		name               = defaultAppName,
