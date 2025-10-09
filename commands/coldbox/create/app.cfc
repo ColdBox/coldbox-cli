@@ -40,7 +40,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	function init(){
 		// Map these shortcut names to the actual ForgeBox slugs
 		variables.templateMap = {
-			"flat"     : "cbtemplate-flat",
+			"flat"        : "cbtemplate-flat",
 			"boxlang"     : "cbtemplate-boxlang",
 			"modern"      : "cbtemplate-modern",
 			"rest"        : "cbtemplate-rest",
@@ -49,7 +49,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			"supersimple" : "cbtemplate-supersimple"
 		};
 
-		variables.defaultAppName = "My ColdBox App";
+		variables.defaultAppName  = "My ColdBox App";
 		variables.defaultSkeleton = "boxlang";
 
 		return this;
@@ -82,9 +82,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean verbose    = false,
 		boolean migrations = false,
 		boolean boxlang    = isBoxLangProject( getCWD() ),
-		boolean docker = true,
-		boolean vite = false,
-		boolean rest = false
+		boolean docker     = true,
+		boolean vite       = false,
+		boolean rest       = false
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
@@ -156,7 +156,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				slug    : variables.formatterUtil.slugify( arguments.name ),
 				version : "1.0.0",
 				location: "forgeboxStorage",
-				ignore : []
+				ignore  : []
 			)
 			.run();
 
@@ -170,10 +170,16 @@ component extends="coldbox-cli.models.BaseCommand" {
 		var envFile = arguments.directory & ".env";
 		if ( !fileExists( envFile ) ) {
 			printInfo( "🌿 Creating .env file" );
-			if( fileExists( arguments.directory & ".env.example" ) ){
-				fileCopy( arguments.directory & ".env.example", envFile );
+			if ( fileExists( arguments.directory & ".env.example" ) ) {
+				fileCopy(
+					arguments.directory & ".env.example",
+					envFile
+				);
 			} else {
-				fileCopy( variables.settings.templatesPath & ".env.example", envFile );
+				fileCopy(
+					variables.settings.templatesPath & ".env.example",
+					envFile
+				);
 			}
 		} else {
 			printInfo( "⏭️  .env file already exists, skipping creation." )
@@ -181,25 +187,33 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// Copilot instructions
 		printInfo( "🤖 Preparing GitHub Copilot configuration" );
-		var githubDir = arguments.directory & ".github";
+		var githubDir   = arguments.directory & ".github";
 		var copilotFile = githubDir & "/copilot-instructions.md";
-		if( !directoryExists( githubDir ) ){
+		if ( !directoryExists( githubDir ) ) {
 			directoryCreate( githubDir, true )
 		}
-		if( !fileExists( copilotFile ) ){
+		if ( !fileExists( copilotFile ) ) {
 			printInfo( "🥊 Creating copilot file" )
 			// If the template has a copilot-instructions.md, use it, otherwise use the default one
-			if( fileExists( arguments.directory & "resources/copilot-instructions.md" ) ){
-				fileCopy( arguments.directory & "resources/copilot-instructions.md", copilotFile );
+			if ( fileExists( arguments.directory & "resources/copilot-instructions.md" ) ) {
+				fileCopy(
+					arguments.directory & "resources/copilot-instructions.md",
+					copilotFile
+				);
 			} else {
-				if( arguments.skeleton == "modern" ){
-					fileCopy( variables.settings.templatesPath & "modern-copilot-instructions.md", copilotFile );
-				}
-				else {
-					fileCopy( variables.settings.templatesPath & "flat-copilot-instructions.md", copilotFile );
+				if ( arguments.skeleton == "modern" ) {
+					fileCopy(
+						variables.settings.templatesPath & "modern-copilot-instructions.md",
+						copilotFile
+					);
+				} else {
+					fileCopy(
+						variables.settings.templatesPath & "flat-copilot-instructions.md",
+						copilotFile
+					);
 				}
 			}
-		} else{
+		} else {
 			printInfo( "⏭️  copilot-instructions.md file already exists, skipping creation." )
 		}
 
@@ -213,9 +227,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 				.toConsole();
 		}
 
-		if( arguments.docker ){
+		if ( arguments.docker ) {
 			printInfo( "🥊 Setting up Docker for containerization" )
-			if( directoryExists( arguments.directory & "docker" ) ){
+			if ( directoryExists( arguments.directory & "docker" ) ) {
 				printInfo( "⏭️  Docker directory already exists, skipping creation." )
 			} else {
 				directoryCreate( arguments.directory & "docker", true )
@@ -242,22 +256,35 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// VITE Setup
-		if( arguments.vite ){
-			if( arguments.skeleton != "modern" && arguments.skeleton != "boxlang" ){
+		if ( arguments.vite ) {
+			if ( arguments.skeleton != "modern" && arguments.skeleton != "boxlang" ) {
 				printWarn( "⚠️  Vite setup is only supported for 'modern' or 'boxlang' skeletons. Skipping Vite setup." )
 			} else {
 				printInfo( "🥊 Setting up Vite for your frontend build system" )
-				fileCopy( "#variables.settings.templatesPath#/vite/.babelrc", arguments.directory & ".babelrc" )
-				fileCopy( "#variables.settings.templatesPath#/vite/package.json", arguments.directory & "package.json" )
-				fileCopy( "#variables.settings.templatesPath#/vite/vite.config.mjs", arguments.directory & "vite.config.mjs" )
+				fileCopy(
+					"#variables.settings.templatesPath#/vite/.babelrc",
+					arguments.directory & ".babelrc"
+				)
+				fileCopy(
+					"#variables.settings.templatesPath#/vite/package.json",
+					arguments.directory & "package.json"
+				)
+				fileCopy(
+					"#variables.settings.templatesPath#/vite/vite.config.mjs",
+					arguments.directory & "vite.config.mjs"
+				)
 				fileDelete( arguments.directory & "app/layouts/Main.bxm" )
-				fileCopy( "#variables.settings.templatesPath#/vite/layouts/Main.bxm", arguments.directory & "app/layouts/Main.bxm" )
-				fileCopy( "#variables.settings.templatesPath#/vite/assets", arguments.directory & "resources/assets" )
+				fileCopy(
+					"#variables.settings.templatesPath#/vite/layouts/Main.bxm",
+					arguments.directory & "app/layouts/Main.bxm"
+				)
+				fileCopy(
+					"#variables.settings.templatesPath#/vite/assets",
+					arguments.directory & "resources/assets"
+				)
 
 				printInfo( "🥊 Installing ColdBox Vite Helpers" )
-				command( "install" )
-					.params( "vite-helpers" )
-					.run();
+				command( "install" ).params( "vite-helpers" ).run();
 
 				variables.print
 					.line( "✅ Vite setup complete!" )
@@ -269,8 +296,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// REST Setup
-		if( arguments.rest ){
-			if( arguments.skeleton != "modern" && arguments.skeleton != "boxlang" ){
+		if ( arguments.rest ) {
+			if ( arguments.skeleton != "modern" && arguments.skeleton != "boxlang" ) {
 				printWarn( "⚠️  REST setup is only supported for 'modern' or 'boxlang' skeletons. Skipping REST setup." )
 			} else {
 				printInfo( "🥊 Setting up a REST API only ColdBox application" )
@@ -278,44 +305,56 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 				// Router
 				fileDelete( arguments.directory & "app/config/Router.bx" )
-				fileCopy( "#variables.settings.templatesPath#/rest/Router.bx", arguments.directory & "app/config/Router.bx" )
+				fileCopy(
+					"#variables.settings.templatesPath#/rest/Router.bx",
+					arguments.directory & "app/config/Router.bx"
+				)
 				// Tests
-				directoryDelete( arguments.directory & "tests/specs", true )
+				directoryDelete(
+					arguments.directory & "tests/specs",
+					true
+				)
 				directoryCopy(
-					source: "#variables.settings.templatesPath#/rest/specs",
+					source     : "#variables.settings.templatesPath#/rest/specs",
 					destination: arguments.directory & "tests/specs",
-					recurse: true,
-					createPath: true
+					recurse    : true,
+					createPath : true
 				)
 				// Configuration
 				directoryCopy(
-					source: "#variables.settings.templatesPath#/rest/config/modules",
+					source     : "#variables.settings.templatesPath#/rest/config/modules",
 					destination: arguments.directory & "app/config/modules",
-					recurse: false,
-					createPath: true
+					recurse    : false,
+					createPath : true
 				)
 				// Models
-				directoryDelete( arguments.directory & "app/models", true )
+				directoryDelete(
+					arguments.directory & "app/models",
+					true
+				)
 				directoryCopy(
-					source: "#variables.settings.templatesPath#/rest/models",
+					source     : "#variables.settings.templatesPath#/rest/models",
 					destination: arguments.directory & "app/models",
-					recurse: false,
-					createPath: true
+					recurse    : false,
+					createPath : true
 				)
 				// Handlers
-				directoryDelete( arguments.directory & "app/handlers", true )
+				directoryDelete(
+					arguments.directory & "app/handlers",
+					true
+				)
 				directoryCopy(
-					source: "#variables.settings.templatesPath#/rest/handlers",
+					source     : "#variables.settings.templatesPath#/rest/handlers",
 					destination: arguments.directory & "app/handlers",
-					recurse: false,
-					createPath: true
+					recurse    : false,
+					createPath : true
 				)
 				// Api Docs
 				directoryCopy(
-					source: "#variables.settings.templatesPath#/rest/apidocs",
+					source     : "#variables.settings.templatesPath#/rest/apidocs",
 					destination: arguments.directory & "resources/apidocs",
-					recurse: true,
-					createPath: true
+					recurse    : true,
+					createPath : true
 				)
 				var newConfig = fileRead( arguments.directory & "app/config/Coldbox.bx" )
 					.replace( "Main.index", "Echo.index" )
@@ -324,13 +363,14 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 				// Install CommandBox Modules
 				printInfo( "🥊 Installing ColdBox API Production Modules: Security, Mementifier, Validation" )
-				command( "install" )
-					.params( "cbsecurity,mementifier,cbvalidation" )
-					.run();
+				command( "install" ).params( "cbsecurity,mementifier,cbvalidation" ).run();
 
 				printInfo( "🥊 Installing ColdBox API Development Modules: route-visualizer,relax" )
 				command( "install" )
-					.params( "cbsecurity,mementifier,cbvalidation", "--saveDev" )
+					.params(
+						"cbsecurity,mementifier,cbvalidation",
+						"--saveDev"
+					)
 					.run();
 
 				printInfo( "✅ REST API only setup complete!" )
