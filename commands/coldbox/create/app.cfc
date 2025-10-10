@@ -182,9 +182,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// set the server name if the user provided one
 		variables.print.line().toConsole();
 		printInfo( "📡  Preparing server and support files" );
-		if ( arguments.name != defaultAppName ) {
-			command( "server set" ).params( name = arguments.name ).run();
-		}
+		command( "server set" ).params( name = arguments.name ).run();
 
 		// ENV File
 		var envFile = arguments.directory & ".env";
