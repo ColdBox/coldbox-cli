@@ -32,7 +32,12 @@ Apache License, Version 2.0.
 
 ## ColdBox CLI Versions
 
-The CLI also matches the major version of ColdBox.  If you are using ColdBox 7, then you should use CLI `@7`.  This is to ensure that you are using the correct commands for your version of ColdBox.
+The CLI matches the major version of ColdBox. **Current version: 7.10.0**
+
+- If you are using **ColdBox 7**, use CLI `@7` (recommended)
+- If you are using **ColdBox 6**, use CLI `@6` (legacy support)
+
+This versioning ensures you get the correct commands and features for your version of ColdBox.
 
 ## System Requirements
 
@@ -52,38 +57,159 @@ The ColdBox CLI provides powerful scaffolding and development tools for both **C
 
 ### 📱 Application Creation
 
-Create new ColdBox applications from various templates:
+Create new ColdBox applications from various templates. **BoxLang is now the default language** for new applications:
 
 ```bash
-# Create a basic ColdBox app
+# Create a basic ColdBox app (BoxLang by default)
 coldbox create app myApp
+coldbox create app myApp --boxlang   # Force BoxLang (default)
+
+# Create a CFML app explicitly
+coldbox create app myApp --cfml
 
 # Create with specific templates
 coldbox create app myApp skeleton=modern
-coldbox create app myApp skeleton=boxlang
 coldbox create app myApp skeleton=rest
-coldbox create app myApp skeleton=elixir
+coldbox create app myApp skeleton=flat
 
-# Create with migrations support
-coldbox create app myApp --migrations
+# Create with additional features
+coldbox create app myApp --migrations     # Database migrations support
+coldbox create app myApp --docker         # Docker environment setup
+coldbox create app myApp --vite          # Vite frontend asset building
+coldbox create app myApp --rest          # REST API configuration
 
-# Interactive app wizard
+# Combine multiple features
+coldbox create app myApp --migrations --docker --vite
+
+# Interactive app wizard (recommended for beginners)
 coldbox create app-wizard
+```
+
+#### 🧙‍♂️ Interactive App Wizard
+
+The `app-wizard` command provides an interactive, step-by-step process for creating new applications. It's perfect for beginners or when you want to explore all available options:
+
+```bash
+coldbox create app-wizard
+```
+
+The wizard will guide you through:
+
+1. **Project Location**: Whether to create in current directory or a new folder
+2. **Language Selection**: Choose between BoxLang (default) or CFML
+3. **Project Type**: API/REST service or full web application
+4. **Frontend Setup**: Optional Vite integration for web applications
+5. **Environment**: Optional Docker containerization
+6. **Database**: Optional migrations support
+
+**Example Wizard Flow**:
+
+```
+Are you currently inside the "myapp" folder? [y/n]: n
+Is this a BoxLang project? [y/n]: y
+Are you creating an API? [y/n]: n
+Would you like to configure Vite as your Front End UI pipeline? [y/n]: y
+Would you like to setup a Docker environment? [y/n]: y
+Are you going to require Database Migrations? [y/n]: y
 ```
 
 ### Application Templates
 
-The CLI supports multiple application templates (skeletons), or you can use your own via any FORGEBOX ID, GitHub repo, local path, zip or URL.  The default templates  for modern development are:
+The CLI supports multiple application templates (skeletons), or you can use your own via any FORGEBOX ID, GitHub repo, local path, zip or URL. **BoxLang templates are now the primary focus** for modern development:
 
-- `boxlang` - A ColdBox app using BoxLang as the primary language.
-- `modern` - A modern ColdBox app with the latest features and best practices for both BoxLang or Adobe ColdFusion
+#### 🥊 BoxLang Templates (Recommended)
 
-The older and flat style templates are:
+- `boxlang` (default) - A modern ColdBox app using BoxLang as the primary language with latest features
+- `modern` - A modern ColdBox app supporting both BoxLang and CFML with contemporary architecture
+- `rest` - A ColdBox REST API template optimized for BoxLang development
 
-- `flat` - A classic ColdBox app with a flat structure.
-- `rest` - A ColdBox app pre-configured for RESTful APIs.
-- `rest-hmvc` - A RESTful ColdBox app using HMVC architecture.
-- `vite` - A ColdBox app integrated with Vite for frontend development.
+#### 📜 Legacy CFML Templates
+
+- `flat` - A classic ColdBox app with a flat structure for traditional CFML development
+- `rest-hmvc` - A RESTful ColdBox app using HMVC architecture
+- `supersimple` - A bare-bones template for minimal setups
+- `vite` - A ColdBox app integrated with Vite for frontend development (legacy)
+
+#### 🚀 Template Features
+
+Modern templates (`boxlang`, `modern`) support additional features via flags:
+
+- `--vite` - Integrates Vite for modern frontend asset building and hot reloading
+- `--rest` - Configures the application as a REST API service
+- `--docker` - Includes Docker configuration for containerized development
+- `--migrations` - Sets up database migrations support
+
+#### ⚡ Vite Integration
+
+The CLI now supports Vite integration for modern frontend development with hot module replacement and optimized builds:
+
+```bash
+# Create app with Vite support
+coldbox create app myApp --vite
+
+# Available for BoxLang and Modern templates
+coldbox create app myApp skeleton=modern --vite
+```
+
+**Vite Features Included**:
+
+- Pre-configured `vite.config.mjs` with ColdBox/BoxLang integration
+- Hot module replacement (HMR) for development
+- Optimized production builds with code splitting
+- Asset preprocessing for CSS, SCSS, JavaScript, and TypeScript
+- Development server with proxy configuration
+- Build scripts in `package.json`
+
+**Development Workflow**:
+
+```bash
+# Start development server with hot reloading
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+#### 🐳 Docker Integration
+
+The CLI provides Docker integration to containerize your ColdBox applications for consistent development and deployment environments:
+
+```bash
+# Create app with Docker support
+coldbox create app myApp --docker
+
+# Combine with other features
+coldbox create app myApp --docker --vite --migrations
+```
+
+**Docker Features Included**:
+
+- Multi-stage `Dockerfile` optimized for ColdBox applications
+- `docker-compose.yml` for local development with services
+- Database service configuration (PostgreSQL/MySQL)
+- Redis caching service setup
+- Environment variable configuration
+- Production-ready container optimization
+- Health checks and monitoring setup
+
+**Docker Commands**:
+
+```bash
+# Build and start development environment
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild containers
+docker-compose up --build
+```
 
 ### 🎯 Handlers (Controllers)
 
@@ -263,17 +389,27 @@ Most commands support these common options:
 
 - `--force` - Overwrite existing files without prompting
 - `--open` - Open generated files in your default editor
-- `--boxlang` - Force BoxLang code generation (overrides auto-detection)
-- `--!boxlang` - Force CFML code generation (overrides auto-detection)
+- `--boxlang` - Force BoxLang code generation (usually not needed as it's the default)
+- `--cfml` - Force CFML code generation (overrides BoxLang default)
 - `--help` - Show detailed help for any command
+
+#### Application-Specific Flags
+
+For application creation commands:
+
+- `--migrations` - Include database migrations support
+- `--docker` - Include Docker configuration and containerization
+- `--vite` - Include Vite frontend asset building (modern/BoxLang templates)
+- `--rest` - Configure as REST API application (BoxLang templates)
 
 #### Language Generation Control
 
-The CLI supports both automatic detection and manual override of the target language:
+The CLI supports both automatic detection and manual override of the target language. **BoxLang is now the default language** for all new applications and generated code:
 
-- **Automatic**: Uses detection methods (server engine, `box.json` settings)
-- **Force BoxLang**: Use `--boxlang` flag to generate BoxLang code regardless of detection
-- **Force CFML**: Use `--!boxlang` flag to generate CFML code regardless of detection
+- **Default**: BoxLang code generation for new applications and components
+- **Automatic**: Uses detection methods (server engine, `box.json` settings) for existing projects
+- **Force CFML**: Use `--cfml` flag to generate CFML code regardless of detection
+- **Force BoxLang**: Use `--boxlang` flag to explicitly generate BoxLang code (usually not needed as it's the default)
 
 ### 💡 BoxLang Support
 
@@ -315,14 +451,16 @@ The CLI detects BoxLang projects using three methods (in order of precedence):
 #### 🚀 Usage Examples
 
 ```bash
-# Automatic detection (uses box.json settings)
+# Default behavior (creates BoxLang code)
 coldbox create handler users
+coldbox create model User
 
-# Force BoxLang generation (overrides detection)
+# Explicit BoxLang generation (usually not needed)
 coldbox create handler users --boxlang
 
-# Force CFML generation (overrides detection)
-coldbox create handler users --!boxlang
+# Force CFML generation for legacy projects
+coldbox create handler users --cfml
+coldbox create app myApp --cfml
 ```
 
 #### 📝 Generated Code Differences
@@ -333,6 +471,28 @@ When BoxLang mode is detected or forced:
 - Generates `class` syntax instead of `component`
 - Uses BoxLang-specific template variants
 - Creates BoxLang test files (`.bxm` extensions)
+
+### 🤖 AI Coding Assistance
+
+The CLI now includes **Copilot instructions** to enhance AI-powered development workflows. These instructions help AI assistants understand ColdBox project structure and generate appropriate code:
+
+#### Features
+
+- **Intelligent Code Generation**: AI assistants can better understand ColdBox conventions and patterns
+- **Template-Aware Suggestions**: Context-aware code suggestions based on your project type
+- **BoxLang & CFML Support**: Appropriate suggestions for both language targets
+- **Framework Integration**: Deep understanding of ColdBox architecture and best practices
+
+#### Copilot Instructions
+
+The CLI includes specialized instruction sets:
+
+- **Modern Apps**: Instructions optimized for contemporary ColdBox applications
+- **Legacy Projects**: Support for traditional flat-structure applications
+- **BoxLang Focus**: Enhanced support for BoxLang-specific patterns
+- **Framework Patterns**: MVC, HMVC, and REST API architectural guidance
+
+These instructions are automatically included in modern application templates to provide the best AI coding experience out of the box.
 
 ### 📖 Getting Help
 
