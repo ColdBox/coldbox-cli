@@ -395,7 +395,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 			.print
 				.line( "👉  Run 'box server start' to launch the development server." )
 				.line( "👉  Run 'box coldbox help' to see a list of available commands from the ColdBox CLI" )
-				.line( "ℹ️. You can remove the [Setup.bx] file from your project now or keep it for future reference." )
 				.line( "🗳️  Happy coding!" )
 				.toConsole();
 	}
