@@ -126,7 +126,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.skeleton = variables.templateMap[ arguments.skeleton ];
 		}
 
-		printInfo( "🛠️ Starting to scaffold your application with the [#arguments.skeleton#] template" )
+		printInfo( "⬇️  Downloading [#arguments.skeleton#] template..." )
 
 		// Install the skeleton from ForgeBox or other endpoint
 		packageService.installPackage(
@@ -155,7 +155,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		printSuccess( "✅  Application scaffolded successfully!" )
-		printInfo( " 🌐 Setting Up Your box.json" )
+		printInfo( "✏️  Setting Up Your box.json" )
 
 		if ( arguments.boxlang ) {
 			command( "package set" ).params( language: "BoxLang" ).run();
@@ -175,7 +175,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 			.run();
 
 		// set the server name if the user provided one
-		printInfo( "📡  Preparing server and support files..." );
+		variables.print.line().toConsole();
+		printInfo( "📡  Preparing server and support files" );
 		if ( arguments.name != defaultAppName ) {
 			command( "server set" ).params( name = arguments.name ).run();
 		}
@@ -228,7 +229,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				}
 			}
 		} else {
-			printWarn( "⏭️  copilot-instructions.md file already exists, skipping creation." )
+			printWarn( "⏭️  Copilot Instructions already exist, skipping creation." )
 		}
 
 		// Run migrations init
@@ -236,7 +237,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			printInfo( "🚀 Initializing Migrations" );
 			variables.utility.ensureMigrationsModule();
 			command( "migrate init" ).run();
-			printHelp( "👉  You can run `migrate help` to see all available migration commands." )
+			printHelp( "👉  You can run `migrate help` to see all available migration commands" )
 		}
 
 		if ( arguments.docker ) {
@@ -259,19 +260,17 @@ component extends="coldbox-cli.models.BaseCommand" {
 				)
 
 				printSuccess( "✅ Docker setup complete!" )
-
-				variables.print
-					.line( "👉  You can run 'box run-script docker:build' to build your Docker image." )
-					.line( "👉  You can run 'box run-script docker:run' to run your Docker container." )
-					.line( "👉  You can run 'box run-script docker:bash' to go into the container shell." )
-					.line( "👉  You can run 'box run-script docker:stack' to startup the Docker Compose Stack" )
-					.toConsole();
+				printHelp( "👉  You can run 'box run-script docker:build' to build your Docker image." )
+				printHelp( "👉  You can run 'box run-script docker:run' to run your Docker container." )
+				printHelp( "👉  You can run 'box run-script docker:bash' to go into the container shell." )
+				printHelp( "👉  You can run 'box run-script docker:stack' to startup the Docker Compose Stack" )
+				variables.print.line().toConsole()
 			}
 		}
 
 		// VITE Setup
 		if ( arguments.vite ) {
-			if ( arguments.skeleton != "modern" && arguments.skeleton != "boxlang" ) {
+			if ( listFindNoCase( "modern,boxlang", arguments.skeleton ) == 0 ) {
 				printWarn( "⚠️  Vite setup is only supported for 'modern' or 'boxlang' skeletons. Skipping Vite setup." )
 			} else {
 				printInfo( "🥊 Setting up Vite for your frontend build system" )
@@ -299,20 +298,17 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 				printInfo( "🥊 Installing ColdBox Vite Helpers" )
 				command( "install" ).params( "vite-helpers" ).run();
-
 				printSuccess( "✅ Vite setup complete!" )
-
-				variables.print
-					.line( "👉  You can run 'npm install' to install the dependencies" )
-					.line( "👉  You can run 'npm run dev' to start the development server" )
-					.line( "👉  You can run 'npm run build' to build the production assets" )
-					.toConsole();
+				printHelp( "👉  You can run 'npm install' to install the dependencies" )
+				printHelp( "👉  You can run 'npm run dev' to start the development server" )
+				printHelp( "👉  You can run 'npm run build' to build the production assets" )
+				variables.print.line().toConsole();
 			}
 		}
 
 		// REST Setup
 		if ( arguments.rest ) {
-			if ( arguments.skeleton != "modern" && arguments.skeleton != "boxlang" ) {
+			if ( listFindNoCase( "modern,boxlang", arguments.skeleton ) == 0 ) {
 				printWarn( "⚠️  REST setup is only supported for 'modern' or 'boxlang' skeletons. Skipping REST setup." )
 			} else {
 				printInfo( "🥊 Setting up a REST API only ColdBox application" )
@@ -386,16 +382,14 @@ component extends="coldbox-cli.models.BaseCommand" {
 					)
 					.run();
 
-				printSuccess( "✅ REST API only setup complete!" )
+				printSuccess( "✅ REST API setup complete!" )
 			}
 		}
 
 		printSuccess( "🥊  Your ColdBox BoxLang application is ready to roll!" )
-		variables.print
-			.line( "👉  Run 'box server start' to launch the development server." )
-			.line( "👉  Run 'box coldbox help' to see a list of available commands from the ColdBox CLI" )
-			.line( "🗳️  Happy coding!" )
-			.toConsole();
+		printHelp( "👉  Run 'server start' to launch the development server." )
+		printHelp( "👉  Run 'coldbox help' to see a list of available commands from the ColdBox CLI" )
+		printHelp( "🗳️  Happy coding!" )
 	}
 
 	/**

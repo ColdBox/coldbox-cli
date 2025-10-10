@@ -34,7 +34,7 @@ component singleton {
 	function ensureMigrationsModule(){
 		if ( !isMigrationsModuleInstalled() ) {
 			variables.print
-				.redLine( "CommandBox-Migrations module not installed. Installing it for you, please wait..." )
+				.redLine( "‼️ CommandBox-Migrations module not installed. Installing it for you, please wait..." )
 				.line()
 				.toConsole();
 			variables.wirebox
