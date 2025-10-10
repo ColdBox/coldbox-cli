@@ -1,10 +1,12 @@
 /**
  *  Create a blank ColdBox app from one of our app skeletons or a skeleton using a valid Endpoint ID which can come from .
  *  FORGEBOX, HTTP/S, git, github, etc.
- *  By default it will create the application in your current directory.
+ *  By default it will create a ColdBox BoxLang application in your current directory.
  * .
  * {code:bash}
  * coldbox create app myApp
+ * // Same as
+ * coldbox create app MyApp --boxlang
  * {code}
  * .
  *  Here are the basic skeletons that are available for you that come from FORGEBOX
@@ -19,6 +21,8 @@
  * .
  * {code:bash}
  * coldbox create app skeleton=modern
+ * // Same as
+ * coldbox create app --cfml
  * {code}
  * .
  * The skeleton parameter can also be any valid FORGEBOX Endpoint ID, which includes a Git repo or HTTP URL pointing to a package.
@@ -71,6 +75,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @docker              Include Docker files and setup Docker configuration
 	 * @vite 					Setup Vite for frontend asset building (For BoxLang or Modern apps only)
 	 * @rest        Is this a REST API project? (For BoxLang apps only)
+	 * @cfml        Set the language to CFML explicitly (overrides boxlang)
 	 **/
 	function run(
 		name               = defaultAppName,
@@ -81,10 +86,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean initWizard = false,
 		boolean verbose    = false,
 		boolean migrations = false,
-		boolean boxlang    = isBoxLangProject( getCWD() ),
+		boolean boxlang    = true,
 		boolean docker     = true,
 		boolean vite       = false,
-		boolean rest       = false
+		boolean rest       = false,
+		boolean cfml = false
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
@@ -92,9 +98,19 @@ component extends="coldbox-cli.models.BaseCommand" {
 			return;
 		}
 
-		job.start( "🧑‍🍳 Creating & Prepping Your App [#arguments.name#]" );
-		if ( arguments.verbose ) {
-			job.setDumpLog( arguments.verbose );
+		// Start the job
+		variables.print.boldGreenLine( "🧑‍🍳 Creating & Prepping Your App [#arguments.name#]" ).toConsole()
+
+		// Determine language via cfml or boxlang flags
+		if ( arguments.cfml ) {
+			arguments.boxlang = false;
+			if( arguments.skeleton == variables.defaultSkeleton ){
+				arguments.skeleton = "modern";
+			}
+			variables.print.line( "⚡Language set to CFML" ).toConsole()
+		} else {
+			arguments.boxlang = true;
+			variables.print.line( "🥊 Language set to BoxLang" ).toConsole()
 		}
 
 		// This will make the directory canonical and absolute
@@ -102,11 +118,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Validate directory, if it doesn't exist, create it.
 		if ( !directoryExists( arguments.directory ) ) {
 			directoryCreate( arguments.directory );
-		}
-
-		// If the skeleton = default and this is a boxlang project, then switch the skeleton to BoxLang
-		if ( arguments.skeleton == "default" && arguments.boxlang ) {
-			arguments.skeleton = variables.defaultSkeleton;
 		}
 
 		// If the skeleton is one of our "shortcut" names
@@ -130,6 +141,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			var originalPath = getCWD();
 			// init must be run from CWD
 			shell.cd( arguments.directory );
+			variables.print.line( "🚀 Initializing ColdBox Application as a Box Package" ).toConsole();
 			command( "init" )
 				.params(
 					name  : arguments.name,
@@ -141,11 +153,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Prepare language
+		variables.print.line( "🤖 Setting up language specifics" ).toConsole();
 		if ( arguments.boxlang ) {
-			printInfo( "Setting language to BoxLang" );
 			command( "package set" ).params( language: "BoxLang" ).run();
 		} else {
-			printInfo( "Setting language to CFML" );
 			command( "package set" ).params( language: "CFML" ).run();
 		}
 
@@ -156,7 +167,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				slug    : variables.formatterUtil.slugify( arguments.name ),
 				version : "1.0.0",
 				location: "forgeboxStorage",
-				ignore  : []
+				ignore  : "[]"
 			)
 			.run();
 
@@ -376,9 +387,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 				printInfo( "✅ REST API only setup complete!" )
 			}
 		}
-
-		// Finalize Create app Job
-		job.complete();
 
 		variables.print
 			.line( "🥊  Your ColdBox BoxLang application is ready to roll!" )
