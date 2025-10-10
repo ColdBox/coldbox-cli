@@ -34,7 +34,7 @@ component extends="app" aliases="" {
 		)
 
 		// Language Selection
-		if( confirm( "Is this a BoxLang project? [y/n]" ) ){
+		if ( confirm( "Is this a BoxLang project? [y/n]" ) ) {
 			arguments.boxlang = true;
 			boxlangWizard( args = arguments );
 		} else {
