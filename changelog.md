@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.10.0] - 2025-10-10
+
 ### Added
 
 - Modules Inherit Entry Point defaults to `true` now
@@ -145,7 +147,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v7.10.0...HEAD
+[7.10.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...v7.10.0
 [7.8.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...v7.8.0
 [7.7.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.6.0...v7.7.0
 [7.6.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.5.0...v7.6.0
