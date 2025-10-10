@@ -76,6 +76,13 @@ component accessors="true" {
 			.line();
 	}
 
+	function printHelp( required message ){
+		variables.print
+			.blackOnLightSkyBlue1( " HELP  " )
+			.line( " #arguments.message#" )
+			.line();
+	}
+
 	function toBoxLangClass( required content ){
 		return reReplaceNoCase(
 			arguments.content,

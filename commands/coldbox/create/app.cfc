@@ -99,7 +99,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Start the job
-		variables.print.boldGreenLine( "🧑‍🍳 Creating & Prepping Your App [#arguments.name#]" ).toConsole()
+		variables.print.boldGreenLine( "🧑‍🍳 Starting to cookup your ColdBox App [#arguments.name#]..." ).toConsole()
 
 		// Determine language via cfml or boxlang flags
 		if ( arguments.cfml ) {
@@ -107,10 +107,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			if ( arguments.skeleton == variables.defaultSkeleton ) {
 				arguments.skeleton = "modern";
 			}
-			variables.print.line( "⚡Language set to CFML" ).toConsole()
+			printInfo( "⚡Language set to CFML" )
 		} else {
 			arguments.boxlang = true;
-			variables.print.line( "🥊 Language set to BoxLang" ).toConsole()
+			printInfo( "🥊 Language set to BoxLang" )
 		}
 
 		// This will make the directory canonical and absolute
@@ -125,6 +125,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 			// Replace it with the actual ForgeBox slug name.
 			arguments.skeleton = variables.templateMap[ arguments.skeleton ];
 		}
+
+		printInfo( "🛠️ Starting to scaffold your application with the [#arguments.skeleton#] template" )
 
 		// Install the skeleton from ForgeBox or other endpoint
 		packageService.installPackage(
@@ -141,19 +143,20 @@ component extends="coldbox-cli.models.BaseCommand" {
 			var originalPath = getCWD();
 			// init must be run from CWD
 			shell.cd( arguments.directory );
-			variables.print.line( "🚀 Initializing ColdBox Application as a Box Package" ).toConsole();
 			command( "init" )
-				.params(
-					name  : arguments.name,
-					slug  : replace( arguments.name, " ", "", "all" ),
-					wizard: arguments.initWizard
+			.params(
+				name  : arguments.name,
+				slug  : replace( arguments.name, " ", "", "all" ),
+				wizard: arguments.initWizard
 				)
 				.run();
 			shell.cd( originalPath );
+			printInfo( "🚀 ColdBox Application initialized as a CommandBox Package" )
 		}
 
-		// Prepare language
-		variables.print.line( "🤖 Setting up language specifics" ).toConsole();
+		printSuccess( "✅  Application scaffolded successfully!" )
+		printInfo( " 🌐 Setting Up Your box.json" )
+
 		if ( arguments.boxlang ) {
 			command( "package set" ).params( language: "BoxLang" ).run();
 		} else {
@@ -172,7 +175,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			.run();
 
 		// set the server name if the user provided one
-		printInfo( "🤖 Preparing server" );
+		printInfo( "📡  Preparing server and support files..." );
 		if ( arguments.name != defaultAppName ) {
 			command( "server set" ).params( name = arguments.name ).run();
 		}
@@ -180,7 +183,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// ENV File
 		var envFile = arguments.directory & ".env";
 		if ( !fileExists( envFile ) ) {
-			printInfo( "🌿 Creating .env file" );
+			printInfo( "🌿 Creating your .env file" );
 			if ( fileExists( arguments.directory & ".env.example" ) ) {
 				fileCopy(
 					arguments.directory & ".env.example",
@@ -193,7 +196,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				);
 			}
 		} else {
-			printInfo( "⏭️  .env file already exists, skipping creation." )
+			printWarn( "⏭️  .env file already exists, skipping creation." )
 		}
 
 		// Copilot instructions
@@ -225,7 +228,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				}
 			}
 		} else {
-			printInfo( "⏭️  copilot-instructions.md file already exists, skipping creation." )
+			printWarn( "⏭️  copilot-instructions.md file already exists, skipping creation." )
 		}
 
 		// Run migrations init
@@ -233,15 +236,13 @@ component extends="coldbox-cli.models.BaseCommand" {
 			printInfo( "🚀 Initializing Migrations" );
 			variables.utility.ensureMigrationsModule();
 			command( "migrate init" ).run();
-			variables.print
-				.line( "👉  You can run `migrate help` to see all available migration commands." )
-				.toConsole();
+			printHelp( "👉  You can run `migrate help` to see all available migration commands." )
 		}
 
 		if ( arguments.docker ) {
 			printInfo( "🥊 Setting up Docker for containerization" )
 			if ( directoryExists( arguments.directory & "docker" ) ) {
-				printInfo( "⏭️  Docker directory already exists, skipping creation." )
+				printWarn( "⏭️  Docker directory already exists, skipping creation." )
 			} else {
 				directoryCreate( arguments.directory & "docker", true )
 				fileCopy(
@@ -256,8 +257,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 					"#variables.settings.templatesPath#/docker/.dockerignore",
 					arguments.directory & "docker/.dockerignore"
 				)
+
+				printSuccess( "✅ Docker setup complete!" )
+
 				variables.print
-					.line( "✅ Docker setup complete!" )
 					.line( "👉  You can run 'box run-script docker:build' to build your Docker image." )
 					.line( "👉  You can run 'box run-script docker:run' to run your Docker container." )
 					.line( "👉  You can run 'box run-script docker:bash' to go into the container shell." )
@@ -297,8 +300,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 				printInfo( "🥊 Installing ColdBox Vite Helpers" )
 				command( "install" ).params( "vite-helpers" ).run();
 
+				printSuccess( "✅ Vite setup complete!" )
+
 				variables.print
-					.line( "✅ Vite setup complete!" )
 					.line( "👉  You can run 'npm install' to install the dependencies" )
 					.line( "👉  You can run 'npm run dev' to start the development server" )
 					.line( "👉  You can run 'npm run build' to build the production assets" )
@@ -312,8 +316,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 				printWarn( "⚠️  REST setup is only supported for 'modern' or 'boxlang' skeletons. Skipping REST setup." )
 			} else {
 				printInfo( "🥊 Setting up a REST API only ColdBox application" )
-				printInfo( "👉  You can always add views and layouts later if you change your mind" )
-
 				// Router
 				fileDelete( arguments.directory & "app/config/Router.bx" )
 				fileCopy(
@@ -384,17 +386,18 @@ component extends="coldbox-cli.models.BaseCommand" {
 					)
 					.run();
 
-				printInfo( "✅ REST API only setup complete!" )
+				printSuccess( "✅ REST API only setup complete!" )
 			}
 		}
 
-		variables.print
-			.line( "🥊  Your ColdBox BoxLang application is ready to roll!" )
-			.line( "👉  Run 'box server start' to launch the development server." )
-			.line( "👉  Run 'box coldbox help' to see a list of available commands from the ColdBox CLI" )
-			.line( "ℹ️. You can remove the [Setup.bx] file from your project now or keep it for future reference." )
-			.line( "🗳️  Happy coding!" )
-			.toConsole();
+		printSuccess( "🥊  Your ColdBox BoxLang application is ready to roll!" )
+		variables
+			.print
+				.line( "👉  Run 'box server start' to launch the development server." )
+				.line( "👉  Run 'box coldbox help' to see a list of available commands from the ColdBox CLI" )
+				.line( "ℹ️. You can remove the [Setup.bx] file from your project now or keep it for future reference." )
+				.line( "🗳️  Happy coding!" )
+				.toConsole();
 	}
 
 	/**
