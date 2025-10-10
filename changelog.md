@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Forgot to bump it to match ColdBox version.
+
 ## [7.10.0] - 2025-10-10
 
 ### Added
