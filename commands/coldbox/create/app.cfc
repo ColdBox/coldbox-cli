@@ -99,7 +99,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Start the job
-		variables.print.boldGreenLine( "🔥 Starting to cookup your ColdBox App [#arguments.name#]..." ).toConsole()
+		variables.print
+			.boldGreenLine( "🔥 Starting to cookup your ColdBox App [#arguments.name#]..." )
+			.line()
+			.toConsole()
 
 		// Determine language via cfml or boxlang flags
 		if ( arguments.cfml ) {
@@ -127,6 +130,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		printInfo( "⬇️  Downloading [#arguments.skeleton#] template..." )
+
+		variables.print.line().toConsole();
 
 		// Install the skeleton from ForgeBox or other endpoint
 		packageService.installPackage(
@@ -270,7 +275,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// VITE Setup
 		if ( arguments.vite ) {
-			if ( listFindNoCase( "modern,boxlang", arguments.skeleton ) == 0 ) {
+			if ( !arguments.skeleton.reFindNoCase( "(modern|boxlang)" ) ) {
 				printWarn( "⚠️  Vite setup is only supported for 'modern' or 'boxlang' skeletons. Skipping Vite setup." )
 			} else {
 				printInfo( "🥊 Setting up Vite for your frontend build system" )
@@ -308,7 +313,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// REST Setup
 		if ( arguments.rest ) {
-			if ( listFindNoCase( "modern,boxlang", arguments.skeleton ) == 0 ) {
+			if ( !arguments.skeleton.reFindNoCase( "(modern|boxlang)" ) ) {
 				printWarn( "⚠️  REST setup is only supported for 'modern' or 'boxlang' skeletons. Skipping REST setup." )
 			} else {
 				printInfo( "🥊 Setting up a REST API only ColdBox application" )
