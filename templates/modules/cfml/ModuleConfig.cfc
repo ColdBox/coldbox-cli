@@ -53,7 +53,7 @@ component {
 	// Module Entry Point
 	this.entryPoint         = "@title@";
 	// Inherit Entry Point
-	this.inheritEntryPoint  = false;
+	this.inheritEntryPoint  = true;
 	// Model Namespace
 	this.modelNamespace     = "@modelNamespace@";
 	// CF Mapping

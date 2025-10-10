@@ -71,7 +71,19 @@ coldbox create app myApp --migrations
 coldbox create app-wizard
 ```
 
-**Available Templates:** `default`, `boxlang`, `modern`, `rest`, `elixir`
+### Application Templates
+
+The CLI supports multiple application templates (skeletons), or you can use your own via any FORGEBOX ID, GitHub repo, local path, zip or URL.  The default templates  for modern development are:
+
+- `boxlang` - A ColdBox app using BoxLang as the primary language.
+- `modern` - A modern ColdBox app with the latest features and best practices for both BoxLang or Adobe ColdFusion
+
+The older and flat style templates are:
+
+- `flat` - A classic ColdBox app with a flat structure.
+- `rest` - A ColdBox app pre-configured for RESTful APIs.
+- `rest-hmvc` - A RESTful ColdBox app using HMVC architecture.
+- `vite` - A ColdBox app integrated with Vite for frontend development.
 
 ### 🎯 Handlers (Controllers)
 
