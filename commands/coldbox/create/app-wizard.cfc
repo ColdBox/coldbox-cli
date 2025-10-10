@@ -15,22 +15,81 @@ component extends="app" aliases="" {
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
 		arguments.directory = getCWD();
+
+		// Ensure Folder Creation
 		if ( !confirm( "Are you currently inside the ""/#name#"" folder (if ""No"" we will create it)? [y/n]" ) ) {
-			arguments.directory = getCWD() & name & "/";
+			arguments.directory = getCWD() & name & "/"
 			if ( !directoryExists( arguments.directory ) ) {
-				directoryCreate( arguments.directory );
+				directoryCreate( arguments.directory )
 			}
-			shell.cd( arguments.directory );
+			shell.cd( arguments.directory )
 		}
 
 		print.boldgreenline(
 			"------------------------------------------------------------------------------------------"
-		);
-		print.boldgreenline( "Files will be installed in the " & arguments.directory & " directory" );
+		)
+		print.boldgreenline( "Files will be installed in the " & arguments.directory & " directory" )
 		print.boldgreenline(
 			"------------------------------------------------------------------------------------------"
-		);
+		)
 
+		// Language Selection
+		if( confirm( "Is this a BoxLang project? [y/n]" ) ){
+			arguments.boxlang = true;
+			boxlangWizard( args = arguments );
+		} else {
+			arguments.boxlang = false;
+			cfmlWizard( args = arguments );
+		}
+
+		if ( confirm( "Are you going to require Database Migrations? [y/n]" ) ) {
+			arguments.migrations = true;
+		} else {
+			arguments.migrations = false;
+		}
+
+		variables.print
+			.boldGreenLine( "🍳 Creating your site..." )
+			.line()
+			.toConsole()
+
+		// turn off wizard
+		arguments.wizard     = false
+		arguments.initWizard = true
+		// Cook the app
+		super.run( argumentCollection = arguments );
+	}
+
+	/**
+	 * Ask the user which BoxLang project they want to create
+	 **/
+	private function boxlangWizard( required args ){
+		// REST Setup
+		if ( confirm( "Are you creating an API? [y/n]" ) ) {
+			args.rest = true;
+		} else {
+			args.rest = false;
+
+			// Vite Setup
+			if ( confirm( "Would you like to configure Vite as your Front End UI pipeline? [y/n]" ) ) {
+				args.vite = true;
+			} else {
+				args.vite = false;
+			}
+		}
+
+		// Docker Setup
+		if ( confirm( "Would you like to setup a Docker environment? [y/n]" ) ) {
+			args.docker = true;
+		} else {
+			args.docker = false;
+		}
+	}
+
+	/**
+	 * Ask the user which CFML project they want to create
+	 **/
+	private function cfmlWizard( required args ){
 		if ( confirm( "Are you creating an API? [y/n]" ) ) {
 			print.boldgreenline(
 				"------------------------------------------------------------------------------------------"
@@ -74,27 +133,22 @@ component extends="app" aliases="" {
 				.options( [
 					{
 						accessKey : 1,
-						value     : "boxlang",
-						display   : "BoxLang ColdBox Template - Default ColdBox App with BoxLang",
+						value     : "modern",
+						display   : "Modern Template - Security-first CFML and BoxLang template with /app outside webroot",
 						selected  : true
 					},
 					{
 						accessKey : 2,
-						value     : "modern",
-						display   : "Modern Template - Security-first CFML and BoxLang template with /app outside webroot"
-					},
-					{
-						accessKey : 3,
 						value     : "flat",
 						display   : "Flat Template - Traditional flat structure with everything in webroot"
 					},
 					{
-						accessKey : 4,
+						accessKey : 3,
 						value     : "vite",
 						display   : "Vite Template - Traditional flat structure development with Vite, Vue 3, and Tailwind CSS"
 					},
 					{
-						accessKey : 5,
+						accessKey : 4,
 						value     : "supersimple",
 						display   : "Super Simple Template - Bare bones, minimal starting point"
 					}
@@ -102,19 +156,6 @@ component extends="app" aliases="" {
 				.required()
 				.ask();
 		}
-		print.line( "Creating your site..." ).toConsole();
-
-		var skeletons        = skeletonComplete();
-		// turn off wizard
-		arguments.wizard     = false;
-		arguments.initWizard = true;
-
-		if ( !arguments.skeleton.len() ) {
-			// Remove if empty so it can default correctly
-			arguments.delete( "skeleton" );
-		}
-
-		super.run( argumentCollection = arguments );
 	}
 
 }
