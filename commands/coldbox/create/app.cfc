@@ -144,10 +144,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 			// init must be run from CWD
 			shell.cd( arguments.directory );
 			command( "init" )
-			.params(
-				name  : arguments.name,
-				slug  : replace( arguments.name, " ", "", "all" ),
-				wizard: arguments.initWizard
+				.params(
+					name  : arguments.name,
+					slug  : replace( arguments.name, " ", "", "all" ),
+					wizard: arguments.initWizard
 				)
 				.run();
 			shell.cd( originalPath );
@@ -391,12 +391,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		printSuccess( "🥊  Your ColdBox BoxLang application is ready to roll!" )
-		variables
-			.print
-				.line( "👉  Run 'box server start' to launch the development server." )
-				.line( "👉  Run 'box coldbox help' to see a list of available commands from the ColdBox CLI" )
-				.line( "🗳️  Happy coding!" )
-				.toConsole();
+		variables.print
+			.line( "👉  Run 'box server start' to launch the development server." )
+			.line( "👉  Run 'box coldbox help' to see a list of available commands from the ColdBox CLI" )
+			.line( "🗳️  Happy coding!" )
+			.toConsole();
 	}
 
 	/**
