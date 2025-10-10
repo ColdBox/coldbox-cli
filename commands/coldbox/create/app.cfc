@@ -90,7 +90,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean docker     = true,
 		boolean vite       = false,
 		boolean rest       = false,
-		boolean cfml = false
+		boolean cfml       = false
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
@@ -104,7 +104,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Determine language via cfml or boxlang flags
 		if ( arguments.cfml ) {
 			arguments.boxlang = false;
-			if( arguments.skeleton == variables.defaultSkeleton ){
+			if ( arguments.skeleton == variables.defaultSkeleton ) {
 				arguments.skeleton = "modern";
 			}
 			variables.print.line( "⚡Language set to CFML" ).toConsole()
