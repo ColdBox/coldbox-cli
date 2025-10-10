@@ -99,7 +99,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// Start the job
-		variables.print.boldGreenLine( "🧑‍🍳 Starting to cookup your ColdBox App [#arguments.name#]..." ).toConsole()
+		variables.print.boldGreenLine( "🔥 Starting to cookup your ColdBox App [#arguments.name#]..." ).toConsole()
 
 		// Determine language via cfml or boxlang flags
 		if ( arguments.cfml ) {
