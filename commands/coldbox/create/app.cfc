@@ -391,19 +391,31 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 
 		// REST Cleanup
-		if( directoryExists( arguments.directory & "resources/rest" ) ){
-			directoryDelete( arguments.directory & "resources/rest", true )
+		if ( directoryExists( arguments.directory & "resources/rest" ) ) {
+			directoryDelete(
+				arguments.directory & "resources/rest",
+				true
+			)
 		}
 		// Vite Cleanup
-		if( directoryExists( arguments.directory & "resources/assets" ) ){
-			directoryDelete( arguments.directory & "resources/assets", true )
+		if ( directoryExists( arguments.directory & "resources/assets" ) ) {
+			directoryDelete(
+				arguments.directory & "resources/assets",
+				true
+			)
 		}
-		if( directoryExists( arguments.directory & "resources/vite" ) ){
-			directoryDelete( arguments.directory & "resources/vite", true )
+		if ( directoryExists( arguments.directory & "resources/vite" ) ) {
+			directoryDelete(
+				arguments.directory & "resources/vite",
+				true
+			)
 		}
 		// Docker Cleanup
-		if( directoryExists( arguments.directory & "resources/docker" ) ){
-			directoryDelete( arguments.directory & "resources/docker", true )
+		if ( directoryExists( arguments.directory & "resources/docker" ) ) {
+			directoryDelete(
+				arguments.directory & "resources/docker",
+				true
+			)
 		}
 
 		printSuccess( "🥊  Your ColdBox BoxLang application is ready to roll!" )
