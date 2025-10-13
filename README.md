@@ -32,16 +32,13 @@ Apache License, Version 2.0.
 
 ## ColdBox CLI Versions
 
-The CLI matches the major version of ColdBox. **Current version: 7.10.0**
+The CLI matches the major version of ColdBox. **Current version: 8**
 
-- If you are using **ColdBox 7**, use CLI `@7` (recommended)
+- If you are using **ColdBox 8**, use CLI `@8` (recommended)
+- If you are using **ColdBox 7**, use CLI `@7.8.0` (recommended)
 - If you are using **ColdBox 6**, use CLI `@6` (legacy support)
 
 This versioning ensures you get the correct commands and features for your version of ColdBox.
-
-## System Requirements
-
-- CommandBox 5.5+
 
 ## Installation
 
