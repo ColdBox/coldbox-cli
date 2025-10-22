@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.1.0] - 2025-10-22
+
 ### Changed
 
 - `docker` argument to create app was supposed to be `false` by default, not `true`
@@ -164,7 +166,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.0.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.1.0...HEAD
+[8.1.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.10.0...v8.0.0
 [7.10.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...v7.10.0
 [7.8.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...v7.8.0
