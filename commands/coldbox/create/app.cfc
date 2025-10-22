@@ -87,7 +87,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean verbose    = false,
 		boolean migrations = false,
 		boolean boxlang    = true,
-		boolean docker     = true,
+		boolean docker     = false,
 		boolean vite       = false,
 		boolean rest       = false,
 		boolean cfml       = false
@@ -195,7 +195,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				);
 			} else {
 				fileCopy(
-					variables.settings.templatesPath & ".env.example",
+					variables.settings.templatesPath & "env.example",
 					envFile
 				);
 			}
@@ -258,7 +258,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 					arguments.directory & "docker/docker-compose.yml"
 				)
 				fileCopy(
-					"#variables.settings.templatesPath#/docker/.dockerignore",
+					"#variables.settings.templatesPath#/docker/dockerignore",
 					arguments.directory & "docker/.dockerignore"
 				)
 

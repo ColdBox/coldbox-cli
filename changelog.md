@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `docker` argument to create app was supposed to be `false` by default, not `true`
+
+### Fixed
+
+- Docker ignore issues
+- App env sample ignore issues
+
 ## [8.0.0] - 2025-10-13
 
 ## [7.10.0] - 2025-10-10
