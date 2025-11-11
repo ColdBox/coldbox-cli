@@ -171,11 +171,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Prepare defaults on box.json so we remove template based ones
 		command( "package set" )
 			.params(
-				name    : arguments.name,
-				slug    : variables.formatterUtil.slugify( arguments.name ),
-				version : "1.0.0",
-				location: "forgeboxStorage",
-				ignore  : "[]",
+				name       : arguments.name,
+				slug       : variables.formatterUtil.slugify( arguments.name ),
+				version    : "1.0.0",
+				location   : "forgeboxStorage",
+				ignore     : "[]",
 				description: "A ColdBox Application created with the ColdBox CLI"
 			)
 			.run();
