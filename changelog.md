@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Missing rest resources for the `boxlang` template
+
+### Fixed
+
+- Cleanup for vite resources only if vite is not selected
+
 ## [8.1.0] - 2025-10-22
 
 ### Changed

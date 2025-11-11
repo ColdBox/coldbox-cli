@@ -1,0 +1,13 @@
+{
+    "data": {
+        "lastName": "admin",
+        "permissions": [],
+		"roles": [],
+        "firstName": "admin",
+        "id": 1,
+        "username": "admin"
+    },
+    "error": false,
+    "pagination": {},
+    "messages": []
+}

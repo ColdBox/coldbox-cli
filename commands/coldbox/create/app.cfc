@@ -175,7 +175,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 				slug    : variables.formatterUtil.slugify( arguments.name ),
 				version : "1.0.0",
 				location: "forgeboxStorage",
-				ignore  : "[]"
+				ignore  : "[]",
+				description: "A ColdBox Application created with the ColdBox CLI"
 			)
 			.run();
 
@@ -310,8 +311,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		}
 		// REST Setup
 		if ( arguments.rest ) {
-			if ( !arguments.skeleton.reFindNoCase( "(modern|boxlang)" ) ) {
-				printWarn( "⚠️  REST setup is only supported for 'modern' or 'boxlang' skeletons. Skipping REST setup." )
+			if ( !arguments.skeleton.reFindNoCase( "(boxlang)" ) ) {
+				printWarn( "⚠️  REST setup is only supported for 'boxlang' skeletons. Skipping REST setup." )
 			} else {
 				printInfo( "🥊 Setting up a REST API only ColdBox application" )
 				// Router
@@ -395,19 +396,22 @@ component extends="coldbox-cli.models.BaseCommand" {
 				true
 			)
 		}
+
 		// Vite Cleanup
-		if ( directoryExists( arguments.directory & "resources/assets" ) ) {
+		if ( !arguments.vite && directoryExists( arguments.directory & "resources/assets" ) ) {
 			directoryDelete(
 				arguments.directory & "resources/assets",
 				true
 			)
 		}
+
 		if ( directoryExists( arguments.directory & "resources/vite" ) ) {
 			directoryDelete(
 				arguments.directory & "resources/vite",
 				true
 			)
 		}
+
 		// Docker Cleanup
 		if ( directoryExists( arguments.directory & "resources/docker" ) ) {
 			directoryDelete(
