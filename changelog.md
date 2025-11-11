@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.2.0] - 2025-11-11
+
 ### Added
 
 - Missing rest resources for the `boxlang` template
@@ -174,7 +176,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.1.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.2.0...HEAD
+[8.2.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.10.0...v8.0.0
 [7.10.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.8.0...v7.10.0
