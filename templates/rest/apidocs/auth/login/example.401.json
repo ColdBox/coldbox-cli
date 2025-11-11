@@ -1,0 +1,49 @@
+{
+    "data": {
+        "lastName": [
+            {
+                "MESSAGE": "The 'lastName' value is required",
+                "VALIDATIONDATA": true,
+                "ERRORMETADATA": {},
+                "REJECTEDVALUE": "",
+                "VALIDATIONTYPE": "Required",
+                "FIELD": "lastName"
+            }
+        ],
+        "firstName": [
+            {
+                "MESSAGE": "The 'firstName' value is required",
+                "VALIDATIONDATA": true,
+                "ERRORMETADATA": {},
+                "REJECTEDVALUE": "",
+                "VALIDATIONTYPE": "Required",
+                "FIELD": "firstName"
+            }
+        ],
+        "PASSWORD": [
+            {
+                "MESSAGE": "The 'PASSWORD' value is required",
+                "VALIDATIONDATA": true,
+                "ERRORMETADATA": {},
+                "REJECTEDVALUE": "",
+                "VALIDATIONTYPE": "Required",
+                "FIELD": "PASSWORD"
+            }
+        ],
+        "USERNAME": [
+            {
+                "MESSAGE": "The 'USERNAME' value is required",
+                "VALIDATIONDATA": true,
+                "ERRORMETADATA": {},
+                "REJECTEDVALUE": "",
+                "VALIDATIONTYPE": "Required",
+                "FIELD": "USERNAME"
+            }
+        ]
+    },
+    "error": true,
+    "pagination": {},
+    "messages": [
+        "Validation exceptions occurred, please see the data"
+    ]
+}

@@ -1,0 +1,61 @@
+﻿@appMapping( "/app" )
+class extends="coldbox.system.testing.BaseTestCase"  {
+
+	/*********************************** LIFE CYCLE Methods ***********************************/
+
+	function beforeAll(){
+		super.beforeAll();
+		// do your own stuff here
+	}
+
+	function afterAll(){
+		// do your own stuff here
+		super.afterAll();
+	}
+
+	/*********************************** BDD SUITES ***********************************/
+
+	function run(){
+		describe( "My RESTFUl Service", () => {
+			beforeEach( ( currentSpec ) => {
+				// Setup as a new ColdBox request, VERY IMPORTANT. ELSE EVERYTHING LOOKS LIKE THE SAME REQUEST.
+				setup();
+			} );
+
+			it( "can handle global exceptions", () => {
+				var event = execute(
+					event          = "echo.onError",
+					renderResults  = true,
+					eventArguments = {
+						exception : {
+							message    : "unit test",
+							detail     : "unit test",
+							stacktrace : ""
+						}
+					}
+				);
+
+				var response = event.getPrivateValue( "response" );
+				expect( response.getError() ).toBeTrue();
+				expect( response.getStatusCode() ).toBe( 500 );
+			} );
+
+			it( "can handle an echo", () => {
+				prepareMock( getRequestContext() ).$( "getHTTPMethod", "GET" );
+				var event    = execute( route = "echo/index" );
+				var response = event.getPrivateValue( "response" );
+				expect( response.getError() ).toBeFalse();
+				expect( response.getData() ).toBe( "Welcome to my ColdBox RESTFul Service" );
+			} );
+
+			it( "can handle missing actions", () => {
+				prepareMock( getRequestContext() ).$( "getHTTPMethod", "GET" );
+				var event    = execute( route = "echo/bogus" );
+				var response = event.getPrivateValue( "response" );
+				expect( response.getError() ).tobeTrue();
+				expect( response.getStatusCode() ).toBe( 404 );
+			} );
+		} );
+	}
+
+}

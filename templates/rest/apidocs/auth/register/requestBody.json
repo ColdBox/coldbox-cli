@@ -1,0 +1,41 @@
+{
+    "description": "Needed fields to register a user",
+    "required": true,
+    "content": {
+        "application/json": {
+            "schema": {
+                "type": "object",
+                "required": [
+					"firstName",
+					"lastName",
+					"username",
+                    "password"
+                ],
+                "properties": {
+					"firstName": {
+                        "description": "The user's first name",
+                        "type": "string"
+					},
+					"lastName": {
+                        "description": "The user's last name",
+                        "type": "string"
+					},
+                    "username": {
+                        "description": "The username to use for login in",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "The password to use for login in",
+                        "type": "string"
+                    }
+                },
+                "example": {
+					"firstName" : "luis",
+					"lastName" : "majano",
+                    "username": "user",
+                    "password": "test"
+                }
+            }
+        }
+    }
+}
