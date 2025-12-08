@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.3.0] - 2025-12-08
+
 ### Added
 
 - More Modern CFML template support
@@ -180,7 +182,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.2.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.3.0...HEAD
+[8.3.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.2.0...v8.3.0
 [8.2.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/ColdBox/coldbox-cli/compare/v7.10.0...v8.0.0
