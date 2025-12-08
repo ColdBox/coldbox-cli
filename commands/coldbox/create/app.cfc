@@ -171,11 +171,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// Prepare defaults on box.json so we remove template based ones
 		command( "package set" )
 			.params(
-				name    : arguments.name,
-				slug    : variables.formatterUtil.slugify( arguments.name ),
-				version : "1.0.0",
-				location: "forgeboxStorage",
-				ignore  : "[]",
+				name       : arguments.name,
+				slug       : variables.formatterUtil.slugify( arguments.name ),
+				version    : "1.0.0",
+				location   : "forgeboxStorage",
+				ignore     : "[]",
 				description: "A ColdBox Application created with the ColdBox CLI"
 			)
 			.run();
@@ -290,14 +290,29 @@ component extends="coldbox-cli.models.BaseCommand" {
 					"#variables.settings.templatesPath#/vite/vite.config.mjs",
 					arguments.directory & "vite.config.mjs"
 				)
-				fileDelete( arguments.directory & "app/layouts/Main.bxm" )
-				fileCopy(
-					"#variables.settings.templatesPath#/vite/layouts/Main.bxm",
-					arguments.directory & "app/layouts/Main.bxm"
-				)
-				fileCopy(
+
+                // BoxLang Layout
+                if( fileExists( arguments.directory & "app/layouts/Main.bxm" ) ) {
+                    fileDelete( arguments.directory & "app/layouts/Main.bxm" )
+                    fileCopy(
+                        "#variables.settings.templatesPath#/vite/layouts/Main.bxm",
+                        arguments.directory & "app/layouts/Main.bxm"
+                    )
+                }
+
+                // CFML Layout
+                if( fileExists( arguments.directory & "app/layouts/Main.cfm" ) ) {
+                    fileDelete( arguments.directory & "app/layouts/Main.cfm" )
+                    fileCopy(
+                        "#variables.settings.templatesPath#/vite/layouts/Main.cfm",
+                        arguments.directory & "app/layouts/Main.cfm"
+                    )
+                }
+
+				directoryCopy(
 					"#variables.settings.templatesPath#/vite/assets",
-					arguments.directory & "resources/assets"
+					arguments.directory & "resources/assets",
+                    true
 				)
 
 				printInfo( "🥊 Installing ColdBox Vite Helpers" )
