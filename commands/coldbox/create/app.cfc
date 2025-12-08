@@ -291,28 +291,28 @@ component extends="coldbox-cli.models.BaseCommand" {
 					arguments.directory & "vite.config.mjs"
 				)
 
-                // BoxLang Layout
-                if( fileExists( arguments.directory & "app/layouts/Main.bxm" ) ) {
-                    fileDelete( arguments.directory & "app/layouts/Main.bxm" )
-                    fileCopy(
-                        "#variables.settings.templatesPath#/vite/layouts/Main.bxm",
-                        arguments.directory & "app/layouts/Main.bxm"
-                    )
-                }
+				// BoxLang Layout
+				if ( fileExists( arguments.directory & "app/layouts/Main.bxm" ) ) {
+					fileDelete( arguments.directory & "app/layouts/Main.bxm" )
+					fileCopy(
+						"#variables.settings.templatesPath#/vite/layouts/Main.bxm",
+						arguments.directory & "app/layouts/Main.bxm"
+					)
+				}
 
-                // CFML Layout
-                if( fileExists( arguments.directory & "app/layouts/Main.cfm" ) ) {
-                    fileDelete( arguments.directory & "app/layouts/Main.cfm" )
-                    fileCopy(
-                        "#variables.settings.templatesPath#/vite/layouts/Main.cfm",
-                        arguments.directory & "app/layouts/Main.cfm"
-                    )
-                }
+				// CFML Layout
+				if ( fileExists( arguments.directory & "app/layouts/Main.cfm" ) ) {
+					fileDelete( arguments.directory & "app/layouts/Main.cfm" )
+					fileCopy(
+						"#variables.settings.templatesPath#/vite/layouts/Main.cfm",
+						arguments.directory & "app/layouts/Main.cfm"
+					)
+				}
 
 				directoryCopy(
 					"#variables.settings.templatesPath#/vite/assets",
 					arguments.directory & "resources/assets",
-                    true
+					true
 				)
 
 				printInfo( "🥊 Installing ColdBox Vite Helpers" )
