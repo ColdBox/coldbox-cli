@@ -386,7 +386,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 				var newConfig = fileRead( arguments.directory & "app/config/Coldbox.bx" )
 					.replace( "Main.index", "Echo.index" )
 					.replace( "Main.onException", "Echo.onError" );
-				fileWrite( arguments.directory & "app/config/Coldbox.bx", newConfig );
+				fileWrite(
+					arguments.directory & "app/config/Coldbox.bx",
+					newConfig
+				);
 
 				// Install CommandBox Modules
 				printInfo( "🥊 Installing ColdBox API Production Modules: Security, Mementifier, Validation" )
@@ -394,10 +397,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 				printInfo( "🥊 Installing ColdBox API Development Modules: route-visualizer,relax" )
 				command( "install" )
-					.params(
-						"route-visualizer,relax",
-					)
-					.flags( 'saveDev' )
+					.params( "route-visualizer,relax" )
+					.flags( "saveDev" )
 					.run();
 
 				printSuccess( "✅ REST API setup complete!" )
