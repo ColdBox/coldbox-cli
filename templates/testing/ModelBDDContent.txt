@@ -11,17 +11,17 @@ component
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
-		super.beforeAll();
+		super.beforeAll()
 
 		// setup the model
-		super.setup();
+		super.setup()
 
 		// init the model object
-		model.init();
+		model.init()
 	}
 
 	function afterAll(){
-		super.afterAll();
+		super.afterAll()
 	}
 
 	/*********************************** BDD SUITES ***********************************/

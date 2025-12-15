@@ -102,6 +102,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 			arguments.description,
 			"all"
 		);
+
 		// BoxLang replacements
 		if ( arguments.boxlang ) {
 			handlerContent     = toBoxLangClass( handlerContent );
@@ -150,7 +151,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 		}
 
 		// Create dir if it doesn't exist
-		var handlerPath = resolvePath( "#arguments.directory#/#arguments.name#.cfc" );
+		var handlerPath = resolvePath( "#arguments.directory#/#arguments.name#.#arguments.boxlang ? 'bx' : 'cfc'#" );
 		directoryCreate(
 			getDirectoryFromPath( handlerPath ),
 			true,
@@ -173,7 +174,7 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 
 		// More Tests?
 		if ( arguments.integrationTests ) {
-			var testPath = resolvePath( "#arguments.testsDirectory#/#arguments.name#Test.cfc" );
+			var testPath = resolvePath( "#arguments.testsDirectory#/#arguments.name#Test.#arguments.boxlang ? 'bx' : 'cfc'#" );
 			// Create dir if it doesn't exist
 			directoryCreate(
 				getDirectoryFromPath( testPath ),

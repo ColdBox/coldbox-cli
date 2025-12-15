@@ -279,7 +279,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			} else {
 				printInfo( "🥊 Setting up Vite for your frontend build system" )
 				fileCopy(
-					"#variables.settings.templatesPath#/vite/.babelrc",
+					"#variables.settings.templatesPath#/vite/babelrc",
 					arguments.directory & ".babelrc"
 				)
 				fileCopy(
@@ -291,28 +291,30 @@ component extends="coldbox-cli.models.BaseCommand" {
 					arguments.directory & "vite.config.mjs"
 				)
 
-                // BoxLang Layout
-                if( fileExists( arguments.directory & "app/layouts/Main.bxm" ) ) {
-                    fileDelete( arguments.directory & "app/layouts/Main.bxm" )
-                    fileCopy(
-                        "#variables.settings.templatesPath#/vite/layouts/Main.bxm",
-                        arguments.directory & "app/layouts/Main.bxm"
-                    )
-                }
+				// BoxLang Layout
+				// Detect if they ar in BoxLang or CFML mode
+				if ( fileExists( arguments.directory & "app/layouts/Main.bxm" ) ) {
+					fileDelete( arguments.directory & "app/layouts/Main.bxm" )
+					fileCopy(
+						"#variables.settings.templatesPath#/vite/layouts/Main.bxm",
+						arguments.directory & "app/layouts/Main.bxm"
+					)
+				}
 
-                // CFML Layout
-                if( fileExists( arguments.directory & "app/layouts/Main.cfm" ) ) {
-                    fileDelete( arguments.directory & "app/layouts/Main.cfm" )
-                    fileCopy(
-                        "#variables.settings.templatesPath#/vite/layouts/Main.cfm",
-                        arguments.directory & "app/layouts/Main.cfm"
-                    )
-                }
+				// CFML Layout
+				// Detect if they ar in BoxLang or CFML mode
+				if ( fileExists( arguments.directory & "app/layouts/Main.cfm" ) ) {
+					fileDelete( arguments.directory & "app/layouts/Main.cfm" )
+					fileCopy(
+						"#variables.settings.templatesPath#/vite/layouts/Main.cfm",
+						arguments.directory & "app/layouts/Main.cfm"
+					)
+				}
 
 				directoryCopy(
 					"#variables.settings.templatesPath#/vite/assets",
 					arguments.directory & "resources/assets",
-                    true
+					true
 				)
 
 				printInfo( "🥊 Installing ColdBox Vite Helpers" )
@@ -386,7 +388,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 				var newConfig = fileRead( arguments.directory & "app/config/Coldbox.bx" )
 					.replace( "Main.index", "Echo.index" )
 					.replace( "Main.onException", "Echo.onError" );
-				fileWrite( "app/config/Coldbox.bx", newConfig );
+				fileWrite(
+					arguments.directory & "app/config/Coldbox.bx",
+					newConfig
+				);
 
 				// Install CommandBox Modules
 				printInfo( "🥊 Installing ColdBox API Production Modules: Security, Mementifier, Validation" )
@@ -394,10 +399,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 				printInfo( "🥊 Installing ColdBox API Development Modules: route-visualizer,relax" )
 				command( "install" )
-					.params(
-						"cbsecurity,mementifier,cbvalidation",
-						"--saveDev"
-					)
+					.params( "route-visualizer,relax" )
+					.flags( "saveDev" )
 					.run();
 
 				printSuccess( "✅ REST API setup complete!" )

@@ -10,9 +10,9 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="|nam
 	*/
 	void function setup(){
 		// interceptor configuration properties, if any
-		configProperties = {};
+		configProperties = {}
 		// init and configure interceptor
-		super.setup();
+		super.setup()
 		// we are now ready to test this interceptor
 	}
 
@@ -20,7 +20,7 @@ component extends="coldbox.system.testing.BaseInterceptorTest" interceptor="|nam
 		// any mocking here
 
 		// test configure
-		interceptor.configure();
+		interceptor.configure()
 	}
 
 |TestCases|
