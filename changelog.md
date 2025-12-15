@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [8.3.0] - 2025-12-08
-
 ### Added
 
 - Make sure `commandbox-boxlang` is a dependency to detect BoxLang projects
