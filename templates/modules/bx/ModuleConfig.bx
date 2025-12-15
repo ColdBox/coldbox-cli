@@ -68,19 +68,19 @@ class {
 	 */
 	function configure(){
 		// parent settings
-		parentSettings = {};
+		parentSettings = {}
 
 		// module settings - stored in modules.name.settings
-		settings = {};
+		settings = {}
 
 		// Layout Settings
-		layoutSettings = { defaultLayout : "" };
+		layoutSettings = { defaultLayout : "" }
 
 		// Custom Declared Points
-		interceptorSettings = { customInterceptionPoints : [] };
+		interceptorSettings = { customInterceptionPoints : [] }
 
 		// Custom Declared Interceptors
-		interceptors = [];
+		interceptors = []
 
 		// Binder Mappings
 		// binder.map("Alias").to("#moduleMapping#.models.MyService");

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Make sure `commandbox-boxlang` is a dependency to detect BoxLang projects
+
+### Fixed
+
+- Creation of `bx` classes when `--boxlang` is used was missing from handler creation
+- App generation install tweaks to avoid path issues by @gpickin
+- Fix on copying files starting with a dot, like `.babelrc` for vite support, which is ignored by default by git ignores.
+
 ## [8.3.0] - 2025-12-08
 
 ### Added

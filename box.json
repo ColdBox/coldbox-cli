@@ -29,7 +29,8 @@
     },
     "dependencies":{
         "testbox-cli":"*",
-        "commandbox-migrations":"*"
+        "commandbox-migrations":"*",
+		"commandbox-boxlang":"*"
     },
     "installPaths":{},
     "ignore":[

@@ -279,7 +279,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			} else {
 				printInfo( "🥊 Setting up Vite for your frontend build system" )
 				fileCopy(
-					"#variables.settings.templatesPath#/vite/.babelrc",
+					"#variables.settings.templatesPath#/vite/babelrc",
 					arguments.directory & ".babelrc"
 				)
 				fileCopy(
@@ -292,6 +292,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				)
 
 				// BoxLang Layout
+				// Detect if they ar in BoxLang or CFML mode
 				if ( fileExists( arguments.directory & "app/layouts/Main.bxm" ) ) {
 					fileDelete( arguments.directory & "app/layouts/Main.bxm" )
 					fileCopy(
@@ -301,6 +302,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 				}
 
 				// CFML Layout
+				// Detect if they ar in BoxLang or CFML mode
 				if ( fileExists( arguments.directory & "app/layouts/Main.cfm" ) ) {
 					fileDelete( arguments.directory & "app/layouts/Main.cfm" )
 					fileCopy(

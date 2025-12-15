@@ -1,6 +1,8 @@
 # ColdBox Modern Template - AI Coding Instructions
 
-This is a ColdBox HMVC framework template with a "modern" folder structure that separates application code from the public webroot. Use CFML/BoxLang with ColdBox 7+ conventions.
+This is a ColdBox HMVC framework template with a "modern" folder structure that separates application code from the public webroot. **Supports both BoxLang (default) and CFML** with ColdBox 7+ conventions.
+
+**Template Features**: This template supports Vite integration (`--vite`), Docker containerization (`--docker`), REST API configuration (`--rest`), and database migrations (`--migrations`).
 
 ## 🏗️ Architecture Overview
 
@@ -53,6 +55,8 @@ This template **requires** CommandBox aliases in `server.json` to expose interna
 ## 📝 Handler Patterns
 
 ### Standard Handler Structure
+
+**Code Style Note**: Semicolons are optional in CFML/BoxLang. Only use them when demarcating properties or in inline component syntax.
 
 ```cfml
 component extends="coldbox.system.EventHandler" {
@@ -179,7 +183,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/app" {
 
 ## 💉 Dependency Injection
 
-Use WireBox annotations in components:
+Use WireBox annotations in components. **Note**: Semicolons are used here to demarcate property declarations:
 
 ```cfml
 component {
@@ -218,9 +222,16 @@ box run-script format          # Format all code
 box run-script format:check    # Check formatting
 box run-script format:watch    # Watch mode
 
-# Docker
-box run-script build:docker    # Build Docker image
-box run-script run:docker      # Run container
+# Vite (if --vite flag was used during creation)
+npm install                    # Install frontend dependencies
+npm run dev                    # Start Vite dev server with HMR
+npm run build                  # Build for production
+npm run preview                # Preview production build
+
+# Docker (if --docker flag was used during creation)
+docker-compose up -d           # Start development environment
+docker-compose logs -f         # View logs
+docker-compose down            # Stop services
 ```
 
 ## 📦 Java Dependencies (Optional)
@@ -275,7 +286,18 @@ When installing modules with web assets:
 
 ## 🎯 When to Use This Template
 
-- **Use Modern Template**: Secure environments, production apps, when you want application code outside webroot
-- **Use Default Template**: Development, simple apps, when you need everything in webroot
+- **Use Modern Template**: Production apps, secure environments, when you want application code outside webroot, supports both BoxLang and CFML
+- **Use BoxLang Template** (default): BoxLang-first projects with modern conventions
+- **Use Flat Template**: Development, simple apps, traditional CFML when you need everything in webroot
 
 This template requires understanding of web server aliases and CommandBox configuration.
+
+## 🚀 Additional Features
+
+**Created with --vite**: Includes Vite configuration for modern frontend development with hot module replacement.
+
+**Created with --docker**: Includes Dockerfile and docker-compose.yml for containerized development and deployment.
+
+**Created with --rest**: Pre-configured for REST API development with appropriate routing and response handlers.
+
+**Created with --migrations**: Includes CommandBox Migrations setup for database version control.

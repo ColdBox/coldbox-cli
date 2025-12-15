@@ -1,6 +1,8 @@
 # ColdBox Flat Template - AI Coding Instructions
 
-This is a ColdBox HMVC framework template using the traditional "flat" structure where all application code lives in the webroot. Use CFML with ColdBox 7+ conventions. Compatible with Adobe ColdFusion 2018+, Lucee 5.x+, and BoxLang 1.0+.
+This is a ColdBox HMVC framework template using the traditional "flat" structure where all application code lives in the webroot. **Supports both BoxLang (when specified) and CFML (default for flat template)** with ColdBox 7+ conventions. Compatible with Adobe ColdFusion 2018+, Lucee 5.x+, and BoxLang 1.0+.
+
+**Note**: For new projects, consider using the BoxLang or Modern templates which are now the recommended defaults.
 
 ## 🏗️ Architecture Overview
 
@@ -43,10 +45,12 @@ This is a ColdBox HMVC framework template using the traditional "flat" structure
 
 ### Standard Handler Structure
 
+**Code Style Note**: Semicolons are optional in CFML/BoxLang. Only use them when demarcating properties or in inline component syntax.
+
 ```cfml
 component extends="coldbox.system.EventHandler" {
 
-    // Dependency injection
+    // Dependency injection (semicolons used to demarcate properties)
     property name="userService" inject="UserService";
 
     // All actions receive three arguments:
@@ -170,10 +174,13 @@ box run-script docker:run          # Run container
 box run-script docker:stack up     # Start docker-compose stack
 box run-script docker:stack down   # Stop docker-compose stack
 
-# ColdBox CLI scaffolding
-coldbox create handler name=Users actions=index,create,save,delete
-coldbox create model name=UserService methods=getAll,save,delete
-coldbox create integration-test handler=Users
+# ColdBox CLI scaffolding (use --cfml to ensure CFML generation)
+coldbox create handler name=Users actions=index,create,save,delete --cfml
+coldbox create model name=UserService methods=getAll,save,delete --cfml
+coldbox create integration-test handler=Users --cfml
+
+# Interactive app wizard
+coldbox create app-wizard      # Step-by-step app creation
 ```
 
 ## 🎯 Configuration Patterns
@@ -254,6 +261,8 @@ component {
 
 ### Property Injection
 
+**Note**: Semicolons are used to demarcate property declarations:
+
 ```cfml
 component {
     // Inject by model name (auto-resolved from models/ folder)
@@ -318,6 +327,17 @@ this.javaSettings = {
 - **`box.json`** - Dependencies, scripts, CommandBox settings
 - **`server.json`** - Server configuration (engine, JVM, rewrites)
 - **`tests/Application.cfc`** - Test bootstrap (mirrors main Application.cfc)
+
+## ⚙️ Language Generation
+
+Since **BoxLang is now the default** for the ColdBox CLI, use the `--cfml` flag when generating new components for CFML-based flat template projects:
+
+```bash
+# Force CFML generation for traditional flat template projects
+coldbox create handler Users --cfml
+coldbox create model UserService --cfml
+coldbox create view users/index --cfml
+```
 
 ## 🔍 Debugging Tips
 
