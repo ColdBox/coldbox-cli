@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.4.0] - 2025-12-15
+
 ### Added
 
 - Make sure `commandbox-boxlang` is a dependency to detect BoxLang projects
@@ -192,7 +194,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.3.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.4.0...HEAD
+[8.4.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.3.0...v8.4.0
 [8.3.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.2.0...v8.3.0
 [8.2.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.0.0...v8.1.0
