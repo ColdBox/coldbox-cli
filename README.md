@@ -1,11 +1,5 @@
-# ColdBox CLI
-
 <p align="center">
-	<img src="https://www.ortussolutions.com/__media/coldbox-185-logo.png">
-	<br>
-	<img src="https://www.ortussolutions.com/__media/wirebox-185.png" height="125">
-	<img src="https://www.ortussolutions.com/__media/cachebox-185.png" height="125" >
-	<img src="https://www.ortussolutions.com/__media/logbox-185.png"  height="125">
+	<img src="https://raw.githubusercontent.com/Ortus-Solutions/ortus-artwork/refs/heads/main/coldbox/SVG/coldbox-logo-full-dark-M.svg">
 </p>
 
 <p align="center">
@@ -22,7 +16,7 @@
 	<a href="https://www.ortussolutions.com">www.ortussolutions.com</a>
 </p>
 
-----
+# ColdBox CLI
 
 This is the official ColdBox CLI for CommandBox.  It is a collection of commands to help you work with ColdBox and its ecosystem for building, testing, and deploying BoxLang and CFML applications.  It provides commands for scaffolding applications, creating tests, modules, models, views, and much more.
 
