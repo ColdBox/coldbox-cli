@@ -3,7 +3,8 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 	function run(){
 		showColdBoxBanner()
 		print.line();
-		print.boldCyan( "Welcome to the ColdBox CLI!" )
+		print
+			.boldCyan( "Welcome to the ColdBox CLI!" )
 			.line()
 			.line()
 			.whiteLine( "Build modern ColdBox applications with ease using BoxLang or CFML." )
