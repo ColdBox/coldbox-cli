@@ -1,26 +1,28 @@
 component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 
 	function run(){
+		showColdBoxBanner()
 		print.line();
-		print.blue( "The " );
-		print.boldGreen( "coldbox" );
-		print
-			.blueLine(
-				" namespace is designed to help developers easily build applications using the ColdBox MVC platform."
-			)
-			.line()
-			.blue( "Use these commands to stub out placeholder handlers, models, views, modules and much more." )
-			.blue(
-				"There are commands to install ColdBox integrations into your IDE, run your application from the command line, "
-			)
-			.blue( "and even generate reports on various aspects of your application structure." )
-			.blue(
-				"  Type help or (--help) before any command name to get additional information on how to call that specific command."
-			)
+		print.boldCyan( "Welcome to the ColdBox CLI!" )
 			.line()
 			.line()
-			.greenLine( "ColdBox CLI Version: #config.version#" )
-			.line();
+			.whiteLine( "Build modern ColdBox applications with ease using BoxLang or CFML." )
+			.line()
+			.boldWhiteLine( "What you can do:" )
+			.line()
+			.greenLine( "  • Generate complete applications with coldbox create app-wizard" )
+			.greenLine( "  • Scaffold handlers, models, views, and modules" )
+			.greenLine( "  • Create REST APIs and CRUD resources" )
+			.greenLine( "  • Generate tests (BDD & Unit)" )
+			.greenLine( "  • Add Docker, Vite, and database migrations support" )
+			.greenLine( "  • Reinit and watch your application during development" )
+			.line()
+			.yellowLine( "Tip: Type 'coldbox create --help' or 'help coldbox <command>' for more details" )
+			.line()
+			.line()
+			.dim( "ColdBox CLI Version: #config.version#" )
+			.line()
+			.line()
 	}
 
 }

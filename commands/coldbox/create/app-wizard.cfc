@@ -10,11 +10,19 @@ component extends="app" aliases="" {
 	 * @boxlang  Is this a BoxLang project?
 	 **/
 	function run(
-		required name,
+		name,
 		skeleton,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
-		arguments.directory = getCWD();
+		arguments.directory = getCWD()
+
+		// Show Big Colorful COLDBOX Banner
+		showColdBoxBanner()
+
+		// Ensure Name
+		if ( isNull( arguments.name ) || len( trim( arguments.name ) ) EQ 0 ) {
+			arguments.name = ask( "What is the name of your ColdBox application?" );
+		}
 
 		// Ensure Folder Creation
 		if ( !confirm( "Are you currently inside the ""/#name#"" folder (if ""No"" we will create it)? [y/n]" ) ) {

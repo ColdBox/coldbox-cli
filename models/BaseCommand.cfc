@@ -92,4 +92,40 @@ component accessors="true" {
 		);
 	}
 
+	/**
+	 * Display the ColdBox ASCII art banner with random gradient colors
+	 */
+	function showColdBoxBanner(){
+		var lines = [
+			" ██████╗  ██████╗  ██╗      ██████╗  ██████╗   ██████╗  ██╗  ██╗",
+			"██╔════╝ ██╔═══██╗ ██║      ██╔══██╗ ██╔══██╗ ██╔═══██╗ ╚██╗██╔╝",
+			"██║      ██║   ██║ ██║      ██║  ██║ ██████╔╝ ██║   ██║  ╚███╔╝ ",
+			"██║      ██║   ██║ ██║      ██║  ██║ ██╔══██╗ ██║   ██║  ██╔██╗ ",
+			"╚██████╗ ╚██████╔╝ ███████╗ ██████╔╝ ██████╔╝ ╚██████╔╝ ██╔╝ ██╗",
+			" ╚═════╝  ╚═════╝  ╚══════╝ ╚═════╝  ╚═════╝   ╚═════╝  ╚═╝  ╚═╝"
+		]
+
+		var gradients = {
+			"Ocean": [ "color81", "color75", "color69", "color63", "color57", "color21" ],
+			"Fire": [ "color196", "color160", "color124", "color88", "color52", "color88" ],
+			"Sunset": [ "color214", "color208", "color202", "color196", "color160", "color124" ],
+			"Purple": [ "color213", "color177", "color141", "color105", "color69", "color39" ],
+			"Mint": [ "color158", "color122", "color86", "color50", "color44", "color38" ],
+			"Gray": [ "color250", "color248", "color245", "color243", "color240", "color238" ]
+		}
+
+		// Randomly select a gradient theme
+		var themeNames = structKeyArray( gradients )
+		var themeName = themeNames[ randRange( 1, arrayLen( themeNames ) ) ]
+		var gradient = gradients[ themeName ]
+
+		variables.print.line()
+
+		for( var i = 1; i <= arrayLen( lines ); i++ ) {
+			variables.print.line( lines[ i ], gradient[ i ] )
+		}
+
+		variables.print.line()
+	}
+
 }

@@ -1,6 +1,7 @@
-component excludeFromHelp=true {
+component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 
 	function run(){
+		showColdBoxBanner()
 		variables.print
 			.line()
 			.blue( "The " )

@@ -98,6 +98,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 			return;
 		}
 
+		// Show Big Colorful COLDBOX Banner
+		showColdBoxBanner()
+
 		// Start the job
 		variables.print
 			.boldGreenLine( "🔥 Starting to cookup your ColdBox App [#arguments.name#]..." )

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New ColdBox ASCII art banner when creating apps and using the app-wizard
+- Improved readme and help commands
+- Name question in app-wizard if not provided
+
 ## [8.4.0] - 2025-12-15
 
 ### Added
