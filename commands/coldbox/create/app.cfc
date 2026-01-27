@@ -396,6 +396,19 @@ component extends="coldbox-cli.models.BaseCommand" {
 					newConfig
 				);
 
+				// Get the server.json : server show scripts.onServerInitialInstall so we can append to it and set it back
+				var originalServerInstall = command( "server show" )
+					.params( property: "scripts.onServerInitialInstall" )
+					.run( returnOutput=true  )
+
+				printInfo( "🥊  Original " & originalServerInstall )
+				// Now call server set to append: ,bx-compat-cfml
+				command( "server set" )
+					.params(
+						"scripts.onServerInitialInstall" : originalServerInstall & ",bx-compat-cfml"
+					)
+					.run();
+
 				// Install CommandBox Modules
 				printInfo( "🥊 Installing ColdBox API Production Modules: Security, Mementifier, Validation" )
 				command( "install" ).params( "cbsecurity,mementifier,cbvalidation" ).run();
