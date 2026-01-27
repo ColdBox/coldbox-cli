@@ -399,14 +399,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 				// Get the server.json : server show scripts.onServerInitialInstall so we can append to it and set it back
 				var originalServerInstall = command( "server show" )
 					.params( property: "scripts.onServerInitialInstall" )
-					.run( returnOutput=true  )
+					.run( returnOutput = true )
 
 				printInfo( "🥊  Original " & originalServerInstall )
 				// Now call server set to append: ,bx-compat-cfml
 				command( "server set" )
-					.params(
-						"scripts.onServerInitialInstall" : originalServerInstall & ",bx-compat-cfml"
-					)
+					.params( "scripts.onServerInitialInstall" : originalServerInstall & ",bx-compat-cfml" )
 					.run();
 
 				// Install CommandBox Modules
