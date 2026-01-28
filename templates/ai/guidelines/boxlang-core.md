@@ -20,11 +20,11 @@ BoxLang is a modern, dynamic JVM language with a clean class-based syntax.
 ```boxlang
 class UserService {
     property name="userDAO" inject;
-    
+
     function getAll() {
         return userDAO.findAll()
     }
-    
+
     function create( required struct data ) {
         return userDAO.create( data )
     }

@@ -28,17 +28,17 @@ Use this skill when creating ColdBox handlers (controllers) for handling HTTP re
 ```boxlang
 class |HandlerName| extends coldbox.system.EventHandler {
     property name="|serviceName|" inject;
-    
+
     function index( event, rc, prc ) {
         prc.|items| = |serviceName|.getAll()
         event.setView( "|viewPath|" )
     }
-    
+
     function show( event, rc, prc ) {
         prc.|item| = |serviceName|.getById( rc.id ?: 0 )
         event.setView( "|viewPath|" )
     }
-    
+
     function create( event, rc, prc ) {
         var result = |serviceName|.create( rc )
         event.renderData(
@@ -46,12 +46,12 @@ class |HandlerName| extends coldbox.system.EventHandler {
             statusCode = 201
         )
     }
-    
+
     function update( event, rc, prc ) {
         var result = |serviceName|.update( rc.id ?: 0, rc )
         event.renderData( data = result )
     }
-    
+
     function delete( event, rc, prc ) {
         |serviceName|.delete( rc.id ?: 0 )
         event.renderData(

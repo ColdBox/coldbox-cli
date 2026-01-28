@@ -30,12 +30,12 @@ ColdBox is a conventions-based HMVC framework for CFML/BoxLang applications.
 ```boxlang
 class Users extends coldbox.system.EventHandler {
     property name="userService" inject;
-    
+
     function index( event, rc, prc ) {
         prc.users = userService.getAll()
         event.setView( "users/index" )
     }
-    
+
     function create( event, rc, prc ) {
         var user = userService.create( rc )
         event.renderData(

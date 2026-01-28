@@ -27,7 +27,7 @@ Use this skill when you need to implement [skill-specific functionality].
 // Implementation template will go here
 class Example {
     property name="dependency" inject;
-    
+
     function execute() {
         // Implementation
     }

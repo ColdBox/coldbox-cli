@@ -115,7 +115,7 @@ component singleton {
 	 */
 	private function getAgentConfigContent( required string agent, required string language ){
 		var templatePath = getTemplatesPath() & "/ai/agents/agent-instructions.md";
-		
+
 		if ( !fileExists( templatePath ) ) {
 			// Fallback content
 			return "# AI Instructions for #arguments.agent#
@@ -125,13 +125,13 @@ Project Language: #arguments.language#
 Guidelines available in .ai/guidelines/
 Skills available in .ai/skills/";
 		}
-		
+
 		var content = fileRead( templatePath );
-		
+
 		// Replace placeholders
 		var languageNote = arguments.language == "boxlang" ? "BoxLang" : ( arguments.language == "cfml" ? "CFML" : "BoxLang/CFML hybrid" );
 		content = replaceNoCase( content, "|LANGUAGE|", languageNote, "all" );
-		
+
 		return content;
 	}
 

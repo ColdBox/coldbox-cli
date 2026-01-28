@@ -33,7 +33,7 @@ describe( "Users Handler", function(){
     beforeEach( function(){
         setup()
     } )
-    
+
     it( "should list all users", function(){
         var event = execute( event="users.index", renderResults=true )
         expect( event.getValue( "users", "" ) ).toBeArray()

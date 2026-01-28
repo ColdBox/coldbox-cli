@@ -19,11 +19,11 @@ CFML is a dynamic, tag-based language designed for rapid web development.
 ```cfml
 component {
     property name="userDAO" inject;
-    
+
     function getAll() {
         return userDAO.findAll();
     }
-    
+
     function create( required struct data ) {
         return userDAO.create( data );
     }

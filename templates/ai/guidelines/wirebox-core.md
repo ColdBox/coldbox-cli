@@ -25,7 +25,7 @@ function configure() {
     map( "UserService" )
         .to( "models.services.UserService" )
         .asSingleton()
-    
+
     map( "UserDAO" )
         .to( "models.dao.UserDAO" )
         .asTransient()
