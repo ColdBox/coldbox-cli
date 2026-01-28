@@ -8,6 +8,7 @@ component singleton {
 	property name="print"            inject="PrintBuffer";
 	property name="fileSystemUtil"   inject="fileSystem";
 	property name="packageService"   inject="PackageService";
+	property name="config"           inject="box:moduleconfig:coldbox-cli";
 	property name="guidelineManager" inject="GuidelineManager@coldbox-cli";
 	property name="skillManager"     inject="SkillManager@coldbox-cli";
 	property name="agentRegistry"    inject="AgentRegistry@coldbox-cli";
@@ -56,7 +57,7 @@ component singleton {
 		// Initialize manifest
 		var manifest = {
 			"coldboxCliVersion" : getColdboxCliVersion(),
-			"lastSync"          : now().toIsoString(),
+			"lastSync"          : dateTimeFormat( now(), "iso" ),
 			"language"          : arguments.language,
 			"guidelines"        : [],
 			"skills"            : [],
@@ -118,8 +119,8 @@ component singleton {
 		}
 
 		// Update coldbox-cli version
-		manifest.coldboxCliVersion = getColdboxCliVersion();
-		manifest.lastSync          = now().toIsoString();
+		manifest.coldboxCliVersion = getColdboxCliVersion()
+		manifest.lastSync          = dateTimeFormat( now(), "iso" )
 
 		// Refresh guidelines based on installed modules
 		var guidelineChanges = variables.guidelineManager.refresh( arguments.directory, manifest );
@@ -292,7 +293,9 @@ component singleton {
 	 * Get current coldbox-cli version
 	 */
 	private function getColdboxCliVersion(){
-		var boxJson = variables.packageService.readPackageDescriptor( getCwd() );
+		// Read from the coldbox-cli module's own box.json using module config path
+		var moduleRoot = variables.config.path
+		var boxJson = variables.packageService.readPackageDescriptor( moduleRoot )
 		return boxJson.version ?: "unknown";
 	}
 

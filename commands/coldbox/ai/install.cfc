@@ -12,6 +12,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 	// DI
 	property name="aiService" inject="AIService@coldbox-cli";
+	property name="config"         inject="box:moduleconfig:coldbox-cli";
 
 	/**
 	 * Run the command
@@ -27,6 +28,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean force   = false,
 		string directory = getCwd()
 	){
+
 		showColdBoxBanner( "AI Integration Installer" );
 
 		// Detect language if not specified
@@ -104,7 +106,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 		print.line();
 
 		var choice = ask( "Enter choice (1-3): " );
-
+		// Default to BoxLang if empty/ENTER
+		if ( !len( trim( choice ) ) ) {
+			choice = "1"
+		}
 		switch ( choice ) {
 			case "1":
 				return "boxlang";

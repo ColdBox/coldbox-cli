@@ -229,7 +229,7 @@ component singleton {
 			"name"             : arguments.skillName,
 			"source"           : arguments.source,
 			"installedVersion" : getColdboxCliVersion(),
-			"syncedAt"         : now().toIsoString()
+			"syncedAt"         : dateTimeFormat( now(), "iso" )
 		};
 
 		if ( existingIndex ) {
