@@ -21,15 +21,11 @@ component singleton {
 		required string agents,
 		required string language
 	){
-		var configured = []
-		var agentList  = listToArray( arguments.agents )
-
-		agentList.each( ( agent ) => {
+		return listToArray( arguments.agents )
+			.map( ( agent ) => {
 			configureAgent( directory, agent, language )
-			configured.append( agent )
+			return agent
 		} )
-
-		return configured
 	}
 
 	/**
@@ -44,7 +40,7 @@ component singleton {
 			"recommendations" : []
 		};
 
-		// Check each configured agent
+		// Check each configured agentr
 		var agents = manifest.agents ?: [];
 		agents.each( ( agent ) => {
 			var configFile = getAgentConfigPath( directory, agent )
@@ -73,17 +69,17 @@ component singleton {
 		required string agent,
 		required string language
 	){
-		var configPath = getAgentConfigPath( arguments.directory, arguments.agent );
-		var content    = getAgentConfigContent( arguments.agent, arguments.language );
+		var configPath = getAgentConfigPath( arguments.directory, arguments.agent )
+		var content    = getAgentConfigContent( arguments.agent, arguments.language )
 
 		// Create directories if needed
-		var configDir = getDirectoryFromPath( configPath );
+		var configDir = getDirectoryFromPath( configPath )
 		if ( !directoryExists( configDir ) ) {
-			directoryCreate( configDir );
+			directoryCreate( configDir )
 		}
 
 		// Write agent config file
-		fileWrite( configPath, content );
+		fileWrite( configPath, content )
 	}
 
 	/**
