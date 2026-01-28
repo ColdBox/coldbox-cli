@@ -16,6 +16,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run( string directory = getCwd() ){
+
+		showColdBoxBanner( "AI Integration Info" );
+
 		try {
 			var info = variables.aiService.getInfo( arguments.directory );
 

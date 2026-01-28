@@ -1046,16 +1046,14 @@ coldbox ai doctor
 - [x] Create `guidelines/` subdirectory
 - [x] Create `skills/` subdirectory
 - [x] Create `templates/ai/` for agent-specific files
-- [ ] Add `.gitignore` entries for AI files
 
 ### 1.2 Core Service Components ✅
 
 - [x] Create `AIService.cfc` - Central AI operations service
 - [x] Create `GuidelineManager.cfc` - Guideline generation and management
 - [x] Create `SkillManager.cfc` - Agent skills management (auto-discovery + core skills)
-- [ ] Create `MCPClient.cfc` - MCP server communication
 - [x] Create `AgentRegistry.cfc` - Multi-agent support registry
-- [ ] Create `utility` methods in `Utility.cfc` for AI operations
+- [ ] Create `MCPClient.cfc` - MCP server communication
 
 ### 1.3 AI Manifest System ✅
 

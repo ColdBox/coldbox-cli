@@ -94,8 +94,11 @@ component accessors="true" {
 
 	/**
 	 * Display the ColdBox ASCII art banner with random gradient colors
+	 *
+	 * @subTitle Optional subtitle to display below the banner
+	 * @theme Optional gradient theme name (e.g., "Ocean", "Fire", "Sunset", "Purple", "Mint", "Gray")
 	 */
-	function showColdBoxBanner(){
+	function showColdBoxBanner( string subTitle = "", string theme = "",  ){
 		var lines = [
 			" ██████╗  ██████╗  ██╗      ██████╗  ██████╗   ██████╗  ██╗  ██╗",
 			"██╔════╝ ██╔═══██╗ ██║      ██╔══██╗ ██╔══██╗ ██╔═══██╗ ╚██╗██╔╝",
@@ -105,7 +108,7 @@ component accessors="true" {
 			" ╚═════╝  ╚═════╝  ╚══════╝ ╚═════╝  ╚═════╝   ╚═════╝  ╚═╝  ╚═╝"
 		]
 
-		var gradients = {
+		var themes = {
 			"Ocean" : [
 				"color81",
 				"color75",
@@ -153,18 +156,60 @@ component accessors="true" {
 				"color243",
 				"color240",
 				"color238"
+			],
+			"Forest" : [
+				"color154",
+				"color148",
+				"color142",
+				"color106",
+				"color70",
+				"color34"
+			],
+			"Gold" : [
+				"color226",
+				"color220",
+				"color214",
+				"color208",
+				"color172",
+				"color136"
 			]
 		}
 
-		// Randomly select a gradient theme
-		var themeNames = structKeyArray( gradients )
-		var themeName  = themeNames[ randRange( 1, arrayLen( themeNames ) ) ]
-		var gradient   = gradients[ themeName ]
+		// Randomly select a gradient theme if none provided
+		if ( arguments.theme == "" ) {
+			var themeNames = structKeyArray( themes )
+			var themeName  = themeNames[ randRange( 1, arrayLen( themeNames ) ) ]
+		} else {
+			var themeName = arguments.theme
+		}
+		var gradient   = themes[ themeName ]
 
 		variables.print.line()
 
 		for ( var i = 1; i <= arrayLen( lines ); i++ ) {
 			variables.print.line( lines[ i ], gradient[ i ] )
+		}
+
+		// Add subtitle block if provided
+		if ( len( arguments.subTitle ) ) {
+			var blockWidth   = 48
+			var contentWidth = blockWidth - 4  // Subtract 4 for the ██ borders (2 chars each side)
+			var padding      = contentWidth - len( arguments.subTitle )
+			var leftPad      = int( padding / 2 )
+			var rightPad     = padding - leftPad
+			var indent       = repeatString( " ", 8 )
+
+			variables.print
+				.line( indent & repeatString( "▄", blockWidth ), gradient.last() )
+				.line(
+					indent & "██" &
+					repeatString( " ", leftPad ) &
+					arguments.subTitle &
+					repeatString( " ", rightPad ) &
+					"██",
+					"white"
+				)
+				.line( indent & repeatString( "▀", blockWidth ), gradient.last() )
 		}
 
 		variables.print.line()
