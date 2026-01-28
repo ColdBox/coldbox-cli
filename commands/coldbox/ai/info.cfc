@@ -92,10 +92,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 			printInfo( "💡 Tip: Run 'coldbox ai doctor' for a detailed health check" );
 			print.line();
 		} catch ( any e ) {
-			printError( "Failed to get AI integration info: #e.message#" );
-			if ( shell.isDebug() ) {
-				printError( e.stackTrace );
-			}
+			printError( "Failed to get AI integration info: #e.message#" )
+			printError( e.stackTrace )
 		}
 	}
 

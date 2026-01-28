@@ -27,6 +27,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean force   = false,
 		string directory = getCwd()
 	){
+		showColdBoxBanner( "AI Integration Installer" );
+
 		// Detect language if not specified
 		if ( !len( arguments.language ) ) {
 			arguments.language = promptForLanguage();
@@ -84,9 +86,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			printInfo( "Your AI assistant is now configured with ColdBox knowledge!" );
 		} catch ( any e ) {
 			printError( "Failed to install AI integration: #e.message#" );
-			if ( shell.isDebug() ) {
-				printError( e.stackTrace );
-			}
+			printError( e.stackTrace );
 		}
 	}
 

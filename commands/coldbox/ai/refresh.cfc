@@ -17,6 +17,9 @@ component extends="coldbox-cli.models.BaseCommand" aliases="update" {
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run( string directory = getCwd() ){
+
+		showColdBoxBanner( "AI Integration Refresher" );
+
 		printInfo( "Refreshing AI integration..." );
 		print.line();
 
@@ -60,10 +63,8 @@ component extends="coldbox-cli.models.BaseCommand" aliases="update" {
 				printInfo( "No changes detected. Everything is up to date!" );
 			}
 		} catch ( any e ) {
-			printError( "Failed to refresh AI integration: #e.message#" );
-			if ( shell.isDebug() ) {
-				printError( e.stackTrace );
-			}
+			printError( "Failed to refresh AI integration: #e.message#" )
+			printError( e.stackTrace )
 		}
 	}
 

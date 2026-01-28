@@ -24,6 +24,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean json     = false,
 		string directory = getCwd()
 	){
+		showColdBoxBanner( "🏥 AI Doctor 🏥" );
 		try {
 			var diagnosis = variables.aiService.diagnose( arguments.directory )
 
