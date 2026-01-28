@@ -21,25 +21,37 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @language Project language mode: boxlang, cfml, hybrid
 	 * @force Overwrite existing AI configuration
 	 * @directory The target directory (defaults to current directory)
+	 * @boxlang Is the project BoxLang (auto-detected)
 	 */
 	function run(
-		string agent    = "claude",
+		string agent    = "",
 		string language = "",
 		boolean force   = false,
-		string directory = getCwd()
+		string directory = getCwd(),
+		boolean boxlang          = isBoxLangProject( getCWD() )
 	){
 
-		showColdBoxBanner( "AI Integration Installer" );
+		showColdBoxBanner( "AI Integration Installer" )
 
-		// Detect language if not specified
-		if ( !len( arguments.language ) ) {
-			arguments.language = promptForLanguage();
+		// Prompt for agents if not specified
+		if ( !len( arguments.agent ) ) {
+			arguments.agent = promptForAgents()
 		}
 
-		printInfo( "Installing AI integration..." );
-		printInfo( "Agent(s): #arguments.agent#" );
-		printInfo( "Language: #arguments.language#" );
-		print.line();
+		// Auto-detect or prompt for language
+		if ( !len( arguments.language ) ) {
+			if ( arguments.boxlang ) {
+				arguments.language = "boxlang"
+				printInfo( "BoxLang project detected - language set to BoxLang" )
+			} else {
+				arguments.language = promptForLanguage()
+			}
+		}
+
+		printInfo( "Installing AI integration..." )
+		printInfo( "Agent(s): #arguments.agent#" )
+		printInfo( "Language: #arguments.language#" )
+		print.line()
 
 		try {
 			var result = variables.aiService.install(
@@ -93,34 +105,50 @@ component extends="coldbox-cli.models.BaseCommand" {
 	}
 
 	/**
+	 * Prompt user to select AI agents (multi-select)
+	 */
+	private function promptForAgents(){
+		print.line()
+		printWarn( "🤖 Agent Selection" )
+		print.line()
+
+		var agentOptions = [
+			{ "display": "Claude (Anthropic) - Recommended for general development", "value": "claude" },
+			{ "display": "GitHub Copilot - Integrated with VS Code", "value": "copilot" },
+			{ "display": "Cursor AI - AI-first code editor", "value": "cursor" },
+			{ "display": "Codex (OpenAI) - GPT-powered coding assistant", "value": "codex" },
+			{ "display": "Gemini (Google) - Google's AI assistant", "value": "gemini" },
+			{ "display": "OpenCode - Open source AI assistant", "value": "opencode" }
+		]
+
+		var selected = multiSelect( "Select one or more AI agents to configure (use spacebar to select, enter to confirm):" )
+			.options( agentOptions )
+			.multiple()
+			.required()
+			.ask()
+
+		// Convert array of selections to comma-separated string
+		return selected.toList()
+	}
+
+	/**
 	 * Prompt user to select language mode
 	 */
 	private function promptForLanguage(){
-		print.line();
-		printWarn( "🌟 Language Selection" );
-		print.line();
-		print.line( "Choose your project's primary language:" );
-		print.line( "  1. BoxLang (recommended) - Modern class-based syntax" );
-		print.line( "  2. CFML - Traditional component syntax" );
-		print.line( "  3. Hybrid - Support both BoxLang and CFML" );
-		print.line();
+		print.line()
+		printWarn( "🌟 Language Selection" )
+		print.line()
 
-		var choice = ask( "Enter choice (1-3): " );
-		// Default to BoxLang if empty/ENTER
-		if ( !len( trim( choice ) ) ) {
-			choice = "1"
-		}
-		switch ( choice ) {
-			case "1":
-				return "boxlang";
-			case "2":
-				return "cfml";
-			case "3":
-				return "hybrid";
-			default:
-				printWarn( "Invalid choice, defaulting to BoxLang" );
-				return "boxlang";
-		}
+		var languageOptions = [
+			{ "display": "BoxLang (recommended) - Modern class-based syntax", "value": "boxlang" },
+			{ "display": "CFML - Traditional component syntax", "value": "cfml" },
+			{ "display": "Hybrid - Support both BoxLang and CFML", "value": "hybrid" }
+		]
+
+		return multiSelect( "Choose your project's primary language:" )
+			.options( languageOptions )
+			.required()
+			.ask()
 	}
 
 }

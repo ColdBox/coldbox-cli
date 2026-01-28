@@ -70,7 +70,8 @@ component singleton {
 		required string language
 	){
 		var configPath = getAgentConfigPath( arguments.directory, arguments.agent )
-		var content    = getAgentConfigContent( arguments.agent, arguments.language )
+		var layout     = detectProjectLayout( arguments.directory )
+		var content    = getAgentConfigContent( arguments.agent, arguments.language, layout )
 
 		// Create directories if needed
 		var configDir = getDirectoryFromPath( configPath )
@@ -118,27 +119,53 @@ component singleton {
 	 *
 	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 * @language Project language mode (boxlang, cfml, hybrid)
+	 * @layout Project layout type (flat or modern)
 	 */
-	private function getAgentConfigContent( required string agent, required string language ){
-		var templatePath = getTemplatesPath() & "/ai/agents/agent-instructions.md";
+	private function getAgentConfigContent( required string agent, required string language, required string layout ){
+		var templatesPath = getTemplatesPath()
+		var templateFile  = ""
 
-		if ( !fileExists( templatePath ) ) {
+		// For copilot, use layout-specific templates
+		if ( arguments.agent == "copilot" ) {
+			templateFile = arguments.layout == "modern"
+				? "#templatesPath#/ai/modern-copilot-instructions.md"
+				: "#templatesPath#/ai/flat-copilot-instructions.md"
+		} else {
+			// Use generic template for other agents
+			templateFile = "#templatesPath#/ai/agents/agent-instructions.md"
+		}
+
+		if ( !fileExists( templateFile ) ) {
 			// Fallback content
 			return "## AI Instructions for #arguments.agent#
 
 Project Language: #arguments.language#
+Project Layout: #arguments.layout#
 
 Guidelines available in .ai/guidelines/
-Skills available in .ai/skills/";
+Skills available in .ai/skills/"
 		}
 
-		var content = fileRead( templatePath );
+		var content = fileRead( templateFile )
 
 		// Replace placeholders
-		var languageNote = arguments.language == "boxlang" ? "BoxLang" : ( arguments.language == "cfml" ? "CFML" : "BoxLang/CFML hybrid" );
-		content = replaceNoCase( content, "|LANGUAGE|", languageNote, "all" );
+		var languageNote = arguments.language == "boxlang" ? "BoxLang" : ( arguments.language == "cfml" ? "CFML" : "BoxLang/CFML hybrid" )
+		content = replaceNoCase( content, "|LANGUAGE|", languageNote, "all" )
 
-		return content;
+		return content
+	}
+
+	/**
+	 * Detect project layout type
+	 *
+	 * @directory The project directory
+	 */
+	private function detectProjectLayout( required string directory ){
+		// Modern layout has separate /app and /public directories
+		var hasAppDir    = directoryExists( "#arguments.directory#/app" )
+		var hasPublicDir = directoryExists( "#arguments.directory#/public" )
+
+		return ( hasAppDir && hasPublicDir ) ? "modern" : "flat"
 	}
 
 	/**
