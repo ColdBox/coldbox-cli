@@ -25,26 +25,27 @@ component extends="coldbox-cli.models.BaseCommand" {
 		string directory = getCwd()
 	){
 		try {
-			var diagnosis = variables.aiService.diagnose( arguments.directory );
+			var diagnosis = variables.aiService.diagnose( arguments.directory )
 
 			// JSON output
 			if ( arguments.json ) {
-				print.line( serializeJSON( diagnosis ) );
-				return;
+				print.line( serializeJSON( diagnosis ) )
+				return
 			}
 
 			// Pretty console output
-			printDiagnosisReport( diagnosis, arguments.verbose );
+			printDiagnosisReport( diagnosis, arguments.verbose )
 		} catch ( any e ) {
-			printError( "Failed to diagnose AI integration: #e.message#" );
-			if ( shell.isDebug() ) {
-				printError( e.stackTrace );
-			}
+			printError( "Failed to diagnose AI integration: #e.message#" )
+			printError( e.stackTrace )
 		}
 	}
 
 	/**
 	 * Print diagnosis report to console
+	 *
+	 * @diagnosis The diagnosis struct
+	 * @verbose Show detailed diagnostic information
 	 */
 	private function printDiagnosisReport( required struct diagnosis, boolean verbose = false ){
 		print.line();
@@ -92,7 +93,15 @@ component extends="coldbox-cli.models.BaseCommand" {
 		printInfo( "   Summary" );
 		printInfo( "───────────────────────────────────────────" );
 		print.line();
-
+		// Ensure summary exists with default values
+		if ( !structKeyExists( diagnosis, "summary" ) || !structKeyExists( diagnosis.summary, "status" ) ) {
+			diagnosis.summary = {
+				"status"              : diagnosis.errors.len() ? "error" : ( diagnosis.warnings.len() ? "warning" : "good" ),
+				"errorCount"          : diagnosis.errors.len(),
+				"warningCount"        : diagnosis.warnings.len(),
+				"recommendationCount" : diagnosis.recommendations.len()
+			}
+		}
 		var status = diagnosis.summary.status;
 		var statusEmoji = {
 			"good"    : "🟢",

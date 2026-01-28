@@ -173,17 +173,31 @@ component singleton {
 		};
 
 		// Check if AI integration is installed
-		var aiDir = arguments.directory & "/.ai";
+		var aiDir = arguments.directory & "/.ai"
 		if ( !directoryExists( aiDir ) ) {
-			issues.errors.append( "AI integration not installed. Run 'coldbox ai install' first." );
-			return issues;
+			issues.errors.append( "AI integration not installed. Run 'coldbox ai install' first." )
+			// Build summary for early return
+			issues.summary = {
+				"status"              : "error",
+				"errorCount"          : issues.errors.len(),
+				"warningCount"        : issues.warnings.len(),
+				"recommendationCount" : issues.recommendations.len()
+			}
+			return issues
 		}
 
 		// Load manifest
-		var manifest = loadManifest( arguments.directory );
+		var manifest = loadManifest( arguments.directory )
 		if ( !structKeyExists( manifest, "coldboxCliVersion" ) ) {
-			issues.errors.append( "Invalid or missing .ai/.manifest.json file" );
-			return issues;
+			issues.errors.append( "Invalid or missing .ai/.manifest.json file" )
+			// Build summary for early return
+			issues.summary = {
+				"status"              : "error",
+				"errorCount"          : issues.errors.len(),
+				"warningCount"        : issues.warnings.len(),
+				"recommendationCount" : issues.recommendations.len()
+			}
+			return issues
 		}
 
 		// Check coldbox-cli version
