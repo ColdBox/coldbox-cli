@@ -27,10 +27,10 @@ component singleton {
 		// Core skills - always installed based on language
 		var coreSkills = getCoreSkillsList( arguments.language );
 
-		coreSkills.each( function( skillName ){
-			installSkill( directory, skillName, "core", manifest );
-			installed.append( skillName );
-		} );
+		coreSkills.each( ( skillName ) => {
+			installSkill( directory, skillName, "core", manifest )
+			installed.append( skillName )
+		} )
 
 		return installed;
 	}
@@ -63,21 +63,21 @@ component singleton {
 		for ( var moduleSlug in allDependencies ) {
 			if ( structKeyExists( skillMap, moduleSlug ) ) {
 				var skills = skillMap[ moduleSlug ];
-				skills.each( function( skillName ){
-					var existing = manifest.skills.filter( function( s ){
-						return s.name == skillName;
-					} );
+				skills.each( ( skillName ) => {
+					var existing = manifest.skills.filter( ( s ) => {
+						return s.name == skillName
+					} )
 
 					if ( existing.len() ) {
 						// Already installed - check if needs update
 						// For now, just mark as updated if module version changed
-						changes.updated.append( skillName );
+						changes.updated.append( skillName )
 					} else {
 						// New skill
-						installSkill( directory, skillName, moduleSlug, manifest );
-						changes.added.append( skillName );
+						installSkill( directory, skillName, moduleSlug, manifest )
+						changes.added.append( skillName )
 					}
-				} );
+				} )
 			}
 		}
 
@@ -89,10 +89,10 @@ component singleton {
 			}
 		}
 
-		toRemove.each( function( name ){
-			removeSkill( directory, name, manifest );
-			changes.removed.append( name );
-		} );
+		toRemove.each( ( name ) => {
+			removeSkill( directory, name, manifest )
+			changes.removed.append( name )
+		} )
 
 		return changes;
 	}
@@ -113,15 +113,15 @@ component singleton {
 		var language   = manifest.language ?: "boxlang";
 		var coreSkills = getCoreSkillsList( language );
 
-		coreSkills.each( function( skillName ){
-			var found = manifest.skills.filter( function( s ){
-				return s.name == skillName;
-			} );
+		coreSkills.each( ( skillName ) => {
+			var found = manifest.skills.filter( ( s ) => {
+				return s.name == skillName
+			} )
 			if ( !found.len() ) {
-				issues.warnings.append( "Missing core skill: #skillName#" );
-				issues.recommendations.append( "Run 'coldbox ai refresh' to install missing skills" );
+				issues.warnings.append( "Missing core skill: #skillName#" )
+				issues.recommendations.append( "Run 'coldbox ai refresh' to install missing skills" )
 			}
-		} );
+		} )
 
 		// Check skill directories exist
 		for ( var skill in manifest.skills ) {
@@ -142,6 +142,8 @@ component singleton {
 
 	/**
 	 * Get list of core skills based on language mode
+	 *
+	 * @language Project language mode (boxlang, cfml, hybrid)
 	 */
 	private function getCoreSkillsList( required string language ){
 		var skills = [];
@@ -189,6 +191,11 @@ component singleton {
 
 	/**
 	 * Install a single skill
+	 *
+	 * @directory The project directory
+	 * @skillName The name of the skill to install
+	 * @source The source of the skill (core or module slug)
+	 * @manifest The manifest struct to update
 	 */
 	private function installSkill(
 		required string directory,
@@ -234,6 +241,10 @@ component singleton {
 
 	/**
 	 * Remove a skill
+	 *
+	 * @directory The project directory
+	 * @skillName The name of the skill to remove
+	 * @manifest The manifest struct to update
 	 */
 	private function removeSkill(
 		required string directory,
@@ -246,20 +257,22 @@ component singleton {
 			"#arguments.directory#/.ai/skills/modules/#arguments.skillName#"
 		];
 
-		possiblePaths.each( function( path ){
+		possiblePaths.each( ( path ) => {
 			if ( directoryExists( path ) ) {
-				directoryDelete( path, true );
+				directoryDelete( path, true )
 			}
-		} );
+		} )
 
 		// Remove from manifest
-		arguments.manifest.skills = arguments.manifest.skills.filter( function( s ){
-			return s.name != skillName;
-		} );
+		arguments.manifest.skills = arguments.manifest.skills.filter( ( s ) => {
+			return s.name != skillName
+		} )
 	}
 
 	/**
 	 * Get skill content (reads from template files)
+	 *
+	 * @skillName The name of the skill to retrieve content for
 	 */
 	private function getSkillContent( required string skillName ){
 		var templatePath = getTemplatesPath() & "/ai/skills/#arguments.skillName#.md";

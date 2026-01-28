@@ -82,9 +82,9 @@ component singleton {
 				var moduleVersion = allDependencies[ moduleSlug ];
 
 				// Check if already in manifest
-				var existing = manifest.guidelines.filter( function( g ){
-					return g.name == guidelineName;
-				} );
+				var existing = manifest.guidelines.filter( ( g ) => {
+					return g.name == guidelineName
+				} )
 
 				if ( existing.len() ) {
 					// Update if version changed
@@ -108,10 +108,10 @@ component singleton {
 			}
 		}
 
-		toRemove.each( function( name ){
-			removeGuideline( directory, name, manifest );
-			changes.removed.append( name );
-		} );
+		toRemove.each( ( name ) => {
+			removeGuideline( directory, name, manifest )
+			changes.removed.append( name )
+		} )
 
 		return changes;
 	}
@@ -130,15 +130,15 @@ component singleton {
 
 		// Check for missing core guidelines
 		var coreGuidelines = [ "coldbox-core", "testbox-core", "wirebox-core" ];
-		coreGuidelines.each( function( name ){
-			var found = manifest.guidelines.filter( function( g ){
-				return g.name == name;
-			} );
+		coreGuidelines.each( ( name ) => {
+			var found = manifest.guidelines.filter( ( g ) => {
+				return g.name == name
+			} )
 			if ( !found.len() ) {
-				issues.warnings.append( "Missing core guideline: #name#" );
-				issues.recommendations.append( "Run 'coldbox ai refresh' to install missing guidelines" );
+				issues.warnings.append( "Missing core guideline: #name#" )
+				issues.recommendations.append( "Run 'coldbox ai refresh' to install missing guidelines" )
 			}
-		} );
+		} )
 
 		// Check guideline files exist
 		for ( var guideline in manifest.guidelines ) {
@@ -161,6 +161,11 @@ component singleton {
 
 	/**
 	 * Install a single guideline
+	 *
+	 * @directory The project directory
+	 * @guidelineName The name of the guideline to install
+	 * @source The source of the guideline (coldbox-cli or module slug)
+	 * @manifest The manifest struct to update
 	 */
 	private function installGuideline(
 		required string directory,
@@ -203,6 +208,10 @@ component singleton {
 
 	/**
 	 * Remove a guideline
+	 *
+	 * @directory The project directory
+	 * @guidelineName The name of the guideline to remove
+	 * @manifest The manifest struct to update
 	 */
 	private function removeGuideline(
 		required string directory,
@@ -215,20 +224,22 @@ component singleton {
 			"#arguments.directory#/.ai/guidelines/modules/#arguments.guidelineName#.md"
 		];
 
-		possiblePaths.each( function( path ){
+		possiblePaths.each( ( path ) => {
 			if ( fileExists( path ) ) {
-				fileDelete( path );
+				fileDelete( path )
 			}
-		} );
+		} )
 
 		// Remove from manifest
-		arguments.manifest.guidelines = arguments.manifest.guidelines.filter( function( g ){
-			return g.name != guidelineName;
-		} );
+		arguments.manifest.guidelines = arguments.manifest.guidelines.filter( ( g ) => {
+			return g.name != guidelineName
+		} )
 	}
 
 	/**
 	 * Get guideline content (reads from template files)
+	 *
+	 * @guidelineName The name of the guideline to retrieve content for
 	 */
 	private function getGuidelineContent( required string guidelineName ){
 		var templatePath = getTemplatesPath() & "/ai/guidelines/#arguments.guidelineName#.md";

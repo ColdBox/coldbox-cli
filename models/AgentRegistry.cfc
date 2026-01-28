@@ -21,15 +21,15 @@ component singleton {
 		required string agents,
 		required string language
 	){
-		var configured = [];
-		var agentList  = listToArray( arguments.agents );
+		var configured = []
+		var agentList  = listToArray( arguments.agents )
 
-		agentList.each( function( agent ){
-			configureAgent( directory, agent, language );
-			configured.append( agent );
-		} );
+		agentList.each( ( agent ) => {
+			configureAgent( directory, agent, language )
+			configured.append( agent )
+		} )
 
-		return configured;
+		return configured
 	}
 
 	/**
@@ -46,13 +46,13 @@ component singleton {
 
 		// Check each configured agent
 		var agents = manifest.agents ?: [];
-		agents.each( function( agent ){
-			var configFile = getAgentConfigPath( directory, agent );
+		agents.each( ( agent ) => {
+			var configFile = getAgentConfigPath( directory, agent )
 			if ( !fileExists( configFile ) ) {
-				issues.warnings.append( "Agent config file missing: #agent#" );
-				issues.recommendations.append( "Run 'coldbox ai refresh' to regenerate agent files" );
+				issues.warnings.append( "Agent config file missing: #agent#" )
+				issues.recommendations.append( "Run 'coldbox ai refresh' to regenerate agent files" )
 			}
-		} );
+		} )
 
 		return issues;
 	}
@@ -63,6 +63,10 @@ component singleton {
 
 	/**
 	 * Configure a single agent
+	 *
+	 * @directory The project directory
+	 * @agent The agent name (claude, copilot, cursor, etc.)
+	 * @language Project language mode (boxlang, cfml, hybrid)
 	 */
 	private function configureAgent(
 		required string directory,
@@ -84,41 +88,47 @@ component singleton {
 
 	/**
 	 * Get agent config file path
+	 *
+	 * @directory The project directory
+	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 */
 	private function getAgentConfigPath( required string directory, required string agent ){
 		switch ( arguments.agent ) {
 			case "claude":
-				return "#arguments.directory#/CLAUDE.md";
+				return "#arguments.directory#/CLAUDE.md"
 
 			case "copilot":
-				return "#arguments.directory#/.github/copilot-instructions.md";
+				return "#arguments.directory#/.github/copilot-instructions.md"
 
 			case "cursor":
-				return "#arguments.directory#/.cursorrules";
+				return "#arguments.directory#/.cursorrules"
 
 			case "codex":
-				return "#arguments.directory#/.codex/instructions.md";
+				return "#arguments.directory#/.codex/instructions.md"
 
 			case "gemini":
-				return "#arguments.directory#/.gemini/instructions.md";
+				return "#arguments.directory#/.gemini/instructions.md"
 
 			case "opencode":
-				return "#arguments.directory#/.opencode/instructions.md";
+				return "#arguments.directory#/.opencode/instructions.md"
 
 			default:
-				return "#arguments.directory#/AI_INSTRUCTIONS.md";
+				return "#arguments.directory#/AI_INSTRUCTIONS.md"
 		}
 	}
 
 	/**
 	 * Get agent config content (reads from template)
+	 *
+	 * @agent The agent name (claude, copilot, cursor, etc.)
+	 * @language Project language mode (boxlang, cfml, hybrid)
 	 */
 	private function getAgentConfigContent( required string agent, required string language ){
 		var templatePath = getTemplatesPath() & "/ai/agents/agent-instructions.md";
 
 		if ( !fileExists( templatePath ) ) {
 			// Fallback content
-			return "# AI Instructions for #arguments.agent#
+			return "## AI Instructions for #arguments.agent#
 
 Project Language: #arguments.language#
 

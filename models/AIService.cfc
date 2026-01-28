@@ -227,6 +227,8 @@ component singleton {
 
 	/**
 	 * Create .ai directory structure
+	 *
+	 * @directory The project directory where .ai structure will be created
 	 */
 	private function createAIDirectoryStructure( required string directory ){
 		var dirs = [
@@ -241,15 +243,18 @@ component singleton {
 			"#arguments.directory#/.ai/skills/custom"
 		];
 
-		dirs.each( function( dir ){
+		dirs.each( ( dir ) => {
 			if ( !directoryExists( dir ) ) {
-				directoryCreate( dir );
+				directoryCreate( dir )
 			}
-		} );
+		} )
 	}
 
 	/**
 	 * Save manifest file
+	 *
+	 * @directory The project directory
+	 * @manifest The manifest struct to save
 	 */
 	private function saveManifest( required string directory, required struct manifest ){
 		var manifestPath = arguments.directory & "/.ai/.manifest.json";
@@ -258,6 +263,8 @@ component singleton {
 
 	/**
 	 * Load manifest file
+	 *
+	 * @directory The project directory
 	 */
 	private function loadManifest( required string directory ){
 		var manifestPath = arguments.directory & "/.ai/.manifest.json";
@@ -277,6 +284,10 @@ component singleton {
 
 	/**
 	 * Update box.json with AI configuration
+	 *
+	 * @directory The project directory
+	 * @language Project language mode (boxlang, cfml, hybrid)
+	 * @agents Comma-separated list of agents
 	 */
 	private function updateBoxJsonAIConfig(
 		required string directory,
