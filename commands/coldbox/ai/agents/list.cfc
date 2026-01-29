@@ -9,7 +9,8 @@
 component extends="coldbox-cli.models.BaseCommand" {
 
 	// DI
-	property name="aiService" inject="AIService@coldbox-cli"
+	property name="aiService"     inject="AIService@coldbox-cli";
+	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
 
 	/**
 	 * Run the command
@@ -23,66 +24,50 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "AI Agents" )
 
-		try {
-			var info = variables.aiService.getInfo( arguments.directory )
+		var info = variables.aiService.getInfo( arguments.directory )
 
-			if ( !info.installed ) {
-				printError( "AI integration not installed. Run 'coldbox ai install' first." )
-				return
-			}
-
-			print.line()
-			printInfo( "Configured AI Agents" )
-			print.line()
-
-			if ( !info.agents.len() ) {
-				printWarn( "No agents configured yet." )
-				print.line()
-				printHelp( "Run 'coldbox ai install --agent=claude,copilot' to configure agents" )
-				return
-			}
-
-			// Agent config paths mapping
-			var agentPaths = {
-				"claude"   : "CLAUDE.md",
-				"copilot"  : ".github/copilot-instructions.md",
-				"cursor"   : ".cursorrules",
-				"codex"    : ".codex/instructions.md",
-				"gemini"   : ".gemini/instructions.md",
-				"opencode" : ".opencode/instructions.md"
-			}
-
-			// Display each configured agent
-			info.agents.each( ( agent ) => {
-				var configPath = agentPaths[ agent ] ?: "AI_INSTRUCTIONS.md"
-				var fullPath   = arguments.directory & "/" & configPath
-				var exists     = fileExists( fullPath )
-
-				if ( exists ) {
-					print.greenLine( "  ✓ #agent#" )
-				} else {
-					print.redLine( "  ✗ #agent# (config file missing)" )
-				}
-
-				if ( arguments.verbose ) {
-					print.indentedLine( "    Config: #configPath#" )
-					if ( !exists ) {
-						print.indentedLine( "    Status: Missing - run 'coldbox ai refresh' to regenerate" )
-					}
-				}
-			} )
-
-			print.line()
-			printInfo( "Total: #info.agents.len()# agent(s) configured" )
-			print.line()
-
-			printHelp( "Tip: Agent config files contain project context for AI assistants" )
-		} catch ( any e ) {
-			printError( "Failed to list agents: #e.message#" )
-			if ( arguments.verbose ) {
-				printError( e.stackTrace )
-			}
+		if ( !info.installed ) {
+			printError( "AI integration not installed. Run 'coldbox ai install' first." )
+			return
 		}
-	}
 
+		print.line()
+		printInfo( "Configured AI Agents" )
+		print.line()
+
+		if ( !info.agents.len() ) {
+			printWarn( "No agents configured yet." )
+			print.line()
+			printHelp( "Run 'coldbox ai install --agent=claude,copilot' to configure agents" )
+			return
+		}
+
+		var agentPaths = variables.agentRegistry.getAgentConfigPaths()
+
+		// Display each configured agent
+		info.agents.each( ( agent ) => {
+			var configPath = agentPaths[ agent ] ?: "AI_INSTRUCTIONS.md"
+			var fullPath   = directory & "/" & configPath
+			var exists     = fileExists( fullPath )
+
+			if ( exists ) {
+				print.greenLine( "  ✓ #agent#" )
+			} else {
+				print.redLine( "  ✗ #agent# (config file missing)" )
+			}
+
+			if ( verbose ) {
+				print.indentedLine( "    Config: #configPath#" )
+				if ( !exists ) {
+					print.indentedLine( "    Status: Missing - run 'coldbox ai refresh' to regenerate" )
+				}
+			}
+		} )
+
+		print.line()
+		printInfo( "Total: #info.agents.len()# agent(s) configured" )
+		print.line()
+
+		printHelp( "Tip: Agent config files contain project context for AI assistants" )
+	}
 }

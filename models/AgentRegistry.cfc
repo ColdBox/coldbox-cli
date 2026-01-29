@@ -29,6 +29,22 @@ component singleton {
 	}
 
 	/**
+	 * Get the config path mapping for all supported agents
+	 *
+	 * @return Struct with agent names as keys and config paths as values
+	 */
+	function getAgentConfigPaths(){
+		return {
+			"claude"   : "CLAUDE.md",
+			"copilot"  : ".github/copilot-instructions.md",
+			"cursor"   : ".cursorrules",
+			"codex"    : ".codex/instructions.md",
+			"gemini"   : ".gemini/instructions.md",
+			"opencode" : ".opencode/instructions.md"
+		}
+	}
+
+	/**
 	 * Diagnose agent configuration health
 	 *
 	 * @directory The project directory
