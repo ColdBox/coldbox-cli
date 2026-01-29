@@ -6,11 +6,10 @@
  * coldbox ai skills create api-development
  * coldbox ai skills create testing-patterns --open
  */
-component extends="coldbox-cli.models.BaseCommand" {
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
 	property name="skillManager" inject="SkillManager@coldbox-cli";
-	property name="aiService"    inject="AIService@coldbox-cli";
 
 	/**
 	 * Run the command
@@ -26,12 +25,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "Create Custom Skill" )
 
-		var info = variables.aiService.getInfo( arguments.directory )
-
-		if ( !info.installed ) {
-			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			return
-		}
+		ensureInstalled( arguments.directory )
 
 		print.line()
 		printInfo( "Creating custom skill: #arguments.name#" )

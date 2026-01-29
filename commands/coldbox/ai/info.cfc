@@ -5,10 +5,7 @@
  * Examples:
  * coldbox ai info
  */
-component extends="coldbox-cli.models.BaseCommand" {
-
-	// DI
-	property name="aiService" inject="AIService@coldbox-cli";
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	/**
 	 * Run the command

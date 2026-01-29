@@ -8,10 +8,9 @@
  * coldbox ai install --language=boxlang
  * coldbox ai install --force
  */
-component extends="coldbox-cli.models.BaseCommand" {
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
-	property name="aiService" inject="AIService@coldbox-cli";
 	property name="config"         inject="box:moduleconfig:coldbox-cli";
 
 	/**

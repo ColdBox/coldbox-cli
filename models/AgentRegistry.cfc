@@ -156,12 +156,12 @@ component singleton {
 			// Fallback content from template
 			var fallbackPath = templatesPath & "/ai/agents/agent-fallback.md"
 			var fallback = fileRead( fallbackPath )
-			
+
 			// Replace tokens
 			fallback = replaceNoCase( fallback, "|agentName|", arguments.agent, "all" )
 			fallback = replaceNoCase( fallback, "|language|", arguments.language, "all" )
 			fallback = replaceNoCase( fallback, "|layout|", arguments.layout, "all" )
-			
+
 			return fallback
 		}
 

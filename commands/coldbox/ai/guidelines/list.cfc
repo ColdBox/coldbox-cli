@@ -6,10 +6,7 @@
  * coldbox ai guidelines list
  * coldbox ai guidelines list --verbose
  */
-component extends="coldbox-cli.models.BaseCommand" {
-
-	// DI
-	property name="aiService" inject="AIService@coldbox-cli";
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	/**
 	 * Run the command
@@ -23,12 +20,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "AI Guidelines" )
 
-		var info = variables.aiService.getInfo( arguments.directory )
-
-		if ( !info.installed ) {
-			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			return
-		}
+		var info = ensureInstalled( arguments.directory )
 
 		print.line()
 		printInfo( "Installed Guidelines" )

@@ -116,7 +116,7 @@ component singleton {
 		// Create skill from template
 		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/custom-skill-template.md"
 		var template = fileRead( templatePath )
-		
+
 		// Replace tokens
 		template = replaceNoCase( template, "|skillName|", arguments.name, "all" )
 		fileWrite( skillFile, template )

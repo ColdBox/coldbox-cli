@@ -1,4 +1,4 @@
-<!-- 
+<!--
 Override for |guidelineName| Core Guideline
 This file is loaded AFTER the core guideline, allowing you to:
 - Add project-specific conventions

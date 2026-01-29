@@ -6,11 +6,10 @@
  * coldbox ai guidelines create my-conventions
  * coldbox ai guidelines create team-standards --open
  */
-component extends="coldbox-cli.models.BaseCommand" {
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
 	property name="guidelineManager" inject="GuidelineManager@coldbox-cli";
-	property name="aiService"        inject="AIService@coldbox-cli";
 
 	/**
 	 * Run the command
@@ -26,12 +25,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "Create Custom Guideline" )
 
-		var info = variables.aiService.getInfo( arguments.directory )
-
-		if ( !info.installed ) {
-			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			return
-		}
+		ensureInstalled( arguments.directory )
 
 		print.line()
 		printInfo( "Creating custom guideline: #arguments.name#" )

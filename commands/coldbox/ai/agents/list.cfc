@@ -6,10 +6,9 @@
  * coldbox ai agents list
  * coldbox ai agents list --verbose
  */
-component extends="coldbox-cli.models.BaseCommand" {
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
-	property name="aiService"     inject="AIService@coldbox-cli";
 	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
 
 	/**
@@ -24,12 +23,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "AI Agents" )
 
-		var info = variables.aiService.getInfo( arguments.directory )
-
-		if ( !info.installed ) {
-			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			return
-		}
+		var info = ensureInstalled( arguments.directory )
 
 		print.line()
 		printInfo( "Configured AI Agents" )

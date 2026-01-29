@@ -6,10 +6,7 @@
  * coldbox ai refresh
  * coldbox ai update
  */
-component extends="coldbox-cli.models.BaseCommand" aliases="update" {
-
-	// DI
-	property name="aiService" inject="AIService@coldbox-cli";
+component extends="coldbox-cli.models.BaseAICommand" aliases="update" {
 
 	/**
 	 * Run the command

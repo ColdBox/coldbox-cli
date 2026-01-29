@@ -6,11 +6,10 @@
  * coldbox ai agents add claude
  * coldbox ai agents add copilot,cursor
  */
-component extends="coldbox-cli.models.BaseCommand" {
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
 	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
-	property name="aiService"     inject="AIService@coldbox-cli";
 
 	/**
 	 * Run the command
@@ -24,12 +23,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "Add AI Agent" )
 
-		var info = variables.aiService.getInfo( arguments.directory )
-
-		if ( !info.installed ) {
-			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			return
-		}
+		var info = ensureInstalled( arguments.directory )
 
 		print.line()
 
@@ -79,8 +73,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		print.line()
 
 		// Get project language from manifest
-		var manifestPath = "#arguments.directory#/.ai/.manifest.json"
-		var manifest = deserializeJSON( fileRead( manifestPath ) )
+		var manifest = readManifest( arguments.directory )
 		var language = manifest.language ?: "boxlang"
 
 		// Configure each agent
@@ -100,11 +93,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 			}
 		} )
 
-		fileWrite( manifestPath, serializeJSON( manifest ) )
+		writeManifest( arguments.directory, manifest )
 
-		print.line()
-		printSuccess( "✓ Agent(s) added successfully!" )
-		print.line()
+		showSuccess( "Agent(s) added successfully!" )
 
 		// Show where files were created
 		var agentPaths = variables.agentRegistry.getAgentConfigPaths()

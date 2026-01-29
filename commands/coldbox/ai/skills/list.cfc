@@ -7,10 +7,7 @@
  * coldbox ai skills list --verbose
  * coldbox ai skills list --category=testing
  */
-component extends="coldbox-cli.models.BaseCommand" {
-
-	// DI
-	property name="aiService" inject="AIService@coldbox-cli";
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	/**
 	 * Run the command
@@ -26,12 +23,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "AI Skills" )
 
-		var info = variables.aiService.getInfo( arguments.directory )
-
-		if ( !info.installed ) {
-			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			return
-		}
+		var info = ensureInstalled( arguments.directory )
 
 		print.line()
 		printInfo( "Installed Skills" )

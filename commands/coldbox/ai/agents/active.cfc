@@ -6,10 +6,7 @@
  * coldbox ai agents active              (shows current active agent)
  * coldbox ai agents active claude       (sets active agent)
  */
-component extends="coldbox-cli.models.BaseCommand" {
-
-	// DI
-	property name="aiService" inject="AIService@coldbox-cli";
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	/**
 	 * Run the command
@@ -23,18 +20,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 	){
 		showColdBoxBanner( "Active AI Agent" )
 
-		var info = variables.aiService.getInfo( arguments.directory )
-
-		if ( !info.installed ) {
-			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			return
-		}
+		var info = ensureInstalled( arguments.directory )
+		var manifest = readManifest( arguments.directory )
 
 		print.line()
-
-		// Read manifest
-		var manifestPath = "#arguments.directory#/.ai/.manifest.json"
-		var manifest = deserializeJSON( fileRead( manifestPath ) )
 
 		// If no agent specified, show current active
 		if ( !arguments.agent.len() ) {
@@ -75,12 +64,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// Update manifest
 		manifest.activeAgent = arguments.agent
-		manifest.lastSync = dateTimeFormat( now(), "iso" )
-		fileWrite( manifestPath, serializeJSON( manifest ) )
+		writeManifest( arguments.directory, manifest )
 
-		print.line()
-		printSuccess( "✓ Active agent set to: #arguments.agent#" )
-		print.line()
+		showSuccess( "Active agent set to: #arguments.agent#" )
 		printInfo( "This setting is informational - all configured agent files remain active." )
 		printInfo( "Use it to track which AI assistant you're currently working with." )
 	}
