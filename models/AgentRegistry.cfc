@@ -8,6 +8,7 @@ component singleton {
 	property name="print"          inject="PrintBuffer";
 	property name="fileSystemUtil" inject="fileSystem";
 	property name="wirebox"        inject="wirebox";
+	property name="utility"        inject="Utility@coldbox-cli";
 
 	/**
 	 * Configure agents for a project
@@ -80,7 +81,7 @@ component singleton {
 	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 * @language Project language mode (boxlang, cfml, hybrid)
 	 */
-	private function configureAgent(
+	function configureAgent(
 		required string directory,
 		required string agent,
 		required string language
@@ -184,12 +185,5 @@ Skills available in .ai/skills/"
 		return ( hasAppDir && hasPublicDir ) ? "modern" : "flat"
 	}
 
-	/**
-	 * Get templates path from settings
-	 */
-	private function getTemplatesPath(){
-		var moduleSettings = wirebox.getInstance( "box:modulesettings:coldbox-cli" );
-		return moduleSettings.templatesPath;
-	}
 
 }

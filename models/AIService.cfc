@@ -202,7 +202,7 @@ component singleton {
 		}
 
 		// Check coldbox-cli version
-		var currentVersion = getColdboxCliVersion();
+		var currentVersion = variables.utility.getColdboxCliVersion();
 		if ( manifest.coldboxCliVersion != currentVersion ) {
 			issues.warnings.append(
 				"coldbox-cli v#currentVersion# installed, but guidelines are from v#manifest.coldboxCliVersion#"
@@ -287,16 +287,6 @@ component singleton {
 			return {};
 		}
 		return deserializeJSON( fileRead( manifestPath ) );
-	}
-
-	/**
-	 * Get current coldbox-cli version
-	 */
-	private function getColdboxCliVersion(){
-		// Read from the coldbox-cli module's own box.json using module config path
-		var moduleRoot = variables.config.path
-		var boxJson = variables.packageService.readPackageDescriptor( moduleRoot )
-		return boxJson.version ?: "unknown";
 	}
 
 	/**

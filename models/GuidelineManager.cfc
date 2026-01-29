@@ -9,6 +9,7 @@ component singleton {
 	property name="fileSystemUtil" inject="fileSystem";
 	property name="packageService" inject="PackageService";
 	property name="wirebox"        inject="wirebox";
+	property name="utility"        inject="Utility@coldbox-cli";
 
 	/**
 	 * Install core guidelines for a project
@@ -26,26 +27,26 @@ component singleton {
 
 		// Always install BoxLang guideline unless language is cfml-only
 		if ( arguments.language != "cfml" ) {
-			installGuideline( arguments.directory, "boxlang-core", "coldbox-cli", manifest );
+			installGuidelineInternal( arguments.directory, "boxlang-core", "coldbox-cli", manifest );
 			installed.append( "boxlang-core" );
 		}
 
 		// Always install CFML guideline unless language is boxlang-only
 		if ( arguments.language != "boxlang" ) {
-			installGuideline( arguments.directory, "cfml-core", "coldbox-cli", manifest );
+			installGuidelineInternal( arguments.directory, "cfml-core", "coldbox-cli", manifest );
 			installed.append( "cfml-core" );
 		}
 
 		// Always install ColdBox core guideline
-		installGuideline( arguments.directory, "coldbox-core", "coldbox-cli", manifest );
+		installGuidelineInternal( arguments.directory, "coldbox-core", "coldbox-cli", manifest );
 		installed.append( "coldbox-core" );
 
 		// Always install TestBox guideline
-		installGuideline( arguments.directory, "testbox-core", "coldbox-cli", manifest );
+		installGuidelineInternal( arguments.directory, "testbox-core", "coldbox-cli", manifest );
 		installed.append( "testbox-core" );
 
 		// Always install WireBox guideline
-		installGuideline( arguments.directory, "wirebox-core", "coldbox-cli", manifest );
+		installGuidelineInternal( arguments.directory, "wirebox-core", "coldbox-cli", manifest );
 		installed.append( "wirebox-core" );
 
 		return installed;
@@ -89,12 +90,12 @@ component singleton {
 				if ( existing.len() ) {
 					// Update if version changed
 					if ( existing[ 1 ].installedVersion != moduleVersion ) {
-						installGuideline( directory, guidelineName, moduleSlug, manifest );
+						installGuidelineInternal( directory, guidelineName, moduleSlug, manifest );
 						changes.updated.append( guidelineName );
 					}
 				} else {
 					// New guideline
-					installGuideline( directory, guidelineName, moduleSlug, manifest );
+					installGuidelineInternal( directory, guidelineName, moduleSlug, manifest );
 					changes.added.append( guidelineName );
 				}
 			}
@@ -109,7 +110,7 @@ component singleton {
 		}
 
 		toRemove.each( ( name ) => {
-			removeGuideline( directory, name, manifest )
+			removeGuidelineInternal( directory, name, manifest )
 			changes.removed.append( name )
 		} )
 
@@ -160,14 +161,14 @@ component singleton {
 	// ========================================
 
 	/**
-	 * Install a single guideline
+	 * Install a single guideline (internal version for refresh)
 	 *
 	 * @directory The project directory
 	 * @guidelineName The name of the guideline to install
 	 * @source The source of the guideline (coldbox-cli or module slug)
 	 * @manifest The manifest struct to update
 	 */
-	private function installGuideline(
+	private function installGuidelineInternal(
 		required string directory,
 		required string guidelineName,
 		required string source,
@@ -195,7 +196,7 @@ component singleton {
 		var guidelineEntry = {
 			"name"             : arguments.guidelineName,
 			"source"           : arguments.source,
-			"installedVersion" : getColdboxCliVersion(),
+			"installedVersion" : variables.utility.getColdboxCliVersion(),
 			"syncedAt"         : dateTimeFormat( now(), "iso" )
 		};
 
@@ -207,13 +208,13 @@ component singleton {
 	}
 
 	/**
-	 * Remove a guideline
+	 * Remove a guideline (internal version for refresh)
 	 *
 	 * @directory The project directory
 	 * @guidelineName The name of the guideline to remove
 	 * @manifest The manifest struct to update
 	 */
-	private function removeGuideline(
+	private function removeGuidelineInternal(
 		required string directory,
 		required string guidelineName,
 		required struct manifest
@@ -242,7 +243,7 @@ component singleton {
 	 * @guidelineName The name of the guideline to retrieve content for
 	 */
 	private function getGuidelineContent( required string guidelineName ){
-		var templatePath = getTemplatesPath() & "/ai/guidelines/#arguments.guidelineName#.md";
+		var templatePath = variables.utility.getTemplatesPath() & "/ai/guidelines/#arguments.guidelineName#.md";
 
 		if ( fileExists( templatePath ) ) {
 			return fileRead( templatePath );
@@ -252,15 +253,6 @@ component singleton {
 		return "## #arguments.guidelineName# Guidelines
 
 This guideline will be populated with actual content.";
-	}
-
-	/**
-	 * Get templates path from settings
-	 */
-	private function getTemplatesPath(){
-		// Get from module settings - same pattern as other commands
-		var moduleSettings = wirebox.getInstance( "box:modulesettings:coldbox-cli" );
-		return moduleSettings.templatesPath;
 	}
 
 	/**
@@ -281,14 +273,6 @@ This guideline will be populated with actual content.";
 			"cachebox"              : "cachebox-core",
 			"logbox"                : "logbox-core"
 		};
-	}
-
-	/**
-	 * Get current coldbox-cli version
-	 */
-	private function getColdboxCliVersion(){
-		// Stub - will get from actual package
-		return "1.0.0";
 	}
 
 }

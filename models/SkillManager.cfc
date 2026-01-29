@@ -9,6 +9,7 @@ component singleton {
 	property name="fileSystemUtil" inject="fileSystem";
 	property name="packageService" inject="PackageService";
 	property name="wirebox"        inject="wirebox";
+	property name="utility"        inject="Utility@coldbox-cli";
 
 	/**
 	 * Install core skills for a project
@@ -95,6 +96,135 @@ component singleton {
 		} )
 
 		return changes;
+	}
+
+	/**
+	 * Create a custom skill from template
+	 *
+	 * @directory The project directory
+	 * @name The custom skill name
+	 */
+	function createCustomSkill( required string directory, required string name ){
+		var targetDir = "#arguments.directory#/.ai/skills/custom/#arguments.name#"
+		var skillFile = "#targetDir#/SKILL.md"
+
+		// Ensure custom directory exists
+		if ( !directoryExists( targetDir ) ) {
+			directoryCreate( targetDir, true )
+		}
+
+		// Create skill from template
+		var template = "---
+name: #arguments.name#
+category: custom
+triggers:
+  - ""Add trigger keywords here""
+  - ""When implementing [feature]""
+  - ""For [specific use case]""
+confidence: high
+---
+
+# #arguments.name# Skill
+
+## When to Use
+
+Describe when this skill should be activated. Be specific about:
+- User requests that should trigger this skill
+- Project contexts where this applies
+- Specific keywords or phrases that indicate this skill is needed
+
+## Implementation Pattern
+
+### Overview
+
+Provide a high-level description of the implementation approach.
+
+### Step-by-Step Guide
+
+1. **Step One**: Describe the first step
+   ```cfml
+   // Example code
+   component {
+       // Implementation
+   }
+   ```
+
+2. **Step Two**: Describe the second step
+   ```cfml
+   // More example code
+   ```
+
+3. **Step Three**: Continue with additional steps
+
+## Code Examples
+
+### Example 1: Basic Usage
+
+```cfml
+// Provide a complete, working example
+component {
+    function example(){
+        // Implementation
+    }
+}
+```
+
+### Example 2: Advanced Pattern
+
+```cfml
+// Show more complex usage
+component {
+    function advancedExample(){
+        // Advanced implementation
+    }
+}
+```
+
+## Best Practices
+
+- List important considerations
+- Document common pitfalls to avoid
+- Include performance tips
+- Security considerations if applicable
+
+## Testing Approach
+
+```cfml
+// Example test case
+describe( ""#arguments.name# Tests"", () => {
+    it( ""should implement feature"", () => {
+        // Test implementation
+    } )
+} )
+```
+
+## Common Mistakes
+
+- Document common errors
+- Show incorrect approaches
+- Explain why they're problematic
+
+## References
+
+- Link to relevant documentation
+- Related skills
+- External resources
+"
+
+		fileWrite( skillFile, template )
+
+		// Update manifest
+		var manifestPath = "#arguments.directory#/.ai/.manifest.json"
+		var manifest = fileExists( manifestPath ) ? deserializeJSON( fileRead( manifestPath ) ) : { "skills": [] }
+
+		manifest.skills.append({
+			"name": arguments.name,
+			"source": "custom",
+			"installedVersion": "1.0.0",
+			"syncedAt": dateTimeFormat( now(), "iso" )
+		})
+
+		fileWrite( manifestPath, serializeJSON( manifest ) )
 	}
 
 	/**
@@ -228,7 +358,7 @@ component singleton {
 		var skillEntry = {
 			"name"             : arguments.skillName,
 			"source"           : arguments.source,
-			"installedVersion" : getColdboxCliVersion(),
+			"installedVersion" : variables.utility.getColdboxCliVersion(),
 			"syncedAt"         : dateTimeFormat( now(), "iso" )
 		};
 
@@ -275,14 +405,14 @@ component singleton {
 	 * @skillName The name of the skill to retrieve content for
 	 */
 	private function getSkillContent( required string skillName ){
-		var templatePath = getTemplatesPath() & "/ai/skills/#arguments.skillName#.md";
+		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/#arguments.skillName#.md";
 
 		if ( fileExists( templatePath ) ) {
 			return fileRead( templatePath );
 		}
 
-		// Use generic template
-		templatePath = getTemplatesPath() & "/ai/skills/skill-template.md";
+		// Try generic template
+		templatePath = variables.utility.getTemplatesPath() & "/ai/skills/skill-template.md";
 		if ( fileExists( templatePath ) ) {
 			var content = fileRead( templatePath );
 			// Replace placeholder with actual skill name
@@ -304,14 +434,7 @@ This skill will be populated with actual content.";
 	}
 
 	/**
-	 * Get templates path from settings
-	 */
-	private function getTemplatesPath(){
-		var moduleSettings = wirebox.getInstance( "box:modulesettings:coldbox-cli" );
-		return moduleSettings.templatesPath;
-	}
 
-	/**
 	 * Get map of module slugs to skills
 	 */
 	private function getSkillModuleMap(){
@@ -335,12 +458,4 @@ This skill will be populated with actual content.";
 		};
 	}
 
-	/**
-	 * Get current coldbox-cli version
-	 */
-	private function getColdboxCliVersion(){
-		// Stub - will get from actual package
-		return "1.0.0";
-	}
 
-}

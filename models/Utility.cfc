@@ -9,10 +9,37 @@ component singleton {
 	this.TAB   = chr( 9 );
 
 	/**
+	 * Get the ColdBox CLI module version
+	 *
+	 * @return The version string from box.json
+	 */
+	static function getColdboxCliVersion(){
+		var moduleSettings = wirebox.getInstance( "box:modulesettings:coldbox-cli" )
+		var boxJsonPath = moduleSettings.path & "/box.json"
+
+		if ( fileExists( boxJsonPath ) ) {
+			var boxJson = deserializeJSON( fileRead( boxJsonPath ) )
+			return boxJson.version ?: "1.0.0"
+		}
+
+		return "1.0.0"
+	}
+
+	/**
+	 * Get the templates path for the ColdBox CLI module
+	 *
+	 * @return The absolute path to the templates directory
+	 */
+	static function getTemplatesPath(){
+		var moduleSettings = wirebox.getInstance( "box:modulesettings:coldbox-cli" )
+		return moduleSettings.templatesPath
+	}
+
+	/**
 	 * Verify that the TestBox module is installed
 	 * else install it
 	 */
-	function ensureTestBoxModule(){
+	static function ensureTestBoxModule(){
 		if ( !isTestBoxModuleInstalled() ) {
 			variables.print
 				.redLine( "TestBox-CLI module not installed. Installing it for you, please wait..." )
@@ -31,7 +58,7 @@ component singleton {
 	 * Verify that the CommandBox Migrations module is installed
 	 * else install it
 	 */
-	function ensureMigrationsModule(){
+	static function ensureMigrationsModule(){
 		if ( !isMigrationsModuleInstalled() ) {
 			variables.print
 				.redLine( "‼️ CommandBox-Migrations module not installed. Installing it for you, please wait..." )
@@ -49,7 +76,7 @@ component singleton {
 	/**
 	 * Is TestBox module installed
 	 */
-	boolean function isTestBoxModuleInstalled(){
+	static boolean function isTestBoxModuleInstalled(){
 		return variables.moduleService
 			.getModuleRegistry()
 			.keyArray()
@@ -59,7 +86,7 @@ component singleton {
 	/**
 	 * Is CommandBox Migrations module installed
 	 */
-	boolean function isMigrationsModuleInstalled(){
+	static boolean function isMigrationsModuleInstalled(){
 		return variables.moduleService
 			.getModuleRegistry()
 			.keyArray()
@@ -71,7 +98,7 @@ component singleton {
 	 *
 	 * @word The word to convert
 	 */
-	function singularize( required word ){
+	static function singularize( required word ){
 		var result = arguments.word;
 
 		if ( result.endsWith( "s" ) ) {
@@ -98,7 +125,7 @@ component singleton {
 	 *
 	 * @word The word to convert
 	 */
-	function pluralize( required word ){
+	static function pluralize( required word ){
 		var result = arguments.word;
 
 		if ( result.endsWith( "s" ) ) {
@@ -138,7 +165,7 @@ component singleton {
 	 * @target      The string to camel case
 	 * @capitalized Whether or not to capitalize the first letter, default is false
 	 */
-	function camelCase(
+	static function camelCase(
 		required target,
 		boolean capitalized = false
 	){
@@ -154,7 +181,7 @@ component singleton {
 	/**
 	 * Camel case a string using upper case for the first letter
 	 */
-	function camelCaseUpper( required target ){
+	static function camelCaseUpper( required target ){
 		return camelCase( arguments.target, true );
 	}
 

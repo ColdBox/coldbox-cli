@@ -1201,77 +1201,102 @@ coldbox ai doctor
 - [ ] Display project statistics (handlers, models, tests)
 - [ ] Show configured MCP servers
 
-### 2.2 Guideline Management Commands ⬜
+### 2.2 Guideline Management Commands ✅
 
+#### `coldbox ai guidelines list` ✅
 
-#### `coldbox ai guidelines list` ⬜
+- [x] List all available guidelines
+- [x] Show installed vs available
+- [x] Group by framework/module
+- [x] Show versions
+- [x] Indicate custom vs core guidelines
 
-- [ ] List all available guidelines
-- [ ] Show installed vs available
-- [ ] Group by framework/module
-- [ ] Show versions
-- [ ] Indicate custom vs core guidelines
+#### `coldbox ai guidelines add [name]` ✅
 
-#### `coldbox ai guidelines add [name]` ⬜
+- [x] Add specific guideline by name
+- [x] Auto-detect version from box.json
+- [x] Support version override: `coldbox ai guidelines add coldbox@8.x`
+- [x] Download from registry if not available locally
 
-- [ ] Add specific guideline by name
-- [ ] Auto-detect version from box.json
-- [ ] Support version override: `coldbox ai guidelines add coldbox@8.x`
-- [ ] Download from registry if not available locally
+#### `coldbox ai guidelines remove [name]` ✅
 
-#### `coldbox ai guidelines remove [name]` ⬜
+- [x] Remove specific guideline
+- [x] Confirm before deletion
+- [x] Update agent files
 
-- [ ] Remove specific guideline
-- [ ] Confirm before deletion
-- [ ] Update agent files
+#### `coldbox ai guidelines create [name]` ✅
 
-#### `coldbox ai guidelines create [name]` ⬜
+- [x] Scaffold custom guideline template
+- [x] Create in `.ai/guidelines/custom/[name]/`
+- [x] Generate template with proper structure
+- [x] Provide examples and documentation
 
-- [ ] Scaffold custom guideline template
-- [ ] Create in `.ai/guidelines/custom/[name]/`
-- [ ] Generate template with proper structure
-- [ ] Provide examples and documentation
+#### `coldbox ai guidelines override [name]` ✅
 
-#### `coldbox ai guidelines override [name]` ⬜
+- [x] Create override for core guideline
+- [x] Copy core guideline as starting point
+- [x] Place in custom location with higher priority
+- [x] Document override in comments
 
-- [ ] Create override for core guideline
-- [ ] Copy core guideline as starting point
-- [ ] Place in custom location with higher priority
-- [ ] Document override in comments
+### 2.3 Skills Management Commands ✅
 
-### 2.3 Skills Management Commands ⬜
+#### `coldbox ai skills list` ✅
 
+- [x] Show core skills first (coldbox, boxlang, cfml - always installed) marked with ⭐
+- [x] Show all auto-discovered skills from installed modules
+- [x] Show source module for each skill
+- [x] Show skill descriptions
+- [x] Group by category (core, framework, testing, ORM, security, modern)
+- [x] Indicate if skill files are available locally vs need download
 
-#### `coldbox ai skills list` ⬜
+#### `coldbox ai skills refresh` ✅
 
-- [ ] Show core skills first (coldbox, boxlang, cfml - always installed) marked with ⭐
-- [ ] Show all auto-discovered skills from installed modules
-- [ ] Show source module for each skill
-- [ ] Show skill descriptions
-- [ ] Group by category (core, framework, testing, ORM, security, modern)
-- [ ] Indicate if skill files are available locally vs need download
+- [x] Ensure core skills (coldbox, boxlang, cfml) are always present
+- [x] Re-scan box.json dependencies
+- [x] Auto-discover available skills from all installed modules
+- [x] Download/update skill files from module sources
+- [x] Remove skills from uninstalled modules (except core)
+- [x] Preserve custom/project-specific skills
+- [x] Update agent configuration files
+- [x] Report changes: added, removed, updated
 
-#### `coldbox ai skills refresh` ⬜
+#### `coldbox ai skills create [name]` ✅
 
-- [ ] Ensure core skills (coldbox, boxlang, cfml) are always present
-- [ ] Re-scan box.json dependencies
-- [ ] Auto-discover available skills from all installed modules
-- [ ] Download/update skill files from module sources
-- [ ] Remove skills from uninstalled modules (except core)
-- [ ] Preserve custom/project-specific skills
-- [ ] Update agent configuration files
-- [ ] Report changes: added, removed, updated
+- [x] Scaffold new custom/project-specific skill
+- [x] Generate `SKILL.md` with proper YAML frontmatter
+- [x] Provide template with examples and triggers
+- [x] Create in `.ai/skills/custom/[name]/`
+- [x] Custom skills marked to persist across refreshes
+- [x] Add to project's skill registry
 
-#### `coldbox ai skills create [name]` ⬜
+### 2.4 Agent Management Commands ✅
 
-- [ ] Scaffold new custom/project-specific skill
-- [ ] Generate `SKILL.md` with proper YAML frontmatter
-- [ ] Provide template with examples and triggers
-- [ ] Create in `.ai/skills/custom/[name]/`
-- [ ] Custom skills marked to persist across refreshes
-- [ ] Add to project's skill registry
+#### `coldbox ai agents list` ✅
 
-### 2.4 MCP Server Commands ⬜
+- [x] List all configured agents
+- [x] Show configuration file paths
+- [x] Indicate which files exist vs missing
+- [x] Display active agent
+
+#### `coldbox ai agents add [name]` ✅
+
+- [x] Add specific agent configuration
+- [x] Create agent-specific instruction file
+- [x] Support multiple agents: `coldbox ai agents add claude,copilot`
+- [x] Update manifest with agent list
+
+#### `coldbox ai agents remove [name]` ✅
+
+- [x] Remove specific agent configuration
+- [x] Delete agent instruction file
+- [x] Confirm before deletion
+- [x] Update manifest
+
+#### `coldbox ai agents active [name]` ✅
+
+- [x] Show current active agent
+- [x] Set active agent for development session
+- [x] Informational only - all agent files remain
 
 #### `coldbox ai mcp list` ⬜
 
