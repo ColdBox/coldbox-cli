@@ -153,14 +153,16 @@ component singleton {
 		}
 
 		if ( !fileExists( templateFile ) ) {
-			// Fallback content
-			return "## AI Instructions for #arguments.agent#
-
-Project Language: #arguments.language#
-Project Layout: #arguments.layout#
-
-Guidelines available in .ai/guidelines/
-Skills available in .ai/skills/"
+			// Fallback content from template
+			var fallbackPath = templatesPath & "/ai/agents/agent-fallback.md"
+			var fallback = fileRead( fallbackPath )
+			
+			// Replace tokens
+			fallback = replaceNoCase( fallback, "|agentName|", arguments.agent, "all" )
+			fallback = replaceNoCase( fallback, "|language|", arguments.language, "all" )
+			fallback = replaceNoCase( fallback, "|layout|", arguments.layout, "all" )
+			
+			return fallback
 		}
 
 		var content = fileRead( templateFile )

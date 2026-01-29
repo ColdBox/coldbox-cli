@@ -250,9 +250,9 @@ component singleton {
 		}
 
 		// Fallback for unknown guidelines
-		return "## #arguments.guidelineName# Guidelines
-
-This guideline will be populated with actual content.";
+		var fallbackPath = variables.utility.getTemplatesPath() & "/ai/guidelines/guideline-fallback.md"
+		var fallback = fileRead( fallbackPath )
+		return replaceNoCase( fallback, "|guidelineName|", arguments.guidelineName, "all" )
 	}
 
 	/**
