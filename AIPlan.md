@@ -1,203 +1,361 @@
-# ColdBox CLI AI Integration Plan
+# ColdBox CLI AI Integration - Implementation Plan
 
-> **Status**: Planning Phase
-> **Last Updated**: January 26, 2026
+> **Status**: Phase 2 - 100% Complete (excluding MCP)
+> **Last Updated**: January 29, 2026
 
-## Overview
+## Implementation Phases
 
-Implement AI-assisted development capabilities in ColdBox CLI to accelerate AI-assisted development by providing essential guidelines and agent skills that help AI agents write high-quality ColdBox applications following best practices.
+### ✅ Phase 1: Foundation (100% Complete)
 
-## Key Features
+**Core Services:**
+- ✅ AIService.cfc - Central orchestration service
+- ✅ GuidelineManager.cfc - Guidelines discovery and management
+- ✅ SkillManager.cfc - Skills discovery and management
+- ✅ AgentRegistry.cfc - Agent configuration and file generation
+- ✅ BaseAICommand.cfc - Common command functionality
 
-- ✅ **AI Guidelines**: Composable instruction files loaded upfront for AI agents
-- ✅ **Agent Skills**: On-demand, task-specific knowledge modules
-- ✅ **MCP Server Integration**: Connect to all Ortus MCP documentation servers
-- ✅ **Multi-Agent Support**: Claude, Copilot, Codex, Gemini, OpenCode
-- ✅ **Custom Guidelines**: User-defined guidelines and overrides
-- ✅ **Third-Party Module Support**: Module authors can include guidelines/skills
+**Template System:**
+- ✅ Guideline templates (core, custom, override, fallback)
+- ✅ Skill templates (core, custom)
+- ✅ Agent instruction templates (fallback)
+- ✅ Layout-specific templates (modern, flat, boxlang)
 
----
-
-## Quick Overview - What We're Building
-
-### 🎯 The Goal
-
-Enable AI agents (Claude, Copilot, etc.) to write high-quality ColdBox applications by providing them with framework knowledge, best practices, and live documentation access.
-
-### 📦 What Gets Installed
-
-**For Developers:**
-
-```bash
-coldbox ai install --agent=claude,copilot
-```
-
-Creates:
-
-- `.ai/guidelines/` - Framework conventions (always loaded by AI)
-- `.ai/skills/` - On-demand implementation patterns
-- `CLAUDE.md`, `.github/copilot-instructions.md` - Agent-specific config
-- `.mcp.json` - Live documentation server connections
-
-**Result:** AI agents know your framework, modules, and coding standards
-
-### 🛠️ CLI Commands (11 Main Commands)
-
-```bash
-# Setup & Management
-coldbox ai install              # Set up AI for project
-coldbox ai refresh               # Refresh skills/guidelines when modules change
-coldbox ai info                 # Show current AI configuration
-coldbox ai doctor               # Diagnose AI configuration and health
-
-# Guidelines (Framework Conventions)
-coldbox ai guidelines list      # See available guidelines
-coldbox ai guidelines create    # Add custom team conventions
-
-# Skills (Implementation Patterns)
-coldbox ai skills list          # See auto-discovered skills
-coldbox ai skills refresh       # Sync skills with installed modules
-coldbox ai skills create        # Add custom implementation pattern
-
-# Agent Management
-coldbox ai agents list          # See supported/configured agents
-coldbox ai agents add           # Enable agent(s) for project
-coldbox ai agents remove        # Disable agent(s)
-
-# MCP Servers (Live Documentation)
-coldbox ai mcp list             # Show available doc servers
-coldbox ai mcp search "query"   # Search across all documentation
-```
-
-### 📚 What Gets Auto-Discovered
-
-**Guidelines** (40+ frameworks/modules):
-
-- ColdBox, BoxLang, CFML, TestBox, WireBox, LogBox, CacheBox
-- CBSecurity, CBValidation, CBAuth, CBSSO, CBWire
-- Quick ORM, QB, cfmigrations, Hyper, and more
-
-**Skills** (30+ patterns organized by priority):
-
-- **BoxLang** (8 skills): Syntax, Classes, Functions, Lambdas, Modules, Streams, Type system, Interop
-- **ColdBox** (9 skills): Handlers, REST APIs, Modules, Interceptors, Routing, Event model, Layouts, View rendering, Cache integration
-- **Testing** (8 skills): BDD specs, Unit tests, Integration tests, Handler tests, Mocking, Test fixtures, Coverage, CI integration
-- **Security** (9 skills): CBSecurity setup, CBAuth integration, Authorization rules, JWT tokens, Passkeys, SSO, CSRF, API authentication, Role-based access
-- ORM/Database (4 skills): Quick patterns, QB usage, Migrations, Relationships
-- Modern (3 skills): CBWire components, Queue processing, WebSockets
-
-**MCP Servers** (25 documentation sources):
-
-- All Ortus product documentation with live search
-- CFML in 100 Minutes, BoxLang, ColdBox, and all modules
-
-### 🔄 The Developer Experience
-
-**Before AI Integration:**
-
-```
-1. Google "ColdBox validation"
-2. Read docs
-3. Copy example
-4. Adapt to your code
-5. Debug issues
-6. Repeat for each feature
-```
-
-**After AI Integration:**
-
-```
-1. Ask AI: "Add validation to user registration"
-2. AI generates correct code following your conventions
-3. Done! ✅
-```
-
-**The AI automatically:**
-
-- Follows ColdBox conventions
-- Uses your installed modules (CBValidation, Quick, etc.)
-- Generates BoxLang or CFML based on project language
-- Includes proper error handling
-- Applies your team's custom guidelines
-
-### 🎨 Multi-Agent Support
-
-Same configuration works for all team members:
-
-- **Claude users** → Uses `CLAUDE.md`
-- **Copilot users** → Uses `.github/copilot-instructions.md`
-- **Gemini users** → Uses `.gemini/` config
-- **Others** → Codex, OpenCode supported
-
-### 📈 For Module Authors
-
-Add AI support to your module:
-
-```
-your-module/
-└── resources/
-    └── coldbox-cli/
-        └── ai/
-            ├── guidelines/
-            │   └── core.md          # Your module conventions
-            └── skills/
-                └── your-feature/
-                    └── SKILL.md     # Implementation patterns
-```
-
-When users `box install your-module` → AI automatically knows how to use it!
-
-### 🚀 Implementation Phases
-
-1. **Foundation** - Core services, directory structure, config schema
-2. **CLI Commands** - 10 commands for managing AI integration
-3. **App Integration** - Add to `coldbox create app` wizard
-4. **Guidelines Content** - 40+ framework/module guidelines
-5. **Skills Content** - 15+ implementation patterns
-6. **MCP Integration** - 25 documentation servers
-7. **Multi-Agent** - 6 agent support (Claude, Copilot, Codex, Gemini, OpenCode)
-8. **Custom Support** - User overrides and custom content
-9. **Module Support** - Third-party module guidelines/skills
-10. **Documentation** - Complete user and author guides
-
-### 📊 Success Metrics
-
-- 40+ guidelines covering entire ColdBox ecosystem
-- **41 skills** prioritizing BoxLang (8), ColdBox (9), Testing (8), and Security (9)
-- 25 MCP servers for live documentation access
-- 6 AI agents supported
-- Zero-config for module installation (auto-discovery)
-- Works with BoxLang, CFML, and hybrid projects
+**Manifest System:**
+- ✅ `.ai/.manifest.json` schema and versioning
+- ✅ Installed guidelines tracking
+- ✅ Discovered skills registry
+- ✅ Agent configuration tracking
+- ✅ Language mode tracking
 
 ---
 
-## Guidelines vs Skills - Understanding the Difference
+### ✅ Phase 2: CLI Commands (100% Complete - excluding MCP)
 
-### 📘 **Guidelines** (Always Loaded - Reference Documentation)
+**Core Commands (4/4):**
+- ✅ `coldbox ai install` - Set up AI integration
+- ✅ `coldbox ai refresh` - Sync with installed modules
+- ✅ `coldbox ai info` - Display current configuration
+- ✅ `coldbox ai doctor` - Diagnose health and issues
 
-**What**: Foundational knowledge loaded when AI starts
-**When**: Always present in AI's context
-**Purpose**: Framework syntax, conventions, and API reference
+**Guideline Management (5/5):**
+- ✅ `coldbox ai guidelines list` - Show installed guidelines
+- ✅ `coldbox ai guidelines add` - Install specific guideline
+- ✅ `coldbox ai guidelines remove` - Remove guideline
+- ✅ `coldbox ai guidelines create` - Create custom guideline
+- ✅ `coldbox ai guidelines override` - Override core guideline
 
-**Think of it as**: The AI's "permanent reference manual" - what exists and how it works
+**Skills Management (3/3):**
+- ✅ `coldbox ai skills list` - Show available skills
+- ✅ `coldbox ai skills refresh` - Sync with modules
+- ✅ `coldbox ai skills create` - Create custom skill
+
+**Agent Management (4/4):**
+- ✅ `coldbox ai agents list` - Show configured agents
+- ✅ `coldbox ai agents add` - Add agent configuration(s)
+- ✅ `coldbox ai agents remove` - Remove agent
+- ✅ `coldbox ai agents active` - Show/set active agent
+
+**MCP Commands (0/2 - DEFERRED):**
+- ⬜ `coldbox ai mcp list` - Show available MCP servers
+- ⬜ `coldbox ai mcp search` - Search across documentation
+
+---
+
+### ⬜ Phase 3: Application Integration
+
+**Integration Points:**
+- ⬜ Add to `coldbox create app` wizard
+- ⬜ Add to `coldbox create app-wizard` flow
+- ⬜ Add `--ai` flag support
+- ⬜ Detect existing app structure
+- ⬜ Analyze project patterns
+- ⬜ Generate project-specific context
+- ⬜ Auto-populate custom guidelines
+- ⬜ Add AI support to `coldbox create module`
+
+---
+
+### ⬜ Phase 4: Core Guidelines Content
+
+**ColdBox Framework (1):**
+- ⬜ `coldbox/core.md` - Core conventions, handlers, routing, events, modules, layouts, interceptors
+
+**Core Frameworks (6):**
+- ⬜ `boxlang/core.md` - Language fundamentals, syntax, classes, modern features
+- ⬜ `cfml/core.md` - Language fundamentals, syntax, component-based development
+- ⬜ `cachebox/core.md` - Caching strategies, providers, events
+- ⬜ `wirebox/core.md` - DI patterns, binder DSL, providers, AOP
+- ⬜ `logbox/core.md` - Logger usage, appenders, configuration
+- ⬜ `testbox/core.md` - BDD/xUnit testing, specs, mocking, integration
+- ⬜ `commandbox/core.md` - Command development, packages, task runners
+
+**Security & Auth (6):**
+- ⬜ `cbsecurity/core.md`
+- ⬜ `cbauth/core.md`
+- ⬜ `cbsecurity-passkeys/core.md`
+- ⬜ `cbsso/core.md`
+- ⬜ `cbcsrf/core.md`
+- ⬜ `cbantisamy/core.md`
+
+**Validation & Data (6):**
+- ⬜ `cbvalidation/core.md`
+- ⬜ `cbi18n/core.md`
+- ⬜ `cbmailservices/core.md`
+- ⬜ `cbmessagebox/core.md`
+- ⬜ `cbpaginator/core.md`
+- ⬜ `cbfeeds/core.md`
+
+**ORM & Database (4):**
+- ⬜ `cborm/core.md`
+- ⬜ `qb/core.md`
+- ⬜ `quick/core.md`
+- ⬜ `cfmigrations/core.md`
+
+**API & Integration (5):**
+- ⬜ `hyper/core.md`
+- ⬜ `cbproxies/core.md`
+- ⬜ `cbswagger/core.md`
+- ⬜ `cbelasticsearch/core.md`
+- ⬜ `s3sdk/core.md`
+
+**Utility & Development (8):**
+- ⬜ `docbox/core.md`
+- ⬜ `cbdebugger/core.md`
+- ⬜ `cbfs/core.md`
+- ⬜ `cbstorages/core.md`
+- ⬜ `stachebox/core.md`
+- ⬜ `cbjavaloader/core.md`
+- ⬜ `cbmarkdown/core.md`
+- ⬜ `cbmockdata/core.md`
+
+**Modern Development (6):**
+- ⬜ `cbwire/core.md`
+- ⬜ `cbq/core.md`
+- ⬜ `socketbox/core.md`
+- ⬜ `mementifier/core.md`
+- ⬜ `unleashsdk/core.md`
+- ⬜ `cbplaywright/core.md`
+
+**Total: 40+ guidelines**
+
+---
+
+### ⬜ Phase 5: Core Skills Content
+
+**BoxLang Development (8 skills - 20%):**
+- ⬜ `boxlang-syntax` - Class syntax, properties, methods
+- ⬜ `boxlang-classes` - Class definition patterns
+- ⬜ `boxlang-functions` - Function types and patterns
+- ⬜ `boxlang-lambdas` - Lambda expressions
+- ⬜ `boxlang-modules` - Module system
+- ⬜ `boxlang-streams` - Stream API
+- ⬜ `boxlang-types` - Type system
+- ⬜ `boxlang-interop` - CFML/Java interop
+
+**ColdBox Development (9 skills - 22%):**
+- ⬜ `handler-development` - Handler patterns
+- ⬜ `rest-api-development` - REST APIs
+- ⬜ `module-development` - ColdBox modules
+- ⬜ `interceptor-development` - Interceptors
+- ⬜ `layout-development` - Layouts and views
+- ⬜ `routing-development` - Route configuration
+- ⬜ `event-model` - Event-driven architecture
+- ⬜ `view-rendering` - View patterns
+- ⬜ `cache-integration` - CacheBox integration
+
+**Testing (8 skills - 20%):**
+- ⬜ `testing-bdd` - BDD testing with TestBox
+- ⬜ `testing-unit` - Unit testing patterns
+- ⬜ `testing-integration` - Integration testing
+- ⬜ `testing-handler` - Handler testing
+- ⬜ `testing-mocking` - MockBox patterns
+- ⬜ `testing-fixtures` - Test fixtures
+- ⬜ `testing-coverage` - Coverage analysis
+- ⬜ `testing-ci` - CI/CD integration
+
+**Security (9 skills - 22%):**
+- ⬜ `security-implementation` - CBSecurity setup
+- ⬜ `authentication` - CBAuth patterns
+- ⬜ `authorization` - Security rules
+- ⬜ `sso-integration` - CBSSO setup
+- ⬜ `jwt-development` - JWT tokens
+- ⬜ `passkeys-integration` - WebAuthn
+- ⬜ `csrf-protection` - CSRF handling
+- ⬜ `api-authentication` - API auth
+- ⬜ `rbac-patterns` - Role-based access
+
+**ORM & Database (4 skills - 10%):**
+- ⬜ `orm-quick` - Quick ORM patterns
+- ⬜ `query-builder` - QB fluent queries
+- ⬜ `database-migrations` - Migrations
+- ⬜ `orm-relationships` - Relationships
+
+**Modern Development (3 skills - 7%):**
+- ⬜ `cbwire-development` - CBWire components
+- ⬜ `queue-development` - CBQ queues
+- ⬜ `websocket-development` - SocketBox
+
+**Total: 41 skills (34 high priority = 83%)**
+
+---
+
+### ⬜ Phase 6: MCP Server Integration
+
+**MCP Client:**
+- ⬜ MCP protocol communication
+- ⬜ stdio-based connections
+- ⬜ Connection pooling
+- ⬜ Error handling and retries
+
+**Ortus MCP Servers (25 total):**
+- ⬜ CFML in 100 Minutes
+- ⬜ BoxLang
+- ⬜ CommandBox
+- ⬜ TestBox
+- ⬜ ColdBox
+- ⬜ CacheBox, LogBox, WireBox
+- ⬜ CBQ, QB, Quick
+- ⬜ CBSecurity, CBAuth, CBSSO
+- ⬜ CBMailservices, CBValidation, CBI18N
+- ⬜ CBFS, CBORM
+- ⬜ CBDebugger, CBElasticsearch
+- ⬜ CBStreams, DocBox
+- ⬜ BXORM, RuleBox
+- ⬜ BoxLang IDE
+- ⬜ CBWire, Megaphone
+
+**MCP Tools:**
+- ⬜ Search documentation
+- ⬜ Get code examples
+- ⬜ Query API references
+- ⬜ Get module information
+- ⬜ Search best practices
+
+**Configuration:**
+- ⬜ Generate `.mcp.json`
+- ⬜ Auto-configure based on packages
+- ⬜ Support custom MCP servers
+
+---
+
+### ⬜ Phase 7: Multi-Agent Support
+
+**Agent Detection:**
+- ⬜ Agent detection logic
+- ⬜ Agent capability detection
+- ⬜ Auto-detect from environment
+
+**Agent Support (6 agents):**
+- ⬜ Claude - `CLAUDE.md`
+- ⬜ GitHub Copilot - `.github/copilot-instructions.md`
+- ⬜ Codex - Codex-specific config
+- ⬜ Gemini - Gemini-specific files
+- ⬜ OpenCode - `.opencode/` config
+- ⬜ Universal - `AGENTS.md` fallback
+
+**Agent Integration:**
+- ⬜ MCP configuration per agent
+- ⬜ Agent-specific formatting
+- ⬜ Test with each agent platform
+
+---
+
+### ⬜ Phase 8: Custom Guidelines & Overrides
+
+**Custom Guidelines:**
+- ⬜ `.ai/guidelines/custom/` structure
+- ⬜ Guidelines discovery
+- ⬜ Validation
+- ⬜ Documentation
+
+**Core Overrides:**
+- ⬜ Override mechanism
+- ⬜ Priority system (custom > override > core)
+- ⬜ Copy core as starting point
+- ⬜ Override warnings
+- ⬜ Documentation
+
+**Custom Skills:**
+- ⬜ `.ai/skills/custom/` structure
+- ⬜ Skill validation (YAML)
+- ⬜ Discovery and registration
+- ⬜ Documentation
+
+---
+
+### ⬜ Phase 9: Third-Party Module Support
+
+**Module Guidelines:**
+- ⬜ Scan `resources/coldbox-cli/ai/guidelines/`
+- ⬜ Auto-register discovered guidelines
+- ⬜ Version matching
+- ⬜ Priority handling
+
+**Module Skills:**
+- ⬜ Scan `resources/coldbox-cli/ai/skills/`
+- ⬜ Auto-register discovered skills
+- ⬜ Activation based on module presence
+
+**Module Author Docs:**
+- ⬜ Guidelines for including AI files
+- ⬜ Example module structure
+- ⬜ Best practices
+- ⬜ Template files
+
+---
+
+### ⬜ Phase 10: Documentation & Examples
+
+**User Documentation:**
+- ⬜ Command reference
+- ⬜ Configuration guide
+- ⬜ Best practices
+- ⬜ Troubleshooting
+
+**Writing Guides:**
+- ⬜ Guideline writing guide
+- ⬜ Skill writing guide
+- ⬜ Module author guide
 
 **Examples:**
+- ⬜ Sample app with AI configured
+- ⬜ Sample module with AI support
+- ⬜ Agent configuration examples
 
-- BoxLang syntax and features
-- ColdBox HMVC structure and naming conventions
-- How handlers work and extend EventHandler
-- Standard dependency injection patterns
-- Configuration file locations and structure
-- Basic routing patterns
+---
 
-**File Location:** `.ai/guidelines/coldbox/core.md`
+## Progress Summary
 
-```markdown
-# ColdBox Framework Core
+**Phase Status:**
+- ✅ Phase 1: Foundation - **100% Complete**
+- ✅ Phase 2: CLI Commands - **100% Complete** (MCP deferred)
+- ⬜ Phase 3: Application Integration - **0% Complete**
+- ⬜ Phase 4: Guidelines Content - **0% Complete** (40+ guidelines)
+- ⬜ Phase 5: Skills Content - **0% Complete** (41 skills)
+- ⬜ Phase 6: MCP Integration - **0% Complete** (25 servers)
+- ⬜ Phase 7: Multi-Agent - **0% Complete** (6 agents)
+- ⬜ Phase 8: Custom Support - **0% Complete**
+- ⬜ Phase 9: Module Support - **0% Complete**
+- ⬜ Phase 10: Documentation - **0% Complete**
 
-## Handler Conventions
+**Overall Progress:** 20% (2/10 phases complete)
 
-- Handlers extend `coldbox.system.EventHandler`
+---
+
+## Success Metrics
+
+- **Guidelines:** 40+ covering entire ColdBox ecosystem
+- **Skills:** 41 total (34 high priority = 83%)
+  - BoxLang: 8 skills (20%)
+  - ColdBox: 9 skills (22%)
+  - Testing: 8 skills (20%)
+  - Security: 9 skills (22%)
+  - ORM/Database: 4 skills (10%)
+  - Modern: 3 skills (7%)
+- **MCP Servers:** 25 Ortus documentation servers
+- **Agents:** 6 AI agents supported
+- **Module Support:** Zero-config auto-discovery
+- **Languages:** BoxLang, CFML, and hybrid projects
 - Located in `/handlers/` directory
 - Use dependency injection via `property` declarations
 - Event handlers receive: event, rc, prc
@@ -813,6 +971,7 @@ class RegistrationHandler extends coldbox.system.EventHandler {
 Works with both BoxLang and CFML. Examples shown in BoxLang (preferred).
 
 ## Configuration
+
 Configure in `config/ColdBox.cfc`:
 
 ```java

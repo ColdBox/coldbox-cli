@@ -34,6 +34,11 @@ This is a CommandBox module (v7.10.0) providing CLI commands for ColdBox framewo
   - Example: `property name="userService" inject="UserService";` (property with semicolon)
   - Example: `var result = service.getData()` (no semicolon needed)
 
+**Markdown File Standards**:
+- **Always lint markdown files after editing** - Run `npx markdownlint-cli -f {filename}` after any markdown file modifications
+- Markdown linting configuration is in `.markdownlint.json`
+- Fix any linting errors before committing changes
+
 ## Development Workflows
 
 **Command Development**:
