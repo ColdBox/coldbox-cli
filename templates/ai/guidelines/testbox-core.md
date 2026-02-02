@@ -1,9 +1,11 @@
 # TestBox Testing Guidelines
 
 ## Overview
+
 TestBox is a BDD/TDD testing framework for CFML/BoxLang.
 
 ## BDD Style
+
 ```boxlang
 describe( "User Registration", function(){
     it( "should create a new user", function(){
@@ -15,6 +17,7 @@ describe( "User Registration", function(){
 ```
 
 ## Assertions
+
 - `expect().toBe()` - Equality check
 - `expect().toBeTrue()` - Boolean checks
 - `expect().toHaveKey()` - Struct key checks
@@ -23,11 +26,13 @@ describe( "User Registration", function(){
 - `expect().toBeStruct()` - Struct checks
 
 ## Test Organization
+
 - Specs in `/tests/specs/`
 - Use `beforeEach()` and `afterEach()` for setup/teardown
 - Group related tests with `describe()` blocks
 
 ## Handler Testing
+
 ```boxlang
 describe( "Users Handler", function(){
     beforeEach( function(){

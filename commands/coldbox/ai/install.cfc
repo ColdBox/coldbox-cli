@@ -10,9 +10,6 @@
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
-	// DI
-	property name="config"         inject="box:moduleconfig:coldbox-cli";
-
 	/**
 	 * Run the command
 	 *

@@ -8,10 +8,10 @@ component singleton {
 	property name="print"            inject="PrintBuffer";
 	property name="fileSystemUtil"   inject="fileSystem";
 	property name="packageService"   inject="PackageService";
-	property name="config"           inject="box:moduleconfig:coldbox-cli";
 	property name="guidelineManager" inject="GuidelineManager@coldbox-cli";
 	property name="skillManager"     inject="SkillManager@coldbox-cli";
 	property name="agentRegistry"    inject="AgentRegistry@coldbox-cli";
+	property name="utility"          inject="Utility@coldbox-cli";
 
 	/**
 	 * Install AI integration for a project
@@ -56,7 +56,7 @@ component singleton {
 
 		// Initialize manifest
 		var manifest = {
-			"coldboxCliVersion" : getColdboxCliVersion(),
+			"coldboxCliVersion" : variables.utility.getColdboxCliVersion(),
 			"lastSync"          : dateTimeFormat( now(), "iso" ),
 			"language"          : arguments.language,
 			"guidelines"        : [],
@@ -119,7 +119,7 @@ component singleton {
 		}
 
 		// Update coldbox-cli version
-		manifest.coldboxCliVersion = getColdboxCliVersion()
+		manifest.coldboxCliVersion = variables.utility.getColdboxCliVersion()
 		manifest.lastSync          = dateTimeFormat( now(), "iso" )
 
 		// Refresh guidelines based on installed modules

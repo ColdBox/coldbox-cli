@@ -139,7 +139,7 @@ component singleton {
 	 * @layout Project layout type (flat or modern)
 	 */
 	private function getAgentConfigContent( required string agent, required string language, required string layout ){
-		var templatesPath = getTemplatesPath()
+		var templatesPath = variables.utility.getTemplatesPath()
 		var templateFile  = ""
 
 		// For copilot, use layout-specific templates

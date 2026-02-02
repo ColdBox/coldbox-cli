@@ -10,6 +10,9 @@ component accessors="true" {
 	property name="serverService"  inject="serverService";
 	property name="packageService" inject="PackageService";
 
+	/**
+	 * Initialize the BaseCommand
+	 */
 	function init(){
 		return this;
 	}

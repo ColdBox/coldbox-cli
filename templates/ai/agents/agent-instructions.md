@@ -30,6 +30,7 @@ Implementation patterns are available in `.ai/skills/`. When implementing featur
 ## Code Generation Standards
 
 ### BoxLang Syntax (Primary)
+
 ```boxlang
 class UserHandler extends coldbox.system.EventHandler {
     property name="userService" inject;
@@ -42,6 +43,7 @@ class UserHandler extends coldbox.system.EventHandler {
 ```
 
 ### Key Conventions
+
 - Use `class` syntax for BoxLang
 - Properties with `inject` for dependency injection
 - No semicolons except property declarations
@@ -49,6 +51,7 @@ class UserHandler extends coldbox.system.EventHandler {
 - Use event.renderData() for REST responses
 
 ### Testing
+
 ```boxlang
 describe( "User Handler", function(){
     it( "should list all users", function(){

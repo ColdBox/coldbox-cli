@@ -365,3 +365,5 @@ This skill will be populated with actual content.";
 			"cbq"    : [ "queue-development" ]
 		};
 	}
+
+}

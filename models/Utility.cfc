@@ -4,6 +4,8 @@ component singleton {
 	property name="moduleService" inject="ModuleService";
 	property name="wirebox"       inject="wirebox";
 	property name="print"         inject="PrintBuffer";
+	property name="settings"       inject="box:modulesettings:coldbox-cli";
+	property name="config"       inject="box:moduleConfig:coldbox-cli";
 
 	this.BREAK = chr( 13 ) & chr( 10 );
 	this.TAB   = chr( 9 );
@@ -13,9 +15,8 @@ component singleton {
 	 *
 	 * @return The version string from box.json
 	 */
-	static function getColdboxCliVersion(){
-		var moduleSettings = wirebox.getInstance( "box:modulesettings:coldbox-cli" )
-		var boxJsonPath = moduleSettings.path & "/box.json"
+	function getColdboxCliVersion(){
+		var boxJsonPath = variables.config.path & "/box.json"
 
 		if ( fileExists( boxJsonPath ) ) {
 			var boxJson = deserializeJSON( fileRead( boxJsonPath ) )
@@ -30,16 +31,15 @@ component singleton {
 	 *
 	 * @return The absolute path to the templates directory
 	 */
-	static function getTemplatesPath(){
-		var moduleSettings = wirebox.getInstance( "box:modulesettings:coldbox-cli" )
-		return moduleSettings.templatesPath
+	function getTemplatesPath(){
+		return variables.settings.templatesPath
 	}
 
 	/**
 	 * Verify that the TestBox module is installed
 	 * else install it
 	 */
-	static function ensureTestBoxModule(){
+	function ensureTestBoxModule(){
 		if ( !isTestBoxModuleInstalled() ) {
 			variables.print
 				.redLine( "TestBox-CLI module not installed. Installing it for you, please wait..." )
@@ -58,7 +58,7 @@ component singleton {
 	 * Verify that the CommandBox Migrations module is installed
 	 * else install it
 	 */
-	static function ensureMigrationsModule(){
+	function ensureMigrationsModule(){
 		if ( !isMigrationsModuleInstalled() ) {
 			variables.print
 				.redLine( "‼️ CommandBox-Migrations module not installed. Installing it for you, please wait..." )
@@ -76,7 +76,7 @@ component singleton {
 	/**
 	 * Is TestBox module installed
 	 */
-	static boolean function isTestBoxModuleInstalled(){
+	boolean function isTestBoxModuleInstalled(){
 		return variables.moduleService
 			.getModuleRegistry()
 			.keyArray()
@@ -86,7 +86,7 @@ component singleton {
 	/**
 	 * Is CommandBox Migrations module installed
 	 */
-	static boolean function isMigrationsModuleInstalled(){
+	boolean function isMigrationsModuleInstalled(){
 		return variables.moduleService
 			.getModuleRegistry()
 			.keyArray()
@@ -98,7 +98,7 @@ component singleton {
 	 *
 	 * @word The word to convert
 	 */
-	static function singularize( required word ){
+	function singularize( required word ){
 		var result = arguments.word;
 
 		if ( result.endsWith( "s" ) ) {
@@ -125,7 +125,7 @@ component singleton {
 	 *
 	 * @word The word to convert
 	 */
-	static function pluralize( required word ){
+	function pluralize( required word ){
 		var result = arguments.word;
 
 		if ( result.endsWith( "s" ) ) {
@@ -165,7 +165,7 @@ component singleton {
 	 * @target      The string to camel case
 	 * @capitalized Whether or not to capitalize the first letter, default is false
 	 */
-	static function camelCase(
+	function camelCase(
 		required target,
 		boolean capitalized = false
 	){
@@ -181,7 +181,7 @@ component singleton {
 	/**
 	 * Camel case a string using upper case for the first letter
 	 */
-	static function camelCaseUpper( required target ){
+	function camelCaseUpper( required target ){
 		return camelCase( arguments.target, true );
 	}
 
