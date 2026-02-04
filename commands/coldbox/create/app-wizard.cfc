@@ -10,11 +10,19 @@ component extends="app" aliases="" {
 	 * @boxlang  Is this a BoxLang project?
 	 **/
 	function run(
-		required name,
+		name,
 		skeleton,
 		boolean boxlang = isBoxLangProject( getCWD() )
 	){
-		arguments.directory = getCWD();
+		arguments.directory = getCWD()
+
+		// Show Big Colorful COLDBOX Banner
+		showColdBoxBanner()
+
+		// Ensure Name
+		if ( isNull( arguments.name ) || len( trim( arguments.name ) ) EQ 0 ) {
+			arguments.name = ask( "What is the name of your ColdBox application?" );
+		}
 
 		// Ensure Folder Creation
 		if ( !confirm( "Are you currently inside the ""/#name#"" folder (if ""No"" we will create it)? [y/n]" ) ) {
@@ -36,11 +44,9 @@ component extends="app" aliases="" {
 		// Language Selection
 		if ( confirm( "Is this a BoxLang project? [y/n]" ) ) {
 			arguments.boxlang = true;
-			arguments.cfml = false;
 			boxlangWizard( args = arguments );
 		} else {
 			arguments.boxlang = false;
-			arguments.cfml = true;
 			cfmlWizard( args = arguments );
 		}
 
@@ -104,7 +110,7 @@ component extends="app" aliases="" {
 				"------------------------------------------------------------------------------------------"
 			);
 
-			args.skeleton = multiselect( "Which template would you like to use?" )
+			arguments.skeleton = multiselect( "Which template would you like to use?" )
 				.options( [
 					{
 						accessKey : 1,
@@ -131,7 +137,7 @@ component extends="app" aliases="" {
 				"------------------------------------------------------------------------------------------"
 			);
 
-			args.skeleton = multiselect( "Which template would you like to use?" )
+			arguments.skeleton = multiselect( "Which template would you like to use?" )
 				.options( [
 					{
 						accessKey : 1,
