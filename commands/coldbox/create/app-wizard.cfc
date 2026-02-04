@@ -44,9 +44,11 @@ component extends="app" aliases="" {
 		// Language Selection
 		if ( confirm( "Is this a BoxLang project? [y/n]" ) ) {
 			arguments.boxlang = true;
+			arguments.cfml = false;
 			boxlangWizard( args = arguments );
 		} else {
 			arguments.boxlang = false;
+			arguments.cfml = true;
 			cfmlWizard( args = arguments );
 		}
 
@@ -110,7 +112,7 @@ component extends="app" aliases="" {
 				"------------------------------------------------------------------------------------------"
 			);
 
-			arguments.skeleton = multiselect( "Which template would you like to use?" )
+			args.skeleton = multiselect( "Which template would you like to use?" )
 				.options( [
 					{
 						accessKey : 1,
@@ -137,7 +139,7 @@ component extends="app" aliases="" {
 				"------------------------------------------------------------------------------------------"
 			);
 
-			arguments.skeleton = multiselect( "Which template would you like to use?" )
+			args.skeleton = multiselect( "Which template would you like to use?" )
 				.options( [
 					{
 						accessKey : 1,
