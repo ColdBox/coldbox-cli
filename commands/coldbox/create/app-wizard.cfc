@@ -44,11 +44,11 @@ component extends="app" aliases="" {
 		// Language Selection
 		if ( confirm( "Is this a BoxLang project? [y/n]" ) ) {
 			arguments.boxlang = true;
-			arguments.cfml = false;
+			arguments.cfml    = false;
 			boxlangWizard( args = arguments );
 		} else {
 			arguments.boxlang = false;
-			arguments.cfml = true;
+			arguments.cfml    = true;
 			cfmlWizard( args = arguments );
 		}
 
