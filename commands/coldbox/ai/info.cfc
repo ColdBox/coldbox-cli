@@ -27,12 +27,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 
 			// Print info
-			print.line();
-			printInfo( "═══════════════════════════════════════════" );
-			printInfo( "   AI Integration Info" );
-			printInfo( "═══════════════════════════════════════════" );
-			print.line();
-
 			print.line( "coldbox-cli Version: #info.coldboxCliVersion#" );
 			print.line( "Language Mode: #info.language#" );
 			print.line( "Last Sync: #info.lastSync#" );
@@ -42,7 +36,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Guidelines (#info.guidelines.len()#):" );
 			if ( info.guidelines.len() ) {
 				info.guidelines.each( function( guideline ){
-					print.indentedLine( "  • #guideline.name# (from #guideline.source#)" );
+					print.indentedLine( "  🦮  #guideline.name# (from #guideline.source#)" );
 				} );
 			} else {
 				print.indentedLine( "  No guidelines installed" );
@@ -78,7 +72,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Configured Agents (#info.agents.len()#):" );
 			if ( info.agents.len() ) {
 				info.agents.each( function( agent ){
-					print.indentedLine( "  • #agent#" );
+					print.indentedLine( "  🤖 #agent#" );
 				} );
 			} else {
 				print.indentedLine( "  No agents configured" );

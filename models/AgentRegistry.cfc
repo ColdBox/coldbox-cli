@@ -30,6 +30,18 @@ component singleton {
 	}
 
 	/**
+	 * Get a specific agent's config file path
+	 *
+	 * @agent The agent name (claude, copilot, cursor, etc.)
+	 *
+	 * @return The expected config file path for the agent
+	 */
+	function getAgentConfigPath( required string agent ){
+		var paths = getAgentConfigPaths()
+		return paths[ arguments.agent ] ?: "AI_INSTRUCTIONS.md"
+	}
+
+	/**
 	 * Get the config path mapping for all supported agents
 	 *
 	 * @return Struct with agent names as keys and config paths as values
