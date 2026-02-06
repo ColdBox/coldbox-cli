@@ -26,16 +26,30 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				return;
 			}
 
-			// Print info
-			print.line( "coldbox-cli Version: #info.coldboxCliVersion#" );
-			print.line( "Language Mode: #info.language#" );
-			print.line( "Last Sync: #info.lastSync#" );
+			// Load manifest to get active agent
+			var manifest = loadManifest( arguments.directory );
+			var activeAgent = manifest.activeAgent ?: "none";
+
+			// Print configuration in a table
+			print.line();
+			print.table(
+				headerNames = [ "Setting", "Value" ],
+				data = [
+					[ "coldbox-cli Version", info.coldboxCliVersion ],
+					[ "Language Mode", info.language ],
+					[ "Active Agent", activeAgent ],
+					[ "Last Sync", info.lastSync ]
+				]
+			);
 			print.line();
 
-			// Guidelines
+			// Guidelines (sorted alphabetically)
 			printInfo( "Guidelines (#info.guidelines.len()#):" );
 			if ( info.guidelines.len() ) {
-				info.guidelines.each( function( guideline ){
+				var sortedGuidelines = info.guidelines.sort( function( a, b ){
+					return compare( a.name, b.name );
+				} );
+				sortedGuidelines.each( function( guideline ){
 					print.indentedLine( "  🦮  #guideline.name# (from #guideline.source#)" );
 				} );
 			} else {
@@ -43,7 +57,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 			print.line();
 
-			// Skills
+			// Skills (sorted alphabetically within groups)
 			printInfo( "Skills (#info.skills.len()#):" );
 			if ( info.skills.len() ) {
 				// Group by source
@@ -52,14 +66,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 				if ( coreSkills.len() ) {
 					print.indentedCyanLine( "  Core:" );
-					coreSkills.each( function( skill ){
+					coreSkills.sort( function( a, b ){
+						return compare( a.name, b.name );
+					} ).each( function( skill ){
 						print.indentedLine( "    ⭐ #skill.name#" );
 					} );
 				}
 
 				if ( moduleSkills.len() ) {
 					print.indentedCyanLine( "  Modules:" );
-					moduleSkills.each( function( skill ){
+					moduleSkills.sort( function( a, b ){
+						return compare( a.name, b.name );
+					} ).each( function( skill ){
 						print.indentedLine( "    • #skill.name# (from #skill.source#)" );
 					} );
 				}
@@ -72,7 +90,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Configured Agents (#info.agents.len()#):" );
 			if ( info.agents.len() ) {
 				info.agents.each( function( agent ){
-					print.indentedLine( "  ⊕ #agent#" );
+					if ( agent == activeAgent ) {
+						print.indentedGreenLine( "  ▶ #agent# (active)" );
+					} else {
+						print.indentedLine( "  ⊕ #agent#" );
+					}
 				} );
 			} else {
 				print.indentedLine( "  No agents configured" );

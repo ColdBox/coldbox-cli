@@ -46,6 +46,19 @@ This is a CommandBox module (v7.10.0) providing CLI commands for ColdBox framewo
 - Use standardized print methods: `printInfo()`, `printError()`, `printWarn()`, `printSuccess()`
 - Commands support `--force` for overwriting and `--open` for opening generated files
 
+**CLI User Interface Guidelines**:
+
+Creating beautiful CLI interfaces enhances user experience. CommandBox provides rich output formatting capabilities:
+
+- **Print Helpers** - Color text, indentation, lines, boxes: <https://commandbox.ortusbooks.com/task-runners/task-output>
+- **Tables** - Display data in formatted tables: <https://commandbox.ortusbooks.com/task-runners/task-output/printing-tables>
+- **Columns** - Multi-column output layouts: <https://commandbox.ortusbooks.com/task-runners/task-output/printing-columns>
+- **Trees** - Hierarchical tree structures: <https://commandbox.ortusbooks.com/task-runners/task-output/printing-tree>
+- **Progress Bars** - Visual progress indicators: <https://commandbox.ortusbooks.com/task-runners/progress-bar>
+- **Interactive Jobs** - User prompts, confirmations, selections: <https://commandbox.ortusbooks.com/task-runners/interactive-jobs>
+
+Use these tools to create polished, professional command interfaces that improve usability and provide clear visual feedback.
+
 **Template Management**:
 - Templates use token replacement with `replaceNoCase(content, "|token|", value, "all")`
 - BoxLang conversion uses `toBoxLangClass()` to transform `component` to `class`
