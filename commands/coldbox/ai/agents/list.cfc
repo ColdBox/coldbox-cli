@@ -27,7 +27,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.line()
 		printInfo( "Configured AI Agents" )
-		print.line()
 
 		if ( !info.agents.len() ) {
 			printWarn( "No agents configured yet." )
@@ -36,18 +35,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			return
 		}
 
-		var agentPaths = variables.agentRegistry.getAgentConfigPaths()
-
 		// Display each configured agent
 		info.agents.each( ( agent ) => {
-			var configPath = agentPaths[ agent ] ?: "AI_INSTRUCTIONS.md"
-			var fullPath   = directory & "/" & configPath
-			var exists     = fileExists( fullPath )
+			var configPath = variables.agentRegistry.getAgentConfigPath( directory, agent )
+			var exists     = fileExists( configPath )
 
 			if ( exists ) {
 				print.greenLine( "  ✓ #agent#" )
 			} else {
-				print.redLine( "  ✗ #agent# (config file missing)" )
+				print.redLine( "  ✗ #agent# (config file missing - run `coldbox ai refresh` to regenerate)" )
 			}
 
 			if ( verbose ) {

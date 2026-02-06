@@ -35,7 +35,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @return The full path to the manifest file
 	 */
 	function getManifestPath( required string directory ){
-		return "#arguments.directory#/.ai/.manifest.json"
+		return variables.aiService.getManifestPath( arguments.directory )
 	}
 
 	/**
@@ -45,9 +45,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 *
 	 * @return The deserialized manifest struct
 	 */
-	function readManifest( required string directory ){
-		var manifestPath = getManifestPath( arguments.directory )
-		return deserializeJSON( fileRead( manifestPath ) )
+	function loadManifest( required string directory ){
+		return variables.aiService.loadManifest( arguments.directory )
 	}
 
 	/**
@@ -56,35 +55,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @directory The target directory
 	 * @manifest The manifest struct to write
 	 */
-	function writeManifest(
+	function saveManifest(
 		required string directory,
 		required struct manifest
 	){
-		var manifestPath = getManifestPath( arguments.directory )
-		arguments.manifest.lastSync = dateTimeFormat( now(), "iso" )
-		fileWrite( manifestPath, serializeJSON( arguments.manifest ) )
-	}
-
-	/**
-	 * Shows a formatted success message with checkmark
-	 *
-	 * @message The success message to display
-	 */
-	function showSuccess( required string message ){
-		print.line()
-		printSuccess( "✓ #arguments.message#" )
-		print.line()
-	}
-
-	/**
-	 * Shows a formatted tip/help message
-	 *
-	 * @message The tip message to display
-	 */
-	function showTip( required string message ){
-		print.line()
-		printHelp( "Tip: #arguments.message#" )
-		print.line()
+		variables.aiService.saveManifest( arguments.directory, arguments.manifest )
 	}
 
 }

@@ -21,7 +21,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Active AI Agent" )
 
 		var info = ensureInstalled( arguments.directory )
-		var manifest = readManifest( arguments.directory )
+		var manifest = loadManifest( arguments.directory )
 
 		print.line()
 
@@ -64,9 +64,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Update manifest
 		manifest.activeAgent = arguments.agent
-		writeManifest( arguments.directory, manifest )
+		saveManifest( arguments.directory, manifest )
 
-		showSuccess( "Active agent set to: #arguments.agent#" )
+		printSuccess( "Active agent set to: #arguments.agent#" )
 		printInfo( "This setting is informational - all configured agent files remain active." )
 		printInfo( "Use it to track which AI assistant you're currently working with." )
 	}

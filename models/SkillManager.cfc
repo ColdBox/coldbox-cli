@@ -10,6 +10,7 @@ component singleton {
 	property name="packageService" inject="PackageService";
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
+	property name="aiService" inject="AIService@coldbox-cli";
 
 	/**
 	 * Install core skills for a project
@@ -122,8 +123,7 @@ component singleton {
 		fileWrite( skillFile, template )
 
 		// Update manifest
-		var manifestPath = "#arguments.directory#/.ai/.manifest.json"
-		var manifest = fileExists( manifestPath ) ? deserializeJSON( fileRead( manifestPath ) ) : { "skills": [] }
+		var manifest = variables.aiService.loadManifest( arguments.directory );
 
 		manifest.skills.append({
 			"name": arguments.name,
@@ -132,7 +132,7 @@ component singleton {
 			"syncedAt": dateTimeFormat( now(), "iso" )
 		})
 
-		fileWrite( manifestPath, serializeJSON( manifest ) )
+		variables.aiService.saveManifest( arguments.directory, manifest )
 	}
 
 	/**

@@ -10,6 +10,31 @@ component singleton {
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
 
+	static {
+		SUPPORTED_AGENTS = [ "claude", "copilot", "cursor", "codex", "gemini", "opencode" ]
+		AGENT_FILES = {
+			"claude"   : "CLAUDE.md",
+			"copilot"  : ".github/copilot-instructions.md",
+			"cursor"   : ".cursorrules",
+			"codex"    : ".codex/instructions.md",
+			"gemini"   : ".gemini/instructions.md",
+			"opencode" : ".opencode/instructions.md"
+		}
+		AGENT_OPTIONS = [
+			{ display: "Claude (Anthropic) - Recommended for general development", value: "claude" },
+			{ display: "GitHub Copilot - Integrated with VS Code", value: "copilot" },
+			{ display: "Cursor AI - AI-first code editor", value: "cursor" },
+			{ display: "Codex (OpenAI) - GPT-powered coding assistant", value: "codex" },
+			{ display: "Gemini (Google) - Google's AI assistant", value: "gemini" },
+			{ display: "OpenCode - Open source AI assistant", value: "opencode" }
+		]
+	}
+
+	// Expose them as instance properties for easier access in commands
+	this.SUPPORTED_AGENTS = static.SUPPORTED_AGENTS
+	this.AGENT_OPTIONS = static.AGENT_OPTIONS
+	this.AGENT_FILES = static.AGENT_FILES
+
 	/**
 	 * Configure agents for a project
 	 *
@@ -30,31 +55,19 @@ component singleton {
 	}
 
 	/**
-	 * Get a specific agent's config file path
+	 * Get the config path mapping for all supported agents or a specific agent if passed
 	 *
-	 * @agent The agent name (claude, copilot, cursor, etc.)
+	 * @agentName Optional agent name to get specific path for (claude, copilot, cursor, codex, gemini, opencode)
 	 *
-	 * @return The expected config file path for the agent
+	 * @return Struct with agent names as keys and config paths as values as per their conventions
 	 */
-	function getAgentConfigPath( required string agent ){
-		var paths = getAgentConfigPaths()
-		return paths[ arguments.agent ] ?: "AI_INSTRUCTIONS.md"
-	}
+	function getAgentConfigPaths( string agentName ){
 
-	/**
-	 * Get the config path mapping for all supported agents
-	 *
-	 * @return Struct with agent names as keys and config paths as values
-	 */
-	function getAgentConfigPaths(){
-		return {
-			"claude"   : "CLAUDE.md",
-			"copilot"  : ".github/copilot-instructions.md",
-			"cursor"   : ".cursorrules",
-			"codex"    : ".codex/instructions.md",
-			"gemini"   : ".gemini/instructions.md",
-			"opencode" : ".opencode/instructions.md"
+		if( !isNull( arguments.agentName ) ){
+			return static.AGENT_FILES[ arguments.agentName ] ?: "AI_INSTRUCTIONS.md"
 		}
+
+		return static.AGENT_FILES
 	}
 
 	/**
@@ -113,12 +126,17 @@ component singleton {
 	}
 
 	/**
-	 * Get agent config file path
+	 * Get agent config file path for a specific agent on a specific project directory
 	 *
 	 * @directory The project directory
 	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 */
-	private function getAgentConfigPath( required string directory, required string agent ){
+	 function getAgentConfigPath( required string directory, required string agent ){
+		// Check if directory ends in / or \ and remove it for consistent path building
+		if ( right( arguments.directory, 1 ) == "/" || right( arguments.directory, 1 ) == "\" ) {
+			arguments.directory = left( arguments.directory, len( arguments.directory ) - 1 )
+		}
+
 		switch ( arguments.agent ) {
 			case "claude":
 				return "#arguments.directory#/CLAUDE.md"

@@ -236,6 +236,43 @@ component singleton {
 		return issues;
 	}
 
+	/**
+	 * Load the manifest file
+	 *
+	 * @directory The project directory
+	 */
+	struct function loadManifest( required string directory ){
+		var manifestPath = arguments.directory & "/.ai/.manifest.json";
+		if ( !fileExists( manifestPath ) ) {
+			return {};
+		}
+		return deserializeJSON( fileRead( manifestPath ) );
+	}
+
+	/**
+	 * Get the manifest file path for a directory
+	 *
+	 * @directory The target directory
+	 *
+	 * @return The full path to the manifest file
+	 */
+	string function getManifestPath( required string directory ){
+		return arguments.directory & "/.ai/.manifest.json";
+	}
+
+	/**
+	 * Save a manifest file
+	 *
+	 * @directory The project directory
+	 * @manifest The manifest struct to save
+	 */
+	AIService function saveManifest( required string directory, required struct manifest ){
+		var manifestPath = getManifestPath( arguments.directory )
+		arguments.manifest.lastSync = dateTimeFormat( now(), "iso" )
+		fileWrite( manifestPath, serializeJSON( arguments.manifest, true ) )
+		return this
+	}
+
 	// ========================================
 	// Private Helpers
 	// ========================================
@@ -263,30 +300,6 @@ component singleton {
 				directoryCreate( dir )
 			}
 		} )
-	}
-
-	/**
-	 * Save manifest file
-	 *
-	 * @directory The project directory
-	 * @manifest The manifest struct to save
-	 */
-	private function saveManifest( required string directory, required struct manifest ){
-		var manifestPath = arguments.directory & "/.ai/.manifest.json";
-		fileWrite( manifestPath, serializeJSON( arguments.manifest, true ) );
-	}
-
-	/**
-	 * Load manifest file
-	 *
-	 * @directory The project directory
-	 */
-	private function loadManifest( required string directory ){
-		var manifestPath = arguments.directory & "/.ai/.manifest.json";
-		if ( !fileExists( manifestPath ) ) {
-			return {};
-		}
-		return deserializeJSON( fileRead( manifestPath ) );
 	}
 
 	/**

@@ -55,35 +55,42 @@ component accessors="true" {
 		variables.print
 			.green1onDodgerBlue2( " INFO  " )
 			.line( " #arguments.message#" )
-			.line();
+			.line()
 	}
 
 	function printError( required message ){
 		variables.print
 			.whiteOnRed2( " ERROR " )
 			.line( " #arguments.message#" )
-			.line();
+			.line()
 	}
 
 	function printWarn( required message ){
 		variables.print
 			.blackOnWheat1( " WARN  " )
 			.line( " #arguments.message#" )
-			.line();
+			.line()
 	}
 
 	function printSuccess( required message ){
 		variables.print
 			.blackOnSeaGreen2( " SUCCESS  " )
 			.line( " #arguments.message#" )
-			.line();
+			.line()
+	}
+
+	function printTip( required string message ){
+		variables.print
+			.blackOnAquamarine2( "  TIP  " )
+			.line( " #arguments.message#" )
+			.line()
 	}
 
 	function printHelp( required message ){
 		variables.print
 			.blackOnLightSkyBlue1( " HELP  " )
 			.line( " #arguments.message#" )
-			.line();
+			.line()
 	}
 
 	function toBoxLangClass( required content ){

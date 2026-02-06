@@ -3,6 +3,7 @@
  * Creates the agent-specific instruction file
  *
  * Examples:
+ * coldbox ai agents add                (shows interactive selection)
  * coldbox ai agents add claude
  * coldbox ai agents add copilot,cursor
  */
@@ -14,11 +15,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	/**
 	 * Run the command
 	 *
-	 * @agent The agent name(s) to add (comma-separated: claude,copilot,cursor,codex,gemini,opencode)
+	 * @agent The agent name(s) to add (comma-separated: claude,copilot,cursor,codex,gemini,opencode). If not provided, shows interactive selection.
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run(
-		required string agent,
+		string agent     = "",
 		string directory = getCwd()
 	){
 		showColdBoxBanner( "Add AI Agent" )
@@ -27,9 +28,29 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.line()
 
+		// If no agent provided, show multiselect prompt
+		if ( !arguments.agent.len() ) {
+			print.line()
+			printWarn( "🤖 Agent Selection" )
+			print.line()
+
+			var selectedAgents = multiselect( "Select one or more AI agents to add (use spacebar to select, enter to confirm):" )
+				.options( variables.agentRegistry.AGENT_OPTIONS )
+				.multiple()
+				.required()
+				.ask()
+
+			if ( !selectedAgents.len() ) {
+				printWarn( "No agents selected." )
+				return
+			}
+
+			arguments.agent = selectedAgents.toList()
+		}
+
 		// Parse comma-separated agents
 		var agents = listToArray( arguments.agent )
-		var validAgents = [ "claude", "copilot", "cursor", "codex", "gemini", "opencode" ]
+		var validAgents = variables.agentRegistry.SUPPORTED_AGENTS
 		var toAdd = []
 		var invalid = []
 
@@ -41,6 +62,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 		} )
 
+		// Validate agent names
 		if ( invalid.len() ) {
 			printError( "Invalid agent name(s): #invalid.toList()#" )
 			printInfo( "Valid agents: #validAgents.toList()#" )
@@ -69,17 +91,17 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 		}
 
-		printInfo( "Adding agent(s): #toAdd.toList()#" )
 		print.line()
+		printInfo( "Adding agent(s): #toAdd.toList()#" )
 
 		// Get project language from manifest
-		var manifest = readManifest( arguments.directory )
+		var manifest = loadManifest( arguments.directory )
 		var language = manifest.language ?: "boxlang"
 
 		// Configure each agent
 		toAdd.each( ( agent ) => {
 			variables.agentRegistry.configureAgent(
-				arguments.directory,
+				directory,
 				agent,
 				language
 			)
@@ -93,20 +115,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 		} )
 
-		writeManifest( arguments.directory, manifest )
-
-		showSuccess( "Agent(s) added successfully!" )
+		saveManifest( arguments.directory, manifest )
+		print.line()
+		printSuccess( "Agent(s) added successfully!" )
 
 		// Show where files were created
 		var agentPaths = variables.agentRegistry.getAgentConfigPaths()
 		printInfo( "Configuration files created:" )
 		toAdd.each( ( agent ) => {
-			var path = agentPaths[ agent ] ?: "AI_INSTRUCTIONS.md"
-			print.indentedLine( "  #path#" )
+			print.indentedLine( " ⊕ #variables.agentRegistry.getAgentConfigPath( directory, agent )#" )
 		} )
 
 		print.line()
-		printHelp( "Tip: Use 'coldbox ai agents list' to see all configured agents" )
+		printTip( "Use 'coldbox ai agents list' to see all configured agents" )
 	}
 
 }

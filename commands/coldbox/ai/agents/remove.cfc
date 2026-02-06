@@ -48,24 +48,21 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Get config file path
-		var agentPaths = variables.agentRegistry.getAgentConfigPaths()
-		var configPath = agentPaths[ arguments.agent ] ?: "AI_INSTRUCTIONS.md"
-		var fullPath = "#arguments.directory#/#configPath#"
+		var configPath = variables.agentRegistry.getAgentConfigPath( arguments.directory, arguments.agent )
+		print.line()
 
 		// Delete config file
-		if ( fileExists( fullPath ) ) {
-			fileDelete( fullPath )
+		if ( fileExists( configPath ) ) {
+			fileDelete( configPath )
 			printSuccess( "✓ Deleted config file: #configPath#" )
 		} else {
 			printWarn( "Config file not found (may have been manually deleted)" )
 		}
 
 		// Update manifest
-		var manifestPath = "#arguments.directory#/.ai/.manifest.json"
-		var manifest = deserializeJSON( fileRead( manifestPath ) )
-		manifest.agents = manifest.agents.filter( ( a ) => a != arguments.agent )
-		manifest.lastSync = dateTimeFormat( now(), "iso" )
-		fileWrite( manifestPath, serializeJSON( manifest ) )
+		var manifest = loadManifest( arguments.directory )
+		manifest.agents = manifest.agents.filter( ( a ) => a != agent )
+		saveManifest( arguments.directory, manifest )
 
 		print.line()
 		printSuccess( "✓ Agent '#arguments.agent#' removed successfully!" )
