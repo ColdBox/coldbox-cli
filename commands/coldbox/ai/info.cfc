@@ -72,16 +72,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Configured Agents (#info.agents.len()#):" );
 			if ( info.agents.len() ) {
 				info.agents.each( function( agent ){
-					print.indentedLine( "  🤖 #agent#" );
+					print.indentedLine( "  ⊕ #agent#" );
 				} );
 			} else {
 				print.indentedLine( "  No agents configured" );
 			}
 			print.line();
-
 			// Quick health check
-			printInfo( "💡 Tip: Run 'coldbox ai doctor' for a detailed health check" );
-			print.line();
+			printTip( "Run 'coldbox ai doctor' for a detailed health check" );
 		} catch ( any e ) {
 			printError( "Failed to get AI integration info: #e.message#" )
 			printError( e.stackTrace )
