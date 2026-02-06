@@ -113,10 +113,24 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			"error"   : "Critical"
 		};
 
-		print.line( "Overall Status: #statusEmoji[ status ]# #statusText[ status ]#" );
-		print.line( "Errors: #diagnosis.summary.errorCount#" );
-		print.line( "Warnings: #diagnosis.summary.warningCount#" );
-		print.line( "Recommendations: #diagnosis.summary.recommendationCount#" );
+		var statusColor = {
+			"good"    : "green",
+			"warning" : "yellow",
+			"error"   : "red"
+		};
+
+		print.table(
+			headerNames = [ "Metric", "Value" ],
+			data = [
+				[
+					"Overall Status",
+					{ value : "#statusEmoji[ status ]# #statusText[ status ]#", options : statusColor[ status ] }
+				],
+				[ "Errors", diagnosis.summary.errorCount ],
+				[ "Warnings", diagnosis.summary.warningCount ],
+				[ "Recommendations", diagnosis.summary.recommendationCount ]
+			]
+		);
 		print.line();
 
 		// Status-based message
