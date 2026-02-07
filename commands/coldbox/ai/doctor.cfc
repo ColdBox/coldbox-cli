@@ -46,12 +46,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @verbose Show detailed diagnostic information
 	 */
 	private function printDiagnosisReport( required struct diagnosis, boolean verbose = false ){
-		print.line();
-		printInfo( "═══════════════════════════════════════════" );
-		printInfo( "   AI Integration Health Check" );
-		printInfo( "═══════════════════════════════════════════" );
-		print.line();
-
 		// Errors
 		if ( diagnosis.errors.len() ) {
 			print.redLine( "❌ Errors (#diagnosis.errors.len()#)" );
@@ -85,12 +79,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.line();
 		}
 
-		// Summary
-		print.line();
-		printInfo( "───────────────────────────────────────────" );
-		printInfo( "   Summary" );
-		printInfo( "───────────────────────────────────────────" );
-		print.line();
 		// Ensure summary exists with default values
 		if ( !structKeyExists( diagnosis, "summary" ) || !structKeyExists( diagnosis.summary, "status" ) ) {
 			diagnosis.summary = {
