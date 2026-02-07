@@ -13,10 +13,37 @@ component singleton {
 	property name="aiService"        inject="AIService@coldbox-cli";
 
 	static {
-		CORE_GUIDELINES = [ "boxlang", "cfml", "coldbox", "cachebox", "logbox", "testbox", "wirebox" ]
+		CORE_GUIDELINES = [ "boxlang", "cfml", "coldbox", "cachebox", "docbox", "logbox", "testbox", "wirebox" ]
+		MODULE_GUIDELINES = [
+			"bcrypt",
+			"cbauth",
+			"cbdebugger",
+			"cbi18n",
+			"cbFeeds",
+			"cbJavaloader",
+			"cbMailServices",
+			"cbMessagebox",
+			"cbMarkdown",
+			"cborm",
+			"cbfs",
+			"cbq",
+			"cbsecurity",
+			"cbsso",
+			"cbSwagger",
+			"cbvalidation",
+			"cbwire",
+			"cfmigrations",
+			"commandbox-migrations",
+			"cors",
+			"hyper",
+			"qb",
+			"quick",
+			"rulebox"
+		]
 	}
 
 	this.CORE_GUIDELINES = static.CORE_GUIDELINES
+	this.MODULE_GUIDELINES = static.MODULE_GUIDELINES
 
 	/**
 	 * Check if a guideline name is a valid core guideline
