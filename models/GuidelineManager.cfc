@@ -312,6 +312,52 @@ component singleton {
 		return true
 	}
 
+	/**
+	 * Create a custom guideline
+	 *
+	 * @directory The project directory
+	 * @name The name of the custom guideline
+	 */
+	function createCustomGuideline(
+		required string directory,
+		required string name
+	){
+		// Load manifest
+		var manifest = variables.aiService.loadManifest( arguments.directory )
+
+		// Read custom guideline template
+		var templatesPath = variables.utility.getTemplatesPath() & "/guidelines/"
+		var templatePath = templatesPath & "custom-guideline-template.md"
+		var content = fileRead( templatePath )
+		content = replaceNoCase( content, "|guidelineName|", arguments.name, "all" )
+
+		// Ensure custom guidelines directory exists
+		var customDir = "#arguments.directory#/.ai/guidelines/custom"
+		if ( !directoryExists( customDir ) ) {
+			directoryCreate( customDir )
+		}
+
+		var targetFile = "#customDir#/#arguments.name#.md"
+
+		// Write guideline file
+		fileWrite( targetFile, content )
+
+		// Update manifest
+		updateManifestEntry(
+			manifest,
+			arguments.name,
+			"custom",
+			"user",
+			variables.utility.getColdboxCliVersion(),
+			false
+		)
+
+		// Save manifest
+		variables.aiService.saveManifest( arguments.directory, manifest )
+
+		return targetFile
+	}
+
 	// ========================================
 	// Private Helpers
 	// ========================================
@@ -328,7 +374,7 @@ component singleton {
 		required string guidelineName,
 		required struct manifest
 	){
-		var templatesPath = variables.utility.getTemplatesPath() & "/guidelines/"
+		var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
 
 		// Try core guidelines folder
 		var corePath = templatesPath & "core/#arguments.guidelineName#.md"
@@ -381,7 +427,7 @@ component singleton {
 			content = fileRead( moduleGuideline )
 		} else {
 			// 2. Check for coldbox-cli bundled guideline
-			var templatesPath = variables.utility.getTemplatesPath() & "/guidelines/"
+			var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
 			var bundledPath = templatesPath & "modules/#arguments.moduleSlug#.md"
 
 			if ( fileExists( bundledPath ) ) {
