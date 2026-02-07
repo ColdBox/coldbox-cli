@@ -32,7 +32,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		// Check if core guideline exists
-		var existing = info.guidelines.filter( ( g ) => g.name == arguments.name && g.source == "core" )
+		var existing = info.guidelines.filter( ( g ) => g.name == name && g.source == "core" )
 		if ( !existing.len() ) {
 			printError( "Core guideline '#arguments.name#' not found." )
 			print.line()
@@ -81,7 +81,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "  • The core guideline remains unchanged for reference" )
 		print.line()
 
-		printHelp( "Tip: Edit the override to customize conventions for your project" )
+		printTip( "Edit the override to customize conventions for your project" )
 
 		if ( arguments.open ) {
 			openPath( overridePath )

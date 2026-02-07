@@ -99,9 +99,18 @@ component singleton {
 	/**
 	 * Refresh AI integration (sync with installed modules)
 	 *
+	 * The refresh process will:
+	 * 1. Load the existing manifest to understand current state
+	 * 2. Check installed modules and determine if any guidelines or skills need to be added
+	 *   updated, or removed based on the current box.json dependencies and the guidelines/skills they provide
+	 * 3. Update the manifest with any changes and save it
+	 * 4. Return a result struct with details on what was added, updated, or removed, along with a success status and message
+	 *
 	 * @directory The project directory
+	 *
+	 * @return Struct with success status, message, and lists of added/updated/removed guidelines and skills
 	 */
-	function refresh( required string directory ){
+	struct function refresh( required string directory ){
 		var result = {
 			"success" : true,
 			"message" : "",
@@ -261,7 +270,7 @@ component singleton {
 	}
 
 	/**
-	 * Save a manifest file
+	 * Save a manifest file and update last sync time
 	 *
 	 * @directory The project directory
 	 * @manifest The manifest struct to save
@@ -271,6 +280,17 @@ component singleton {
 		arguments.manifest.lastSync = dateTimeFormat( now(), "iso" )
 		fileWrite( manifestPath, serializeJSON( arguments.manifest, true ) )
 		return this
+	}
+
+	/**
+	 * This function updates the last sync time in the manifest without modifying any other content, then saves it.
+	 * This is useful for operations that want to update the sync time after making changes to guidelines/skills/agents without needing to re-save the entire manifest content.
+	 *
+	 * @directory The project directory
+	 */
+	AIService function updateLastSync( required string directory ){
+		var manifest = loadManifest( arguments.directory );
+		return saveManifest( arguments.directory, manifest );
 	}
 
 	// ========================================

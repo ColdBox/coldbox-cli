@@ -87,7 +87,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.line()
 		}
 
-		printHelp( "Tip: Use 'coldbox ai skills list' to see all installed skills" )
+		printTip( "Use 'coldbox ai skills list' to see all installed skills" )
 	}
 
 }

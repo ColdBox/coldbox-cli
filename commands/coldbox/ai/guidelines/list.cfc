@@ -82,6 +82,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Total: #info.guidelines.len()# guideline(s) installed" )
 		print.line()
 
-		printHelp( "Tip: Run 'coldbox ai refresh' to sync with installed modules" )
+		printTip( "Run 'coldbox ai refresh' to sync with installed modules" )
 	}
 }

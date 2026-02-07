@@ -73,7 +73,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "  • Use markdown formatting for clarity" )
 		print.line()
 
-		printHelp( "Tip: Edit the SKILL.md file to define when and how this skill should be used" )
+		printTip( "Edit the SKILL.md file to define when and how this skill should be used" )
 
 		if ( arguments.open ) {
 			openPath( skillPath )

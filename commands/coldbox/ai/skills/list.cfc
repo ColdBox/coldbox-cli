@@ -90,7 +90,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Total: #info.skills.len()# skill(s) installed" )
 		print.line()
 
-		printHelp( "Tip: Run 'coldbox ai refresh' to sync with installed modules" )
-		printHelp( "Tip: Run 'coldbox ai skills create <name>' to create a custom skill" )
+		printTip( "Run 'coldbox ai refresh' to sync with installed modules" )
+		printTip( "Run 'coldbox ai skills create <name>' to create a custom skill" )
 	}
 }

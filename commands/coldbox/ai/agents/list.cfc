@@ -58,6 +58,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Total: #info.agents.len()# agent(s) configured" )
 		print.line()
 
-		printHelp( "Tip: Agent config files contain project context for AI assistants" )
+		printTip( "Agent config files contain project context for AI assistants" )
 	}
 }

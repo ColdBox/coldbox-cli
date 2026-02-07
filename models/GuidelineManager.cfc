@@ -10,6 +10,7 @@ component singleton {
 	property name="packageService" inject="PackageService";
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
+	property name="aiService"        inject="AIService@coldbox-cli";
 
 	/**
 	 * Install core guidelines for a project
@@ -154,6 +155,36 @@ component singleton {
 		}
 
 		return issues;
+	}
+
+	/**
+	 * Remove a guideline from the project
+	 *
+	 * @directory The project root directory
+	 * @name The guideline name to remove
+	 *
+	 * @return boolean True if removed successfully, false otherwise
+	 */
+	function removeGuideline( required string directory, required string name ){
+		var guidelinePath = "#arguments.directory#/.ai/guidelines/#arguments.name#.md"
+		var customPath = "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md"
+		var overridePath = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
+
+		// Remove from appropriate location
+		if ( fileExists( overridePath ) ) {
+			fileDelete( overridePath )
+		} else if ( fileExists( customPath ) ) {
+			fileDelete( customPath )
+		} else if ( fileExists( guidelinePath ) ) {
+			fileDelete( guidelinePath )
+		}
+
+		// Update manifest
+		var manifest = variables.aiService.loadManifest( arguments.directory )
+		manifest.guidelines = manifest.guidelines.filter( ( g ) => g.name != name )
+		variables.aiService.saveManifest( arguments.directory, manifest )
+
+		return true
 	}
 
 	// ========================================

@@ -34,6 +34,13 @@ This is a CommandBox module (v7.10.0) providing CLI commands for ColdBox framewo
   - Example: `property name="userService" inject="UserService";` (property with semicolon)
   - Example: `var result = service.getData()` (no semicolon needed)
 
+- **Closure Scoping**: When using closures (arrow functions or anonymous functions), you CANNOT use the `arguments` scope to access outer function parameters
+  - ❌ WRONG: `guidelines.filter( ( g ) => g.name != arguments.name )` (will fail - arguments.name is not accessible)
+  - ✅ CORRECT: `guidelines.filter( ( g ) => g.name != name )` (remove scope prefix, variable will be found in outer scope)
+  - This applies to all scopes inside closures - use unscoped variable names to access outer function variables
+  - The closure will automatically search outer scopes for unscoped variables
+  - If there is ambiguity with a variable declared internally, then before the closure call you can assign the outer variable to a new variable with a different name and use that inside the closure
+
 **Markdown File Standards**:
 - **Always lint markdown files after editing** - Run `npx markdownlint-cli -f {filename}` after any markdown file modifications
 - Markdown linting configuration is in `.markdownlint.json`

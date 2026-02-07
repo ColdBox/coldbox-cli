@@ -67,7 +67,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 		printSuccess( "✓ Agent '#arguments.agent#' removed successfully!" )
 		print.line()
-		printHelp( "Tip: Use 'coldbox ai agents add #arguments.agent#' to re-add this agent" )
+		printTip( "Use 'coldbox ai agents add #arguments.agent#' to re-add this agent" )
 	}
 
 }

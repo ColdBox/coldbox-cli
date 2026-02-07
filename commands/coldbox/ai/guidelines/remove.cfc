@@ -32,7 +32,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		// Check if guideline exists
-		var existing = info.guidelines.filter( ( g ) => g.name == arguments.name )
+		var existing = info.guidelines.filter( ( g ) => g.name == name )
 		if ( !existing.len() ) {
 			printError( "Guideline '#arguments.name#' is not installed." )
 			print.line()
@@ -63,12 +63,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			arguments.name
 		)
 
-		// Update manifest
-		variables.aiService.updateManifest(
-			arguments.directory,
-			{ "lastSync": dateTimeFormat( now(), "iso" ) }
-		)
-
 		// Regenerate agent files
 		print.line()
 		printInfo( "Regenerating agent configuration files..." )
@@ -77,7 +71,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 		printSuccess( "✓ Guideline '#arguments.name#' removed successfully!" )
 		print.line()
-		printHelp( "Tip: Use 'coldbox ai refresh' to sync guidelines with installed modules" )
+		printTip( "Use 'coldbox ai refresh' to sync guidelines with installed modules" )
 	}
 
 }
