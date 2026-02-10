@@ -326,7 +326,7 @@ component singleton {
 		var manifest = variables.aiService.loadManifest( arguments.directory )
 
 		// Read custom guideline template
-		var templatesPath = variables.utility.getTemplatesPath() & "/guidelines/"
+		var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
 		var templatePath = templatesPath & "custom-guideline-template.md"
 		var content = fileRead( templatePath )
 		content = replaceNoCase( content, "|guidelineName|", arguments.name, "all" )
@@ -386,6 +386,18 @@ component singleton {
 		}
 
 		var content = fileRead( corePath )
+
+		// For ColdBox guideline, detect template type and replace structure placeholder
+		if ( arguments.guidelineName == "coldbox" ) {
+			var templateType = variables.utility.detectTemplateType( arguments.directory )
+			var structurePath = templatesPath & "core/coldbox-structure-#templateType#.md"
+			
+			if ( fileExists( structurePath ) ) {
+				var structureContent = fileRead( structurePath )
+				content = replaceNoCase( content, "|STRUCTURE|", structureContent, "all" )
+			}
+		}
+
 		var targetFile = "#arguments.directory#/.ai/guidelines/core/#arguments.guidelineName#.md"
 
 		// Write guideline file
@@ -534,4 +546,5 @@ component singleton {
 			return g.name != guidelineName
 		} )
 	}
+
 }

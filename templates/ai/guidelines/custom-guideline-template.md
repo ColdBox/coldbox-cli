@@ -1,44 +1,33 @@
-# |guidelineName| Guidelines
+# |guidelineName| Guideline
 
 ## Overview
 
-Document your team's conventions, standards, and best practices here.
+This is a custom guideline for your project. Use this file to document project-specific conventions, patterns, or requirements that AI agents should follow when working with your codebase.
 
-## Code Style
+## Purpose
 
-- Describe coding standards
-- Naming conventions
-- File organization
+Describe what aspect of your project this guideline covers.
 
-## Architecture Patterns
+## Guidelines
 
-- Preferred design patterns
-- Component structure
-- Dependencies management
+Add your specific guidelines here:
 
-## Testing Standards
-
-- Test coverage requirements
-- Test naming conventions
-- Mocking strategies
-
-## Documentation
-
-- Code documentation standards
-- API documentation requirements
-- README conventions
+- Guideline 1
+- Guideline 2
+- Guideline 3
 
 ## Examples
 
+Provide code examples demonstrating the guidelines:
+
 ```cfml
-// Add code examples showing your conventions
-component {
-    // Example implementation
-}
+// Example code here
 ```
 
-## References
+## Additional Notes
 
-- Link to internal documentation
-- Team wiki pages
-- External resources
+Any additional context or information that AI agents should be aware of when working with this aspect of your project.
+
+## Maintenance
+
+Remember to keep this guideline updated as your project conventions evolve.

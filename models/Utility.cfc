@@ -185,4 +185,18 @@ component singleton {
 		return camelCase( arguments.target, true );
 	}
 
+	/**
+	 * Detect the ColdBox template type (flat or modern) based on project structure
+	 *
+	 * @directory The project directory
+	 *
+	 * @return string "modern" if app/ and public/ exist, "flat" otherwise
+	 */
+	function detectTemplateType( required string directory ){
+		var hasAppFolder = directoryExists( "#arguments.directory#/app" )
+		var hasPublicFolder = directoryExists( "#arguments.directory#/public" )
+
+		return ( hasAppFolder && hasPublicFolder ) ? "modern" : "flat"
+	}
+
 }
