@@ -92,12 +92,17 @@ component singleton {
 	}
 
 	/**
-	 * Refresh guidelines based on installed modules
+	 * Refresh guidelines - syncs manifest with file system and installed modules
+	 * - Updates module guidelines based on box.json dependencies
+	 * - Syncs custom guidelines from .ai/guidelines/custom/
+	 * - Syncs override guidelines from .ai/guidelines/overrides/
+	 * - Removes manifest entries for deleted files
+	 * - Removes guidelines for uninstalled modules
 	 *
 	 * @directory The project directory
 	 * @manifest The manifest struct to update
 	 */
-	function refresh( required string directory, required struct manifest ){
+function refresh( required string directory, required struct manifest ){
 		var changes = {
 			"added"         : [],
 			"updated"       : [],
@@ -159,15 +164,102 @@ component singleton {
 		}
 
 		// Remove guidelines for uninstalled modules
-		var toRemove = [];
+		var toRemove = []
 		for ( var guideline in manifest.guidelines ) {
-			if ( guideline.source != "coldbox-cli" && !structKeyExists( allDependencies, guideline.source ) ) {
-				toRemove.append( guideline.name );
+			var gType = guideline.type ?: ""
+			var gSource = guideline.source ?: ""
+
+			// Don't remove core, custom, or override guidelines
+			if ( gSource == "coldbox-cli" || gType == "core" || gSource == "user" || gType == "custom" || gType == "override" ) {
+				continue;
+			}
+
+			// Remove module guidelines if module no longer installed
+			if ( !structKeyExists( allDependencies, gSource ) ) {
+				toRemove.append( guideline.name )
 			}
 		}
 
 		toRemove.each( ( name ) => {
 			removeGuidelineInternal( directory, name, manifest )
+			changes.removed.append( name )
+		} )
+
+		// Sync custom guidelines from filesystem
+		var customDir = "#arguments.directory#/.ai/guidelines/custom"
+		if ( directoryExists( customDir ) ) {
+			var customFiles = directoryList( customDir, false, "name", "*.md" )
+			customFiles.each( ( fileName ) => {
+				var guidelineName = replaceNoCase( fileName, ".md", "" )
+
+				// Check if in manifest
+				var existing = manifest.guidelines.filter( ( g ) => g.name == guidelineName )
+				if ( !existing.len() ) {
+					// Add to manifest
+					updateManifestEntry(
+						manifest,
+						guidelineName,
+						"custom",
+						"user",
+						variables.utility.getColdboxCliVersion(),
+						false
+					)
+					changes.added.append( guidelineName )
+				}
+			} )
+		}
+
+		// Sync override guidelines from filesystem
+		var overridesDir = "#arguments.directory#/.ai/guidelines/overrides"
+		if ( directoryExists( overridesDir ) ) {
+			var overrideFiles = directoryList( overridesDir, false, "name", "*.md" )
+			overrideFiles.each( ( fileName ) => {
+				var baseName = replaceNoCase( fileName, ".md", "" )
+				var manifestName = "#baseName#-override"
+
+				// Check if in manifest
+				var existing = manifest.guidelines.filter( ( g ) => g.name == manifestName )
+				if ( !existing.len() ) {
+					// Add to manifest
+					updateManifestEntry(
+						manifest,
+						manifestName,
+						"override",
+						"user",
+						variables.utility.getColdboxCliVersion(),
+						false
+					)
+					changes.added.append( manifestName )
+				}
+			} )
+		}
+
+		// Remove manifest entries for files that no longer exist
+		var orphanedGuidelines = []
+		for ( var guideline in manifest.guidelines ) {
+			var gType = guideline.type ?: ""
+			var filePath = ""
+
+			// Determine expected file path
+			if ( gType == "core" ) {
+				filePath = "#arguments.directory#/.ai/guidelines/core/#guideline.name#.md"
+			} else if ( gType == "module" ) {
+				filePath = "#arguments.directory#/.ai/guidelines/modules/#guideline.name#.md"
+			} else if ( gType == "custom" ) {
+				filePath = "#arguments.directory#/.ai/guidelines/custom/#guideline.name#.md"
+			} else if ( gType == "override" ) {
+				var baseName = replaceNoCase( guideline.name, "-override", "" )
+				filePath = "#arguments.directory#/.ai/guidelines/overrides/#baseName#.md"
+			}
+
+			// Check if file exists
+			if ( filePath.len() && !fileExists( filePath ) ) {
+				orphanedGuidelines.append( guideline.name )
+			}
+		}
+
+		orphanedGuidelines.each( ( name ) => {
+			manifest.guidelines = manifest.guidelines.filter( ( g ) => g.name != name )
 			changes.removed.append( name )
 		} )
 
@@ -391,7 +483,7 @@ component singleton {
 		// Read override template
 		var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
 		var templatePath = templatesPath & "guideline-override-template.md"
-		
+
 		if ( !fileExists( templatePath ) ) {
 			throw(
 				type = "GuidelineManager.TemplateNotFound",
