@@ -28,7 +28,7 @@ moduleSettings = {
         iso8601Format = false,
         // Default date mask
         dateMask = "yyyy-MM-dd",
-        // Default time mask  
+        // Default time mask
         timeMask = "HH:mm:ss",
         // Auto-detect ORM entity properties
         ormAutoIncludes = true,
@@ -52,12 +52,12 @@ Mark objects for mementifier by adding `this.memento` structure:
 
 ```javascript
 component {
-    
+
     property name="firstName"
     property name="lastName"
     property name="email"
     property name="role" // Relationship
-    
+
     this.memento = {
         defaultIncludes = [
             "firstName",
@@ -80,7 +80,7 @@ component {
             }
         }
     }
-    
+
     string function getAvatarLink() {
         return "https://avatar.example.com/" & getEmail()
     }
@@ -217,7 +217,7 @@ Define multiple transformation strategies per object:
 this.memento = {
     defaultIncludes = [ "id", "name", "email" ],
     defaultExcludes = [ "detailedStats", "auditLog" ],
-    
+
     profiles = {
         "export" : {
             defaultIncludes = [
@@ -272,7 +272,7 @@ property name="resultsMapper" inject="ResultsMapper@mementifier"
 
 function list() {
     var users = userService.list()
-    
+
     return resultsMapper.process(
         collection = users,
         id = "userID", // Unique identifier key
@@ -350,16 +350,16 @@ struct function getMemento(
 ) {
     // Call mementifier
     var memento = this.$getMemento( argumentCollection = arguments )
-    
+
     // Add custom data
     if ( hasEntryType() ) {
         memento[ "typeSlug" ] = getEntryType().getTypeSlug()
         memento[ "typeName" ] = getEntryType().getTypeName()
     }
-    
+
     // Add computed values
     memento[ "isActive" ] = getStatus() == "active"
-    
+
     return memento
 }
 ```
@@ -375,13 +375,13 @@ Mementifier auto-detects ColdFusion ORM entities:
 
 ```javascript
 component persistent="true" table="users" {
-    
+
     property name="userID" fieldtype="id"
     property name="firstName"
     property name="lastName"
     property name="email"
     property name="role" cfc="Role" fieldtype="many-to-one"
-    
+
     // No need to list all properties if ormAutoIncludes = true
     this.memento = {
         defaultExcludes = [
@@ -480,10 +480,10 @@ profiles = {
 ```javascript
 // handlers/api/Users.cfc
 component {
-    
+
     property name="userService" inject
     property name="resultsMapper" inject="ResultsMapper@mementifier"
-    
+
     function index( event, rc, prc ) {
         prc.response = resultsMapper.process(
             userService.list(),
@@ -491,12 +491,12 @@ component {
             profile = "api"
         )
     }
-    
+
     function show( event, rc, prc ) {
         var user = userService.get( rc.id )
         prc.response = user.getMemento( profile = "api" )
     }
-    
+
     function export( event, rc, prc ) {
         prc.response = userService
             .list()
@@ -535,12 +535,12 @@ string function getAvatarURL() {
 ```javascript
 struct function getMemento() {
     var includes = "firstName,lastName,email"
-    
+
     // Add admin-only fields
     if ( isUserInRole( "admin" ) ) {
         includes &= ",apiToken,lastLoginIP"
     }
-    
+
     return this.$getMemento( includes = includes )
 }
 ```
@@ -553,7 +553,7 @@ function list( event, rc, prc ) {
         page = rc.page ?: 1,
         pageSize = rc.pageSize ?: 20
     )
-    
+
     prc.response = {
         "data" : resultsMapper.process( results.data, "id" ),
         "pagination" : {

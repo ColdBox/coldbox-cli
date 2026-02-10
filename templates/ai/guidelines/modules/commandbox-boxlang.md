@@ -224,7 +224,7 @@ box server start
 class {
     function main() {
         println( "BoxLang Standalone Application" )
-        
+
         // Your application logic
         var server = new Server()
         server.start( port=8080 )

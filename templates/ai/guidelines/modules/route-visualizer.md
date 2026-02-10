@@ -191,7 +191,7 @@ route( "/products/:id" )
 // Verify in visualizer:
 // - Name: products.show
 // - Pattern: /products/:id
-    
+
 // Use in handlers:
 var url = event.buildLink( "products.show", { id: product.getId() } )
 ```
@@ -263,7 +263,7 @@ resources( "api:products" )
 ```javascript
 route( "/api/v1" )
     .toNamespaceRouting( "api.v1" )
-    
+
 route( "/api/v2" )
     .toNamespaceRouting( "api.v2" )
 

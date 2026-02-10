@@ -39,9 +39,9 @@ Create a model implementing `ICredentialRepository` interface:
 ```javascript
 // models/Passkey.cfc
 component implements="cbsecurity-passkeys.models.ICredentialRepository" {
-    
+
     property name="userService" inject
-    
+
     /**
      * Find credential by credential ID
      * @credentialId The credential ID bytes
@@ -53,16 +53,16 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
             [ { value: arguments.credentialId, cfsqltype: "binary" } ],
             { returntype: "array" }
         )
-        
+
         if ( !credential.len() ) {
             return createObject( "java", "java.util.Optional" ).empty()
         }
-        
+
         return createObject( "java", "java.util.Optional" ).of(
             buildCredential( credential[ 1 ] )
         )
     }
-    
+
     /**
      * Get all credentials for a user
      * @userHandle The user handle bytes
@@ -74,12 +74,12 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
             [ { value: arguments.userHandle, cfsqltype: "binary" } ],
             { returntype: "array" }
         )
-        
+
         return credentials.map( function( cred ) {
             return buildCredential( cred )
         } )
     }
-    
+
     /**
      * Get user handle for a given username
      * @username The username
@@ -87,16 +87,16 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
      */
     function getUserHandleForUsername( required string username ) {
         var user = userService.findByUsername( arguments.username )
-        
+
         if ( isNull( user ) ) {
             return createObject( "java", "java.util.Optional" ).empty()
         }
-        
+
         return createObject( "java", "java.util.Optional" ).of(
             charsetDecode( user.getId(), "utf-8" )
         )
     }
-    
+
     /**
      * Lookup username by user handle
      * @userHandle The user handle bytes
@@ -105,16 +105,16 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
     function getUsernameForUserHandle( required binary userHandle ) {
         var userId = charsetEncode( arguments.userHandle, "utf-8" )
         var user = userService.get( userId )
-        
+
         if ( isNull( user ) ) {
             return createObject( "java", "java.util.Optional" ).empty()
         }
-        
+
         return createObject( "java", "java.util.Optional" ).of(
             user.getUsername()
         )
     }
-    
+
     /**
      * Check if username exists
      * @username The username
@@ -123,7 +123,7 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
     function usernameExists( required string username ) {
         return !isNull( userService.findByUsername( arguments.username ) )
     }
-    
+
     /**
      * Save a new credential
      * @credential The credential to save
@@ -141,7 +141,7 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
             ]
         )
     }
-    
+
     /**
      * Update credential signature count
      * @credential The credential
@@ -157,7 +157,7 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
             ]
         )
     }
-    
+
     private function buildCredential( required struct data ) {
         // Build WebAuthn credential object from database data
         var credential = createObject( "java", "com.yubico.webauthn.RegisteredCredential" )
@@ -167,7 +167,7 @@ component implements="cbsecurity-passkeys.models.ICredentialRepository" {
             .publicKeyCose( data.publicKey )
             .signatureCount( data.signCount )
             .build()
-        
+
         return credential
     }
 }
@@ -222,10 +222,10 @@ CREATE TABLE passkeys (
 <script type="module">
 // Check if passkeys are supported
 if ( await window.cbSecurity.passkeys.isSupported() ) {
-    
+
     // Show passkey registration button
     document.getElementById( 'passkeyRegisterBtn' ).style.display = 'block'
-    
+
     // Register passkey
     document.getElementById( 'passkeyRegisterBtn' ).addEventListener( 'click', async () => {
         try {
@@ -244,7 +244,7 @@ if ( await window.cbSecurity.passkeys.isSupported() ) {
 ```html
 <script type="module">
 if ( await window.cbSecurity.passkeys.isSupported() ) {
-    
+
     // Login with passkey
     document.getElementById( 'passkeyLoginBtn' ).addEventListener( 'click', async () => {
         try {
@@ -289,10 +289,10 @@ window.cbSecurity.passkeys.autocomplete(
 ```javascript
 // handlers/Auth.cfc
 component {
-    
+
     property name="passkeyService" inject="PasskeyService@cbsecurity-passkeys"
     property name="userService" inject
-    
+
     /**
      * Initialize passkey registration
      */
@@ -301,27 +301,27 @@ component {
         if ( !auth().check() ) {
             relocate( "login" )
         }
-        
+
         var user = auth().user()
-        
+
         // Start registration process
         var options = passkeyService.startRegistration(
             username = user.getUsername(),
             userHandle = user.getId()
         )
-        
+
         event.getResponse()
             .setData( options )
             .setStatusCode( 200 )
     }
-    
+
     /**
      * Complete passkey registration
      */
     function finishRegistration( event, rc, prc ) {
         try {
             passkeyService.finishRegistration( rc )
-            
+
             event.getResponse()
                 .setData( { success: true, message: "Passkey registered successfully" } )
                 .setStatusCode( 201 )
@@ -343,9 +343,9 @@ component {
  */
 function startLogin( event, rc, prc ) {
     var username = rc.username ?: ""
-    
+
     var options = passkeyService.startAuthentication( username )
-    
+
     event.getResponse()
         .setData( options )
         .setStatusCode( 200 )
@@ -357,11 +357,11 @@ function startLogin( event, rc, prc ) {
 function finishLogin( event, rc, prc ) {
     try {
         var authResult = passkeyService.finishAuthentication( rc )
-        
+
         if ( authResult.success ) {
             // Authenticate user with cbSecurity/cbAuth
             auth().login( authResult.user )
-            
+
             event.getResponse()
                 .setData( {
                     success: true,
@@ -390,28 +390,28 @@ moduleSettings = {
     "cbsecurity-passkeys" = {
         // Required: Your credential repository
         credentialRepositoryMapping = "Passkey",
-        
+
         // Required: Allowed origins (domains)
         allowedOrigins = [ "localhost:8080", "example.com", "www.example.com" ],
-        
+
         // Optional: Display name shown to users
         displayName = "My App",
-        
+
         // Optional: Timeout for registration (milliseconds)
         registrationTimeout = 60000,
-        
+
         // Optional: Timeout for authentication (milliseconds)
         authenticationTimeout = 60000,
-        
+
         // Optional: Require user verification (biometrics/PIN)
         userVerification = "preferred", // required, preferred, discouraged
-        
+
         // Optional: Attestation conveyance preference
         attestation = "none", // none, indirect, direct
-        
+
         // Optional: Authenticator attachment
         authenticatorAttachment = "", // empty, platform, cross-platform
-        
+
         // Optional: Require resident key (discoverable credential)
         residentKey = "preferred" // required, preferred, discouraged
     }
@@ -526,21 +526,21 @@ function deletePasskey( event, rc, prc ) {
 ```javascript
 // Test credential repository
 component extends="tests.resources.BaseIntegrationTest" {
-    
+
     function run() {
         describe( "Passkey Service", function() {
-            
+
             it( "can register a passkey", function() {
                 var user = createUser()
-                
+
                 var options = passkeyService.startRegistration(
                     username = user.getUsername(),
                     userHandle = user.getId()
                 )
-                
+
                 expect( options ).toHaveKey( "challenge" )
             } )
-            
+
             it( "can authenticate with passkey", function() {
                 // Test authentication flow
             } )

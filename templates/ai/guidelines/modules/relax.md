@@ -46,7 +46,7 @@ Create a CFC in your `APILocation` (default: `models/resources/`):
 ```javascript
 // models/resources/MyAPI.cfc
 component {
-    
+
     function configure() {
         // API Metadata
         this.relax = {
@@ -60,26 +60,26 @@ component {
                 url = "https://example.com/support"
             }
         }
-        
+
         // Define global response formats
         globalResponse( "200", "Success" )
         globalResponse( "400", "Bad Request" )
         globalResponse( "401", "Unauthorized" )
         globalResponse( "404", "Not Found" )
         globalResponse( "500", "Server Error" )
-        
+
         // Define resources
         defineUsers()
         defineProducts()
     }
-    
+
     function defineUsers() {
         // Resource group
         resource(
             resource = "/api/users",
             description = "User management endpoints"
         )
-        
+
         // GET /api/users - List users
         route(
             pattern = "/api/users",
@@ -115,7 +115,7 @@ component {
                 }
             ]
         )
-        
+
         // POST /api/users - Create user
         route(
             pattern = "/api/users",
@@ -150,7 +150,7 @@ component {
                 "message" : "User created successfully"
             }
         )
-        
+
         // GET /api/users/:id - Get user
         route(
             pattern = "/api/users/:id",
@@ -181,7 +181,7 @@ component {
                 "modifiedDate" : "date"
             }
         )
-        
+
         // PUT /api/users/:id - Update user
         route(
             pattern = "/api/users/:id",
@@ -199,7 +199,7 @@ component {
         .param( name = "lastName", type = "string" )
         .param( name = "email", type = "string" )
         .response( status = "200", description = "User updated" )
-        
+
         // DELETE /api/users/:id - Delete user
         route(
             pattern = "/api/users/:id",
@@ -479,23 +479,23 @@ route( pattern = "/api/v2/users", handler = "api.v2.users" )
 ```javascript
 function defineResource() {
     resource( resource = "/api/items" )
-    
+
     // List
     route( "/api/items", "api.items", "index", "GET" )
         .param( "page", "numeric", false, 1 )
-    
+
     // Create
     route( "/api/items", "api.items", "create", "POST" )
         .param( "name", "string", true )
-    
+
     // Show
     route( "/api/items/:id", "api.items", "show", "GET" )
         .pathParam( "id", "UUID", true )
-    
+
     // Update
     route( "/api/items/:id", "api.items", "update", "PUT" )
         .pathParam( "id", "UUID", true )
-    
+
     // Delete
     route( "/api/items/:id", "api.items", "delete", "DELETE" )
         .pathParam( "id", "UUID", true )
