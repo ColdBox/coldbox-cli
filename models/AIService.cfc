@@ -114,11 +114,18 @@ component singleton {
 	 */
 	struct function refresh( required string directory ){
 		var result = {
-			"success" : true,
-			"message" : "",
-			"added"   : [],
-			"updated" : [],
-			"removed" : []
+			"success"    : true,
+			"message"    : "",
+			"guidelines" : {
+				"added"   : [],
+				"updated" : [],
+				"removed" : []
+			},
+			"skills" : {
+				"added"   : [],
+				"updated" : [],
+				"removed" : []
+			}
 		};
 
 		// Load existing manifest
@@ -138,15 +145,15 @@ component singleton {
 
 		// Refresh guidelines based on installed modules
 		var guidelineChanges = variables.guidelineManager.refresh( arguments.directory, manifest );
-		result.added.append( guidelineChanges.added, true );
-		result.updated.append( guidelineChanges.updated, true );
-		result.removed.append( guidelineChanges.removed, true );
+		result.guidelines.added.append( guidelineChanges.added, true );
+		result.guidelines.updated.append( guidelineChanges.updated, true );
+		result.guidelines.removed.append( guidelineChanges.removed, true );
 
 		// Refresh skills based on installed modules
 		var skillChanges = variables.skillManager.refresh( arguments.directory, manifest );
-		result.added.append( skillChanges.added, true );
-		result.updated.append( skillChanges.updated, true );
-		result.removed.append( skillChanges.removed, true );
+		result.skills.added.append( skillChanges.added, true );
+		result.skills.updated.append( skillChanges.updated, true );
+		result.skills.removed.append( skillChanges.removed, true );
 
 		// Save updated manifest
 		saveManifest( arguments.directory, manifest );

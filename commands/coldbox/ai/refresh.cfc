@@ -32,31 +32,45 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="update" {
 			printSuccess( "✓ AI integration refreshed successfully!" );
 			print.line();
 
-			if ( result.added.len() ) {
-				print.greenLine( "Added (#result.added.len()#):" );
-				result.added.each( function( item ){
-					print.indentedGreenLine( "  + #item#" );
+			// Combine all changes for display
+			var totalAdded = result.guidelines.added.len() + result.skills.added.len();
+			var totalUpdated = result.guidelines.updated.len() + result.skills.updated.len();
+			var totalRemoved = result.guidelines.removed.len() + result.skills.removed.len();
+
+			if ( totalAdded ) {
+				print.greenLine( "Added (#totalAdded#):" );
+				result.guidelines.added.each( function( item ){
+					print.indentedGreenLine( "  + #item# (guideline)" );
+				} );
+				result.skills.added.each( function( item ){
+					print.indentedGreenLine( "  + #item# (skill)" );
 				} );
 				print.line();
 			}
 
-			if ( result.updated.len() ) {
-				print.yellowLine( "Updated (#result.updated.len()#):" );
-				result.updated.each( function( item ){
-					print.indentedYellowLine( "  ↻ #item#" );
+			if ( totalUpdated ) {
+				print.yellowLine( "Updated (#totalUpdated#):" );
+				result.guidelines.updated.each( function( item ){
+					print.indentedYellowLine( "  ↻ #item# (guideline)" );
+				} );
+				result.skills.updated.each( function( item ){
+					print.indentedYellowLine( "  ↻ #item# (skill)" );
 				} );
 				print.line();
 			}
 
-			if ( result.removed.len() ) {
-				print.redLine( "Removed (#result.removed.len()#):" );
-				result.removed.each( function( item ){
-					print.indentedRedLine( "  - #item#" );
+			if ( totalRemoved ) {
+				print.redLine( "Removed (#totalRemoved#):" );
+				result.guidelines.removed.each( function( item ){
+					print.indentedRedLine( "  - #item# (guideline)" );
+				} );
+				result.skills.removed.each( function( item ){
+					print.indentedRedLine( "  - #item# (skill)" );
 				} );
 				print.line();
 			}
 
-			if ( !result.added.len() && !result.updated.len() && !result.removed.len() ) {
+			if ( !totalAdded && !totalUpdated && !totalRemoved ) {
 				printInfo( "No changes detected. Everything is up to date!" );
 			}
 
