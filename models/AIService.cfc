@@ -55,10 +55,12 @@ component singleton {
 		createAIDirectoryStructure( arguments.directory );
 
 		// Initialize manifest
+		var templateType = variables.utility.detectTemplateType( arguments.directory )
 		var manifest = {
 			"coldboxCliVersion" : variables.utility.getColdboxCliVersion(),
 			"lastSync"          : dateTimeFormat( now(), "iso" ),
 			"language"          : arguments.language,
+			"templateType"      : templateType,
 			"guidelines"        : [],
 			"skills"            : [],
 			"agents"            : listToArray( arguments.agents )
@@ -131,6 +133,9 @@ component singleton {
 		manifest.coldboxCliVersion = variables.utility.getColdboxCliVersion()
 		manifest.lastSync          = dateTimeFormat( now(), "iso" )
 
+		// Update/add template type (detects current structure, handles old manifests or structure changes)
+		manifest.templateType = variables.utility.detectTemplateType( arguments.directory )
+
 		// Refresh guidelines based on installed modules
 		var guidelineChanges = variables.guidelineManager.refresh( arguments.directory, manifest );
 		result.added.append( guidelineChanges.added, true );
@@ -162,6 +167,7 @@ component singleton {
 			"installed"         : structKeyExists( manifest, "coldboxCliVersion" ),
 			"coldboxCliVersion" : manifest.coldboxCliVersion ?: "unknown",
 			"language"          : manifest.language ?: "unknown",
+			"templateType"      : manifest.templateType ?: "unknown",
 			"lastSync"          : manifest.lastSync ?: "never",
 			"guidelines"        : manifest.guidelines ?: [],
 			"skills"            : manifest.skills ?: [],

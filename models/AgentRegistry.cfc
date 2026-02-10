@@ -112,8 +112,8 @@ component singleton {
 		required string language
 	){
 		var configPath = getAgentConfigPath( arguments.directory, arguments.agent )
-		var layout     = detectProjectLayout( arguments.directory )
-		var content    = getAgentConfigContent( arguments.agent, arguments.language, layout )
+		var templateType = variables.utility.detectTemplateType( arguments.directory )
+		var content    = getAgentConfigContent( arguments.agent, arguments.language, templateType, arguments.directory )
 
 		// Create directories if needed
 		var configDir = getDirectoryFromPath( configPath )
@@ -166,56 +166,132 @@ component singleton {
 	 *
 	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 * @language Project language mode (boxlang, cfml, hybrid)
-	 * @layout Project layout type (flat or modern)
+	 * @templateType Project template type (flat or modern)
+	 * @directory The project directory
 	 */
-	private function getAgentConfigContent( required string agent, required string language, required string layout ){
+	private function getAgentConfigContent(
+		required string agent,
+		required string language,
+		required string templateType,
+		required string directory
+	){
 		var templatesPath = variables.utility.getTemplatesPath()
 		var templateFile  = ""
 
-		// For copilot, use layout-specific templates
-		if ( arguments.agent == "copilot" ) {
-			templateFile = arguments.layout == "modern"
-				? "#templatesPath#/ai/modern-copilot-instructions.md"
-				: "#templatesPath#/ai/flat-copilot-instructions.md"
-		} else {
-			// Use generic template for other agents
-			templateFile = "#templatesPath#/ai/agents/agent-instructions.md"
-		}
+		// Use layout-specific templates for all agents
+		templateFile = arguments.templateType == "modern"
+			? "#templatesPath#/ai/agents/agent-modern-instructions.md"
+			: "#templatesPath#/ai/agents/agent-flat-instructions.md"
 
 		if ( !fileExists( templateFile ) ) {
-			// Fallback content from template
-			var fallbackPath = templatesPath & "/ai/agents/agent-fallback.md"
-			var fallback = fileRead( fallbackPath )
-
-			// Replace tokens
-			fallback = replaceNoCase( fallback, "|agentName|", arguments.agent, "all" )
-			fallback = replaceNoCase( fallback, "|language|", arguments.language, "all" )
-			fallback = replaceNoCase( fallback, "|layout|", arguments.layout, "all" )
-
-			return fallback
+			throw(
+				type = "AgentRegistry.TemplateNotFound",
+				message = "Agent template not found: #templateFile#"
+			)
 		}
 
 		var content = fileRead( templateFile )
 
+		// Get project information
+		var boxJson = {}
+		var boxJsonPath = "#arguments.directory#/box.json"
+		if ( fileExists( boxJsonPath ) ) {
+			boxJson = deserializeJSON( fileRead( boxJsonPath ) )
+		}
+
+		var projectName = boxJson.name ?: getFileFromPath( arguments.directory )
+		var coldboxVersion = boxJson.dependencies.coldbox ?: "8.x"
+
+		// Determine language mode display
+		var languageMode = "BoxLang"
+		if ( arguments.language == "cfml" ) {
+			languageMode = "CFML"
+		} else if ( arguments.language == "hybrid" ) {
+			languageMode = "BoxLang/CFML Hybrid"
+		}
+
+		// Detect enabled features
+		var viteEnabled = detectViteEnabled( arguments.directory )
+		var dockerEnabled = detectDockerEnabled( arguments.directory )
+		var ormEnabled = detectOrmEnabled( boxJson )
+		var migrationsEnabled = detectMigrationsEnabled( arguments.directory, boxJson )
+
+		// Build features list
+		var enabledFeatures = []
+		if ( viteEnabled ) enabledFeatures.append( "Vite" )
+		if ( dockerEnabled ) enabledFeatures.append( "Docker" )
+		if ( ormEnabled ) enabledFeatures.append( "ORM" )
+		if ( migrationsEnabled ) enabledFeatures.append( "Migrations" )
+
+		var features = enabledFeatures.len() ? enabledFeatures.toList( ", " ) : "None"
+
 		// Replace placeholders
-		var languageNote = arguments.language == "boxlang" ? "BoxLang" : ( arguments.language == "cfml" ? "CFML" : "BoxLang/CFML hybrid" )
-		content = replaceNoCase( content, "|LANGUAGE|", languageNote, "all" )
+		content = replaceNoCase( content, "|PROJECT_NAME|", projectName, "all" )
+		content = replaceNoCase( content, "|LANGUAGE_MODE|", languageMode, "all" )
+		content = replaceNoCase( content, "|COLDBOX_VERSION|", coldboxVersion, "all" )
+		content = replaceNoCase( content, "|FEATURES|", features, "all" )
+		content = replaceNoCase( content, "|VITE_ENABLED|", viteEnabled ? "Yes" : "No", "all" )
+		content = replaceNoCase( content, "|DOCKER_ENABLED|", dockerEnabled ? "Yes" : "No", "all" )
+		content = replaceNoCase( content, "|ORM_ENABLED|", ormEnabled ? "Yes" : "No", "all" )
+		content = replaceNoCase( content, "|MIGRATIONS_ENABLED|", migrationsEnabled ? "Yes" : "No", "all" )
 
 		return content
 	}
 
 	/**
-	 * Detect project layout type
-	 *
-	 * @directory The project directory
+	 * Detect if Vite is enabled in the project
 	 */
-	private function detectProjectLayout( required string directory ){
-		// Modern layout has separate /app and /public directories
-		var hasAppDir    = directoryExists( "#arguments.directory#/app" )
-		var hasPublicDir = directoryExists( "#arguments.directory#/public" )
+	private function detectViteEnabled( required string directory ){
+		var viteConfig = "#arguments.directory#/vite.config.mjs"
+		var packageJson = "#arguments.directory#/package.json"
 
-		return ( hasAppDir && hasPublicDir ) ? "modern" : "flat"
+		if ( fileExists( viteConfig ) ) return true
+
+		if ( fileExists( packageJson ) ) {
+			var pkgContent = deserializeJSON( fileRead( packageJson ) )
+			return structKeyExists( pkgContent.dependencies ?: {}, "vite" ) ||
+			       structKeyExists( pkgContent.devDependencies ?: {}, "vite" )
+		}
+
+		return false
 	}
 
+	/**
+	 * Detect if Docker is enabled in the project
+	 */
+	private function detectDockerEnabled( required string directory ){
+		return fileExists( "#arguments.directory#/Dockerfile" ) ||
+		       fileExists( "#arguments.directory#/docker-compose.yml" )
+	}
+
+	/**
+	 * Detect if ORM is enabled (cborm or quick)
+	 */
+	private function detectOrmEnabled( required struct boxJson ){
+		var deps = boxJson.dependencies ?: {}
+		var devDeps = boxJson.devDependencies ?: {}
+
+		return structKeyExists( deps, "cborm" ) ||
+		       structKeyExists( devDeps, "cborm" ) ||
+		       structKeyExists( deps, "quick" ) ||
+		       structKeyExists( devDeps, "quick" )
+	}
+
+	/**
+	 * Detect if migrations are enabled
+	 */
+	private function detectMigrationsEnabled( required string directory, required struct boxJson ){
+		// Check for migrations in dependencies
+		var deps = boxJson.dependencies ?: {}
+		var devDeps = boxJson.devDependencies ?: {}
+
+		if ( structKeyExists( deps, "commandbox-migrations" ) ||
+		     structKeyExists( devDeps, "commandbox-migrations" ) ) {
+			return true
+		}
+
+		// Check for migrations directory
+		return directoryExists( "#arguments.directory#/resources/database/migrations" )
+	}
 
 }

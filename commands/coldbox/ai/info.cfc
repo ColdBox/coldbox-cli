@@ -35,8 +35,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.table(
 				headerNames = [ "Setting", "Value" ],
 				data = [
-					[ "coldbox-cli Version", info.coldboxCliVersion ],
+					[ "ColdBox CLI Version", info.coldboxCliVersion ],
 					[ "Language Mode", info.language ],
+					[ "App Type", info.templateType ],
 					[ "Active Agent", activeAgent ],
 					[ "Last Sync", info.lastSync ]
 				]
