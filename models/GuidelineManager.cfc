@@ -391,7 +391,7 @@ component singleton {
 		if ( arguments.guidelineName == "coldbox" ) {
 			var templateType = variables.utility.detectTemplateType( arguments.directory )
 			var structurePath = templatesPath & "core/coldbox-structure-#templateType#.md"
-			
+
 			if ( fileExists( structurePath ) ) {
 				var structureContent = fileRead( structurePath )
 				content = replaceNoCase( content, "|STRUCTURE|", structureContent, "all" )

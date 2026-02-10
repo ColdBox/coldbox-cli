@@ -23,17 +23,17 @@ ColdBox is a conventions-based HMVC (Hierarchical Model-View-Controller) framewo
 class Users extends coldbox.system.EventHandler {
     property name="userService" inject;
     property name="log" inject="logbox:logger:{this}";
-    
+
     function index( event, rc, prc ) {
         prc.users = userService.getAll()
         event.setView( "users/index" )
     }
-    
+
     function show( event, rc, prc ) {
         prc.user = userService.getById( rc.id ?: 0 )
         event.setView( "users/show" )
     }
-    
+
     function create( event, rc, prc ) {
         var user = userService.create( rc )
         flash.put( "notice", "User created successfully" )
@@ -47,36 +47,36 @@ class Users extends coldbox.system.EventHandler {
 ```boxlang
 class API extends coldbox.system.EventHandler {
     property name="userService" inject;
-    
+
     function index( event, rc, prc ) {
         prc.data = userService.getAll()
-        event.renderData( 
+        event.renderData(
             data = prc.data,
             formats = "json,xml"
         )
     }
-    
+
     function show( event, rc, prc ) {
         prc.data = userService.getById( rc.id ?: 0 )
         event.renderData( data = prc.data )
     }
-    
+
     function create( event, rc, prc ) {
         prc.data = userService.create( rc )
-        event.renderData( 
+        event.renderData(
             data = prc.data,
             statusCode = 201
         )
     }
-    
+
     function update( event, rc, prc ) {
         prc.data = userService.update( rc.id, rc )
         event.renderData( data = prc.data )
     }
-    
+
     function delete( event, rc, prc ) {
         userService.delete( rc.id )
-        event.renderData( 
+        event.renderData(
             data = { message: "Deleted successfully" },
             statusCode = 204
         )
@@ -137,7 +137,7 @@ event.setView( view="users/show", layout="custom" )
 event.setLayout( "admin" )
 
 // Render data (JSON/XML/PDF/etc)
-event.renderData( 
+event.renderData(
     data = users,
     type = "json",
     statusCode = 200
@@ -192,13 +192,13 @@ event.setHTTPHeader( statusCode=404, statusText="Not Found" )
 class Users extends coldbox.system.EventHandler {
     // Auto-inject by name convention
     property name="userService" inject;
-    
+
     // Inject from specific path
     property name="utils" inject="models.Utils";
-    
+
     // Inject by ID
     property name="mailService" inject="id:MailService";
-    
+
     // Inject using DSL
     property name="cache" inject="cachebox:default";
     property name="log" inject="logbox:logger:{this}";
@@ -226,44 +226,44 @@ Located in `config/Router.cfc`:
 function configure() {
     // Enable full rewrites
     setFullRewrites( true )
-    
+
     // Basic route
     route( "/" ).to( "main.index" )
     route( "/about" ).to( "main.about" )
-    
+
     // Route with placeholders
     route( "/blog/:year/:month/:day/:slug" ).to( "blog.show" )
-    
+
     // Optional placeholders
     route( "/search/:term?/:page?" ).to( "search.results" )
-    
+
     // Constrained placeholders
     route( "/user/:id-numeric" ).to( "users.show" )
     route( "/blog/:year-regex:(\\d{4})" ).to( "blog.archive" )
-    
+
     // Named routes
     route( "/contact" )
         .as( "contactPage" )
         .to( "main.contact" )
-    
+
     // RESTful resources
     resources( "users" )
     // Creates: index, create, show, update, delete routes
-    
+
     // API routes
     group( { pattern="/api/v1", handler="api" }, () => {
         route( "/users" ).to( "users.index" )
         route( "/users/:id" ).to( "users.show" )
     } )
-    
+
     // Route to view directly
     route( "/terms" ).toView( "legal/terms" )
-    
+
     // Route to response function
     route( "/health" ).toResponse( ( event, rc, prc ) => {
         return { status: "ok", timestamp: now() }
     } )
-    
+
     // Redirect routes
     route( "/old-page" ).toRedirect( "/new-page", 301 )
 }
@@ -316,17 +316,17 @@ postModuleUnload
 ```boxlang
 class SecurityInterceptor extends coldbox.system.Interceptor {
     property name="securityService" inject;
-    
+
     function preProcess( event, interceptData ) {
         if ( !securityService.isLoggedIn() && !event.valueExists( "public" ) ) {
             flash.put( "error", "Please log in" )
             relocate( "auth.login" )
         }
     }
-    
+
     function onException( event, interceptData ) {
         // interceptData contains: exception, type, timestamp
-        log.error( 
+        log.error(
             "Exception occurred: #interceptData.exception.message#",
             interceptData.exception
         )
@@ -341,7 +341,7 @@ In `config/ColdBox.cfc`:
 ```boxlang
 interceptors = [
     { class="interceptors.SecurityInterceptor" },
-    { 
+    {
         class="interceptors.RequestLogger",
         properties={ logPath="/logs/requests" }
     }
@@ -387,13 +387,13 @@ component {
     this.author = "Your Name"
     this.version = "1.0.0"
     this.entryPoint = "/shop"
-    
+
     function configure() {
         settings = {
             currency: "USD",
             taxRate: 0.08
         }
-        
+
         interceptors = [
             { class="interceptors.ShopSecurity" }
         ]
@@ -420,16 +420,16 @@ component {
             onInvalidEvent = "main.notFound",
             customErrorTemplate = "/views/main/error.cfm"
         }
-        
+
         settings = {
             mySettings = "value",
             apiKey = getSystemSetting( "API_KEY", "" )
         }
-        
+
         interceptors = [
             { class="interceptors.Security" }
         ]
-        
+
         moduleSettings = {
             cbdebugger = {
                 enabled = true
