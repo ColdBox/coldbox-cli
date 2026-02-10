@@ -104,8 +104,13 @@ component singleton {
 	 *
 	 * @directory The project directory
 	 * @name The custom skill name
+	 * @language The language variant (boxlang or cfml)
 	 */
-	function createCustomSkill( required string directory, required string name ){
+	function createCustomSkill(
+		required string directory,
+		required string name,
+		string language = "boxlang"
+	){
 		var targetDir = "#arguments.directory#/.ai/skills/custom/#arguments.name#"
 		var skillFile = "#targetDir#/SKILL.md"
 
@@ -115,7 +120,8 @@ component singleton {
 		}
 
 		// Create skill from template
-		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/custom-skill-template.md"
+		var languageSuffix = arguments.language == "cfml" ? ".cfml" : ".bx"
+		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/custom-skill-template#languageSuffix#.md"
 		var template = fileRead( templatePath )
 
 		// Replace tokens

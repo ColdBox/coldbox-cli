@@ -5,6 +5,7 @@
  * Examples:
  * coldbox ai skills create api-development
  * coldbox ai skills create testing-patterns --open
+ * coldbox ai skills create payment-processing --cfml
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -15,11 +16,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * Run the command
 	 *
 	 * @name The custom skill name
+	 * @boxlang Use BoxLang syntax (default)
+	 * @cfml Use CFML syntax
 	 * @open Open the created file in the default editor
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run(
 		required string name,
+		boolean boxlang  = true,
+		boolean cfml     = false,
 		boolean open     = false,
 		string directory = getCwd()
 	){
@@ -27,8 +32,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		ensureInstalled( arguments.directory )
 
+		// Determine language (cfml flag overrides boxlang)
+		var language = arguments.cfml ? "cfml" : "boxlang"
+
 		print.line()
-		printInfo( "Creating custom skill: #arguments.name#" )
+		printInfo( "Creating custom skill: #arguments.name# (#uCase(language)#)" )
 		print.line()
 
 		// Check if already exists
@@ -47,7 +55,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Create skill from template
 		variables.skillManager.createCustomSkill(
 			arguments.directory,
-			arguments.name
+			arguments.name,
+			language
 		)
 
 		// Regenerate agent files
