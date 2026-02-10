@@ -30,11 +30,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var coreGuidelines   = []
 		var moduleGuidelines = []
 		var customGuidelines = []
+		var overrideGuidelines = []
 
 		info.guidelines.each( ( guideline ) => {
-			if ( guideline.source == "coldbox-cli" ) {
+			if ( guideline.type == "override" ) {
+				overrideGuidelines.append( guideline )
+			} else if ( guideline.source == "coldbox-cli" ) {
 				coreGuidelines.append( guideline )
-			} else if ( guideline.source == "custom" ) {
+			} else if ( guideline.source == "custom" || guideline.type == "custom" ) {
 				customGuidelines.append( guideline )
 			} else {
 				moduleGuidelines.append( guideline )
@@ -75,6 +78,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printWarn( "🔧 Custom Guidelines (#customGuidelines.len()#)" )
 			customGuidelines.each( ( guideline ) => {
 				print.indentedLine( "  • #guideline.name#" )
+				if ( verbose && structKeyExists( guideline, "syncedAt" ) ) {
+					print.indentedLine( "    Last synced: #guideline.syncedAt#" )
+				}
+			} )
+			print.line()
+		}
+
+		// Display override guidelines
+		if ( overrideGuidelines.len() ) {
+			printWarn( "🎯 Override Guidelines (#overrideGuidelines.len()#)" )
+			overrideGuidelines.each( ( guideline ) => {
+				var baseName = replaceNoCase( guideline.name, "-override", "" )
+				print.indentedLine( "  • #baseName# (overridden)" )
 				if ( verbose && structKeyExists( guideline, "syncedAt" ) ) {
 					print.indentedLine( "    Last synced: #guideline.syncedAt#" )
 				}

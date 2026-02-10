@@ -1,10 +1,11 @@
 /**
- * Create an override for a core guideline
- * Copies the core guideline as a starting point for customization
+ * Create an override for a core or module guideline
+ * Copies the guideline as a starting point for customization
  *
  * Examples:
  * coldbox ai guidelines override coldbox
  * coldbox ai guidelines override testbox --open
+ * coldbox ai guidelines override cbsecurity --open
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -14,7 +15,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	/**
 	 * Run the command
 	 *
-	 * @name The core guideline name to override
+	 * @name The guideline name to override (core or module)
 	 * @open Open the created override file in the default editor
 	 * @directory The target directory (defaults to current directory)
 	 */
@@ -31,38 +32,35 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Creating override for: #arguments.name#" )
 		print.line()
 
-		// Check if core guideline exists
-		var existing = info.guidelines.filter( ( g ) => g.name == name && g.source == "core" )
+		// Check if guideline exists (core or module)
+		var existing = info.guidelines.filter( ( g ) => g.name == name )
 		if ( !existing.len() ) {
-			printError( "Core guideline '#arguments.name#' not found." )
+			printError( "Guideline '#arguments.name#' not found." )
 			print.line()
-			printHelp( "Use 'coldbox ai guidelines list' to see available core guidelines" )
+			printHelp( "Use 'coldbox ai guidelines list' to see available guidelines" )
 			return
 		}
 
+		var guideline = existing[ 1 ]
+
 		// Check if override already exists
-		var overridePath = "#arguments.directory#/.ai/guidelines/custom/#arguments.name#-override.md"
+		var overridePath = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
 		if ( fileExists( overridePath ) ) {
 			printWarn( "Override for '#arguments.name#' already exists at:" )
 			printWarn( "  #overridePath#" )
 			print.line()
 
 			if ( !confirm( "Do you want to overwrite it? [y/n]" ) ) {
-				printInfo( "Operation cancelled." )
+			printInfo( "Operation cancelled." )
 				return
 			}
 		}
 
-		// Create override from core guideline
+		// Create override from guideline
 		variables.guidelineManager.createGuidelineOverride(
 			arguments.directory,
-			arguments.name
-		)
-
-		// Update manifest
-		variables.aiService.updateManifest(
-			arguments.directory,
-			{ "lastSync": dateTimeFormat( now(), "iso" ) }
+			arguments.name,
+			guideline.type
 		)
 
 		// Regenerate agent files
@@ -76,9 +74,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		printInfo( "Override Guidelines:" )
-		printInfo( "  • This override will be loaded AFTER the core guideline" )
+		printInfo( "  • This override will be loaded AFTER the #guideline.type# guideline" )
 		printInfo( "  • You can add project-specific rules and modifications" )
-		printInfo( "  • The core guideline remains unchanged for reference" )
+		printInfo( "  • The original guideline remains unchanged for reference" )
+		printInfo( "  • Agents automatically read overrides from .ai/guidelines/overrides/" )
 		print.line()
 
 		printTip( "Edit the override to customize conventions for your project" )

@@ -358,6 +358,80 @@ component singleton {
 		return targetFile
 	}
 
+	/**
+	 * Create a guideline override
+	 *
+	 * @directory The project directory
+	 * @name The name of the guideline to override
+	 * @type The guideline type (core or module)
+	 */
+	function createGuidelineOverride(
+		required string directory,
+		required string name,
+		required string type
+	){
+		// Load manifest
+		var manifest = variables.aiService.loadManifest( arguments.directory )
+
+		// Determine source path based on type
+		var sourcePath = arguments.type == "core"
+			? "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
+			: "#arguments.directory#/.ai/guidelines/modules/#arguments.name#.md"
+
+		if ( !fileExists( sourcePath ) ) {
+			throw(
+				type = "GuidelineManager.GuidelineNotFound",
+				message = "Guideline '#arguments.name#' not found at: #sourcePath#"
+			)
+		}
+
+		// Read the original guideline content
+		var originalContent = fileRead( sourcePath )
+
+		// Read override template
+		var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
+		var templatePath = templatesPath & "guideline-override-template.md"
+		
+		if ( !fileExists( templatePath ) ) {
+			throw(
+				type = "GuidelineManager.TemplateNotFound",
+				message = "Override template not found: #templatePath#"
+			)
+		}
+
+		var content = fileRead( templatePath )
+
+		// Replace placeholders
+		content = replaceNoCase( content, "|guidelineName|", arguments.name, "all" )
+		content = replaceNoCase( content, "|coreContent|", originalContent, "all" )
+
+		// Ensure overrides directory exists
+		var overridesDir = "#arguments.directory#/.ai/guidelines/overrides"
+		if ( !directoryExists( overridesDir ) ) {
+			directoryCreate( overridesDir )
+		}
+
+		var targetFile = "#overridesDir#/#arguments.name#.md"
+
+		// Write override file
+		fileWrite( targetFile, content )
+
+		// Update manifest with override entry
+		updateManifestEntry(
+			manifest,
+			"#arguments.name#-override",
+			"override",
+			"user",
+			variables.utility.getColdboxCliVersion(),
+			false
+		)
+
+		// Save manifest
+		variables.aiService.saveManifest( arguments.directory, manifest )
+
+		return targetFile
+	}
+
 	// ========================================
 	// Private Helpers
 	// ========================================
