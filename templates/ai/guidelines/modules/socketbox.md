@@ -1,7 +1,7 @@
 # SocketBox - WebSocket Real-Time Communication
 
-> **Module**: socketbox  
-> **Category**: Real-Time / WebSockets  
+> **Module**: socketbox
+> **Category**: Real-Time / WebSockets
 > **Purpose**: WebSocket server and client integration for real-time bidirectional communication
 
 ## Overview
@@ -34,24 +34,24 @@ moduleSettings = {
     socketbox: {
         // WebSocket server port
         port: 8080,
-        
+
         // SSL/TLS configuration
         ssl: {
             enabled: false,
             certPath: "",
             keyPath: ""
         },
-        
+
         // Authentication
         requireAuth: true,
-        
+
         // Redis for horizontal scaling
         redis: {
             enabled: false,
             host: "localhost",
             port: 6379
         },
-        
+
         // CORS
         cors: {
             enabled: true,
@@ -67,30 +67,30 @@ moduleSettings = {
 
 ```javascript
 component extends="socketbox.models.BaseEventHandler" {
-    
+
     function onConnect( socket, data ) {
         log.info( "Client connected: #socket.getId()#" );
-        
+
         // Authenticate
         if ( !validateToken( data.token ?: "" ) ) {
             socket.disconnect( "Unauthorized" );
             return;
         }
-        
+
         // Join user-specific room
         socket.join( "user-#data.userId#" );
-        
+
         // Broadcast to others
         broadcast.to( "lobby" ).emit( "userJoined", {
             userId: data.userId,
             username: data.username
         } );
     }
-    
+
     function onDisconnect( socket, reason ) {
         log.info( "Client disconnected: #socket.getId()#" );
     }
-    
+
     function onMessage( socket, event, data ) {
         switch ( arguments.event ) {
             case "chatMessage":
@@ -101,7 +101,7 @@ component extends="socketbox.models.BaseEventHandler" {
                 break;
         }
     }
-    
+
     private function handleChatMessage( socket, data ) {
         var message = {
             userId: socket.getAttribute( "userId" ),
@@ -109,10 +109,10 @@ component extends="socketbox.models.BaseEventHandler" {
             message: data.message,
             timestamp: now()
         };
-        
+
         // Broadcast to room
         broadcast.to( data.room ).emit( "newMessage", message );
-        
+
         // Save to database
         messageService.save( message );
     }
@@ -166,10 +166,10 @@ socket.emit( 'joinRoom', { room: 'general' } );
 ```javascript
 component {
     property name="socketServer" inject="SocketServer@socketbox";
-    
+
     function joinRoom( socket, data ) {
         socket.join( data.room );
-        
+
         // Notify room members
         broadcast
             .to( data.room )
@@ -179,17 +179,17 @@ component {
                 room: data.room
             } );
     }
-    
+
     function leaveRoom( socket, data ) {
         socket.leave( data.room );
-        
+
         broadcast
             .to( data.room )
             .emit( "userLeftRoom", {
                 userId: socket.getAttribute( "userId" )
             } );
     }
-    
+
     function broadcastToRoom( roomName, event, data ) {
         socketServer
             .to( roomName )
@@ -203,14 +203,14 @@ component {
 ```javascript
 function sendPrivateMessage( socket, data ) {
     var recipientRoom = "user-#data.recipientId#";
-    
+
     // Send to recipient
     broadcast.to( recipientRoom ).emit( "privateMessage", {
         from: socket.getAttribute( "userId" ),
         message: data.message,
         timestamp: now()
     } );
-    
+
     // Confirm delivery to sender
     socket.emit( "messageSent", {
         messageId: createUUID(),
@@ -224,7 +224,7 @@ function sendPrivateMessage( socket, data ) {
 ```javascript
 component {
     property name="socketServer" inject="SocketServer@socketbox";
-    
+
     function sendNotification( userId, notification ) {
         // Send to specific user
         socketServer
@@ -236,7 +236,7 @@ component {
                 timestamp: now()
             } );
     }
-    
+
     function broadcastNotification( notification ) {
         // Send to all connected clients
         socketServer
@@ -251,7 +251,7 @@ component {
 // Server-side: push metrics
 function updateDashboardMetrics() {
     var metrics = metricsService.getCurrentMetrics();
-    
+
     socketServer
         .to( "dashboard" )
         .emit( "metricsUpdate", metrics );

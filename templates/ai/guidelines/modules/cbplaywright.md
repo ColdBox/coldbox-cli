@@ -1,7 +1,7 @@
 # CBPlaywright - End-to-End Browser Testing
 
-> **Module**: cbplaywright  
-> **Category**: Testing / E2E  
+> **Module**: cbplaywright
+> **Category**: Testing / E2E
 > **Purpose**: Browser automation and end-to-end testing using Microsoft Playwright
 
 ## Overview
@@ -37,25 +37,25 @@ moduleSettings = {
     cbplaywright: {
         // Browser type: chromium, firefox, webkit
         browser: "chromium",
-        
+
         // Headless mode
         headless: true,
-        
+
         // Base URL for tests
         baseURL: "http://localhost:8080",
-        
+
         // Screenshot on failure
         screenshotOnFailure: true,
-        
+
         // Video recording
         recordVideo: false,
-        
+
         // Viewport size
         viewport: {
             width: 1280,
             height: 720
         },
-        
+
         // Timeout settings (milliseconds)
         timeout: 30000
     }
@@ -68,52 +68,52 @@ moduleSettings = {
 
 ```javascript
 component extends="testbox.system.BaseSpec" {
-    
+
     function beforeAll() {
         playwright = getInstance( "PlaywrightService@cbplaywright" );
         browser = playwright.launch();
         page = browser.newPage();
     }
-    
+
     function afterAll() {
         browser.close();
     }
-    
+
     function run() {
         describe( "Login Flow", function() {
-            
+
             it( "can login successfully", function() {
                 // Navigate to login page
                 page.goto( "/login" );
-                
+
                 // Fill login form
                 page.fill( "#username", "testuser" );
                 page.fill( "#password", "password123" );
-                
+
                 // Submit form
                 page.click( "button[type='submit']" );
-                
+
                 // Wait for navigation
                 page.waitForURL( "/dashboard" );
-                
+
                 // Assert redirected to dashboard
                 expect( page.url() ).toInclude( "/dashboard" );
-                
+
                 // Assert welcome message
                 var welcomeText = page.textContent( "h1" );
                 expect( welcomeText ).toInclude( "Welcome" );
             });
-            
+
             it( "shows error for invalid credentials", function() {
                 page.goto( "/login" );
-                
+
                 page.fill( "#username", "invalid" );
                 page.fill( "#password", "wrong" );
                 page.click( "button[type='submit']" );
-                
+
                 // Wait for error message
                 page.waitForSelector( ".alert-danger" );
-                
+
                 var errorMsg = page.textContent( ".alert-danger" );
                 expect( errorMsg ).toInclude( "Invalid credentials" );
             });
@@ -127,30 +127,30 @@ component extends="testbox.system.BaseSpec" {
 ```javascript
 // /tests/resources/pages/LoginPage.cfc
 component {
-    
+
     variables.page = "";
-    
+
     function init( required page ) {
         variables.page = arguments.page;
         return this;
     }
-    
+
     function navigate() {
         variables.page.goto( "/login" );
         return this;
     }
-    
+
     function login( required string username, required string password ) {
         variables.page.fill( "#username", arguments.username );
         variables.page.fill( "#password", arguments.password );
         variables.page.click( "button[type='submit']" );
         return this;
     }
-    
+
     function getErrorMessage() {
         return variables.page.textContent( ".alert-danger" );
     }
-    
+
     function isOnLoginPage() {
         return variables.page.url().find( "/login" );
     }
@@ -159,16 +159,16 @@ component {
 // In test
 function run() {
     describe( "Login Tests", function() {
-        
+
         beforeEach( function() {
             loginPage = new pages.LoginPage( page );
         });
-        
+
         it( "can login with valid credentials", function() {
             loginPage
                 .navigate()
                 .login( "testuser", "password123" );
-            
+
             page.waitForURL( "/dashboard" );
             expect( page.url() ).toInclude( "/dashboard" );
         });
@@ -181,12 +181,12 @@ function run() {
 ```javascript
 it( "matches visual baseline", function() {
     page.goto( "/products" );
-    
+
     // Take screenshot
     var screenshot = page.screenshot();
-    
+
     // Compare with baseline (visual regression)
-    playwright.compareScreenshot( 
+    playwright.compareScreenshot(
         actual = screenshot,
         baseline = "/tests/baseline/products-page.png",
         threshold = 0.1 // 10% difference allowed
@@ -218,9 +218,9 @@ it( "handles API failures gracefully", function() {
             } )
         } );
     } );
-    
+
     page.goto( "/users" );
-    
+
     // Assert error message displayed
     var errorMsg = page.textContent( ".error-message" );
     expect( errorMsg ).toInclude( "Unable to load users" );
@@ -238,9 +238,9 @@ it( "uses mocked data", function() {
             } )
         } );
     } );
-    
+
     page.goto( "/products" );
-    
+
     var productName = page.textContent( ".product:first-child" );
     expect( productName ).toBe( "Test Product" );
 });
@@ -257,14 +257,14 @@ it( "works on mobile devices", function() {
         isMobile = true,
         hasTouch = true
     );
-    
+
     var mobilePage = context.newPage();
     mobilePage.goto( "/" );
-    
+
     // Test mobile menu
     mobilePage.click( ".mobile-menu-toggle" );
     expect( mobilePage.isVisible( ".mobile-menu" ) ).toBeTrue();
-    
+
     context.close();
 });
 ```
@@ -274,14 +274,14 @@ it( "works on mobile devices", function() {
 ```javascript
 it( "validates form inputs", function() {
     page.goto( "/register" );
-    
+
     // Fill form
     page.fill( "#email", "test@example.com" );
     page.fill( "#password", "pass123" );
     page.fill( "#confirm-password", "different" );
-    
+
     page.click( "button[type='submit']" );
-    
+
     // Assert validation error
     var error = page.textContent( ".password-error" );
     expect( error ).toInclude( "Passwords do not match" );
@@ -289,11 +289,11 @@ it( "validates form inputs", function() {
 
 it( "handles file uploads", function() {
     page.goto( "/profile/settings" );
-    
+
     // Upload file
     page.setInputFiles( "#avatar", "/tests/fixtures/avatar.jpg" );
     page.click( "#save-button" );
-    
+
     page.waitForSelector( ".success-message" );
     expect( page.textContent( ".success-message" ) ).toInclude( "Profile updated" );
 });
@@ -304,12 +304,12 @@ it( "handles file uploads", function() {
 ```javascript
 it( "meets accessibility standards", function() {
     page.goto( "/" );
-    
+
     // Check for accessibility violations
     var violations = playwright.checkAccessibility( page );
-    
+
     expect( violations).toBeEmpty();
-    
+
     // Or specific checks
     expect( page.getAttribute( "html", "lang" ) ).toBe( "en" );
     expect( page.locator( 'input:not([aria-label]):not([aria-labelledby])' ).count() ).toBe( 0 );
@@ -366,10 +366,10 @@ function loginAsUser() {
 ```javascript
 beforeEach( function() {
     // Create test data via API
-    http url="http://localhost:8080/api/setup" 
-        method="POST" 
+    http url="http://localhost:8080/api/setup"
+        method="POST"
         result="local.response";
-    
+
     variables.testData = deserializeJSON( response.fileContent );
 });
 ```
