@@ -16,7 +16,7 @@
 
 **Template System:**
 - ✅ Guideline templates (core, custom, override, fallback)
-- ✅ Skill templates (core, custom)
+- ✅ Skill templates (core, custom with language variants: boxlang, cfml)
 - ✅ Agent instruction templates (fallback)
 - ✅ Layout-specific templates (modern, flat, boxlang)
 
@@ -37,23 +37,26 @@
 - ✅ `coldbox ai info` - Display current configuration
 - ✅ `coldbox ai doctor` - Diagnose health and issues
 
-**Guideline Management (5/5):**
+**Guideline Management (6/6):**
 - ✅ `coldbox ai guidelines list` - Show installed guidelines (with type grouping)
+- ✅ `coldbox ai guidelines refresh` - Refresh guidelines from installed modules
 - ✅ `coldbox ai guidelines add` - Install specific guideline
 - ✅ `coldbox ai guidelines remove` - Remove guideline (with explicit --core|--module|--custom|--override flags)
 - ✅ `coldbox ai guidelines create` - Create custom guideline
 - ✅ `coldbox ai guidelines override` - Override core/module guideline (template-based)
 
-**Skills Management (3/3):**
+**Skills Management (4/4):**
 - ✅ `coldbox ai skills list` - Show available skills
 - ✅ `coldbox ai skills refresh` - Sync with modules
-- ✅ `coldbox ai skills create` - Create custom skill
+- ✅ `coldbox ai skills create` - Create custom skill (with --boxlang/--cfml language flags)
+- ✅ `coldbox ai skills remove` - Remove skill (with explicit --core|--module|--custom flags)
 
-**Agent Management (4/4):**
+**Agent Management (5/5):**
 - ✅ `coldbox ai agents list` - Show configured agents
 - ✅ `coldbox ai agents add` - Add agent configuration(s)
 - ✅ `coldbox ai agents remove` - Remove agent
 - ✅ `coldbox ai agents active` - Show/set active agent
+- ✅ `coldbox ai agents open` - Open agent config file in editor
 
 **MCP Commands (0/2 - DEFERRED):**
 - ⬜ `coldbox ai mcp list` - Show available MCP servers
@@ -67,10 +70,8 @@
 - ⬜ Add to `coldbox create app` wizard
 - ⬜ Add to `coldbox create app-wizard` flow
 - ⬜ Add `--ai` flag support
-- ⬜ Detect existing app structure
-- ⬜ Analyze project patterns
+- ⬜ Detect existing app structure, this comes from the skeleton chosen during app creation, and auto-configure AI integration
 - ⬜ Generate project-specific context
-- ⬜ Auto-populate custom guidelines
 - ⬜ Add AI support to `coldbox create module`
 
 ---
@@ -338,7 +339,7 @@
 - ✅ Phase 1: Foundation - **100% Complete**
 - ✅ Phase 2: CLI Commands - **100% Complete** (MCP deferred)
 - ⬜ Phase 3: Application Integration - **0% Complete**
-- ⬜ Phase 4: Guidelines Content - **0% Complete** (40+ guidelines)
+- ✅ Phase 4: Guidelines Content - **100% Complete** (40/40 guidelines)
 - ⬜ Phase 5: Skills Content - **0% Complete** (41 skills)
 - ⬜ Phase 6: MCP Integration - **0% Complete** (25 servers)
 - ⬜ Phase 7: Multi-Agent - **0% Complete** (6 agents)
@@ -346,14 +347,14 @@
 - ⬜ Phase 9: Module Support - **0% Complete**
 - ⬜ Phase 10: Documentation - **0% Complete**
 
-**Overall Progress:** 20% (2/10 phases complete)
+**Overall Progress:** 30% (3/10 phases complete)
 
 ---
 
 ## Success Metrics
 
-- **Guidelines:** 40+ covering entire ColdBox ecosystem
-- **Skills:** 41 total (34 high priority = 83%)
+- **Guidelines:** 40/40 complete (100%) covering entire ColdBox ecosystem
+- **Skills:** 0/41 (0% complete) - 41 total planned (34 high priority = 83%)
   - BoxLang: 8 skills (20%)
   - ColdBox: 9 skills (22%)
   - Testing: 8 skills (20%)
