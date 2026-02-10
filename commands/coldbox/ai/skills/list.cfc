@@ -21,13 +21,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		string category  = "",
 		string directory = getCwd()
 	){
-		showColdBoxBanner( "AI Skills" )
+		showColdBoxBanner( "Installed AI Skills" )
 
 		var info = ensureInstalled( arguments.directory )
-
-		print.line()
-		printInfo( "Installed Skills" )
-		print.line()
 
 		// Group skills by source and category
 		var coreSkills   = []
@@ -46,7 +42,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display core skills
 		if ( coreSkills.len() ) {
-			printSuccess( "⭐ Core Skills (#coreSkills.len()#)" )
+			print.lineBlackOnSeaGreen1( "⭐ Core Skills (#coreSkills.len()#)" )
+				.line()
+				.line()
 			printHelp( "  Always available - covering ColdBox, BoxLang, CFML, and Testing" )
 			if ( verbose ) {
 				coreSkills.each( ( skill ) => {
@@ -58,7 +56,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display module skills
 		if ( moduleSkills.len() ) {
-			printInfo( "📦 Module Skills (#moduleSkills.len()#)" )
+			print.lineBlackOnSeaGreen1( "📦 Module Skills (#moduleSkills.len()#)" )
+				.line()
+				.line()
 			var skillsByModule = {}
 			moduleSkills.each( ( skill ) => {
 				if ( !structKeyExists( skillsByModule, skill.source ) ) {
@@ -78,7 +78,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display custom skills
 		if ( customSkills.len() ) {
-			printWarn( "🔧 Custom Skills (#customSkills.len()#)" )
+			print.lineBlackOnSeaGreen1( "🔧 Custom Skills (#customSkills.len()#)" )
+				.line()
+				.line()
 			customSkills.each( ( skill ) => {
 				print.indentedLine( "  • #skill.name#" )
 			} )

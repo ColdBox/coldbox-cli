@@ -313,26 +313,41 @@ function refresh( required string directory, required struct manifest ){
 	 *
 	 * @return boolean True if removed successfully, false otherwise
 	 */
-	function removeGuideline( required string directory, required string name ){
-		var corePath = "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
-		var modulePath = "#arguments.directory#/.ai/guidelines/modules/#arguments.name#.md"
-		var customPath = "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md"
-		var overridePath = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
+	function removeGuideline(
+		required string directory,
+		required string name,
+		required string type
+	){
+		// Determine file location and manifest name based on type
+		var filePath = ""
+		var manifestName = arguments.name
 
-		// Remove from appropriate location
-		if ( fileExists( overridePath ) ) {
-			fileDelete( overridePath )
-		} else if ( fileExists( customPath ) ) {
-			fileDelete( customPath )
-		} else if ( fileExists( corePath ) ) {
-			fileDelete( corePath )
-		} else if ( fileExists( modulePath ) ) {
-			fileDelete( modulePath )
+		if ( arguments.type == "override" ) {
+			// Override files are stored with base name, manifest has -override suffix
+			filePath = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
+			manifestName = "#arguments.name#-override"
+		} else if ( arguments.type == "core" ) {
+			filePath = "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
+		} else if ( arguments.type == "custom" ) {
+			filePath = "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md"
+		} else if ( arguments.type == "module" ) {
+			filePath = "#arguments.directory#/.ai/guidelines/modules/#arguments.name#.md"
 		}
+
+		// Check if file exists
+		if ( !fileExists( filePath ) ) {
+			throw(
+				type = "GuidelineManager.GuidelineNotFound",
+				message = "#arguments.type# guideline '#arguments.name#' not found at: #filePath#"
+			)
+		}
+
+		// Delete the file
+		fileDelete( filePath )
 
 		// Update manifest
 		var manifest = variables.aiService.loadManifest( arguments.directory )
-		manifest.guidelines = manifest.guidelines.filter( ( g ) => g.name != name )
+		manifest.guidelines = manifest.guidelines.filter( ( g ) => g.name != manifestName )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
 		return true
