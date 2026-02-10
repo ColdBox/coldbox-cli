@@ -1,7 +1,7 @@
 # ColdBox CLI AI Integration - Implementation Plan
 
-> **Status**: Phase 2 - 100% Complete (excluding MCP)
-> **Last Updated**: January 29, 2026
+> **Status**: Phase 4 - 78% Complete (29/37 guidelines)
+> **Last Updated**: February 10, 2026
 
 ## Implementation Phases
 
@@ -33,16 +33,16 @@
 
 **Core Commands (4/4):**
 - ✅ `coldbox ai install` - Set up AI integration
-- ✅ `coldbox ai refresh` - Sync with installed modules
+- ✅ `coldbox ai refresh` - Sync with installed modules (syncs custom & override guidelines from filesystem)
 - ✅ `coldbox ai info` - Display current configuration
 - ✅ `coldbox ai doctor` - Diagnose health and issues
 
 **Guideline Management (5/5):**
-- ✅ `coldbox ai guidelines list` - Show installed guidelines
+- ✅ `coldbox ai guidelines list` - Show installed guidelines (with type grouping)
 - ✅ `coldbox ai guidelines add` - Install specific guideline
-- ✅ `coldbox ai guidelines remove` - Remove guideline
+- ✅ `coldbox ai guidelines remove` - Remove guideline (with explicit --core|--module|--custom|--override flags)
 - ✅ `coldbox ai guidelines create` - Create custom guideline
-- ✅ `coldbox ai guidelines override` - Override core guideline
+- ✅ `coldbox ai guidelines override` - Override core/module guideline (template-based)
 
 **Skills Management (3/3):**
 - ✅ `coldbox ai skills list` - Show available skills
@@ -75,68 +75,75 @@
 
 ---
 
-### ⬜ Phase 4: Core Guidelines Content
+### ✅ Phase 4: Core Guidelines Content (78% Complete - 29/37)
 
-**ColdBox Framework (1):**
-- ⬜ `coldbox/core.md` - Core conventions, handlers, routing, events, modules, layouts, interceptors
+**Core Frameworks (9/9 - 100%):**
+- ✅ `coldbox.md` - Core conventions, handlers, routing, events, modules, layouts, interceptors
+- ✅ `coldbox-cli.md` - CLI commands, application creation, scaffolding, AI integration
+- ✅ `boxlang.md` - Language fundamentals, syntax, classes, modern features
+- ✅ `cfml.md` - Language fundamentals, syntax, component-based development
+- ✅ `cachebox.md` - Caching strategies, providers, events
+- ✅ `wirebox.md` - DI patterns, binder DSL, providers, AOP
+- ✅ `logbox.md` - Logger usage, appenders, configuration
+- ✅ `testbox.md` - BDD/xUnit testing, specs, mocking, integration
+- ✅ `docbox.md` - Documentation generation and standards
 
-**Core Frameworks (6):**
-- ⬜ `boxlang/core.md` - Language fundamentals, syntax, classes, modern features
-- ⬜ `cfml/core.md` - Language fundamentals, syntax, component-based development
-- ⬜ `cachebox/core.md` - Caching strategies, providers, events
-- ⬜ `wirebox/core.md` - DI patterns, binder DSL, providers, AOP
-- ⬜ `logbox/core.md` - Logger usage, appenders, configuration
-- ⬜ `testbox/core.md` - BDD/xUnit testing, specs, mocking, integration
-- ⬜ `commandbox/core.md` - Command development, packages, task runners
+**Security & Auth (4/6 - 67%):**
+- ✅ `cbsecurity.md` - Security rules, authentication, authorization
+- ✅ `cbauth.md` - User authentication patterns
+- ✅ `cbsecurity-passkeys.md` - WebAuthn/Passkeys integration
+- ✅ `cbsso.md` - Single sign-on integration
+- ⬜ `cbcsrf.md` - CSRF protection
+- ⬜ `cbantisamy.md` - XSS prevention
 
-**Security & Auth (6):**
-- ⬜ `cbsecurity/core.md`
-- ⬜ `cbauth/core.md`
-- ⬜ `cbsecurity-passkeys/core.md`
-- ⬜ `cbsso/core.md`
-- ⬜ `cbcsrf/core.md`
-- ⬜ `cbantisamy/core.md`
+**Validation & Data (5/6 - 83%):**
+- ✅ `cbvalidation.md` - Validation rules and constraints
+- ✅ `cbi18n.md` - Internationalization and localization
+- ✅ `cbmailservices.md` - Email protocols and templating
+- ✅ `cbmessagebox.md` - Flash messaging
+- ⬜ `cbpaginator.md` - Pagination helpers
+- ✅ `cbfeeds.md` - RSS/Atom feed parsing
 
-**Validation & Data (6):**
-- ⬜ `cbvalidation/core.md`
-- ⬜ `cbi18n/core.md`
-- ⬜ `cbmailservices/core.md`
-- ⬜ `cbmessagebox/core.md`
-- ⬜ `cbpaginator/core.md`
-- ⬜ `cbfeeds/core.md`
+**ORM & Database (4/4 - 100%):**
+- ✅ `cborm.md` - ORM utilities and event handling
+- ✅ `qb.md` - Query builder fluent API
+- ✅ `quick.md` - Active Record ORM patterns
+- ✅ `cfmigrations.md` - Database migrations
 
-**ORM & Database (4):**
-- ⬜ `cborm/core.md`
-- ⬜ `qb/core.md`
-- ⬜ `quick/core.md`
-- ⬜ `cfmigrations/core.md`
+**API & Integration (2/5 - 40%):**
+- ✅ `hyper.md` - HTTP client for REST APIs
+- ⬜ `cbproxies.md` - Proxy patterns
+- ✅ `cbswagger.md` - OpenAPI/Swagger documentation
+- ⬜ `cbelasticsearch.md` - Elasticsearch integration
+- ⬜ `s3sdk.md` - AWS S3 integration
 
-**API & Integration (5):**
-- ⬜ `hyper/core.md`
-- ⬜ `cbproxies/core.md`
-- ⬜ `cbswagger/core.md`
-- ⬜ `cbelasticsearch/core.md`
-- ⬜ `s3sdk/core.md`
+**Utility & Development (5/8 - 63%):**
+- ✅ `cbdebugger.md` - Debugging tools and profiler
+- ✅ `cbfs.md` - File system abstraction
+- ⬜ `cbstorages.md` - Storage abstractions
+- ⬜ `stachebox.md` - Mustache templating
+- ✅ `cbjavaloader.md` - Java class loading
+- ✅ `cbmarkdown.md` - Markdown processing
+- ⬜ `cbmockdata.md` - Test data generation
 
-**Utility & Development (8):**
-- ⬜ `docbox/core.md`
-- ⬜ `cbdebugger/core.md`
-- ⬜ `cbfs/core.md`
-- ⬜ `cbstorages/core.md`
-- ⬜ `stachebox/core.md`
-- ⬜ `cbjavaloader/core.md`
-- ⬜ `cbmarkdown/core.md`
-- ⬜ `cbmockdata/core.md`
+**Modern Development (3/6 - 50%):**
+- ✅ `cbwire.md` - LiveWire-style reactive components
+- ✅ `cbq.md` - Job queues and background processing
+- ⬜ `socketbox.md` - WebSocket real-time communication
+- ✅ `mementifier.md` - DTO/memento pattern
+- ⬜ `unleashsdk.md` - Feature flags
+- ⬜ `cbplaywright.md` - E2E browser testing
 
-**Modern Development (6):**
-- ⬜ `cbwire/core.md`
-- ⬜ `cbq/core.md`
-- ⬜ `socketbox/core.md`
-- ⬜ `mementifier/core.md`
-- ⬜ `unleashsdk/core.md`
-- ⬜ `cbplaywright/core.md`
+**Additional Guidelines (7):**
+- ✅ `bcrypt.md` - Password hashing
+- ✅ `cors.md` - CORS handling
+- ✅ `rulebox.md` - Business rules engine
+- ✅ `commandbox-migrations.md` - CommandBox migration commands
+- ✅ `commandbox-boxlang.md` - BoxLang CLI tools
+- ✅ `route-visualizer.md` - Route visualization
+- ✅ `relax.md` - REST API documentation
 
-**Total: 40+ guidelines**
+**Total: 29/37 guidelines complete (78%)**
 
 ---
 
@@ -2137,10 +2144,14 @@ Overall Status: 🟡 Good (3 warnings, 4 recommendations)
 
 ## Phase 11: Testing & Quality Assurance ⬜
 
-- [ ] Number of guidelines created: **Target: 40+**
-- [ ] Number of skills created: **Target: 20-25+**
-- [ ] Number of MCP servers integrated: **Target: 25** (added CFML in 100 Minutes)
-- [ ] Number of agents supported: **Target: 6** (Claude, Copilot, Codex, Gemini, OpenCode)
+**Current Metrics:**
+- ✅ Number of guidelines created: **29/40+** (73% - Target: 40+)
+  - Core: 9/9 (100%)
+  - Modules: 20 (67% of planned modules)
+- ⬜ Number of skills created: **0/20-25+** (Target: 20-25+)
+- ⬜ Number of MCP servers integrated: **0/25** (Target: 25 - including CFML in 100 Minutes)
+- ✅ Number of agents supported: **5/6** (83% - Claude, Copilot, Windsurf, Cursor, Cline - Target: Add Amazon Q)
+- ⬜ Documentation coverage: **Target: 100%**
 - [ ] Documentation coverage: **Target: 100%**
 - [ ] Community adoption rate
 - [ ] AI-generated code quality improvement
@@ -2149,12 +2160,18 @@ Overall Status: 🟡 Good (3 warnings, 4 recommendations)
 ## Quick Reference
 
 **Total Phases**: 12
-**Completed**: 0
-**In Progress**: 0
-**Not Started**: 12
+**Completed**: 2 (Phase 1, Phase 2)
+**In Progress**: 1 (Phase 4 - 78% complete)
+**Not Started**: 9
 
-**Overall Progress**: ⬜⬜⬜⬜⬜⬜⬜⬜⬜⬜ 0%
-0
-**Completed**: 0
-**In Progress**: 0
-**Not Started**: 10
+**Key Metrics:**
+- Guidelines Created: **29/37** (78% of Phase 4 target)
+- Core Guidelines: **9/9** (100% complete)
+- Module Guidelines: **20/28** (71% complete)
+- Skills Created: **0/41** (Phase 5 target)
+- MCP Servers: **0** (Phase 7 deferred)
+- CLI Commands: **16/18** (89% - MCP deferred)
+
+**Overall Progress**: ■■■□□□□□□□ 30%
+
+**Current Focus**: Phase 4 - Completing remaining module guidelines
