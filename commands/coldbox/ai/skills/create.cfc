@@ -50,12 +50,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			arguments.name
 		)
 
-		// Update manifest
-		variables.aiService.updateManifest(
-			arguments.directory,
-			{ "lastSync": dateTimeFormat( now(), "iso" ) }
-		)
-
 		// Regenerate agent files
 		print.line()
 		printInfo( "Regenerating agent configuration files..." )
