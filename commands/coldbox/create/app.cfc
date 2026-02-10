@@ -207,38 +207,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 			printWarn( "⏭️  .env file already exists, skipping creation." )
 		}
 
-		// Copilot instructions
-		printInfo( "🤖 Preparing GitHub Copilot configuration" );
-		var githubDir   = arguments.directory & ".github";
-		var copilotFile = githubDir & "/copilot-instructions.md";
-		if ( !directoryExists( githubDir ) ) {
-			directoryCreate( githubDir, true )
-		}
-		if ( !fileExists( copilotFile ) ) {
-			printInfo( "🥊 Creating copilot file" )
-			// If the template has a copilot-instructions.md, use it, otherwise use the default one
-			if ( fileExists( arguments.directory & "resources/copilot-instructions.md" ) ) {
-				fileCopy(
-					arguments.directory & "resources/copilot-instructions.md",
-					copilotFile
-				);
-			} else {
-				if ( arguments.skeleton == "modern" ) {
-					fileCopy(
-						variables.settings.templatesPath & "modern-copilot-instructions.md",
-						copilotFile
-					);
-				} else {
-					fileCopy(
-						variables.settings.templatesPath & "flat-copilot-instructions.md",
-						copilotFile
-					);
-				}
-			}
-		} else {
-			printWarn( "⏭️  Copilot Instructions already exist, skipping creation." )
-		}
-
 		// Run migrations init
 		if ( arguments.migrations ) {
 			printInfo( "🚀 Initializing Migrations" );
