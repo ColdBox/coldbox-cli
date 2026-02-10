@@ -13,7 +13,7 @@ component singleton {
 	property name="aiService"        inject="AIService@coldbox-cli";
 
 	static {
-		CORE_GUIDELINES = [ "boxlang", "cfml", "coldbox", "cachebox", "docbox", "logbox", "testbox", "wirebox" ]
+		CORE_GUIDELINES = [ "boxlang", "cfml", "coldbox", "coldbox-cli", "cachebox", "docbox", "logbox", "testbox", "wirebox" ]
 		MODULE_GUIDELINES = [
 			"bcrypt",
 			"cbauth",
