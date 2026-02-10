@@ -148,55 +148,14 @@ component extends="coldbox-cli.models.BaseCommand" {
 			directoryCreate( "#modulePath#/resources/coldbox-cli/ai/guidelines", true )
 			directoryCreate( "#modulePath#/resources/coldbox-cli/ai/skills", true )
 
-			// Create module guideline template
-			var guidelineTemplate = [
-				"# #arguments.name# Module",
-				"",
-				"> **Module**: #arguments.name#",
-				"> **Category**: modules",
-				"> **Purpose**: [Describe what this module does]",
-				"",
-				"## Overview",
-				"",
-				"[Provide an overview of the module's functionality]",
-				"",
-				"## Installation",
-				"",
-				"```bash",
-				"box install #arguments.name#",
-				"```",
-				"",
-				"## Configuration",
-				"",
-				"Configure in `config/ColdBox.cfc`:",
-				"",
-				"```boxlang",
-				"moduleSettings = {",
-				"    #arguments.name# = {",
-				"        // Configuration options",
-				"    }",
-				"}",
-				"```",
-				"",
-				"## Usage Patterns",
-				"",
-				"### Basic Usage",
-				"",
-				"[Provide code examples]",
-				"",
-				"## Best Practices",
-				"",
-				"- [List best practices]",
-				"",
-				"## Additional Resources",
-				"",
-				"- Documentation: [Add link]",
-				"- Repository: [Add link]"
-			]
+			// Read and process module guideline template
+			var guidelineContent = fileRead( "#variables.settings.templatesPath#/ai/ModuleGuidelineTemplate.txt" )
+			guidelineContent = replaceNoCase( guidelineContent, "|moduleName|", arguments.name, "all" )
 
+			// Write guideline file
 			fileWrite(
 				"#modulePath#/resources/coldbox-cli/ai/guidelines/core.md",
-				guidelineTemplate.toList( chr(10) )
+				guidelineContent
 			)
 
 			printSuccess( "✅ AI support added to module!" )
