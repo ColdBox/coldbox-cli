@@ -142,6 +142,48 @@ component singleton {
 	}
 
 	/**
+	 * Remove a skill from the project
+	 *
+	 * @directory The project directory
+	 * @name The skill name to remove
+	 * @type The skill type (core, module, custom)
+	 */
+	function removeSkillFromProject(
+		required string directory,
+		required string name,
+		required string type
+	){
+		// Determine directory location based on type
+		var skillDir = ""
+
+		if ( arguments.type == "core" ) {
+			skillDir = "#arguments.directory#/.ai/skills/core/#arguments.name#"
+		} else if ( arguments.type == "module" ) {
+			skillDir = "#arguments.directory#/.ai/skills/modules/#arguments.name#"
+		} else if ( arguments.type == "custom" ) {
+			skillDir = "#arguments.directory#/.ai/skills/custom/#arguments.name#"
+		}
+
+		// Check if directory exists
+		if ( !directoryExists( skillDir ) ) {
+			throw(
+				type = "SkillManager.SkillNotFound",
+				message = "#arguments.type# skill '#arguments.name#' not found at: #skillDir#"
+			)
+		}
+
+		// Delete the directory
+		directoryDelete( skillDir, true )
+
+		// Update manifest
+		var manifest = variables.aiService.loadManifest( arguments.directory )
+		manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
+		variables.aiService.saveManifest( arguments.directory, manifest )
+
+		return true
+	}
+
+	/**
 	 * Diagnose skill health
 	 *
 	 * @directory The project directory

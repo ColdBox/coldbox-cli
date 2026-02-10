@@ -33,12 +33,12 @@ Provide a high-level description of the implementation approach.
     * Example implementation
     */
    component {
-       
+
        function init() {
            // Implementation
            return this;
        }
-       
+
        function myMethod() {
            // Method implementation
        }
@@ -68,15 +68,15 @@ Provide a high-level description of the implementation approach.
  * Provide a complete, working example
  */
 component {
-    
+
     property name="userService" inject="UserService";
-    
+
     /**
      * Example action
      */
     function index( event, rc, prc ) {
         prc.users = userService.getAll();
-        
+
         event.setView( "users/index" );
     }
 }
@@ -89,12 +89,12 @@ component {
  * Show more complex usage
  */
 component singleton {
-    
+
     property name="wirebox" inject="wirebox";
-    
+
     function processData( required array data ) {
         var processed = [];
-        
+
         for( var item in arguments.data ) {
             if( item.status == "active" ) {
                 processed.append({
@@ -104,10 +104,10 @@ component singleton {
                 });
             }
         }
-        
+
         return processed;
     }
-    
+
     function getRepository() {
         return wirebox.getInstance( "MyRepository" );
     }
@@ -130,11 +130,11 @@ component singleton {
  * Example test case using TestBox BDD
  */
 component extends="tests.resources.BaseTestCase" {
-    
+
     function beforeAll() {
         super.beforeAll();
     }
-    
+
     function run() {
         describe( "|skillName| Tests", function() {
             it( "should implement feature", function() {
@@ -143,7 +143,7 @@ component extends="tests.resources.BaseTestCase" {
                     rc = {},
                     prc = {}
                 );
-                
+
                 expect( result ).notToBeNull();
             });
         });
