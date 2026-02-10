@@ -76,6 +76,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @vite 					Setup Vite for frontend asset building (For BoxLang or Modern apps only)
 	 * @rest        Is this a REST API project? (For BoxLang apps only)
 	 * @cfml        Set the language to CFML explicitly (overrides boxlang)
+	 * @ai                  Enable AI integration for the application
+	 * @aiAgent             The AI agent to configure (claude, copilot, cursor, etc.)
 	 **/
 	function run(
 		name               = defaultAppName,
@@ -90,7 +92,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean docker     = false,
 		boolean vite       = false,
 		boolean rest       = false,
-		boolean cfml       = false
+		boolean cfml       = false,
+		boolean ai         = false,
+		string aiAgent     = "claude"
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
@@ -422,10 +426,28 @@ component extends="coldbox-cli.models.BaseCommand" {
 			)
 		}
 
-		printSuccess( "🥊  Your ColdBox BoxLang application is ready to roll!" )
-		printHelp( "👉  Run 'server start' to launch the development server." )
-		printHelp( "👉  Run 'coldbox help' to see a list of available commands from the ColdBox CLI" )
-		printHelp( "🗳️  Happy coding!" )
+	// AI Integration Setup
+	if ( arguments.ai ) {
+		printInfo( "🤖 Setting up AI integration..." )
+		variables.print.line().toConsole()
+
+		// Determine language from skeleton and flags
+		var language = arguments.boxlang ? "boxlang" : "cfml"
+
+		command( "coldbox ai install" )
+			.params(
+				directory = arguments.directory,
+				agents    = arguments.aiAgent,
+				language  = language
+			)
+			.run()
+
+		printSuccess( "✅ AI integration complete!" )
+		printHelp( "👉  Run 'coldbox ai info' to see your AI configuration" )
+		printHelp( "👉  Run 'coldbox ai help' to see available AI commands" )
+		variables.print.line().toConsole()
+	}
+
 	}
 
 	/**

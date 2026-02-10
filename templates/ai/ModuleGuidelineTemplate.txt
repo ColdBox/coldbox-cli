@@ -1,0 +1,42 @@
+# |moduleName| Module
+
+> **Module**: |moduleName|
+> **Category**: modules
+> **Purpose**: [Describe what this module does]
+
+## Overview
+
+[Provide an overview of the module's functionality]
+
+## Installation
+
+```bash
+box install |moduleName|
+```
+
+## Configuration
+
+Configure in `config/ColdBox.cfc`:
+
+```boxlang
+moduleSettings = {
+    |moduleName| = {
+        // Configuration options
+    }
+}
+```
+
+## Usage Patterns
+
+### Basic Usage
+
+[Provide code examples]
+
+## Best Practices
+
+- [List best practices]
+
+## Additional Resources
+
+- Documentation: [Add link]
+- Repository: [Add link]

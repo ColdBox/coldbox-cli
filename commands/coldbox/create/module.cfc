@@ -21,6 +21,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @directory      The base directory to create your model in and creates the directory if it does not exist.
 	 * @views          Create the views folder on creatin or remove it. Defaults to true
 	 * @boxlang 	 If this is a boxlang project, defaults to true
+	 * @ai             Enable AI integration for the module (creates AI guideline structure)
 	 **/
 	function run(
 		required name,
@@ -33,7 +34,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 		dependencies    = "",
 		directory       = "modules_app",
 		boolean views   = true,
-		boolean boxlang = isBoxLangProject( getCWD() )
+		boolean boxlang = isBoxLangProject( getCWD() ),
+		boolean ai      = false
 	){
 		// This will make each directory canonical and absolute
 		arguments.directory = resolvePath( arguments.directory );
@@ -135,6 +137,70 @@ component extends="coldbox-cli.models.BaseCommand" {
 			"path",
 			( path ) => !reFindNoCase( "\.DS_Store", arguments.path )
 		).each( ( item ) => print.greenLine( "  => " & item.replace( directory, "" ) ) );
-	}
 
-}
+		// AI Integration Setup
+		if ( arguments.ai ) {
+			var modulePath = arguments.directory & "/#arguments.name#"
+
+			printInfo( "🤖 Setting up AI integration for module..." )
+
+			// Create AI structure
+			directoryCreate( "#modulePath#/resources/coldbox-cli/ai/guidelines", true )
+			directoryCreate( "#modulePath#/resources/coldbox-cli/ai/skills", true )
+
+			// Create module guideline template
+			var guidelineTemplate = [
+				"# #arguments.name# Module",
+				"",
+				"> **Module**: #arguments.name#",
+				"> **Category**: modules",
+				"> **Purpose**: [Describe what this module does]",
+				"",
+				"## Overview",
+				"",
+				"[Provide an overview of the module's functionality]",
+				"",
+				"## Installation",
+				"",
+				"```bash",
+				"box install #arguments.name#",
+				"```",
+				"",
+				"## Configuration",
+				"",
+				"Configure in `config/ColdBox.cfc`:",
+				"",
+				"```boxlang",
+				"moduleSettings = {",
+				"    #arguments.name# = {",
+				"        // Configuration options",
+				"    }",
+				"}",
+				"```",
+				"",
+				"## Usage Patterns",
+				"",
+				"### Basic Usage",
+				"",
+				"[Provide code examples]",
+				"",
+				"## Best Practices",
+				"",
+				"- [List best practices]",
+				"",
+				"## Additional Resources",
+				"",
+				"- Documentation: [Add link]",
+				"- Repository: [Add link]"
+			]
+
+			fileWrite(
+				"#modulePath#/resources/coldbox-cli/ai/guidelines/core.md",
+				guidelineTemplate.toList( chr(10) )
+			)
+
+			printSuccess( "✅ AI support added to module!" )
+			printHelp( "👉  Edit: #modulePath#/resources/coldbox-cli/ai/guidelines/core.md" )
+			printHelp( "👉  When users install this module, AI guidelines will be auto-discovered" )
+		}
+	}
