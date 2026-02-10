@@ -1,0 +1,46 @@
+component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
+
+	function run(){
+		showColdBoxBanner( "AI Skills" )
+		print.line();
+		print
+			.boldCyan( "AI Skills Management" )
+			.line()
+			.line()
+			.whiteLine( "Skills are how-to cookbooks that guide AI through specific tasks" )
+			.line()
+			.boldWhiteLine( "Skill Types:" )
+			.line()
+			.line( "  • Core - Framework skills (creating handlers, REST APIs, tests, etc.)" )
+			.line( "  • Modules - Module-specific skills (migrations, authentication, etc.)" )
+			.line( "  • Custom - Your project-specific workflows and patterns" )
+			.line()
+			.boldWhiteLine( "Commands:" )
+			.line()
+			.greenLine( "  coldbox ai skills list               List all available skills" )
+			.greenLine( "  coldbox ai skills create <name>      Create a custom skill" )
+			.greenLine( "  coldbox ai skills refresh            Sync skills with installed modules" )
+			.line()
+			.yellowLine( "Examples:" )
+			.line()
+			.dim( "  ## List all skills" )
+			.line( "  coldbox ai skills list" )
+			.line()
+			.dim( "  ## Create a custom deployment workflow skill" )
+			.line( "  coldbox ai skills create deployment-workflow" )
+			.line()
+			.dim( "  ## Refresh skills after installing new modules" )
+			.line( "  coldbox ai skills refresh" )
+			.line()
+			.line()
+			.yellowLine( "Skills are stored in:" )
+			.line( "  .ai/skills/core/     - Core framework skills" )
+			.line( "  .ai/skills/modules/  - Module skills" )
+			.line( "  .ai/skills/custom/   - Your custom skills" )
+			.line()
+			.line()
+			.yellowLine( "Tip: Skills complement guidelines - guidelines explain 'what', skills explain 'how'" )
+			.line()
+	}
+
+}
