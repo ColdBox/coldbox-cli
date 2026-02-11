@@ -58,12 +58,12 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				.lineBlackOnSeaGreen1( "⭐ Core Skills (#coreSkills.len()#)" )
 				.line()
 				.line()
-			printHelp( "  Always available - covering ColdBox, BoxLang, CFML, and Testing" )
-			if ( verbose ) {
-				coreSkills.each( ( skill ) => {
-					print.indentedLine( "  • #skill.name#" )
-				} )
-			}
+			coreSkills.each( ( skill ) => {
+				print.indentedLine( "  • #skill.name#" )
+				if ( verbose && structKeyExists( skill, "syncedAt" ) ) {
+					print.indentedLine( "    Last synced: #skill.syncedAt#" )
+				}
+			} )
 			print.line()
 		}
 
