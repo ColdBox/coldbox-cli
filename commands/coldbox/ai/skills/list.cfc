@@ -83,9 +83,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 			structEach( skillsByModule, ( module, skills ) => {
 				print.indentedLine( "  From #module#:" )
-				skills.sort( "textnocase" ).each( ( skillName ) => {
-					print.indentedLine( "    • #skillName#" )
-				} )
+				skills
+					.sort( "textnocase" )
+					.each( ( skillName ) => {
+						print.indentedLine( "    • #skillName#" )
+					} )
 			} )
 			print.line()
 		}

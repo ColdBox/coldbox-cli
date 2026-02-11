@@ -76,9 +76,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.line();
 
 			printInfo( "Skills installed: #result.skills.len()#" );
-			result.skills.sort( "textnocase" ).each( function( skill ){
-				print.indentedLine( "  • #skill#" );
-			} );
+			result.skills
+				.sort( "textnocase" )
+				.each( function( skill ){
+					print.indentedLine( "  • #skill#" );
+				} );
 			print.line();
 
 			printInfo( "Agents configured:" );
@@ -91,10 +93,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			var totalMcpServers = result.mcpServers.core.len() + result.mcpServers.module.len();
 			printInfo( "MCP Servers configured: #totalMcpServers#" );
 			if ( result.mcpServers.core.len() ) {
-				print.indentedCyanLine( "  Core (#result.mcpServers.core.len()#): #result.mcpServers.core.toList( ', ' )#" );
+				print.indentedCyanLine( "  Core (#result.mcpServers.core.len()#): #result.mcpServers.core.toList( ", " )#" );
 			}
 			if ( result.mcpServers.module.len() ) {
-				print.indentedCyanLine( "  Module (#result.mcpServers.module.len()#): #result.mcpServers.module.toList( ', ' )#" );
+				print.indentedCyanLine( "  Module (#result.mcpServers.module.len()#): #result.mcpServers.module.toList( ", " )#" );
 			}
 			print.line();
 
