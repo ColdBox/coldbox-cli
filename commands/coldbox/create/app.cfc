@@ -190,7 +190,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// set the server name if the user provided one
 		variables.print.line().toConsole();
 		printInfo( "📡  Preparing server and support files" );
-		command( "server set" ).params( name: arguments.name ).run( returnOutput:true );
+		command( "server set" ).params( name: arguments.name ).run( returnOutput: true );
 
 		// ENV File
 		var envFile = arguments.directory & ".env";
@@ -433,14 +433,13 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 			command( "coldbox ai install" )
 				.params(
-					agent    = arguments.aiAgent,
-					language  = language,
-					directory = arguments.directory,
+					agent      = arguments.aiAgent,
+					language   = language,
+					directory  = arguments.directory,
 					showBanner = false
 				)
 				.run()
 		}
-
 	}
 
 	/**

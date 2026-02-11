@@ -108,7 +108,10 @@ component accessors="true" {
 	 * @subTitle Optional subtitle to display below the banner
 	 * @theme Optional gradient theme name (e.g., "Ocean", "Fire", "Sunset", "Purple", "Mint", "Gray")
 	 */
-	function showColdBoxBanner( string subTitle = "", string theme = "",  ){
+	function showColdBoxBanner(
+		string subTitle = "",
+		string theme    = ""
+	){
 		var lines = [
 			" ██████╗  ██████╗  ██╗      ██████╗  ██████╗   ██████╗  ██╗  ██╗",
 			"██╔════╝ ██╔═══██╗ ██║      ██╔══██╗ ██╔══██╗ ██╔═══██╗ ╚██╗██╔╝",
@@ -192,7 +195,7 @@ component accessors="true" {
 		} else {
 			var themeName = arguments.theme
 		}
-		var gradient   = themes[ themeName ]
+		var gradient = themes[ themeName ]
 
 		variables.print.line()
 
@@ -203,14 +206,17 @@ component accessors="true" {
 		// Add subtitle block if provided
 		if ( len( arguments.subTitle ) ) {
 			var blockWidth   = 48
-			var contentWidth = blockWidth - 4  // Subtract 4 for the ██ borders (2 chars each side)
+			var contentWidth = blockWidth - 4 // Subtract 4 for the ██ borders (2 chars each side)
 			var padding      = contentWidth - len( arguments.subTitle )
 			var leftPad      = int( padding / 2 )
 			var rightPad     = padding - leftPad
 			var indent       = repeatString( " ", 8 )
 
 			variables.print
-				.line( indent & repeatString( "▄", blockWidth ), gradient.last() )
+				.line(
+					indent & repeatString( "▄", blockWidth ),
+					gradient.last()
+				)
 				.line(
 					indent & "██" &
 					repeatString( " ", leftPad ) &
@@ -219,7 +225,10 @@ component accessors="true" {
 					"██",
 					"white"
 				)
-				.line( indent & repeatString( "▀", blockWidth ), gradient.last() )
+				.line(
+					indent & repeatString( "▀", blockWidth ),
+					gradient.last()
+				)
 		}
 
 		variables.print.line()

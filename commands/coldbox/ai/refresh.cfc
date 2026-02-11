@@ -14,7 +14,6 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="update" {
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run( string directory = getCwd() ){
-
 		showColdBoxBanner( "AI Integration Refresher" );
 
 		printInfo( "Refreshing AI integration..." );
@@ -33,7 +32,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="update" {
 			print.line();
 
 			// Combine all changes for display
-			var totalAdded = result.guidelines.added.len() + result.skills.added.len();
+			var totalAdded   = result.guidelines.added.len() + result.skills.added.len();
 			var totalUpdated = result.guidelines.updated.len() + result.skills.updated.len();
 			var totalRemoved = result.guidelines.removed.len() + result.skills.removed.len();
 

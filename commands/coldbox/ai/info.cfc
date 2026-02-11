@@ -13,7 +13,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run( string directory = getCwd() ){
-
 		showColdBoxBanner( "AI Integration Info" );
 
 		try {
@@ -27,15 +26,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 
 			// Load manifest to get active agent
-			var manifest = loadManifest( arguments.directory );
+			var manifest    = loadManifest( arguments.directory );
 			var activeAgent = manifest.activeAgent ?: "none";
 
 			// Print configuration in a table
 			print.line();
 			print.table(
 				headerNames = [ "Setting", "Value" ],
-				data = [
-					[ "ColdBox CLI Version", info.coldboxCliVersion ],
+				data        = [
+					[
+						"ColdBox CLI Version",
+						info.coldboxCliVersion
+					],
 					[ "Language Mode", info.language ],
 					[ "App Type", info.templateType ],
 					[ "Active Agent", activeAgent ],
@@ -62,25 +64,33 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Skills (#info.skills.len()#):" );
 			if ( info.skills.len() ) {
 				// Group by source
-				var coreSkills   = info.skills.filter( function( s ){ return s.source == "core"; } );
-				var moduleSkills = info.skills.filter( function( s ){ return s.source != "core"; } );
+				var coreSkills = info.skills.filter( function( s ){
+					return s.source == "core";
+				} );
+				var moduleSkills = info.skills.filter( function( s ){
+					return s.source != "core";
+				} );
 
 				if ( coreSkills.len() ) {
 					print.indentedCyanLine( "  Core:" );
-					coreSkills.sort( function( a, b ){
-						return compare( a.name, b.name );
-					} ).each( function( skill ){
-						print.indentedLine( "    ⭐ #skill.name#" );
-					} );
+					coreSkills
+						.sort( function( a, b ){
+							return compare( a.name, b.name );
+						} )
+						.each( function( skill ){
+							print.indentedLine( "    ⭐ #skill.name#" );
+						} );
 				}
 
 				if ( moduleSkills.len() ) {
 					print.indentedCyanLine( "  Modules:" );
-					moduleSkills.sort( function( a, b ){
-						return compare( a.name, b.name );
-					} ).each( function( skill ){
-						print.indentedLine( "    • #skill.name# (from #skill.source#)" );
-					} );
+					moduleSkills
+						.sort( function( a, b ){
+							return compare( a.name, b.name );
+						} )
+						.each( function( skill ){
+							print.indentedLine( "    • #skill.name# (from #skill.source#)" );
+						} );
 				}
 			} else {
 				print.indentedLine( "  No skills installed" );

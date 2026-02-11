@@ -20,11 +20,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	function run(
 		string agent     = "",
 		string directory = getCwd(),
-		boolean set = false
+		boolean set      = false
 	){
 		showColdBoxBanner( "Active AI Agent" )
 
-		var info = ensureInstalled( arguments.directory )
+		var info     = ensureInstalled( arguments.directory )
 		var manifest = loadManifest( arguments.directory )
 
 		print.line()
@@ -42,10 +42,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					var selectedAgent = multiSelect( "Which agent would you like to set as active?" )
 						.options(
 							info.agents.map( ( agent ) => {
-								return {
-									display : agent,
-									value   : agent
-								}
+								return { display : agent, value : agent }
 							} )
 						)
 						.required()

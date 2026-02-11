@@ -56,7 +56,7 @@ component singleton {
 
 		// Initialize manifest
 		var templateType = variables.utility.detectTemplateType( arguments.directory )
-		var manifest = {
+		var manifest     = {
 			"coldboxCliVersion" : variables.utility.getColdboxCliVersion(),
 			"lastSync"          : dateTimeFormat( now(), "iso" ),
 			"language"          : arguments.language,
@@ -92,7 +92,11 @@ component singleton {
 		result.manifest = manifest;
 
 		// Update box.json with AI configuration
-		updateBoxJsonAIConfig( arguments.directory, arguments.language, arguments.agents );
+		updateBoxJsonAIConfig(
+			arguments.directory,
+			arguments.language,
+			arguments.agents
+		);
 
 		result.message = "AI integration installed successfully!";
 		return result;
@@ -235,7 +239,10 @@ component singleton {
 		// Validate guidelines
 		var guidelineIssues = variables.guidelineManager.diagnose( arguments.directory, manifest );
 		issues.warnings.append( guidelineIssues.warnings, true );
-		issues.recommendations.append( guidelineIssues.recommendations, true );
+		issues.recommendations.append(
+			guidelineIssues.recommendations,
+			true
+		);
 
 		// Validate skills
 		var skillIssues = variables.skillManager.diagnose( arguments.directory, manifest );
@@ -249,9 +256,9 @@ component singleton {
 
 		// Build summary
 		issues.summary = {
-			"status"           : issues.errors.len() ? "error" : ( issues.warnings.len() ? "warning" : "good" ),
-			"errorCount"       : issues.errors.len(),
-			"warningCount"     : issues.warnings.len(),
+			"status"              : issues.errors.len() ? "error" : ( issues.warnings.len() ? "warning" : "good" ),
+			"errorCount"          : issues.errors.len(),
+			"warningCount"        : issues.warnings.len(),
 			"recommendationCount" : issues.recommendations.len()
 		};
 
@@ -288,10 +295,16 @@ component singleton {
 	 * @directory The project directory
 	 * @manifest The manifest struct to save
 	 */
-	AIService function saveManifest( required string directory, required struct manifest ){
-		var manifestPath = getManifestPath( arguments.directory )
+	AIService function saveManifest(
+		required string directory,
+		required struct manifest
+	){
+		var manifestPath            = getManifestPath( arguments.directory )
 		arguments.manifest.lastSync = dateTimeFormat( now(), "iso" )
-		fileWrite( manifestPath, serializeJSON( arguments.manifest, true ) )
+		fileWrite(
+			manifestPath,
+			serializeJSON( arguments.manifest, true )
+		)
 		return this
 	}
 

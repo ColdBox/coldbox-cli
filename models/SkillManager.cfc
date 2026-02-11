@@ -10,7 +10,7 @@ component singleton {
 	property name="packageService" inject="PackageService";
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
-	property name="aiService" inject="AIService@coldbox-cli";
+	property name="aiService"      inject="AIService@coldbox-cli";
 
 	/**
 	 * Install core skills for a project
@@ -30,7 +30,12 @@ component singleton {
 		var coreSkills = getCoreSkillsList( arguments.language );
 
 		coreSkills.each( ( skillName ) => {
-			installSkill( directory, skillName, "core", manifest )
+			installSkill(
+				directory,
+				skillName,
+				"core",
+				manifest
+			)
 			installed.append( skillName )
 		} )
 
@@ -48,7 +53,10 @@ component singleton {
 	 * @directory The project directory
 	 * @manifest The manifest struct to update
 	 */
-	function refresh( required string directory, required struct manifest ){
+	function refresh(
+		required string directory,
+		required struct manifest
+	){
 		var changes = {
 			"added"   : [],
 			"updated" : [],
@@ -56,8 +64,8 @@ component singleton {
 		};
 
 		// Get installed modules from box.json
-		var boxJson        = variables.packageService.readPackageDescriptor( arguments.directory );
-		var dependencies   = boxJson.dependencies ?: {};
+		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory );
+		var dependencies    = boxJson.dependencies ?: {};
 		var devDependencies = boxJson.devDependencies ?: {};
 		var allDependencies = {};
 		allDependencies.append( dependencies );
@@ -81,7 +89,12 @@ component singleton {
 						changes.updated.append( skillName )
 					} else {
 						// New skill
-						installSkill( directory, skillName, moduleSlug, manifest )
+						installSkill(
+							directory,
+							skillName,
+							moduleSlug,
+							manifest
+						)
 						changes.added.append( skillName )
 					}
 				} )
@@ -92,7 +105,7 @@ component singleton {
 		var toRemove = [];
 		for ( var skill in manifest.skills ) {
 			var skillSource = skill.source ?: ""
-			var skillType = skill.type ?: ""
+			var skillType   = skill.type ?: ""
 
 			// Don't remove core, custom, or override skills
 			if ( skillSource == "core" || skillSource == "user" || skillType == "custom" || skillType == "override" ) {
@@ -121,13 +134,13 @@ component singleton {
 					var existing = manifest.skills.filter( ( s ) => s.name == dirName )
 					if ( !existing.len() ) {
 						// Add to manifest
-						manifest.skills.append({
+						manifest.skills.append( {
 							"name"             : dirName,
 							"source"           : "custom",
 							"type"             : "custom",
 							"installedVersion" : variables.utility.getColdboxCliVersion(),
 							"syncedAt"         : dateTimeFormat( now(), "iso" )
-						})
+						} )
 						changes.added.append( dirName )
 					}
 				}
@@ -139,20 +152,20 @@ component singleton {
 		if ( directoryExists( overridesDir ) ) {
 			var overrideFiles = directoryList( overridesDir, false, "name", "*.md" )
 			overrideFiles.each( ( fileName ) => {
-				var baseName = replaceNoCase( fileName, ".md", "" )
+				var baseName     = replaceNoCase( fileName, ".md", "" )
 				var manifestName = "#baseName#-override"
 
 				// Check if in manifest
 				var existing = manifest.skills.filter( ( s ) => s.name == manifestName )
 				if ( !existing.len() ) {
 					// Add to manifest
-					manifest.skills.append({
+					manifest.skills.append( {
 						"name"             : manifestName,
 						"source"           : "user",
 						"type"             : "override",
 						"installedVersion" : variables.utility.getColdboxCliVersion(),
 						"syncedAt"         : dateTimeFormat( now(), "iso" )
-					})
+					} )
 					changes.added.append( manifestName )
 				}
 			} )
@@ -161,9 +174,9 @@ component singleton {
 		// Remove manifest entries for files/directories that no longer exist
 		var orphanedSkills = []
 		for ( var skill in manifest.skills ) {
-			var skillType = skill.type ?: ""
+			var skillType   = skill.type ?: ""
 			var skillSource = skill.source ?: skill.type ?: ""
-			var skillPath = ""
+			var skillPath   = ""
 
 			// Determine expected file/directory path
 			if ( skillSource == "core" ) {
@@ -172,7 +185,7 @@ component singleton {
 				skillPath = "#arguments.directory#/.ai/skills/custom/#skill.name#/SKILL.md"
 			} else if ( skillType == "override" ) {
 				var baseName = replaceNoCase( skill.name, "-override", "" )
-				skillPath = "#arguments.directory#/.ai/skills/overrides/#baseName#.md"
+				skillPath    = "#arguments.directory#/.ai/skills/overrides/#baseName#.md"
 			} else {
 				// Module skill
 				skillPath = "#arguments.directory#/.ai/skills/modules/#skill.name#/SKILL.md"
@@ -214,22 +227,27 @@ component singleton {
 
 		// Create skill from template
 		var languageSuffix = arguments.language == "cfml" ? ".cfml" : ".bx"
-		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/custom-skill-template#languageSuffix#.md"
-		var template = fileRead( templatePath )
+		var templatePath   = variables.utility.getTemplatesPath() & "/ai/skills/custom-skill-template#languageSuffix#.md"
+		var template       = fileRead( templatePath )
 
 		// Replace tokens
-		template = replaceNoCase( template, "|skillName|", arguments.name, "all" )
+		template = replaceNoCase(
+			template,
+			"|skillName|",
+			arguments.name,
+			"all"
+		)
 		fileWrite( skillFile, template )
 
 		// Update manifest
 		var manifest = variables.aiService.loadManifest( arguments.directory );
 
-		manifest.skills.append({
-			"name": arguments.name,
-			"source": "custom",
-			"installedVersion": "1.0.0",
-			"syncedAt": dateTimeFormat( now(), "iso" )
-		})
+		manifest.skills.append( {
+			"name"             : arguments.name,
+			"source"           : "custom",
+			"installedVersion" : "1.0.0",
+			"syncedAt"         : dateTimeFormat( now(), "iso" )
+		} )
 
 		variables.aiService.saveManifest( arguments.directory, manifest )
 	}
@@ -247,12 +265,12 @@ component singleton {
 		required string type
 	){
 		// Determine file/directory location based on type
-		var skillPath = ""
+		var skillPath    = ""
 		var manifestName = arguments.name
 
 		if ( arguments.type == "override" ) {
 			// Override files are stored with base name, manifest has -override suffix
-			skillPath = "#arguments.directory#/.ai/skills/overrides/#arguments.name#.md"
+			skillPath    = "#arguments.directory#/.ai/skills/overrides/#arguments.name#.md"
 			manifestName = "#arguments.name#-override"
 		} else if ( arguments.type == "core" ) {
 			skillPath = "#arguments.directory#/.ai/skills/core/#arguments.name#"
@@ -265,7 +283,7 @@ component singleton {
 		// Check if path exists
 		if ( !fileExists( skillPath ) && !directoryExists( skillPath ) ) {
 			throw(
-				type = "SkillManager.SkillNotFound",
+				type    = "SkillManager.SkillNotFound",
 				message = "#arguments.type# skill '#arguments.name#' not found at: #skillPath#"
 			)
 		}
@@ -278,7 +296,7 @@ component singleton {
 		}
 
 		// Update manifest
-		var manifest = variables.aiService.loadManifest( arguments.directory )
+		var manifest    = variables.aiService.loadManifest( arguments.directory )
 		manifest.skills = manifest.skills.filter( ( s ) => s.name != manifestName )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
@@ -302,12 +320,12 @@ component singleton {
 
 		// Determine source path based on type
 		var sourcePath = arguments.type == "core"
-			? "#arguments.directory#/.ai/skills/core/#arguments.name#/SKILL.md"
-			: "#arguments.directory#/.ai/skills/modules/#arguments.name#/SKILL.md"
+		 ? "#arguments.directory#/.ai/skills/core/#arguments.name#/SKILL.md"
+		 : "#arguments.directory#/.ai/skills/modules/#arguments.name#/SKILL.md"
 
 		if ( !fileExists( sourcePath ) ) {
 			throw(
-				type = "SkillManager.SkillNotFound",
+				type    = "SkillManager.SkillNotFound",
 				message = "Skill '#arguments.name#' not found at: #sourcePath#"
 			)
 		}
@@ -317,11 +335,11 @@ component singleton {
 
 		// Read override template
 		var templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/"
-		var templatePath = templatesPath & "skill-override-template.md"
+		var templatePath  = templatesPath & "skill-override-template.md"
 
 		if ( !fileExists( templatePath ) ) {
 			throw(
-				type = "SkillManager.TemplateNotFound",
+				type    = "SkillManager.TemplateNotFound",
 				message = "Override template not found: #templatePath#"
 			)
 		}
@@ -329,8 +347,18 @@ component singleton {
 		var content = fileRead( templatePath )
 
 		// Replace placeholders
-		content = replaceNoCase( content, "|skillName|", arguments.name, "all" )
-		content = replaceNoCase( content, "|coreContent|", originalContent, "all" )
+		content = replaceNoCase(
+			content,
+			"|skillName|",
+			arguments.name,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|coreContent|",
+			originalContent,
+			"all"
+		)
 
 		// Ensure overrides directory exists
 		var overridesDir = "#arguments.directory#/.ai/skills/overrides"
@@ -366,7 +394,10 @@ component singleton {
 	 * @directory The project directory
 	 * @manifest The manifest struct
 	 */
-	function diagnose( required string directory, required struct manifest ){
+	function diagnose(
+		required string directory,
+		required struct manifest
+	){
 		var issues = {
 			"warnings"        : [],
 			"recommendations" : []
@@ -477,8 +508,8 @@ component singleton {
 
 		// Create SKILL.md file with frontmatter (check if module ships its own)
 		var content = getSkillContent(
-			skillName = arguments.skillName,
-			directory = arguments.directory,
+			skillName  = arguments.skillName,
+			directory  = arguments.directory,
 			moduleSlug = arguments.source != "core" ? arguments.source : ""
 		);
 		fileWrite( "#skillDir#/SKILL.md", content );
@@ -545,7 +576,7 @@ component singleton {
 	 */
 	private function getSkillContent(
 		required string skillName,
-		string directory = "",
+		string directory  = "",
 		string moduleSlug = ""
 	){
 		// 1. If moduleSlug provided, check if module ships its own skill at .ai/skills/<skillName>/SKILL.md
@@ -567,8 +598,18 @@ component singleton {
 		if ( fileExists( templatePath ) ) {
 			var content = fileRead( templatePath );
 			// Replace placeholder with actual skill name
-			content = replaceNoCase( content, "skill-template", arguments.skillName, "all" );
-			content = replaceNoCase( content, "Skill Name", arguments.skillName, "all" );
+			content     = replaceNoCase(
+				content,
+				"skill-template",
+				arguments.skillName,
+				"all"
+			);
+			content = replaceNoCase(
+				content,
+				"Skill Name",
+				arguments.skillName,
+				"all"
+			);
 			return content;
 		}
 
@@ -599,13 +640,13 @@ This skill will be populated with actual content.";
 				"api-authentication",
 				"rbac-patterns"
 			],
-			"cbauth" : [ "authentication" ],
-			"cbsso"  : [ "sso-integration" ],
-			"quick"  : [ "orm-quick", "orm-relationships" ],
-			"qb"     : [ "query-builder" ],
+			"cbauth"                : [ "authentication" ],
+			"cbsso"                 : [ "sso-integration" ],
+			"quick"                 : [ "orm-quick", "orm-relationships" ],
+			"qb"                    : [ "query-builder" ],
 			"commandbox-migrations" : [ "database-migrations" ],
-			"cbwire" : [ "cbwire-development" ],
-			"cbq"    : [ "queue-development" ]
+			"cbwire"                : [ "cbwire-development" ],
+			"cbq"                   : [ "queue-development" ]
 		};
 	}
 

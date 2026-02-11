@@ -150,7 +150,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 			// Read and process module guideline template
 			var guidelineContent = fileRead( "#variables.settings.templatesPath#/ai/ModuleGuidelineTemplate.txt" )
-			guidelineContent = replaceNoCase( guidelineContent, "|moduleName|", arguments.name, "all" )
+			guidelineContent     = replaceNoCase(
+				guidelineContent,
+				"|moduleName|",
+				arguments.name,
+				"all"
+			)
 
 			// Write guideline file
 			fileWrite(

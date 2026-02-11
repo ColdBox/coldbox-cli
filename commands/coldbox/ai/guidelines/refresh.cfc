@@ -70,8 +70,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Installed Guidelines Summary:" )
 			print.line()
 
-			var updatedInfo = variables.aiService.getInfo( arguments.directory )
-			var coreGuidelines = updatedInfo.guidelines.filter( ( g ) => g.source == "coldbox-cli" )
+			var updatedInfo      = variables.aiService.getInfo( arguments.directory )
+			var coreGuidelines   = updatedInfo.guidelines.filter( ( g ) => g.source == "coldbox-cli" )
 			var moduleGuidelines = updatedInfo.guidelines.filter( ( g ) => g.source != "coldbox-cli" && g.source != "custom" )
 			var customGuidelines = updatedInfo.guidelines.filter( ( g ) => g.source == "custom" )
 

@@ -11,7 +11,14 @@ component singleton {
 	property name="utility"        inject="Utility@coldbox-cli";
 
 	static {
-		SUPPORTED_AGENTS = [ "claude", "copilot", "cursor", "codex", "gemini", "opencode" ]
+		SUPPORTED_AGENTS = [
+			"claude",
+			"copilot",
+			"cursor",
+			"codex",
+			"gemini",
+			"opencode"
+		]
 		AGENT_FILES = {
 			"claude"   : "CLAUDE.md",
 			"copilot"  : ".github/copilot-instructions.md",
@@ -21,19 +28,37 @@ component singleton {
 			"opencode" : ".opencode/instructions.md"
 		}
 		AGENT_OPTIONS = [
-			{ display: "Claude (Anthropic) - Recommended for general development", value: "claude" },
-			{ display: "GitHub Copilot - Integrated with VS Code", value: "copilot" },
-			{ display: "Cursor AI - AI-first code editor", value: "cursor" },
-			{ display: "Codex (OpenAI) - GPT-powered coding assistant", value: "codex" },
-			{ display: "Gemini (Google) - Google's AI assistant", value: "gemini" },
-			{ display: "OpenCode - Open source AI assistant", value: "opencode" }
+			{
+				display : "Claude (Anthropic) - Recommended for general development",
+				value   : "claude"
+			},
+			{
+				display : "GitHub Copilot - Integrated with VS Code",
+				value   : "copilot"
+			},
+			{
+				display : "Cursor AI - AI-first code editor",
+				value   : "cursor"
+			},
+			{
+				display : "Codex (OpenAI) - GPT-powered coding assistant",
+				value   : "codex"
+			},
+			{
+				display : "Gemini (Google) - Google's AI assistant",
+				value   : "gemini"
+			},
+			{
+				display : "OpenCode - Open source AI assistant",
+				value   : "opencode"
+			}
 		]
 	}
 
 	// Expose them as instance properties for easier access in commands
 	this.SUPPORTED_AGENTS = static.SUPPORTED_AGENTS
-	this.AGENT_OPTIONS = static.AGENT_OPTIONS
-	this.AGENT_FILES = static.AGENT_FILES
+	this.AGENT_OPTIONS    = static.AGENT_OPTIONS
+	this.AGENT_FILES      = static.AGENT_FILES
 
 	/**
 	 * Configure agents for a project
@@ -47,8 +72,7 @@ component singleton {
 		required string agents,
 		required string language
 	){
-		return listToArray( arguments.agents )
-			.map( ( agent ) => {
+		return listToArray( arguments.agents ).map( ( agent ) => {
 			configureAgent( directory, agent, language )
 			return agent
 		} )
@@ -62,8 +86,7 @@ component singleton {
 	 * @return Struct with agent names as keys and config paths as values as per their conventions
 	 */
 	function getAgentConfigPaths( string agentName ){
-
-		if( !isNull( arguments.agentName ) ){
+		if ( !isNull( arguments.agentName ) ) {
 			return static.AGENT_FILES[ arguments.agentName ] ?: "AI_INSTRUCTIONS.md"
 		}
 
@@ -76,7 +99,10 @@ component singleton {
 	 * @directory The project directory
 	 * @manifest The manifest struct
 	 */
-	function diagnose( required string directory, required struct manifest ){
+	function diagnose(
+		required string directory,
+		required struct manifest
+	){
 		var issues = {
 			"warnings"        : [],
 			"recommendations" : []
@@ -111,9 +137,14 @@ component singleton {
 		required string agent,
 		required string language
 	){
-		var configPath = getAgentConfigPath( arguments.directory, arguments.agent )
+		var configPath   = getAgentConfigPath( arguments.directory, arguments.agent )
 		var templateType = variables.utility.detectTemplateType( arguments.directory )
-		var content    = getAgentConfigContent( arguments.agent, arguments.language, templateType, arguments.directory )
+		var content      = getAgentConfigContent(
+			arguments.agent,
+			arguments.language,
+			templateType,
+			arguments.directory
+		)
 
 		// Create directories if needed
 		var configDir = getDirectoryFromPath( configPath )
@@ -131,31 +162,31 @@ component singleton {
 	 * @directory The project directory
 	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 */
-	 function getAgentConfigPath( required string directory, required string agent ){
+	function getAgentConfigPath(
+		required string directory,
+		required string agent
+	){
 		// Check if directory ends in / or \ and remove it for consistent path building
 		if ( right( arguments.directory, 1 ) == "/" || right( arguments.directory, 1 ) == "\" ) {
-			arguments.directory = left( arguments.directory, len( arguments.directory ) - 1 )
+			arguments.directory = left(
+				arguments.directory,
+				len( arguments.directory ) - 1
+			)
 		}
 
 		switch ( arguments.agent ) {
 			case "claude":
 				return "#arguments.directory#/CLAUDE.md"
-
 			case "copilot":
 				return "#arguments.directory#/.github/copilot-instructions.md"
-
 			case "cursor":
 				return "#arguments.directory#/.cursorrules"
-
 			case "codex":
 				return "#arguments.directory#/.codex/instructions.md"
-
 			case "gemini":
 				return "#arguments.directory#/.gemini/instructions.md"
-
 			case "opencode":
 				return "#arguments.directory#/.opencode/instructions.md"
-
 			default:
 				return "#arguments.directory#/AI_INSTRUCTIONS.md"
 		}
@@ -180,12 +211,12 @@ component singleton {
 
 		// Use layout-specific templates for all agents
 		templateFile = arguments.templateType == "modern"
-			? "#templatesPath#/ai/agents/agent-modern-instructions.md"
-			: "#templatesPath#/ai/agents/agent-flat-instructions.md"
+		 ? "#templatesPath#/ai/agents/agent-modern-instructions.md"
+		 : "#templatesPath#/ai/agents/agent-flat-instructions.md"
 
 		if ( !fileExists( templateFile ) ) {
 			throw(
-				type = "AgentRegistry.TemplateNotFound",
+				type    = "AgentRegistry.TemplateNotFound",
 				message = "Agent template not found: #templateFile#"
 			)
 		}
@@ -193,13 +224,13 @@ component singleton {
 		var content = fileRead( templateFile )
 
 		// Get project information
-		var boxJson = {}
+		var boxJson     = {}
 		var boxJsonPath = "#arguments.directory#/box.json"
 		if ( fileExists( boxJsonPath ) ) {
 			boxJson = deserializeJSON( fileRead( boxJsonPath ) )
 		}
 
-		var projectName = boxJson.name ?: getFileFromPath( arguments.directory )
+		var projectName    = boxJson.name ?: getFileFromPath( arguments.directory )
 		var coldboxVersion = boxJson.dependencies.coldbox ?: "8.x"
 
 		// Determine language mode display
@@ -211,9 +242,9 @@ component singleton {
 		}
 
 		// Detect enabled features
-		var viteEnabled = detectViteEnabled( arguments.directory )
-		var dockerEnabled = detectDockerEnabled( arguments.directory )
-		var ormEnabled = detectOrmEnabled( boxJson )
+		var viteEnabled       = detectViteEnabled( arguments.directory )
+		var dockerEnabled     = detectDockerEnabled( arguments.directory )
+		var ormEnabled        = detectOrmEnabled( boxJson )
 		var migrationsEnabled = detectMigrationsEnabled( arguments.directory, boxJson )
 
 		// Build features list
@@ -226,14 +257,54 @@ component singleton {
 		var features = enabledFeatures.len() ? enabledFeatures.toList( ", " ) : "None"
 
 		// Replace placeholders
-		content = replaceNoCase( content, "|PROJECT_NAME|", projectName, "all" )
-		content = replaceNoCase( content, "|LANGUAGE_MODE|", languageMode, "all" )
-		content = replaceNoCase( content, "|COLDBOX_VERSION|", coldboxVersion, "all" )
-		content = replaceNoCase( content, "|FEATURES|", features, "all" )
-		content = replaceNoCase( content, "|VITE_ENABLED|", viteEnabled ? "Yes" : "No", "all" )
-		content = replaceNoCase( content, "|DOCKER_ENABLED|", dockerEnabled ? "Yes" : "No", "all" )
-		content = replaceNoCase( content, "|ORM_ENABLED|", ormEnabled ? "Yes" : "No", "all" )
-		content = replaceNoCase( content, "|MIGRATIONS_ENABLED|", migrationsEnabled ? "Yes" : "No", "all" )
+		content = replaceNoCase(
+			content,
+			"|PROJECT_NAME|",
+			projectName,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|LANGUAGE_MODE|",
+			languageMode,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|COLDBOX_VERSION|",
+			coldboxVersion,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|FEATURES|",
+			features,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|VITE_ENABLED|",
+			viteEnabled ? "Yes" : "No",
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|DOCKER_ENABLED|",
+			dockerEnabled ? "Yes" : "No",
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|ORM_ENABLED|",
+			ormEnabled ? "Yes" : "No",
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|MIGRATIONS_ENABLED|",
+			migrationsEnabled ? "Yes" : "No",
+			"all"
+		)
 
 		return content
 	}
@@ -242,15 +313,21 @@ component singleton {
 	 * Detect if Vite is enabled in the project
 	 */
 	private function detectViteEnabled( required string directory ){
-		var viteConfig = "#arguments.directory#/vite.config.mjs"
+		var viteConfig  = "#arguments.directory#/vite.config.mjs"
 		var packageJson = "#arguments.directory#/package.json"
 
 		if ( fileExists( viteConfig ) ) return true
 
 		if ( fileExists( packageJson ) ) {
 			var pkgContent = deserializeJSON( fileRead( packageJson ) )
-			return structKeyExists( pkgContent.dependencies ?: {}, "vite" ) ||
-			       structKeyExists( pkgContent.devDependencies ?: {}, "vite" )
+			return structKeyExists(
+				pkgContent.dependencies ?: {},
+				"vite"
+			) ||
+			structKeyExists(
+				pkgContent.devDependencies ?: {},
+				"vite"
+			)
 		}
 
 		return false
@@ -261,32 +338,37 @@ component singleton {
 	 */
 	private function detectDockerEnabled( required string directory ){
 		return fileExists( "#arguments.directory#/Dockerfile" ) ||
-		       fileExists( "#arguments.directory#/docker-compose.yml" )
+		fileExists( "#arguments.directory#/docker-compose.yml" )
 	}
 
 	/**
 	 * Detect if ORM is enabled (cborm or quick)
 	 */
 	private function detectOrmEnabled( required struct boxJson ){
-		var deps = boxJson.dependencies ?: {}
+		var deps    = boxJson.dependencies ?: {}
 		var devDeps = boxJson.devDependencies ?: {}
 
 		return structKeyExists( deps, "cborm" ) ||
-		       structKeyExists( devDeps, "cborm" ) ||
-		       structKeyExists( deps, "quick" ) ||
-		       structKeyExists( devDeps, "quick" )
+		structKeyExists( devDeps, "cborm" ) ||
+		structKeyExists( deps, "quick" ) ||
+		structKeyExists( devDeps, "quick" )
 	}
 
 	/**
 	 * Detect if migrations are enabled
 	 */
-	private function detectMigrationsEnabled( required string directory, required struct boxJson ){
+	private function detectMigrationsEnabled(
+		required string directory,
+		required struct boxJson
+	){
 		// Check for migrations in dependencies
-		var deps = boxJson.dependencies ?: {}
+		var deps    = boxJson.dependencies ?: {}
 		var devDeps = boxJson.devDependencies ?: {}
 
-		if ( structKeyExists( deps, "commandbox-migrations" ) ||
-		     structKeyExists( devDeps, "commandbox-migrations" ) ) {
+		if (
+			structKeyExists( deps, "commandbox-migrations" ) ||
+			structKeyExists( devDeps, "commandbox-migrations" )
+		) {
 			return true
 		}
 

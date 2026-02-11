@@ -80,10 +80,10 @@ component extends="app" aliases="" {
 			var agentChoice = ask( "Select AI agent [1-4]: " )
 
 			var agentMap = {
-				"1": "claude",
-				"2": "copilot",
-				"3": "cursor",
-				"4": "claude,copilot,cursor"
+				"1" : "claude",
+				"2" : "copilot",
+				"3" : "cursor",
+				"4" : "claude,copilot,cursor"
 			}
 
 			arguments.aiAgent = agentMap[ agentChoice ] ?: "claude"

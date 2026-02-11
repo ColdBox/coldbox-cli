@@ -49,10 +49,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Parse comma-separated agents
-		var agents = listToArray( arguments.agent )
+		var agents      = listToArray( arguments.agent )
 		var validAgents = variables.agentRegistry.SUPPORTED_AGENTS
-		var toAdd = []
-		var invalid = []
+		var toAdd       = []
+		var invalid     = []
 
 		agents.each( ( agent ) => {
 			if ( validAgents.find( agent ) ) {
@@ -100,11 +100,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Configure each agent
 		toAdd.each( ( agent ) => {
-			variables.agentRegistry.configureAgent(
-				directory,
-				agent,
-				language
-			)
+			variables.agentRegistry.configureAgent( directory, agent, language )
 			print.greenLine( "  ✓ #agent# configured" )
 		} )
 

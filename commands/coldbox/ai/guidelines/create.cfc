@@ -45,10 +45,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Create guideline from template
-		variables.guidelineManager.createCustomGuideline(
-			arguments.directory,
-			arguments.name
-		)
+		variables.guidelineManager.createCustomGuideline( arguments.directory, arguments.name )
 
 		// Regenerate agent files
 		print.line()

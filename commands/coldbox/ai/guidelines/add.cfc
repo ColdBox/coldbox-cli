@@ -57,10 +57,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Installing core guideline '#arguments.name#'..." )
 
 		// Install the guideline (version will be coldbox-cli version)
-		variables.guidelineManager.installGuideline(
-			arguments.directory,
-			arguments.name
-		)
+		variables.guidelineManager.installGuideline( arguments.directory, arguments.name )
 
 		// Regenerate agent files
 		print.line()

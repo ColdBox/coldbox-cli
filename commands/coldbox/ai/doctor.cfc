@@ -45,7 +45,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @diagnosis The diagnosis struct
 	 * @verbose Show detailed diagnostic information
 	 */
-	private function printDiagnosisReport( required struct diagnosis, boolean verbose = false ){
+	private function printDiagnosisReport(
+		required struct diagnosis,
+		boolean verbose = false
+	){
 		// Errors
 		if ( diagnosis.errors.len() ) {
 			print.redLine( "❌ Errors (#diagnosis.errors.len()#)" );
@@ -88,7 +91,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				"recommendationCount" : diagnosis.recommendations.len()
 			}
 		}
-		var status = diagnosis.summary.status;
+		var status      = diagnosis.summary.status;
 		var statusEmoji = {
 			"good"    : "🟢",
 			"warning" : "🟡",
@@ -109,14 +112,26 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.table(
 			headerNames = [ "Metric", "Value" ],
-			data = [
+			data        = [
 				[
 					"Overall Status",
-					{ value : "#statusEmoji[ status ]# #statusText[ status ]#", options : statusColor[ status ] }
+					{
+						value   : "#statusEmoji[ status ]# #statusText[ status ]#",
+						options : statusColor[ status ]
+					}
 				],
-				[ "Errors", diagnosis.summary.errorCount ],
-				[ "Warnings", diagnosis.summary.warningCount ],
-				[ "Recommendations", diagnosis.summary.recommendationCount ]
+				[
+					"Errors",
+					diagnosis.summary.errorCount
+				],
+				[
+					"Warnings",
+					diagnosis.summary.warningCount
+				],
+				[
+					"Recommendations",
+					diagnosis.summary.recommendationCount
+				]
 			]
 		);
 		print.line();

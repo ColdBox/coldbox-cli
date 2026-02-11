@@ -10,10 +10,20 @@ component singleton {
 	property name="packageService" inject="PackageService";
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
-	property name="aiService"        inject="AIService@coldbox-cli";
+	property name="aiService"      inject="AIService@coldbox-cli";
 
 	static {
-		CORE_GUIDELINES = [ "boxlang", "cfml", "coldbox", "coldbox-cli", "cachebox", "docbox", "logbox", "testbox", "wirebox" ]
+		CORE_GUIDELINES = [
+			"boxlang",
+			"cfml",
+			"coldbox",
+			"coldbox-cli",
+			"cachebox",
+			"docbox",
+			"logbox",
+			"testbox",
+			"wirebox"
+		]
 		MODULE_GUIDELINES = [
 			"bcrypt",
 			"cbantisamy",
@@ -58,7 +68,7 @@ component singleton {
 		]
 	}
 
-	this.CORE_GUIDELINES = static.CORE_GUIDELINES
+	this.CORE_GUIDELINES   = static.CORE_GUIDELINES
 	this.MODULE_GUIDELINES = static.MODULE_GUIDELINES
 
 	/**
@@ -117,7 +127,10 @@ component singleton {
 	 * @directory The project directory
 	 * @manifest The manifest struct to update
 	 */
-function refresh( required string directory, required struct manifest ){
+	function refresh(
+		required string directory,
+		required struct manifest
+	){
 		var changes = {
 			"added"         : [],
 			"updated"       : [],
@@ -126,8 +139,8 @@ function refresh( required string directory, required struct manifest ){
 		}
 
 		// Get installed modules from box.json
-		var boxJson        = variables.packageService.readPackageDescriptor( arguments.directory )
-		var dependencies   = boxJson.dependencies ?: {}
+		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory )
+		var dependencies    = boxJson.dependencies ?: {}
 		var devDependencies = boxJson.devDependencies ?: {}
 		var allDependencies = {}
 		allDependencies.append( dependencies )
@@ -181,11 +194,13 @@ function refresh( required string directory, required struct manifest ){
 		// Remove guidelines for uninstalled modules
 		var toRemove = []
 		for ( var guideline in manifest.guidelines ) {
-			var gType = guideline.type ?: ""
+			var gType   = guideline.type ?: ""
 			var gSource = guideline.source ?: ""
 
 			// Don't remove core, custom, or override guidelines
-			if ( gSource == "coldbox-cli" || gType == "core" || gSource == "user" || gType == "custom" || gType == "override" ) {
+			if (
+				gSource == "coldbox-cli" || gType == "core" || gSource == "user" || gType == "custom" || gType == "override"
+			) {
 				continue;
 			}
 
@@ -229,7 +244,7 @@ function refresh( required string directory, required struct manifest ){
 		if ( directoryExists( overridesDir ) ) {
 			var overrideFiles = directoryList( overridesDir, false, "name", "*.md" )
 			overrideFiles.each( ( fileName ) => {
-				var baseName = replaceNoCase( fileName, ".md", "" )
+				var baseName     = replaceNoCase( fileName, ".md", "" )
 				var manifestName = "#baseName#-override"
 
 				// Check if in manifest
@@ -252,7 +267,7 @@ function refresh( required string directory, required struct manifest ){
 		// Remove manifest entries for files that no longer exist
 		var orphanedGuidelines = []
 		for ( var guideline in manifest.guidelines ) {
-			var gType = guideline.type ?: ""
+			var gType    = guideline.type ?: ""
 			var filePath = ""
 
 			// Determine expected file path
@@ -264,7 +279,7 @@ function refresh( required string directory, required struct manifest ){
 				filePath = "#arguments.directory#/.ai/guidelines/custom/#guideline.name#.md"
 			} else if ( gType == "override" ) {
 				var baseName = replaceNoCase( guideline.name, "-override", "" )
-				filePath = "#arguments.directory#/.ai/guidelines/overrides/#baseName#.md"
+				filePath     = "#arguments.directory#/.ai/guidelines/overrides/#baseName#.md"
 			}
 
 			// Check if file exists
@@ -287,7 +302,10 @@ function refresh( required string directory, required struct manifest ){
 	 * @directory The project directory
 	 * @manifest The manifest struct
 	 */
-	function diagnose( required string directory, required struct manifest ){
+	function diagnose(
+		required string directory,
+		required struct manifest
+	){
 		var issues = {
 			"warnings"        : [],
 			"recommendations" : []
@@ -334,12 +352,12 @@ function refresh( required string directory, required struct manifest ){
 		required string type
 	){
 		// Determine file location and manifest name based on type
-		var filePath = ""
+		var filePath     = ""
 		var manifestName = arguments.name
 
 		if ( arguments.type == "override" ) {
 			// Override files are stored with base name, manifest has -override suffix
-			filePath = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
+			filePath     = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
 			manifestName = "#arguments.name#-override"
 		} else if ( arguments.type == "core" ) {
 			filePath = "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
@@ -352,7 +370,7 @@ function refresh( required string directory, required struct manifest ){
 		// Check if file exists
 		if ( !fileExists( filePath ) ) {
 			throw(
-				type = "GuidelineManager.GuidelineNotFound",
+				type    = "GuidelineManager.GuidelineNotFound",
 				message = "#arguments.type# guideline '#arguments.name#' not found at: #filePath#"
 			)
 		}
@@ -361,7 +379,7 @@ function refresh( required string directory, required struct manifest ){
 		fileDelete( filePath )
 
 		// Update manifest
-		var manifest = variables.aiService.loadManifest( arguments.directory )
+		var manifest        = variables.aiService.loadManifest( arguments.directory )
 		manifest.guidelines = manifest.guidelines.filter( ( g ) => g.name != manifestName )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
@@ -376,13 +394,16 @@ function refresh( required string directory, required struct manifest ){
 	 *
 	 * @return string The detected version or empty string if not found
 	 */
-	function detectModuleVersion( required string directory, required string guidelineName ){
+	function detectModuleVersion(
+		required string directory,
+		required string guidelineName
+	){
 		// For module guidelines, guideline name IS the module slug
 		var moduleSlug = arguments.guidelineName
 
 		// Read box.json
-		var boxJson = variables.packageService.readPackageDescriptor( arguments.directory )
-		var dependencies = boxJson.dependencies ?: {}
+		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory )
+		var dependencies    = boxJson.dependencies ?: {}
 		var devDependencies = boxJson.devDependencies ?: {}
 
 		// Check for version in dependencies
@@ -449,9 +470,14 @@ function refresh( required string directory, required struct manifest ){
 
 		// Read custom guideline template
 		var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
-		var templatePath = templatesPath & "custom-guideline-template.md"
-		var content = fileRead( templatePath )
-		content = replaceNoCase( content, "|guidelineName|", arguments.name, "all" )
+		var templatePath  = templatesPath & "custom-guideline-template.md"
+		var content       = fileRead( templatePath )
+		content           = replaceNoCase(
+			content,
+			"|guidelineName|",
+			arguments.name,
+			"all"
+		)
 
 		// Ensure custom guidelines directory exists
 		var customDir = "#arguments.directory#/.ai/guidelines/custom"
@@ -497,12 +523,12 @@ function refresh( required string directory, required struct manifest ){
 
 		// Determine source path based on type
 		var sourcePath = arguments.type == "core"
-			? "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
-			: "#arguments.directory#/.ai/guidelines/modules/#arguments.name#.md"
+		 ? "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
+		 : "#arguments.directory#/.ai/guidelines/modules/#arguments.name#.md"
 
 		if ( !fileExists( sourcePath ) ) {
 			throw(
-				type = "GuidelineManager.GuidelineNotFound",
+				type    = "GuidelineManager.GuidelineNotFound",
 				message = "Guideline '#arguments.name#' not found at: #sourcePath#"
 			)
 		}
@@ -512,11 +538,11 @@ function refresh( required string directory, required struct manifest ){
 
 		// Read override template
 		var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
-		var templatePath = templatesPath & "guideline-override-template.md"
+		var templatePath  = templatesPath & "guideline-override-template.md"
 
 		if ( !fileExists( templatePath ) ) {
 			throw(
-				type = "GuidelineManager.TemplateNotFound",
+				type    = "GuidelineManager.TemplateNotFound",
 				message = "Override template not found: #templatePath#"
 			)
 		}
@@ -524,8 +550,18 @@ function refresh( required string directory, required struct manifest ){
 		var content = fileRead( templatePath )
 
 		// Replace placeholders
-		content = replaceNoCase( content, "|guidelineName|", arguments.name, "all" )
-		content = replaceNoCase( content, "|coreContent|", originalContent, "all" )
+		content = replaceNoCase(
+			content,
+			"|guidelineName|",
+			arguments.name,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|coreContent|",
+			originalContent,
+			"all"
+		)
 
 		// Ensure overrides directory exists
 		var overridesDir = "#arguments.directory#/.ai/guidelines/overrides"
@@ -576,7 +612,7 @@ function refresh( required string directory, required struct manifest ){
 		var corePath = templatesPath & "core/#arguments.guidelineName#.md"
 		if ( !fileExists( corePath ) ) {
 			throw(
-				type = "GuidelineManager.CoreGuidelineNotFound",
+				type    = "GuidelineManager.CoreGuidelineNotFound",
 				message = "Core guideline template not found: #arguments.guidelineName#.md"
 			)
 		}
@@ -585,12 +621,17 @@ function refresh( required string directory, required struct manifest ){
 
 		// For ColdBox guideline, detect template type and replace structure placeholder
 		if ( arguments.guidelineName == "coldbox" ) {
-			var templateType = variables.utility.detectTemplateType( arguments.directory )
+			var templateType  = variables.utility.detectTemplateType( arguments.directory )
 			var structurePath = templatesPath & "core/coldbox-structure-#templateType#.md"
 
 			if ( fileExists( structurePath ) ) {
 				var structureContent = fileRead( structurePath )
-				content = replaceNoCase( content, "|STRUCTURE|", structureContent, "all" )
+				content              = replaceNoCase(
+					content,
+					"|STRUCTURE|",
+					structureContent,
+					"all"
+				)
 			}
 		}
 
@@ -626,7 +667,7 @@ function refresh( required string directory, required struct manifest ){
 		required string moduleSlug,
 		required struct manifest
 	){
-		var content = ""
+		var content       = ""
 		var autoGenerated = false
 
 		// 1. Check if module ships guideline at .ai/guideline.md (standard location)
@@ -635,113 +676,127 @@ function refresh( required string directory, required struct manifest ){
 			content = fileRead( moduleGuideline )
 		} else {
 			// 2. Check for coldbox-cli bundled guideline
-				var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
-				var bundledPath = templatesPath & "modules/#arguments.moduleSlug#.md"
+			var templatesPath = variables.utility.getTemplatesPath() & "/ai/guidelines/"
+			var bundledPath   = templatesPath & "modules/#arguments.moduleSlug#.md"
 
-				if ( fileExists( bundledPath ) ) {
-					content = fileRead( bundledPath )
-				} else {
-					// 3. Use auto-generated template
-					var templatePath = templatesPath & "module-autogenerated-template.md"
-					content = fileRead( templatePath )
-					content = replaceNoCase( content, "|guidelineName|", arguments.guidelineName, "all" )
-					content = replaceNoCase( content, "|moduleSlug|", arguments.moduleSlug, "all" )
-					autoGenerated = true
-				}
+			if ( fileExists( bundledPath ) ) {
+				content = fileRead( bundledPath )
+			} else {
+				// 3. Use auto-generated template
+				var templatePath = templatesPath & "module-autogenerated-template.md"
+				content          = fileRead( templatePath )
+				content          = replaceNoCase(
+					content,
+					"|guidelineName|",
+					arguments.guidelineName,
+					"all"
+				)
+				content = replaceNoCase(
+					content,
+					"|moduleSlug|",
+					arguments.moduleSlug,
+					"all"
+				)
+				autoGenerated = true
 			}
-		}
-
-		var targetFile = "#arguments.directory#/.ai/guidelines/modules/#arguments.guidelineName#.md"
-
-		// Write guideline file
-		fileWrite( targetFile, content )
-
-		// Get module version for tracking
-		var moduleVersion = detectModuleVersion( arguments.directory, arguments.moduleSlug )
-
-		// Update manifest
-		updateManifestEntry(
-			arguments.manifest,
-			arguments.guidelineName,
-			"module",
-			arguments.moduleSlug,
-			moduleVersion,
-			autoGenerated
-		)
-
-		return autoGenerated
-	}
-
-	/**
-	 * Update or add a guideline entry in the manifest
-	 *
-	 * @manifest The manifest struct to update
-	 * @guidelineName The guideline name
-	 * @type The guideline type (core, module, custom, override)
-	 * @source The source (coldbox-cli or module slug)
-	 * @version The version to track (coldbox-cli version or module version)
-	 * @autoGenerated Whether this was auto-generated
-	 */
-	private function updateManifestEntry(
-		required struct manifest,
-		required string guidelineName,
-		required string type,
-		required string source,
-		required string version,
-		required boolean autoGenerated
-	){
-		var existingIndex = 0
-		for ( var i = 1; i <= arguments.manifest.guidelines.len(); i++ ) {
-			if ( arguments.manifest.guidelines[ i ].name == arguments.guidelineName ) {
-				existingIndex = i
-				break
-			}
-		}
-
-		var guidelineEntry = {
-			"name"             : arguments.guidelineName,
-			"type"             : arguments.type,
-			"source"           : arguments.source,
-			"installedVersion" : arguments.version,
-			"syncedAt"         : dateTimeFormat( now(), "iso" ),
-			"autoGenerated"    : arguments.autoGenerated
-		}
-
-		if ( existingIndex ) {
-			arguments.manifest.guidelines[ existingIndex ] = guidelineEntry
-		} else {
-			arguments.manifest.guidelines.append( guidelineEntry )
 		}
 	}
 
-	/**
-	 * Remove a guideline (internal version for refresh)
-	 *
-	 * @directory The project directory
-	 * @guidelineName The name of the guideline to remove
-	 * @manifest The manifest struct to update
-	 */
-	private function removeGuidelineInternal(
-		required string directory,
-		required string guidelineName,
-		required struct manifest
-	){
-		// Remove file
-		var possiblePaths = [
-			"#arguments.directory#/.ai/guidelines/core/#arguments.guidelineName#.md",
-			"#arguments.directory#/.ai/guidelines/modules/#arguments.guidelineName#.md"
-		];
+	var targetFile = "#arguments.directory#/.ai/guidelines/modules/#arguments.guidelineName#.md"
 
-		possiblePaths.each( ( path ) => {
-			if ( fileExists( path ) ) {
-				fileDelete( path )
-			}
-		} )
+	// Write guideline file
+	fileWrite( targetFile, content )
 
-		// Remove from manifest
-		arguments.manifest.guidelines = arguments.manifest.guidelines.filter( ( g ) => {
-			return g.name != guidelineName
-		} )
+	// Get module version for tracking
+	var moduleVersion = detectModuleVersion(
+		arguments.directory,
+		arguments.moduleSlug
+	)
+
+	// Update manifest
+	updateManifestEntry(
+		arguments.manifest,
+		arguments.guidelineName,
+		"module",
+		arguments.moduleSlug,
+		moduleVersion,
+		autoGenerated
+	)
+
+	return autoGenerated
+
+}
+
+/**
+ * Update or add a guideline entry in the manifest
+ *
+ * @manifest The manifest struct to update
+ * @guidelineName The guideline name
+ * @type The guideline type (core, module, custom, override)
+ * @source The source (coldbox-cli or module slug)
+ * @version The version to track (coldbox-cli version or module version)
+ * @autoGenerated Whether this was auto-generated
+ */
+private function updateManifestEntry(
+	required struct manifest,
+	required string guidelineName,
+	required string type,
+	required string source,
+	required string version,
+	required boolean autoGenerated
+){
+	var existingIndex = 0
+	for ( var i = 1; i <= arguments.manifest.guidelines.len(); i++ ) {
+		if ( arguments.manifest.guidelines[ i ].name == arguments.guidelineName ) {
+			existingIndex = i
+			break
+		}
 	}
+
+	var guidelineEntry = {
+		"name"             : arguments.guidelineName,
+		"type"             : arguments.type,
+		"source"           : arguments.source,
+		"installedVersion" : arguments.version,
+		"syncedAt"         : dateTimeFormat( now(), "iso" ),
+		"autoGenerated"    : arguments.autoGenerated
+	}
+
+	if ( existingIndex ) {
+		arguments.manifest.guidelines[ existingIndex ] = guidelineEntry
+	} else {
+		arguments.manifest.guidelines.append( guidelineEntry )
+	}
+}
+
+/**
+ * Remove a guideline (internal version for refresh)
+ *
+ * @directory The project directory
+ * @guidelineName The name of the guideline to remove
+ * @manifest The manifest struct to update
+ */
+private function removeGuidelineInternal(
+	required string directory,
+	required string guidelineName,
+	required struct manifest
+){
+	// Remove file
+	var possiblePaths = [
+		"#arguments.directory#/.ai/guidelines/core/#arguments.guidelineName#.md",
+		"#arguments.directory#/.ai/guidelines/modules/#arguments.guidelineName#.md"
+	];
+
+	possiblePaths.each( ( path ) => {
+		if ( fileExists( path ) ) {
+			fileDelete( path )
+		}
+	} )
+
+	// Remove from manifest
+	arguments.manifest.guidelines = arguments.manifest.guidelines.filter( ( g ) => {
+		return g.name != guidelineName
+	} )
+}
 
 }

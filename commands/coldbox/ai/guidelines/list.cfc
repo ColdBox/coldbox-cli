@@ -23,13 +23,13 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var info = ensureInstalled( arguments.directory )
 
 		// Group guidelines by source
-		var coreGuidelines   = []
-		var moduleGuidelines = []
-		var customGuidelines = []
+		var coreGuidelines     = []
+		var moduleGuidelines   = []
+		var customGuidelines   = []
 		var overrideGuidelines = []
 
 		info.guidelines.each( ( guideline ) => {
-			var gType = guideline.type ?: ""
+			var gType   = guideline.type ?: ""
 			var gSource = guideline.source ?: ""
 
 			if ( gType == "override" ) {
@@ -45,7 +45,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display core guidelines
 		if ( coreGuidelines.len() ) {
-			print.blackOnSeaGreen1( "⭐ Core Guidelines (#coreGuidelines.len()#)" )
+			print
+				.blackOnSeaGreen1( "⭐ Core Guidelines (#coreGuidelines.len()#)" )
 				.line()
 				.line()
 			coreGuidelines.each( ( guideline ) => {
@@ -59,7 +60,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display module guidelines
 		if ( moduleGuidelines.len() ) {
-			print.blackOnSeaGreen1( "📦 Module Guidelines (#moduleGuidelines.len()#)" )
+			print
+				.blackOnSeaGreen1( "📦 Module Guidelines (#moduleGuidelines.len()#)" )
 				.line()
 				.line()
 			moduleGuidelines.each( ( guideline ) => {
@@ -84,7 +86,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display custom guidelines
 		if ( customGuidelines.len() ) {
-			print.blackOnSeaGreen1( "🔧 Custom Guidelines (#customGuidelines.len()#)" )
+			print
+				.blackOnSeaGreen1( "🔧 Custom Guidelines (#customGuidelines.len()#)" )
 				.line()
 				.line()
 			customGuidelines.each( ( guideline ) => {
@@ -98,7 +101,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display override guidelines
 		if ( overrideGuidelines.len() ) {
-			print.blackOnSeaGreen1( "🎯 Override Guidelines (#overrideGuidelines.len()#)" )
+			print
+				.blackOnSeaGreen1( "🎯 Override Guidelines (#overrideGuidelines.len()#)" )
 				.line()
 				.line()
 			overrideGuidelines.each( ( guideline ) => {
@@ -118,4 +122,5 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		printTip( "Run 'coldbox ai refresh' to sync with installed modules" )
 	}
+
 }

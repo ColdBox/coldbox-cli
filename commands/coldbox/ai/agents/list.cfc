@@ -60,4 +60,5 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		printTip( "Agent config files contain project context for AI assistants" )
 	}
+
 }

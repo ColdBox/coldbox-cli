@@ -51,7 +51,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.line()
 
 			if ( !confirm( "Do you want to overwrite it? [y/n]" ) ) {
-			printInfo( "Operation cancelled." )
+				printInfo( "Operation cancelled." )
 				return
 			}
 		}

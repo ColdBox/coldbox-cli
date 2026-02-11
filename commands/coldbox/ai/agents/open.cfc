@@ -22,7 +22,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Open Agent Config" )
 
-		var info = ensureInstalled( arguments.directory )
+		var info     = ensureInstalled( arguments.directory )
 		var manifest = loadManifest( arguments.directory )
 
 		print.line()
@@ -60,10 +60,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					agentToOpen = multiSelect( "Which agent configuration would you like to open?" )
 						.options(
 							info.agents.map( ( agent ) => {
-								return {
-									display : agent,
-									value   : agent
-								}
+								return { display : agent, value : agent }
 							} )
 						)
 						.required()

@@ -40,7 +40,12 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		ensureInstalled( arguments.directory )
 
 		// Validate exactly one type flag is specified
-		var typeFlags = [ arguments.core, arguments.module, arguments.custom, arguments.override ]
+		var typeFlags = [
+			arguments.core,
+			arguments.module,
+			arguments.custom,
+			arguments.override
+		]
 		var typeFlagCount = typeFlags.filter( ( flag ) => flag ).len()
 
 		if ( typeFlagCount == 0 ) {
@@ -63,10 +68,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Determine type
 		var displayType = ""
-		if ( arguments.core ) displayType = "core"
-		else if ( arguments.module ) displayType = "module"
-		else if ( arguments.custom ) displayType = "custom"
-		else if ( arguments.override ) displayType = "override"
+		if ( arguments.core ) displayType = "core" else if ( arguments.module ) displayType = "module" else if ( arguments.custom ) displayType = "custom" else if ( arguments.override ) displayType = "override"
 
 		print.line()
 		printInfo( "Removing #displayType# skill: #arguments.name#" )

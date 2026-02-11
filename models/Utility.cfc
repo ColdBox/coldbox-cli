@@ -4,8 +4,8 @@ component singleton {
 	property name="moduleService" inject="ModuleService";
 	property name="wirebox"       inject="wirebox";
 	property name="print"         inject="PrintBuffer";
-	property name="settings"       inject="box:modulesettings:coldbox-cli";
-	property name="config"       inject="box:moduleConfig:coldbox-cli";
+	property name="settings"      inject="box:modulesettings:coldbox-cli";
+	property name="config"        inject="box:moduleConfig:coldbox-cli";
 
 	this.BREAK = chr( 13 ) & chr( 10 );
 	this.TAB   = chr( 9 );
@@ -193,7 +193,7 @@ component singleton {
 	 * @return string "modern" if app/ and public/ exist, "flat" otherwise
 	 */
 	function detectTemplateType( required string directory ){
-		var hasAppFolder = directoryExists( "#arguments.directory#/app" )
+		var hasAppFolder    = directoryExists( "#arguments.directory#/app" )
 		var hasPublicFolder = directoryExists( "#arguments.directory#/public" )
 
 		return ( hasAppFolder && hasPublicFolder ) ? "modern" : "flat"

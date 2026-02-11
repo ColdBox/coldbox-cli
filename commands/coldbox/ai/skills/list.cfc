@@ -32,7 +32,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var overrideSkills = []
 
 		info.skills.each( ( skill ) => {
-			var skillType = skill.type ?: ""
+			var skillType   = skill.type ?: ""
 			var skillSource = skill.source ?: ""
 
 			if ( skillType == "override" ) {
@@ -48,7 +48,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display core skills
 		if ( coreSkills.len() ) {
-			print.lineBlackOnSeaGreen1( "⭐ Core Skills (#coreSkills.len()#)" )
+			print
+				.lineBlackOnSeaGreen1( "⭐ Core Skills (#coreSkills.len()#)" )
 				.line()
 				.line()
 			printHelp( "  Always available - covering ColdBox, BoxLang, CFML, and Testing" )
@@ -62,7 +63,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display module skills
 		if ( moduleSkills.len() ) {
-			print.lineBlackOnSeaGreen1( "📦 Module Skills (#moduleSkills.len()#)" )
+			print
+				.lineBlackOnSeaGreen1( "📦 Module Skills (#moduleSkills.len()#)" )
 				.line()
 				.line()
 			var skillsByModule = {}
@@ -84,7 +86,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display custom skills
 		if ( customSkills.len() ) {
-			print.lineBlackOnSeaGreen1( "🔧 Custom Skills (#customSkills.len()#)" )
+			print
+				.lineBlackOnSeaGreen1( "🔧 Custom Skills (#customSkills.len()#)" )
 				.line()
 				.line()
 			customSkills.each( ( skill ) => {
@@ -95,7 +98,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Display override skills
 		if ( overrideSkills.len() ) {
-			print.lineBlackOnSeaGreen1( "🎯 Override Skills (#overrideSkills.len()#)" )
+			print
+				.lineBlackOnSeaGreen1( "🎯 Override Skills (#overrideSkills.len()#)" )
 				.line()
 				.line()
 			overrideSkills.each( ( skill ) => {
@@ -117,4 +121,5 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printTip( "Run 'coldbox ai skills create <name>' to create a custom skill" )
 		printTip( "Run 'coldbox ai skills override <name>' to override a core/module skill" )
 	}
+
 }

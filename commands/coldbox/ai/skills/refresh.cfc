@@ -70,8 +70,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Installed Skills Summary:" )
 			print.line()
 
-			var updatedInfo = variables.aiService.getInfo( arguments.directory )
-			var coreSkills = updatedInfo.skills.filter( ( s ) => s.source == "coldbox-cli" )
+			var updatedInfo  = variables.aiService.getInfo( arguments.directory )
+			var coreSkills   = updatedInfo.skills.filter( ( s ) => s.source == "coldbox-cli" )
 			var moduleSkills = updatedInfo.skills.filter( ( s ) => s.source != "coldbox-cli" && s.source != "custom" )
 			var customSkills = updatedInfo.skills.filter( ( s ) => s.source == "custom" )
 

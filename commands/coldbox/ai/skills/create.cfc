@@ -36,7 +36,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var language = arguments.cfml ? "cfml" : "boxlang"
 
 		print.line()
-		printInfo( "Creating custom skill: #arguments.name# (#uCase(language)#)" )
+		printInfo( "Creating custom skill: #arguments.name# (#uCase( language )#)" )
 		print.line()
 
 		// Check if already exists

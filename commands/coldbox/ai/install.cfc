@@ -21,14 +21,13 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @showBanner Whether to show the ColdBox banner (default: true)
 	 */
 	function run(
-		string agent    = "",
-		string language = "",
-		boolean force   = false,
-		string directory = getCwd(),
-		boolean boxlang          = isBoxLangProject( getCWD() ),
-		boolean showBanner		 = true
+		string agent       = "",
+		string language    = "",
+		boolean force      = false,
+		string directory   = getCwd(),
+		boolean boxlang    = isBoxLangProject( getCWD() ),
+		boolean showBanner = true
 	){
-
 		if ( arguments.showBanner ) {
 			showColdBoxBanner( "AI Integration Installer" )
 		}
@@ -114,12 +113,30 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		var agentOptions = [
-			{ "display": "Claude (Anthropic) - Recommended for general development", "value": "claude" },
-			{ "display": "GitHub Copilot - Integrated with VS Code", "value": "copilot" },
-			{ "display": "Cursor AI - AI-first code editor", "value": "cursor" },
-			{ "display": "Codex (OpenAI) - GPT-powered coding assistant", "value": "codex" },
-			{ "display": "Gemini (Google) - Google's AI assistant", "value": "gemini" },
-			{ "display": "OpenCode - Open source AI assistant", "value": "opencode" }
+			{
+				"display" : "Claude (Anthropic) - Recommended for general development",
+				"value"   : "claude"
+			},
+			{
+				"display" : "GitHub Copilot - Integrated with VS Code",
+				"value"   : "copilot"
+			},
+			{
+				"display" : "Cursor AI - AI-first code editor",
+				"value"   : "cursor"
+			},
+			{
+				"display" : "Codex (OpenAI) - GPT-powered coding assistant",
+				"value"   : "codex"
+			},
+			{
+				"display" : "Gemini (Google) - Google's AI assistant",
+				"value"   : "gemini"
+			},
+			{
+				"display" : "OpenCode - Open source AI assistant",
+				"value"   : "opencode"
+			}
 		]
 
 		var selected = multiSelect( "Select one or more AI agents to configure (use spacebar to select, enter to confirm):" )
@@ -141,9 +158,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		var languageOptions = [
-			{ "display": "BoxLang (recommended) - Modern class-based syntax", "value": "boxlang" },
-			{ "display": "CFML - Traditional component syntax", "value": "cfml" },
-			{ "display": "Hybrid - Support both BoxLang and CFML", "value": "hybrid" }
+			{
+				"display" : "BoxLang (recommended) - Modern class-based syntax",
+				"value"   : "boxlang"
+			},
+			{
+				"display" : "CFML - Traditional component syntax",
+				"value"   : "cfml"
+			},
+			{
+				"display" : "Hybrid - Support both BoxLang and CFML",
+				"value"   : "hybrid"
+			}
 		]
 
 		return multiSelect( "Choose your project's primary language:" )

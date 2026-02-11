@@ -60,7 +60,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Update manifest
-		var manifest = loadManifest( arguments.directory )
+		var manifest    = loadManifest( arguments.directory )
 		manifest.agents = manifest.agents.filter( ( a ) => a != agent )
 		saveManifest( arguments.directory, manifest )
 

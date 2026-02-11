@@ -59,7 +59,10 @@ component extends="coldbox-cli.models.BaseCommand" {
 		required string directory,
 		required struct manifest
 	){
-		variables.aiService.saveManifest( arguments.directory, arguments.manifest )
+		variables.aiService.saveManifest(
+			arguments.directory,
+			arguments.manifest
+		)
 	}
 
 }
