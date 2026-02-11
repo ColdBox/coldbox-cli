@@ -163,3 +163,5 @@ component extends="coldbox-cli.models.BaseCommand" {
 			printHelp( "👉  When users install this module, AI guidelines will be auto-discovered" )
 		}
 	}
+
+}

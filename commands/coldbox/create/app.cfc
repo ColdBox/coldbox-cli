@@ -77,7 +77,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @rest        Is this a REST API project? (For BoxLang apps only)
 	 * @cfml        Set the language to CFML explicitly (overrides boxlang)
 	 * @ai                  Enable AI integration for the application
-	 * @aiAgent             The AI agent to configure (claude, copilot, cursor, etc.)
+	 * @aiAgent             The AI agent(s) to configure (claude, copilot, cursor, etc.), this can be a comma separated list for multiple agents, default is "claude"
 	 **/
 	function run(
 		name               = defaultAppName,
@@ -170,9 +170,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		printInfo( "✏️  Setting Up Your box.json" )
 
 		if ( arguments.boxlang ) {
-			command( "package set" ).params( language: "BoxLang" ).run();
+			command( "package set" ).params( language: "BoxLang" ).run( returnOutput: true );
 		} else {
-			command( "package set" ).params( language: "CFML" ).run();
+			command( "package set" ).params( language: "CFML" ).run( returnOutput: true );
 		}
 
 		// Prepare defaults on box.json so we remove template based ones
@@ -185,12 +185,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 				ignore     : "[]",
 				description: "A ColdBox Application created with the ColdBox CLI"
 			)
-			.run();
+			.run( returnOutput: true );
 
 		// set the server name if the user provided one
 		variables.print.line().toConsole();
 		printInfo( "📡  Preparing server and support files" );
-		command( "server set" ).params( name = arguments.name ).run();
+		command( "server set" ).params( name: arguments.name ).run( returnOutput:true );
 
 		// ENV File
 		var envFile = arguments.directory & ".env";
@@ -426,27 +426,22 @@ component extends="coldbox-cli.models.BaseCommand" {
 			)
 		}
 
-	// AI Integration Setup
-	if ( arguments.ai ) {
-		printInfo( "🤖 Setting up AI integration..." )
-		variables.print.line().toConsole()
+		// AI Integration Setup
+		if ( arguments.ai ) {
+			printInfo( "🤖 Setting up AI integration..." )
 
-		// Determine language from skeleton and flags
-		var language = arguments.boxlang ? "boxlang" : "cfml"
+			// Determine language from skeleton and flags
+			var language = arguments.boxlang ? "boxlang" : "cfml"
 
-		command( "coldbox ai install" )
-			.params(
-				directory = arguments.directory,
-				agents    = arguments.aiAgent,
-				language  = language
-			)
-			.run()
-
-		printSuccess( "✅ AI integration complete!" )
-		printHelp( "👉  Run 'coldbox ai info' to see your AI configuration" )
-		printHelp( "👉  Run 'coldbox ai help' to see available AI commands" )
-		variables.print.line().toConsole()
-	}
+			command( "coldbox ai install" )
+				.params(
+					agent    = arguments.aiAgent,
+					language  = language,
+					directory = arguments.directory,
+					showBanner = false
+				)
+				.run()
+		}
 
 	}
 
