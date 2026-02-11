@@ -1270,3 +1270,37 @@ coldbox ai doctor
 3. AI generates correct code following your conventions
 4. AI includes proper error handling
 5. Done!
+
+
+## MCP Servers
+
+- BoxLang AI https://ai.ortusbooks.com/~gitbook/mcp
+- https://boxlang-ide.ortusbooks.com/~gitbook/mcp
+- https://bxorm.ortusbooks.com/~gitbook/mcp
+- https://cachebox.ortusbooks.com/~gitbook/mcp
+- https://cbauth.ortusbooks.com/~gitbook/mcp
+- https://cbdebugger.ortusbooks.com/~gitbook/mcp
+- https://cbelasticsearch.ortusbooks.com/~gitbook/mcp
+- https://cbfs.ortusbooks.com/~gitbook/mcp
+- https://cbq.ortusbooks.com/~gitbook/mcp
+- https://cbsso.ortusbooks.com/~gitbook/mcp
+- https://cbwire.ortusbooks.com/~gitbook/mcp
+- https://cfconfig.ortusbooks.com/~gitbook/mcp
+- https://cfmigrations.ortusbooks.com/~gitbook/mcp
+- https://coldbox-i18n.ortusbooks.com/~gitbook/mcp
+- https://coldbox-mailservices.ortusbooks.com/~gitbook/mcp
+- https://coldbox-orm.ortusbooks.com/~gitbook/mcp
+- https://coldbox-security.ortusbooks.com/~gitbook/mcp
+- https://coldbox-validation.ortusbooks.com/~gitbook/mcp
+- https://coldbox.ortusbooks.com/~gitbook/mcp
+- https://contentbox.ortusbooks.com/~gitbook/mcp
+- https://commandbox.ortusbooks.com/~gitbook/mcp
+- https://docbox.ortusbooks.com/~gitbook/mcp
+- https://logbox.ortusbooks.com/~gitbook/mcp
+- https://megaphone.ortusbooks.com/~gitbook/mcp
+- https://qb.ortusbooks.com/~gitbook/mcp
+- https://quick.ortusbooks.com/~gitbook/mcp
+- https://testbox.ortusbooks.com/~gitbook/mcp
+- https://wirebox.ortusbooks.com/~gitbook/mcp
+- Modern CFML https://modern-cfml.ortusbooks.com/~gitbook/mcp
+- Relax, cbSwagger https://coldbox-relax.ortusbooks.com/~gitbook/mcp
