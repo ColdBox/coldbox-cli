@@ -50,7 +50,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "🔧  Installing AI integration..." )
 		printInfo( "🤖  Agent(s): #arguments.agent#" )
 		printInfo( "🔤  Language: #arguments.language#" )
-		print.line()
 
 		try {
 			var result = variables.aiService.install(
@@ -77,7 +76,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.line();
 
 			printInfo( "Skills installed: #result.skills.len()#" );
-			result.skills.each( function( skill ){
+			result.skills.sort( "textnocase" ).each( function( skill ){
 				print.indentedLine( "  • #skill#" );
 			} );
 			print.line();
@@ -86,6 +85,17 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			result.agents.each( function( agent ){
 				print.indentedLine( "  • #agent#" );
 			} );
+			print.line();
+
+			// Show MCP servers
+			var totalMcpServers = result.mcpServers.core.len() + result.mcpServers.module.len();
+			printInfo( "MCP Servers configured: #totalMcpServers#" );
+			if ( result.mcpServers.core.len() ) {
+				print.indentedCyanLine( "  Core (#result.mcpServers.core.len()#): #result.mcpServers.core.toList( ', ' )#" );
+			}
+			if ( result.mcpServers.module.len() ) {
+				print.indentedCyanLine( "  Module (#result.mcpServers.module.len()#): #result.mcpServers.module.toList( ', ' )#" );
+			}
 			print.line();
 
 			// Show next steps

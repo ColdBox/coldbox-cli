@@ -90,7 +90,8 @@ component singleton {
 		var mcpServers = variables.mcpRegistry.getServersForProject( arguments.directory );
 		manifest.mcpServers.core   = mcpServers.core;
 		manifest.mcpServers.module = mcpServers.module;
-
+		result.mcpServers.core     = mcpServers.core;
+		result.mcpServers.module   = mcpServers.module;
 		// Configure agents
 		result.agents = variables.agentRegistry.configureAgents(
 			arguments.directory,

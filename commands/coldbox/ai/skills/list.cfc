@@ -46,6 +46,12 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 		} )
 
+		// Sort all skill arrays alphabetically by name
+		coreSkills.sort( ( a, b ) => compareNoCase( a.name, b.name ) )
+		moduleSkills.sort( ( a, b ) => compareNoCase( a.name, b.name ) )
+		customSkills.sort( ( a, b ) => compareNoCase( a.name, b.name ) )
+		overrideSkills.sort( ( a, b ) => compareNoCase( a.name, b.name ) )
+
 		// Display core skills
 		if ( coreSkills.len() ) {
 			print
@@ -77,7 +83,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 			structEach( skillsByModule, ( module, skills ) => {
 				print.indentedLine( "  From #module#:" )
-				skills.each( ( skillName ) => {
+				skills.sort( "textnocase" ).each( ( skillName ) => {
 					print.indentedLine( "    • #skillName#" )
 				} )
 			} )
