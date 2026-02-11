@@ -18,16 +18,20 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @force Overwrite existing AI configuration
 	 * @directory The target directory (defaults to current directory)
 	 * @boxlang Is the project BoxLang (auto-detected)
+	 * @showBanner Whether to show the ColdBox banner (default: true)
 	 */
 	function run(
 		string agent    = "",
 		string language = "",
 		boolean force   = false,
 		string directory = getCwd(),
-		boolean boxlang          = isBoxLangProject( getCWD() )
+		boolean boxlang          = isBoxLangProject( getCWD() ),
+		boolean showBanner		 = true
 	){
 
-		showColdBoxBanner( "AI Integration Installer" )
+		if ( arguments.showBanner ) {
+			showColdBoxBanner( "AI Integration Installer" )
+		}
 
 		// Prompt for agents if not specified
 		if ( !len( arguments.agent ) ) {
@@ -38,15 +42,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( !len( arguments.language ) ) {
 			if ( arguments.boxlang ) {
 				arguments.language = "boxlang"
-				printInfo( "BoxLang project detected - language set to BoxLang" )
+				printInfo( "🥊 BoxLang project detected - language set to BoxLang" )
 			} else {
 				arguments.language = promptForLanguage()
 			}
 		}
 
-		printInfo( "Installing AI integration..." )
-		printInfo( "Agent(s): #arguments.agent#" )
-		printInfo( "Language: #arguments.language#" )
+		printInfo( "🔧  Installing AI integration..." )
+		printInfo( "🤖  Agent(s): #arguments.agent#" )
+		printInfo( "🔤  Language: #arguments.language#" )
 		print.line()
 
 		try {
@@ -63,7 +67,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 
 			// Success!
-			printSuccess( "✓ AI integration installed successfully!" );
+			printSuccess( "🍭  AI integration installed successfully!" );
 			print.line();
 
 			// Show what was installed
@@ -86,14 +90,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.line();
 
 			// Show next steps
-			printWarn( "Next Steps:" );
+			printTip( "Next Steps:" );
 			print.indentedLine( "1. Review generated agent files (CLAUDE.md, etc.)" );
 			print.indentedLine( "2. Install modules as needed (box install cbsecurity, quick, etc.)" );
-			print.indentedLine( "3. Run 'coldbox ai refresh' after installing modules" );
-			print.indentedLine( "4. Run 'coldbox ai doctor' to verify configuration" );
+			print.indentedLine( "3. Run 'coldbox ai info' to verify integrations" );
+			print.indentedLine( "4. Run 'coldbox ai refresh' after installing modules" );
+			print.indentedLine( "5. Run 'coldbox ai doctor' to verify configuration" );
 			print.line();
 
-			printInfo( "Your AI assistant is now configured with ColdBox knowledge!" );
+			printInfo( "Your AI assistant is now configured with ColdBox + #arguments.language# knowledge!" );
 		} catch ( any e ) {
 			printError( "Failed to install AI integration: #e.message#" );
 			printError( e.stackTrace );
