@@ -66,8 +66,16 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Determine type
-		var displayType = ""
-		if ( arguments.core ) displayType = "core" else if ( arguments.module ) displayType = "module" else if ( arguments.custom ) displayType = "custom" else if ( arguments.override ) displayType = "override"
+		var displayType = "";
+		if ( arguments.core ){
+			displayType = "core";
+		} else if ( arguments.module ){
+			displayType = "module";
+		} else if ( arguments.custom ){
+			displayType = "custom";
+		} else if ( arguments.override ){
+			displayType = "override";
+		}
 
 		print.line()
 		printInfo( "Removing #displayType# guideline: #arguments.name#" )
