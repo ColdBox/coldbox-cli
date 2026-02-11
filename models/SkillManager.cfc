@@ -39,6 +39,11 @@ component singleton {
 
 	/**
 	 * Refresh skills based on installed modules
+	 * - Updates module skills based on box.json dependencies
+	 * - Syncs custom skills from .ai/skills/custom/
+	 * - Syncs override skills from .ai/skills/overrides/
+	 * - Removes manifest entries for deleted files
+	 * - Removes skills for uninstalled modules
 	 *
 	 * @directory The project directory
 	 * @manifest The manifest struct to update
@@ -83,16 +88,104 @@ component singleton {
 			}
 		}
 
-		// Remove skills for uninstalled modules (but keep core skills)
+		// Remove skills for uninstalled modules (but keep core and custom skills)
 		var toRemove = [];
 		for ( var skill in manifest.skills ) {
-			if ( skill.source != "core" && !structKeyExists( allDependencies, skill.source ) ) {
+			var skillSource = skill.source ?: ""
+			var skillType = skill.type ?: ""
+
+			// Don't remove core, custom, or override skills
+			if ( skillSource == "core" || skillSource == "user" || skillType == "custom" || skillType == "override" ) {
+				continue;
+			}
+
+			// Remove module skills if module no longer installed
+			if ( !structKeyExists( allDependencies, skillSource ) ) {
 				toRemove.append( skill.name );
 			}
 		}
 
 		toRemove.each( ( name ) => {
 			removeSkill( directory, name, manifest )
+			changes.removed.append( name )
+		} )
+
+		// Sync custom skills from filesystem
+		var customDir = "#arguments.directory#/.ai/skills/custom"
+		if ( directoryExists( customDir ) ) {
+			var customDirs = directoryList( customDir, false, "name" )
+			customDirs.each( ( dirName ) => {
+				var skillPath = "#customDir#/#dirName#/SKILL.md"
+				if ( fileExists( skillPath ) ) {
+					// Check if in manifest
+					var existing = manifest.skills.filter( ( s ) => s.name == dirName )
+					if ( !existing.len() ) {
+						// Add to manifest
+						manifest.skills.append({
+							"name"             : dirName,
+							"source"           : "custom",
+							"type"             : "custom",
+							"installedVersion" : variables.utility.getColdboxCliVersion(),
+							"syncedAt"         : dateTimeFormat( now(), "iso" )
+						})
+						changes.added.append( dirName )
+					}
+				}
+			} )
+		}
+
+		// Sync override skills from filesystem
+		var overridesDir = "#arguments.directory#/.ai/skills/overrides"
+		if ( directoryExists( overridesDir ) ) {
+			var overrideFiles = directoryList( overridesDir, false, "name", "*.md" )
+			overrideFiles.each( ( fileName ) => {
+				var baseName = replaceNoCase( fileName, ".md", "" )
+				var manifestName = "#baseName#-override"
+
+				// Check if in manifest
+				var existing = manifest.skills.filter( ( s ) => s.name == manifestName )
+				if ( !existing.len() ) {
+					// Add to manifest
+					manifest.skills.append({
+						"name"             : manifestName,
+						"source"           : "user",
+						"type"             : "override",
+						"installedVersion" : variables.utility.getColdboxCliVersion(),
+						"syncedAt"         : dateTimeFormat( now(), "iso" )
+					})
+					changes.added.append( manifestName )
+				}
+			} )
+		}
+
+		// Remove manifest entries for files/directories that no longer exist
+		var orphanedSkills = []
+		for ( var skill in manifest.skills ) {
+			var skillType = skill.type ?: ""
+			var skillSource = skill.source ?: skill.type ?: ""
+			var skillPath = ""
+
+			// Determine expected file/directory path
+			if ( skillSource == "core" ) {
+				skillPath = "#arguments.directory#/.ai/skills/core/#skill.name#/SKILL.md"
+			} else if ( skillType == "custom" ) {
+				skillPath = "#arguments.directory#/.ai/skills/custom/#skill.name#/SKILL.md"
+			} else if ( skillType == "override" ) {
+				var baseName = replaceNoCase( skill.name, "-override", "" )
+				skillPath = "#arguments.directory#/.ai/skills/overrides/#baseName#.md"
+			} else {
+				// Module skill
+				skillPath = "#arguments.directory#/.ai/skills/modules/#skill.name#/SKILL.md"
+			}
+
+			// Check if file exists
+			if ( skillPath.len() && !fileExists( skillPath ) ) {
+				orphanedSkills.append( skill.name )
+			}
+		}
+
+		orphanedSkills.each( ( name ) => {
+			manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
 
@@ -146,41 +239,125 @@ component singleton {
 	 *
 	 * @directory The project directory
 	 * @name The skill name to remove
-	 * @type The skill type (core, module, custom)
+	 * @type The skill type (core, module, custom, override)
 	 */
 	function removeSkillFromProject(
 		required string directory,
 		required string name,
 		required string type
 	){
-		// Determine directory location based on type
-		var skillDir = ""
+		// Determine file/directory location based on type
+		var skillPath = ""
+		var manifestName = arguments.name
 
-		if ( arguments.type == "core" ) {
-			skillDir = "#arguments.directory#/.ai/skills/core/#arguments.name#"
+		if ( arguments.type == "override" ) {
+			// Override files are stored with base name, manifest has -override suffix
+			skillPath = "#arguments.directory#/.ai/skills/overrides/#arguments.name#.md"
+			manifestName = "#arguments.name#-override"
+		} else if ( arguments.type == "core" ) {
+			skillPath = "#arguments.directory#/.ai/skills/core/#arguments.name#"
 		} else if ( arguments.type == "module" ) {
-			skillDir = "#arguments.directory#/.ai/skills/modules/#arguments.name#"
+			skillPath = "#arguments.directory#/.ai/skills/modules/#arguments.name#"
 		} else if ( arguments.type == "custom" ) {
-			skillDir = "#arguments.directory#/.ai/skills/custom/#arguments.name#"
+			skillPath = "#arguments.directory#/.ai/skills/custom/#arguments.name#"
 		}
 
-		// Check if directory exists
-		if ( !directoryExists( skillDir ) ) {
+		// Check if path exists
+		if ( !fileExists( skillPath ) && !directoryExists( skillPath ) ) {
 			throw(
 				type = "SkillManager.SkillNotFound",
-				message = "#arguments.type# skill '#arguments.name#' not found at: #skillDir#"
+				message = "#arguments.type# skill '#arguments.name#' not found at: #skillPath#"
 			)
 		}
 
-		// Delete the directory
-		directoryDelete( skillDir, true )
+		// Delete the file or directory
+		if ( fileExists( skillPath ) ) {
+			fileDelete( skillPath )
+		} else {
+			directoryDelete( skillPath, true )
+		}
 
 		// Update manifest
 		var manifest = variables.aiService.loadManifest( arguments.directory )
-		manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
+		manifest.skills = manifest.skills.filter( ( s ) => s.name != manifestName )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
 		return true
+	}
+
+	/**
+	 * Create a skill override
+	 *
+	 * @directory The project directory
+	 * @name The name of the skill to override
+	 * @type The skill type (core or module)
+	 */
+	function createSkillOverride(
+		required string directory,
+		required string name,
+		required string type
+	){
+		// Load manifest
+		var manifest = variables.aiService.loadManifest( arguments.directory )
+
+		// Determine source path based on type
+		var sourcePath = arguments.type == "core"
+			? "#arguments.directory#/.ai/skills/core/#arguments.name#/SKILL.md"
+			: "#arguments.directory#/.ai/skills/modules/#arguments.name#/SKILL.md"
+
+		if ( !fileExists( sourcePath ) ) {
+			throw(
+				type = "SkillManager.SkillNotFound",
+				message = "Skill '#arguments.name#' not found at: #sourcePath#"
+			)
+		}
+
+		// Read the original skill content
+		var originalContent = fileRead( sourcePath )
+
+		// Read override template
+		var templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/"
+		var templatePath = templatesPath & "skill-override-template.md"
+
+		if ( !fileExists( templatePath ) ) {
+			throw(
+				type = "SkillManager.TemplateNotFound",
+				message = "Override template not found: #templatePath#"
+			)
+		}
+
+		var content = fileRead( templatePath )
+
+		// Replace placeholders
+		content = replaceNoCase( content, "|skillName|", arguments.name, "all" )
+		content = replaceNoCase( content, "|coreContent|", originalContent, "all" )
+
+		// Ensure overrides directory exists
+		var overridesDir = "#arguments.directory#/.ai/skills/overrides"
+		if ( !directoryExists( overridesDir ) ) {
+			directoryCreate( overridesDir, true )
+		}
+
+		var targetFile = "#overridesDir#/#arguments.name#.md"
+
+		// Write override file
+		fileWrite( targetFile, content )
+
+		// Update manifest with override entry
+		var skillEntry = {
+			"name"             : "#arguments.name#-override",
+			"source"           : "user",
+			"type"             : "override",
+			"installedVersion" : variables.utility.getColdboxCliVersion(),
+			"syncedAt"         : dateTimeFormat( now(), "iso" )
+		}
+
+		manifest.skills.append( skillEntry )
+
+		// Save manifest
+		variables.aiService.saveManifest( arguments.directory, manifest )
+
+		return targetFile
 	}
 
 	/**
