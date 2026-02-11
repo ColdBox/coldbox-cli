@@ -21,23 +21,26 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "AI Integration Structure" );
 
 		try {
-			var info = ensureInstalled( arguments.directory );
+			var info     = ensureInstalled( arguments.directory );
 			var manifest = loadManifest( arguments.directory );
 
 			// Read package descriptor for name and version
 			var packageDescriptor = packageService.readPackageDescriptor( arguments.directory );
-			var packageName = packageDescriptor.name ?: "Unknown";
-			var packageVersion = packageDescriptor.version ?: "0.0.0";
+			var packageName       = packageDescriptor.name ?: "Unknown";
+			var packageVersion    = packageDescriptor.version ?: "0.0.0";
 
 			// Build tree structure
 			var treeData = buildTreeStructure( info, manifest, arguments.verbose );
 
 			print.line();
 			print.boldSeaGreen1Line( "AI Integration Structure - #packageName# (#packageVersion#)" );
-			print.tree(
-				treeData,
-				( path, pathArray ) => formatTreeItem( path, pathArray, info, manifest, verbose )
-			);
+			print.tree( treeData, ( path, pathArray ) => formatTreeItem(
+				path,
+				pathArray,
+				info,
+				manifest,
+				verbose
+			) );
 
 			// Summary
 			print.line();
@@ -61,19 +64,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var lastKey = pathArray[ pathArray.len() ];
 
 		// Color coding based on path using ANSI codes
-		var green = chr(27) & "[32m";
-		var cyan = chr(27) & "[36m";
-		var yellow = chr(27) & "[33m";
-		var magenta = chr(27) & "[35m";
-		var dim = chr(27) & "[2m";
-		var reset = chr(27) & "[0m";
+		var green   = chr( 27 ) & "[32m";
+		var cyan    = chr( 27 ) & "[36m";
+		var yellow  = chr( 27 ) & "[33m";
+		var magenta = chr( 27 ) & "[35m";
+		var dim     = chr( 27 ) & "[2m";
+		var reset   = chr( 27 ) & "[0m";
 
 		// Apply colors based on path
 		if ( path contains "/core/" ) {
 			return green & lastKey & reset;
 		} else if ( path contains "/module" ) {
 			return cyan & lastKey & reset;
-		} else if ( path contains "/custom/") {
+		} else if ( path contains "/custom/" ) {
 			return yellow & lastKey & reset;
 		} else if ( path contains "/overrides/" ) {
 			return magenta & lastKey & reset;
@@ -96,10 +99,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		var tree = [
 			".ai/": {
-				"guidelines/ (#arguments.info.guidelines.len()#)": buildGuidelinesStruct( arguments.info, arguments.verbose ),
-				"skills/ (#arguments.info.skills.len()#)": buildSkillsStruct( arguments.info ),
-				"agents/ (#arguments.manifest.agents.len()#)": buildAgentsStruct( arguments.manifest, arguments.verbose ),
-				"mcp-servers/ (#getTotalMCPServers( arguments.manifest )#)": buildMCPServersStruct( arguments.manifest )
+				"guidelines/ (#arguments.info.guidelines.len()#)" : buildGuidelinesStruct(
+					arguments.info,
+					arguments.verbose
+				),
+				"skills/ (#arguments.info.skills.len()#)"     : buildSkillsStruct( arguments.info ),
+				"agents/ (#arguments.manifest.agents.len()#)" : buildAgentsStruct(
+					arguments.manifest,
+					arguments.verbose
+				),
+				"mcp-servers/ (#getTotalMCPServers( arguments.manifest )#)" : buildMCPServersStruct(
+					arguments.manifest
+				)
 			}
 		]
 
@@ -110,7 +121,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * Get total MCP servers count
 	 */
 	private function getTotalMCPServers( required struct manifest ){
-		var mcpServers = arguments.manifest.mcpServers ?: { "core": [], "module": [], "custom": [] };
+		var mcpServers = arguments.manifest.mcpServers ?: {
+			"core"   : [],
+			"module" : [],
+			"custom" : []
+		};
 		return mcpServers.core.len() + mcpServers.module.len() + mcpServers.custom.len();
 	}
 
@@ -122,14 +137,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		boolean verbose = false
 	){
 		var guidelines = arguments.info.guidelines;
-		var result = {};
+		var result     = {};
 
 		// Group guidelines
 		var grouped = {
-			"core": [],
-			"module": [],
-			"custom": [],
-			"override": []
+			"core"     : [],
+			"module"   : [],
+			"custom"   : [],
+			"override" : []
 		};
 
 		guidelines.each( ( guideline ) => {
@@ -145,9 +160,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			result[ "core/ (#grouped.core.len()#)" ] = {};
 			grouped.core.each( ( guideline ) => {
 				if ( verbose && structKeyExists( guideline, "path" ) ) {
-					result[ "core/ (#grouped.core.len()#)" ][ guideline.name ] = {
-						"#guideline.path#": {}
-					};
+					result[ "core/ (#grouped.core.len()#)" ][ guideline.name ] = { "#guideline.path#" : {} };
 				} else {
 					result[ "core/ (#grouped.core.len()#)" ][ guideline.name ] = {};
 				}
@@ -158,9 +171,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			result[ "modules/ (#grouped.module.len()#)" ] = {};
 			grouped.module.each( ( guideline ) => {
 				if ( verbose && structKeyExists( guideline, "path" ) ) {
-					result[ "modules/ (#grouped.module.len()#)" ][ guideline.name ] = {
-						"#guideline.path#": {}
-					};
+					result[ "modules/ (#grouped.module.len()#)" ][ guideline.name ] = { "#guideline.path#" : {} };
 				} else {
 					result[ "modules/ (#grouped.module.len()#)" ][ guideline.name ] = {};
 				}
@@ -171,9 +182,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			result[ "custom/ (#grouped.custom.len()#)" ] = {};
 			grouped.custom.each( ( guideline ) => {
 				if ( verbose && structKeyExists( guideline, "path" ) ) {
-					result[ "custom/ (#grouped.custom.len()#)" ][ guideline.name ] = {
-						"#guideline.path#": {}
-					};
+					result[ "custom/ (#grouped.custom.len()#)" ][ guideline.name ] = { "#guideline.path#" : {} };
 				} else {
 					result[ "custom/ (#grouped.custom.len()#)" ][ guideline.name ] = {};
 				}
@@ -184,9 +193,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			result[ "overrides/ (#grouped.override.len()#)" ] = {};
 			grouped.override.each( ( guideline ) => {
 				if ( verbose && structKeyExists( guideline, "path" ) ) {
-					result[ "overrides/ (#grouped.override.len()#)" ][ guideline.name ] = {
-						"#guideline.path#": {}
-					};
+					result[ "overrides/ (#grouped.override.len()#)" ][ guideline.name ] = { "#guideline.path#" : {} };
 				} else {
 					result[ "overrides/ (#grouped.override.len()#)" ][ guideline.name ] = {};
 				}
@@ -205,14 +212,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Group skills
 		var grouped = {
-			"core": [],
-			"module": [],
-			"custom": [],
-			"override": []
+			"core"     : [],
+			"module"   : [],
+			"custom"   : [],
+			"override" : []
 		};
 
 		skills.each( ( skill ) => {
-			var type = skill.type ?: "module";
+			var type   = skill.type ?: "module";
 			var source = skill.source ?: "";
 
 			if ( type == "override" ) {
@@ -270,19 +277,17 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		if ( agents.len() ) {
 			var agentFiles = {
-				"claude": "CLAUDE.md",
-				"copilot": ".github/copilot-instructions.md",
-				"cursor": ".cursorrules",
-				"codex": ".codex/instructions.md",
-				"gemini": ".gemini/instructions.md",
-				"opencode": ".opencode/instructions.md"
+				"claude"   : "CLAUDE.md",
+				"copilot"  : ".github/copilot-instructions.md",
+				"cursor"   : ".cursorrules",
+				"codex"    : ".codex/instructions.md",
+				"gemini"   : ".gemini/instructions.md",
+				"opencode" : ".opencode/instructions.md"
 			};
 
 			agents.each( ( agent ) => {
 				if ( verbose && structKeyExists( agentFiles, agent ) ) {
-					result[ agent ] = {
-						"#agentFiles[ agent ]#": {}
-					};
+					result[ agent ] = { "#agentFiles[ agent ]#" : {} };
 				} else {
 					result[ agent ] = {};
 				}
@@ -299,9 +304,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 */
 	private function buildMCPServersStruct( required struct manifest ){
 		var mcpServers = arguments.manifest.mcpServers ?: {
-			"core": [],
-			"module": [],
-			"custom": []
+			"core"   : [],
+			"module" : [],
+			"custom" : []
 		};
 
 		var result = {};
@@ -326,7 +331,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( mcpServers.custom.len() ) {
 			result[ "custom/ (#mcpServers.custom.len()#)" ] = {};
 			mcpServers.custom.each( ( mcpServer ) => {
-				var name = isStruct( mcpServer ) ? mcpServer.name : mcpServer;
+				var name                                                = isStruct( mcpServer ) ? mcpServer.name : mcpServer;
 				result[ "custom/ (#mcpServers.custom.len()#)" ][ name ] = {};
 			} );
 		}
@@ -341,7 +346,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		required struct info,
 		required struct manifest
 	){
-		var mcpServers = arguments.manifest.mcpServers ?: { "core": [], "module": [], "custom": [] };
+		var mcpServers = arguments.manifest.mcpServers ?: {
+			"core"   : [],
+			"module" : [],
+			"custom" : []
+		};
 		var totalMCP = mcpServers.core.len() + mcpServers.module.len() + mcpServers.custom.len();
 
 		print.line();
@@ -349,10 +358,22 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.table(
 			[
-				{ "Component": "Guidelines", "Count": arguments.info.guidelines.len() },
-				{ "Component": "Skills", "Count": arguments.info.skills.len() },
-				{ "Component": "Agents", "Count": arguments.manifest.agents.len() },
-				{ "Component": "MCP Servers", "Count": totalMCP }
+				{
+					"Component" : "Guidelines",
+					"Count"     : arguments.info.guidelines.len()
+				},
+				{
+					"Component" : "Skills",
+					"Count"     : arguments.info.skills.len()
+				},
+				{
+					"Component" : "Agents",
+					"Count"     : arguments.manifest.agents.len()
+				},
+				{
+					"Component" : "MCP Servers",
+					"Count"     : totalMCP
+				}
 			],
 			[ "Component", "Count" ]
 		);

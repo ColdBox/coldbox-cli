@@ -26,9 +26,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		try {
-			var info = ensureInstalled( arguments.directory );
+			var info     = ensureInstalled( arguments.directory );
 			var manifest = loadManifest( arguments.directory );
-			var stats = calculateStats( info, manifest, arguments.directory );
+			var stats    = calculateStats( info, manifest, arguments.directory );
 
 			// JSON output
 			if ( arguments.json ) {
@@ -53,41 +53,41 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		required string directory
 	){
 		var stats = {
-			"guidelines": {
-				"total": arguments.info.guidelines.len(),
-				"core": 0,
-				"module": 0,
-				"custom": 0,
-				"override": 0,
-				"totalSize": 0,
-				"avgSize": 0
+			"guidelines" : {
+				"total"     : arguments.info.guidelines.len(),
+				"core"      : 0,
+				"module"    : 0,
+				"custom"    : 0,
+				"override"  : 0,
+				"totalSize" : 0,
+				"avgSize"   : 0
 			},
-			"skills": {
-				"total": arguments.info.skills.len(),
-				"core": 0,
-				"module": 0,
-				"custom": 0,
-				"override": 0,
-				"totalSize": 0,
-				"avgSize": 0
+			"skills" : {
+				"total"     : arguments.info.skills.len(),
+				"core"      : 0,
+				"module"    : 0,
+				"custom"    : 0,
+				"override"  : 0,
+				"totalSize" : 0,
+				"avgSize"   : 0
 			},
-			"agents": {
-				"total": arguments.manifest.agents.len(),
-				"configured": arguments.manifest.agents
+			"agents" : {
+				"total"      : arguments.manifest.agents.len(),
+				"configured" : arguments.manifest.agents
 			},
-			"mcpServers": {
-				"total": 0,
-				"core": 0,
-				"module": 0,
-				"custom": 0
+			"mcpServers" : {
+				"total"  : 0,
+				"core"   : 0,
+				"module" : 0,
+				"custom" : 0
 			},
-			"language": arguments.manifest.language ?: "unknown",
-			"templateType": arguments.manifest.templateType ?: "unknown",
-			"lastSync": arguments.manifest.lastSync ?: "never",
-			"contextEstimate": {
-				"totalKB": 0,
-				"guidelinesKB": 0,
-				"skillsKB": 0
+			"language"        : arguments.manifest.language ?: "unknown",
+			"templateType"    : arguments.manifest.templateType ?: "unknown",
+			"lastSync"        : arguments.manifest.lastSync ?: "never",
+			"contextEstimate" : {
+				"totalKB"      : 0,
+				"guidelinesKB" : 0,
+				"skillsKB"     : 0
 			}
 		};
 
@@ -101,7 +101,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Count skills by type
 		arguments.info.skills.each( ( skill ) => {
-			var type = skill.type ?: "module";
+			var type   = skill.type ?: "module";
 			var source = skill.source ?: "";
 
 			if ( type == "override" ) {
@@ -116,11 +116,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		} );
 
 		// Count MCP servers
-		var mcpServers = arguments.manifest.mcpServers ?: { "core": [], "module": [], "custom": [] };
-		stats.mcpServers.core = mcpServers.core.len();
+		var mcpServers = arguments.manifest.mcpServers ?: {
+			"core"   : [],
+			"module" : [],
+			"custom" : []
+		};
+		stats.mcpServers.core   = mcpServers.core.len();
 		stats.mcpServers.module = mcpServers.module.len();
 		stats.mcpServers.custom = mcpServers.custom.len();
-		stats.mcpServers.total = stats.mcpServers.core + stats.mcpServers.module + stats.mcpServers.custom;
+		stats.mcpServers.total  = stats.mcpServers.core + stats.mcpServers.module + stats.mcpServers.custom;
 
 		// Calculate file sizes
 		var aiDir = arguments.directory & "/.ai";
@@ -128,20 +132,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			// Guidelines size
 			var guidelinesDir = aiDir & "/guidelines";
 			if ( directoryExists( guidelinesDir ) ) {
-				var guidelineSize = calculateDirectorySize( guidelinesDir );
-				stats.guidelines.totalSize = guidelineSize;
-				stats.guidelines.avgSize = stats.guidelines.total > 0 ?
-					int( guidelineSize / stats.guidelines.total ) : 0;
+				var guidelineSize                  = calculateDirectorySize( guidelinesDir );
+				stats.guidelines.totalSize         = guidelineSize;
+				stats.guidelines.avgSize           = stats.guidelines.total > 0 ? int( guidelineSize / stats.guidelines.total ) : 0;
 				stats.contextEstimate.guidelinesKB = int( guidelineSize / 1024 );
 			}
 
 			// Skills size
 			var skillsDir = aiDir & "/skills";
 			if ( directoryExists( skillsDir ) ) {
-				var skillsSize = calculateDirectorySize( skillsDir );
-				stats.skills.totalSize = skillsSize;
-				stats.skills.avgSize = stats.skills.total > 0 ?
-					int( skillsSize / stats.skills.total ) : 0;
+				var skillsSize                 = calculateDirectorySize( skillsDir );
+				stats.skills.totalSize         = skillsSize;
+				stats.skills.avgSize           = stats.skills.total > 0 ? int( skillsSize / stats.skills.total ) : 0;
 				stats.contextEstimate.skillsKB = int( skillsSize / 1024 );
 			}
 
@@ -246,18 +248,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Show usage indicator based on common AI models (using GPT-4 128K as baseline)
 		var estimatedTokens = arguments.stats.contextEstimate.totalKB * 300;
-		var baselineTokens = 128000; // GPT-4 context window
-		var percentage = ( estimatedTokens / baselineTokens ) * 100;
+		var baselineTokens  = 128000; // GPT-4 context window
+		var percentage      = ( estimatedTokens / baselineTokens ) * 100;
 
 		print.toConsole( "  Usage: " );
 		if ( percentage < 30 ) {
-			print.greenLine( "✓ Low (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+			print.greenLine( "✓ Low (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
 		} else if ( percentage < 60 ) {
-			print.yellowLine( "⚠ Moderate (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+			print.yellowLine( "⚠ Moderate (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
 		} else if ( percentage < 90 ) {
-			print.orangeLine( "⚠ High (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+			print.orangeLine( "⚠ High (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
 		} else {
-			print.redLine( "⛔ Very High (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+			print.redLine( "⛔ Very High (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
 			print.dim( "  Consider reducing guidelines/skills for better AI performance" );
 		}
 		print.line();
@@ -265,10 +267,26 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Context window estimates for popular AI models
 		if ( arguments.verbose ) {
 			print.cyanLine( "📈 Context Window Utilization:" );
-			printContextUtilization( "Claude 3.5 Sonnet", 200000, arguments.stats.contextEstimate.totalKB );
-			printContextUtilization( "GPT-4", 128000, arguments.stats.contextEstimate.totalKB );
-			printContextUtilization( "GPT-3.5-Turbo", 16000, arguments.stats.contextEstimate.totalKB );
-			printContextUtilization( "Gemini 1.5 Pro", 1000000, arguments.stats.contextEstimate.totalKB );
+			printContextUtilization(
+				"Claude 3.5 Sonnet",
+				200000,
+				arguments.stats.contextEstimate.totalKB
+			);
+			printContextUtilization(
+				"GPT-4",
+				128000,
+				arguments.stats.contextEstimate.totalKB
+			);
+			printContextUtilization(
+				"GPT-3.5-Turbo",
+				16000,
+				arguments.stats.contextEstimate.totalKB
+			);
+			printContextUtilization(
+				"Gemini 1.5 Pro",
+				1000000,
+				arguments.stats.contextEstimate.totalKB
+			);
 			print.line();
 		}
 
@@ -287,18 +305,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		// Rough estimate: 1KB ≈ 300 tokens
 		var estimatedTokens = arguments.usedKB * 300;
-		var percentage = ( estimatedTokens / arguments.contextTokens ) * 100;
-		var color = percentage < 30 ? "green" : ( percentage < 60 ? "yellow" : "red" );
+		var percentage      = ( estimatedTokens / arguments.contextTokens ) * 100;
+		var color           = percentage < 30 ? "green" : ( percentage < 60 ? "yellow" : "red" );
 
 		print.line( "  #arguments.modelName#: " );
 		print.toConsole( "    " );
 
 		if ( color == "green" ) {
-			print.greenText( "#numberFormat( percentage, '9.2' )#%" );
+			print.greenText( "#numberFormat( percentage, "9.2" )#%" );
 		} else if ( color == "yellow" ) {
-			print.yellowText( "#numberFormat( percentage, '9.2' )#%" );
+			print.yellowText( "#numberFormat( percentage, "9.2" )#%" );
 		} else {
-			print.redText( "#numberFormat( percentage, '9.2' )#%" );
+			print.redText( "#numberFormat( percentage, "9.2" )#%" );
 		}
 
 		print.line( " (~#numberFormat( estimatedTokens )# tokens of #numberFormat( arguments.contextTokens )#)" );
@@ -311,9 +329,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( arguments.bytes < 1024 ) {
 			return "#arguments.bytes# B";
 		} else if ( arguments.bytes < 1048576 ) {
-			return "#numberFormat( arguments.bytes / 1024, '9.2' )# KB";
+			return "#numberFormat( arguments.bytes / 1024, "9.2" )# KB";
 		} else {
-			return "#numberFormat( arguments.bytes / 1048576, '9.2' )# MB";
+			return "#numberFormat( arguments.bytes / 1048576, "9.2" )# MB";
 		}
 	}
 
