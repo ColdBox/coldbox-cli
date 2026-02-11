@@ -26,14 +26,20 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var info = ensureInstalled( arguments.directory )
 
 		// Group skills by source and category
-		var coreSkills   = []
-		var moduleSkills = []
-		var customSkills = []
+		var coreSkills     = []
+		var moduleSkills   = []
+		var customSkills   = []
+		var overrideSkills = []
 
 		info.skills.each( ( skill ) => {
-			if ( skill.source == "core" ) {
+			var skillType = skill.type ?: ""
+			var skillSource = skill.source ?: ""
+
+			if ( skillType == "override" ) {
+				overrideSkills.append( skill )
+			} else if ( skillSource == "core" ) {
 				coreSkills.append( skill )
-			} else if ( skill.source == "custom" ) {
+			} else if ( skillSource == "custom" || skillType == "custom" ) {
 				customSkills.append( skill )
 			} else {
 				moduleSkills.append( skill )
@@ -87,6 +93,21 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			print.line()
 		}
 
+		// Display override skills
+		if ( overrideSkills.len() ) {
+			print.lineBlackOnSeaGreen1( "🎯 Override Skills (#overrideSkills.len()#)" )
+				.line()
+				.line()
+			overrideSkills.each( ( skill ) => {
+				var baseName = replaceNoCase( skill.name, "-override", "" )
+				print.indentedLine( "  • #baseName# (overridden)" )
+				if ( verbose && structKeyExists( skill, "syncedAt" ) ) {
+					print.indentedLine( "    Last synced: #skill.syncedAt#" )
+				}
+			} )
+			print.line()
+		}
+
 		// Summary
 		print.line()
 		printInfo( "Total: #info.skills.len()# skill(s) installed" )
@@ -94,5 +115,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		printTip( "Run 'coldbox ai refresh' to sync with installed modules" )
 		printTip( "Run 'coldbox ai skills create <name>' to create a custom skill" )
+		printTip( "Run 'coldbox ai skills override <name>' to override a core/module skill" )
 	}
 }
