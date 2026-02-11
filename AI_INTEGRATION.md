@@ -98,21 +98,21 @@ graph TB
         Agents["🤖 Agents<br/>(6 Supported)<br/>Claude, Copilot, Cursor<br/>Codex, Gemini, OpenCode"]
         MCP["🌐 MCP Servers<br/>(30+ Built-in)<br/>Extended AI capabilities<br/>via protocol"]
     end
-    
+
     subgraph "Sources"
         Core["Core<br/>(Built-in)"]
         Modules["Modules<br/>(Auto-discovered)"]
         Custom["Custom<br/>(Project-specific)"]
         Override["Overrides<br/>(Customizations)"]
     end
-    
+
     subgraph "AI Assistants"
         Claude["Claude Desktop/Code"]
         Copilot["GitHub Copilot"]
         Cursor["Cursor IDE"]
         Other["Codex/Gemini/OpenCode"]
     end
-    
+
     Core --> Guidelines
     Core --> Skills
     Modules --> Guidelines
@@ -121,16 +121,16 @@ graph TB
     Custom --> Skills
     Override --> Guidelines
     Override --> Skills
-    
+
     Guidelines --> Agents
     Skills --> Agents
     MCP --> Agents
-    
+
     Agents --> Claude
     Agents --> Copilot
     Agents --> Cursor
     Agents --> Other
-    
+
     style Guidelines fill:#e1f5ff,stroke:#01579b
     style Skills fill:#fff9e1,stroke:#f57f17
     style Agents fill:#f3e5f5,stroke:#4a148c
@@ -172,7 +172,7 @@ flowchart TD
     CreateStructure --> GenerateConfigs["⚙️ Generate agent configs<br/>CLAUDE.md, .cursorrules, etc."]
     GenerateConfigs --> SyncModules["🔄 Sync module resources"]
     SyncModules --> Complete(["✅ Installation Complete"])
-    
+
     style Start fill:#4caf50,color:#fff
     style Complete fill:#2e7d32,color:#fff
     style Detect fill:#ff9800,color:#fff
@@ -203,30 +203,30 @@ After installation, the following structure is created in your project:
 ```mermaid
 graph TD
     Root[".ai/"]
-    
+
     Root --> Guidelines["📚 guidelines/"]
     Root --> Skills["🎯 skills/"]
     Root --> MCP["🌐 mcp-servers/"]
     Root --> Manifest["📋 manifest.json"]
-    
+
     Guidelines --> GCore["⚙️ core/<br/>(8 guidelines)"]    Guidelines --> GModules["📦 modules/<br/>(28 guidelines)"]
     Guidelines --> GCustom["📝 custom/<br/>(Your guidelines)"]
     Guidelines --> GOverride["🎯 overrides/<br/>(Customizations)"]
-    
+
     Skills --> SCore["⚙️ core/<br/>(62 skills)"]
     Skills --> SModules["📦 modules/<br/>(Module skills)"]
     Skills --> SCustom["📝 custom/<br/>(Your skills)"]
     Skills --> SOverride["🎯 overrides/<br/>(Customizations)"]
-    
+
     MCP --> MCPCore["⚙️ core/<br/>(30+ servers)"]
     MCP --> MCPCustom["📝 custom/<br/>(Your servers)"]
-    
+
     Root --> Agents["Agent Configs"]
     Agents --> Claude["CLAUDE.md"]
     Agents --> Copilot[".github/copilot-instructions.md"]
     Agents --> Cursor[".cursorrules"]
     Agents --> Other["+ 3 more agents"]
-    
+
     style Root fill:#9c27b0,color:#fff
     style Guidelines fill:#2196f3,color:#fff
     style Skills fill:#ffc107,color:#000
@@ -319,28 +319,28 @@ graph LR
         G3["📚 Handler Conventions"]
         G4["📚 Routing"]
     end
-    
+
     subgraph "AI Agent Context"
         Agent["🤖 AI Assistant<br/>Always loaded"]
     end
-    
+
     subgraph "Skills (On-Demand)"
         S1["🎯 Creating REST APIs"]
         S2["🎯 Writing Tests"]
         S3["🎯 Database Migrations"]
         S4["🎯 Async Programming"]
     end
-    
+
     G1 --> Agent
     G2 --> Agent
     G3 --> Agent
     G4 --> Agent
-    
+
     Agent -."Invoke when needed".-> S1
     Agent -."Invoke when needed".-> S2
     Agent -."Invoke when needed".-> S3
     Agent -."Invoke when needed".-> S4
-    
+
     style Agent fill:#9c27b0,color:#fff
     style G1 fill:#2196f3,color:#fff
     style G2 fill:#2196f3,color:#fff
@@ -374,15 +374,15 @@ flowchart LR
     Guidelines["📚 Guidelines<br/>~85 KB"]
     Skills["🎯 Skills<br/>~124 KB"]
     Total["💾 Total Context<br/>~209 KB<br/>~62,700 tokens"]
-    
+
     Guidelines --> Total
     Skills --> Total
-    
+
     Total --> Claude["Claude 3.5<br/>200K tokens<br/>7.84% used"]
     Total --> GPT4["GPT-4<br/>128K tokens<br/>12.27% used"]
     Total --> GPT35["GPT-3.5-Turbo<br/>16K tokens<br/>⚠️ 97.97% used"]
     Total --> Gemini["Gemini 1.5 Pro<br/>1M tokens<br/>0.98% used"]
-    
+
     style Total fill:#ff9800,color:#fff
     style Claude fill:#4caf50,color:#fff
     style GPT4 fill:#8bc34a,color:#000
@@ -494,12 +494,12 @@ graph TD
         Module["📦 Modules<br/>.ai/guidelines/modules/<br/>From installed packages"]
         Core["⚙️ Core<br/>.ai/guidelines/core/<br/>Built-in (Lowest Priority)"]
     end
-    
+
     Override -."Replaces".-> Core
     Override -."Replaces".-> Module
     Custom -."Adds to".-> Module
     Module -."Extends".-> Core
-    
+
     subgraph "Example: coldbox.md"
         Check{"Which version<br/>to use?"}
         UseOverride["✅ Use override version<br/>Custom conventions"]
@@ -507,12 +507,12 @@ graph TD
         UseCustom["Use custom version<br/>If exists"]
         UseCore["Use core version<br/>Default fallback"]
     end
-    
+
     Check -->|"Override exists"| UseOverride
     Check -->|"Custom exists"| UseCustom
     Check -->|"Module exists"| UseModule
     Check -->|"None exist"| UseCore
-    
+
     style Override fill:#f44336,color:#fff
     style Custom fill:#ff9800,color:#fff
     style Module fill:#2196f3,color:#fff
@@ -980,7 +980,7 @@ graph TB
         Skills["🎯 62+ Skills"]
         MCP["🌐 30+ MCP Servers"]
     end
-    
+
     subgraph "Agent Configurations"
         Guidelines --> ClaudeConfig["CLAUDE.md"]
         Guidelines --> CopilotConfig[".github/copilot-instructions.md"]
@@ -988,29 +988,29 @@ graph TB
         Guidelines --> CodexConfig[".codex/instructions.md"]
         Guidelines --> GeminiConfig[".gemini/instructions.md"]
         Guidelines --> OpenCodeConfig[".opencode/instructions.md"]
-        
+
         Skills --> ClaudeConfig
         Skills --> CopilotConfig
         Skills --> CursorConfig
         Skills --> CodexConfig
         Skills --> GeminiConfig
         Skills --> OpenCodeConfig
-        
+
         MCP --> ClaudeConfig
     end
-    
+
     subgraph "Team Members"
         ClaudeConfig --> Dev1["👨‍💻 Developer 1<br/>Uses Claude"]
         CopilotConfig --> Dev2["👩‍💻 Developer 2<br/>Uses Copilot"]
         CursorConfig --> Dev3["👨‍💻 Developer 3<br/>Uses Cursor"]
         CodexConfig --> Dev4["👩‍💻 Developer 4<br/>Uses Codex"]
     end
-    
+
     Dev1 -."All follow same standards".-> Standards["✅ Consistent Code Quality"]
     Dev2 -.-> Standards
     Dev3 -.-> Standards
     Dev4 -.-> Standards
-    
+
     style Guidelines fill:#2196f3,color:#fff
     style Skills fill:#ffc107,color:#000
     style MCP fill:#4caf50,color:#fff
@@ -1388,18 +1388,18 @@ flowchart TD
     Update --> Refresh["🔄 Refresh agent configs"]
     Refresh --> Complete(["✅ QB guidelines & skills available"])
     Skip --> End(["Done"])
-    
+
     subgraph "Module Structure"
         ModuleDir[".../modules/qb/"]
         ResourceDir["resources/coldbox-cli/ai/"]
         GuidelineFile["guidelines/core.md"]
         SkillFile["skills/using-qb/SKILL.md"]
-        
+
         ModuleDir --> ResourceDir
         ResourceDir --> GuidelineFile
         ResourceDir --> SkillFile
     end
-    
+
     style Install fill:#2196f3,color:#fff
     style Complete fill:#4caf50,color:#fff
     style Load fill:#ff9800,color:#fff
