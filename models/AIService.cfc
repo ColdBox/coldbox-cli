@@ -93,7 +93,7 @@ component singleton {
 		result.mcpServers.core     = mcpServers.core;
 		result.mcpServers.module   = mcpServers.module;
 		// Configure agents
-		result.agents = variables.agentRegistry.configureAgents(
+		result.agents              = variables.agentRegistry.configureAgents(
 			arguments.directory,
 			arguments.agents,
 			arguments.language
