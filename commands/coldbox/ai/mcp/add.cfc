@@ -13,7 +13,7 @@
 component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
-	property name="mcpRegistry" inject="MCPRegistry@coldbox-cli";
+	property name="mcpRegistry"   inject="MCPRegistry@coldbox-cli";
 	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
 
 	/**
