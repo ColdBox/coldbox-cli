@@ -6,6 +6,7 @@
  * Examples:
  * coldbox ai skills remove handler-development --core
  * coldbox ai skills remove api-patterns --custom
+ * coldbox ai skills remove handler-development --override
  * coldbox ai skills remove security-implementation --module
  * coldbox ai skills remove testing-bdd --core --force
  */
@@ -21,6 +22,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @core Remove a core skill
 	 * @module Remove a module skill
 	 * @custom Remove a custom skill
+	 * @override Remove an override skill
 	 * @force Skip confirmation prompt
 	 * @directory The target directory (defaults to current directory)
 	 */
@@ -29,6 +31,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		boolean core     = false,
 		boolean module   = false,
 		boolean custom   = false,
+		boolean override = false,
 		boolean force    = false,
 		string directory = getCwd()
 	){
@@ -37,17 +40,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		ensureInstalled( arguments.directory )
 
 		// Validate exactly one type flag is specified
-		var typeFlags = [ arguments.core, arguments.module, arguments.custom ]
+		var typeFlags = [ arguments.core, arguments.module, arguments.custom, arguments.override ]
 		var typeFlagCount = typeFlags.filter( ( flag ) => flag ).len()
 
 		if ( typeFlagCount == 0 ) {
 			printError( "You must specify a skill type to remove." )
 			print.line()
-			printHelp( "Use one of: --core, --module, or --custom" )
+			printHelp( "Use one of: --core, --module, --custom, or --override" )
 			print.line()
 			printInfo( "Examples:" )
 			printInfo( "  coldbox ai skills remove handler-development --core" )
 			printInfo( "  coldbox ai skills remove api-patterns --custom" )
+			printInfo( "  coldbox ai skills remove handler-development --override" )
 			printInfo( "  coldbox ai skills remove security-implementation --module" )
 			return
 		}
@@ -62,6 +66,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( arguments.core ) displayType = "core"
 		else if ( arguments.module ) displayType = "module"
 		else if ( arguments.custom ) displayType = "custom"
+		else if ( arguments.override ) displayType = "override"
 
 		print.line()
 		printInfo( "Removing #displayType# skill: #arguments.name#" )
@@ -75,6 +80,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		} else if ( displayType == "module" ) {
 			printWarn( "ℹ️  This is a module skill." )
 			printWarn( "It will be restored when you run 'coldbox ai refresh' if the module is still installed." )
+			print.line()
+		} else if ( displayType == "override" ) {
+			printInfo( "🎯 This is an override skill." )
+			printInfo( "The original skill will be used after removal." )
 			print.line()
 		} else if ( displayType == "custom" ) {
 			printInfo( "🔧 This is a custom skill." )
@@ -118,8 +127,12 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Type-specific tips
 		if ( displayType == "module" ) {
 			printTip( "Use 'coldbox ai refresh' to restore this skill if the module is still installed" )
+		} else if ( displayType == "override" ) {
+			printTip( "The original '#replaceNoCase( arguments.name, "-override", "" )#' skill is now active" )
 		} else if ( displayType == "core" ) {
 			printTip( "Use 'coldbox ai refresh' to restore core skills" )
+		} else {
+			printTip( "Use 'coldbox ai skills list' to see remaining skills" )
 		}
 	}
 
