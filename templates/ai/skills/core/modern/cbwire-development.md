@@ -63,26 +63,26 @@ coldbox create wire TodoList
  * wires/Counter.cfc
  */
 component extends="cbwire.models.Component" {
-    
+
     // Component data
     data = {
         "count": 0
     }
-    
+
     /**
      * Increment counter
      */
     function increment() {
         data.count++
     }
-    
+
     /**
      * Decrement counter
      */
     function decrement() {
         data.count--
     }
-    
+
     /**
      * Reset counter
      */
@@ -99,7 +99,7 @@ component extends="cbwire.models.Component" {
 <cfoutput>
 <div>
     <h3>Counter: #data.count#</h3>
-    
+
     <button wire:click="increment">+</button>
     <button wire:click="decrement">-</button>
     <button wire:click="reset">Reset</button>
@@ -131,16 +131,16 @@ component extends="cbwire.models.Component" {
  * wires/TodoList.cfc
  */
 component extends="cbwire.models.Component" {
-    
+
     // Accept parameters
     property name="userId" default="0"
-    
+
     property name="todoService" inject="TodoService"
-    
+
     data = {
         "todos": []
     }
-    
+
     /**
      * Initialize component
      */
@@ -181,31 +181,31 @@ component extends="cbwire.models.Component" {
  * wires/UserForm.cfc
  */
 component extends="cbwire.models.Component" {
-    
+
     data = {
         "firstName": "",
         "lastName": "",
         "email": "",
         "errors": {}
     }
-    
+
     function save() {
         // Validate
         data.errors = {}
-        
+
         if ( data.email.len() == 0 ) {
             data.errors.email = "Email is required"
             return
         }
-        
+
         // Save user
         userService.create( data )
-        
+
         // Reset form
         data.firstName = ""
         data.lastName = ""
         data.email = ""
-        
+
         // Show success message
         flash.put( "success", "User created!" )
     }
@@ -220,12 +220,12 @@ component extends="cbwire.models.Component" {
         <label>First Name</label>
         <input type="text" wire:model.defer="firstName">
     </div>
-    
+
     <div>
         <label>Last Name</label>
         <input type="text" wire:model.defer="lastName">
     </div>
-    
+
     <div>
         <label>Email</label>
         <input type="email" wire:model.defer="email">
@@ -233,9 +233,9 @@ component extends="cbwire.models.Component" {
             <span class="error">#data.errors.email#</span>
         </cfif>
     </div>
-    
+
     <button type="submit">Save</button>
-    
+
     <div wire:loading>
         Saving...
     </div>
@@ -270,31 +270,31 @@ component extends="cbwire.models.Component" {
 
 ```boxlang
 component extends="cbwire.models.Component" {
-    
+
     property name="userService" inject="UserService"
-    
+
     data = {
         "users": []
     }
-    
+
     function onMount() {
         loadUsers()
     }
-    
+
     function loadUsers() {
         data.users = userService.list()
     }
-    
+
     function delete( userId ) {
         userService.delete( userId )
         loadUsers()
     }
-    
+
     function toggleActive( userId ) {
         var user = userService.find( userId )
         user.isActive = !user.isActive
         user.save()
-        
+
         loadUsers()
     }
 }
@@ -306,7 +306,7 @@ component extends="cbwire.models.Component" {
 
 ```boxlang
 component extends="cbwire.models.Component" {
-    
+
     /**
      * Called once when component is mounted
      */
@@ -314,14 +314,14 @@ component extends="cbwire.models.Component" {
         // Initialize component
         data.items = itemService.list()
     }
-    
+
     /**
      * Called before each update
      */
     function onUpdate() {
         // Pre-update logic
     }
-    
+
     /**
      * Called after each update
      */
@@ -329,7 +329,7 @@ component extends="cbwire.models.Component" {
         // Post-update logic
         // Good for dependency injection
     }
-    
+
     /**
      * Called before rendering
      */
@@ -399,14 +399,14 @@ component extends="cbwire.models.Component" {
  * wires/ProductSearch.cfc
  */
 component extends="cbwire.models.Component" {
-    
+
     property name="productService" inject="ProductService"
-    
+
     data = {
         "searchTerm": "",
         "results": []
     }
-    
+
     /**
      * Watch for search term changes
      */
@@ -428,11 +428,11 @@ component extends="cbwire.models.Component" {
         wire:model.debounce.300ms="searchTerm"
         placeholder="Search products..."
     >
-    
+
     <div wire:loading wire:target="searchTerm">
         Searching...
     </div>
-    
+
     <cfif data.results.len()>
         <ul>
             <cfloop array="#data.results#" index="product">
@@ -451,35 +451,35 @@ component extends="cbwire.models.Component" {
  * wires/UserList.cfc
  */
 component extends="cbwire.models.Component" {
-    
+
     property name="userService" inject="UserService"
-    
+
     data = {
         "users": [],
         "page": 1,
         "perPage": 25,
         "total": 0
     }
-    
+
     function onMount() {
         loadUsers()
     }
-    
+
     function loadUsers() {
         var result = userService.paginate(
             page: data.page,
             perPage: data.perPage
         )
-        
+
         data.users = result.data
         data.total = result.total
     }
-    
+
     function nextPage() {
         data.page++
         loadUsers()
     }
-    
+
     function previousPage() {
         if ( data.page > 1 ) {
             data.page--
@@ -545,7 +545,7 @@ function save() {
     if ( !validate() ) {
         return
     }
-    
+
     userService.create( data )
 }
 ```
@@ -592,11 +592,11 @@ function save() {
 // ✅ Good: Server validation
 function save() {
     data.errors = validate( data )
-    
+
     if ( structCount( data.errors ) > 0 ) {
         return
     }
-    
+
     userService.create( data )
 }
 ```

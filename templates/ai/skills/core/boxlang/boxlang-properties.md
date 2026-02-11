@@ -74,25 +74,25 @@ function loadProperties( required filePath ) {
     if ( !fileExists( filePath ) ) {
         throw( "Properties file not found: #filePath#" )
     }
-    
+
     var props = createObject( "java", "java.util.Properties" ).init()
     var fileInput = createObject( "java", "java.io.FileInputStream" ).init( filePath )
-    
+
     try {
         props.load( fileInput )
     } finally {
         fileInput.close()
     }
-    
+
     // Convert to struct
     var config = {}
     var keys = props.propertyNames()
-    
+
     while ( keys.hasMoreElements() ) {
         var key = keys.nextElement()
         config[key] = props.getProperty( key )
     }
-    
+
     return config
 }
 
@@ -111,15 +111,15 @@ println( config.app_name )
  */
 function saveProperties( required filePath, required properties ) {
     var props = createObject( "java", "java.util.Properties" ).init()
-    
+
     // Add properties
     properties.each( ( key, value ) => {
         props.setProperty( key, toString( value ) )
     } )
-    
+
     // Save to file
     var fileOutput = createObject( "java", "java.io.FileOutputStream" ).init( filePath )
-    
+
     try {
         props.store( fileOutput, "Application Configuration" )
     } finally {
@@ -147,10 +147,10 @@ saveProperties(
  * models/ConfigService.cfc
  */
 class singleton {
-    
+
     variables.config = {}
     variables.filePath = ""
-    
+
     /**
      * Initialize from properties file
      */
@@ -159,80 +159,80 @@ class singleton {
         reload()
         return this
     }
-    
+
     /**
      * Load/reload configuration
      */
     function reload() {
         variables.config = loadPropertiesFile( filePath )
     }
-    
+
     /**
      * Get configuration value
      */
     function get( required key, defaultValue = "" ) {
         return config.keyExists( key ) ? config[key] : defaultValue
     }
-    
+
     /**
      * Set configuration value
      */
     function set( required key, required value ) {
         config[key] = value
     }
-    
+
     /**
      * Save configuration
      */
     function save() {
         savePropertiesFile( filePath, config )
     }
-    
+
     /**
      * Get all configuration
      */
     function getAll() {
         return config.copy()
     }
-    
+
     /**
      * Check if key exists
      */
     function has( required key ) {
         return config.keyExists( key )
     }
-    
+
     private function loadPropertiesFile( path ) {
         var props = createObject( "java", "java.util.Properties" ).init()
         var input = createObject( "java", "java.io.FileInputStream" ).init( path )
-        
+
         try {
             props.load( input )
-            
+
             var result = {}
             var keys = props.propertyNames()
-            
+
             while ( keys.hasMoreElements() ) {
                 var key = keys.nextElement()
                 result[key] = props.getProperty( key )
             }
-            
+
             return result
-            
+
         } finally {
             input.close()
         }
     }
-    
+
     private function savePropertiesFile( path, data ) {
         var props = createObject( "java", "java.util.Properties" ).init()
-        
+
         data.each( ( key, value ) => {
             props.setProperty( key, toString( value ) )
         } )
-        
+
         var output = createObject( "java", "java.io.FileOutputStream" ).init( path )
-        
+
         try {
             props.store( output, "Generated Configuration" )
         } finally {
@@ -249,21 +249,21 @@ class singleton {
  * Application.bx
  */
 class {
-    
+
     this.name = "MyApp"
-    
+
     function onApplicationStart() {
         // Load configuration
         application.config = new models.ConfigService(
             expandPath( "/config/app.properties" )
         )
-        
+
         // Set app name from config
         this.name = application.config.get( "app.name", "MyApp" )
-        
+
         // Configure datasource from properties
         this.datasource = application.config.get( "db.name" )
-        
+
         this.datasources = {
             "#this.datasource#": {
                 class: application.config.get( "db.driver" ),
@@ -273,12 +273,12 @@ class {
             }
         }
     }
-    
+
     private function buildConnectionString() {
         var host = application.config.get( "db.host", "localhost" )
         var port = application.config.get( "db.port", "3306" )
         var name = application.config.get( "db.name" )
-        
+
         return "jdbc:mysql://#host#:#port#/#name#"
     }
 }
@@ -294,32 +294,32 @@ class {
  */
 function loadConfig() {
     var environment = getEnvironment()
-    
+
     // Load base config
     var config = loadProperties( expandPath( "/config/app.properties" ) )
-    
+
     // Load environment overrides
     var envFile = expandPath( "/config/app.#environment#.properties" )
-    
+
     if ( fileExists( envFile ) ) {
         var envConfig = loadProperties( envFile )
         config.append( envConfig )
     }
-    
+
     return config
 }
 
 function getEnvironment() {
     // Check environment variable
     var env = getEnv( "APP_ENV" )
-    
+
     if ( env.len() > 0 ) {
         return env
     }
-    
+
     // Detect from hostname
     var host = cgi.server_name
-    
+
     if ( host.findNoCase( "localhost" ) > 0 ) {
         return "development"
     } else if ( host.findNoCase( "staging" ) > 0 ) {
@@ -358,24 +358,24 @@ db.name=myapp_prod
  */
 function parseNestedProperties( properties ) {
     var result = {}
-    
+
     properties.each( ( key, value ) => {
         var parts = key.listToArray( "." )
         var current = result
-        
+
         for ( var i = 1; i <= parts.len() - 1; i++ ) {
             var part = parts[i]
-            
+
             if ( !current.keyExists( part ) ) {
                 current[part] = {}
             }
-            
+
             current = current[part]
         }
-        
+
         current[ parts.last() ] = value
     } )
-    
+
     return result
 }
 
@@ -409,23 +409,23 @@ var nested = parseNestedProperties( flat )
  * Get typed property values
  */
 class {
-    
+
     variables.config = {}
-    
+
     function getString( required key, defaultValue = "" ) {
         return get( key, defaultValue )
     }
-    
+
     function getInt( required key, defaultValue = 0 ) {
         var value = get( key, defaultValue )
         return isNumeric( value ) ? val( value ) : defaultValue
     }
-    
+
     function getBoolean( required key, defaultValue = false ) {
         var value = lCase( get( key, defaultValue ) )
         return listFindNoCase( "true,yes,1", value ) > 0
     }
-    
+
     function getList( required key, delimiter = ",", defaultValue = [] ) {
         var value = get( key, "" )
         return value.len() > 0 ? value.listToArray( delimiter ) : defaultValue

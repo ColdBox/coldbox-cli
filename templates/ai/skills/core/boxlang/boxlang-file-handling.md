@@ -75,11 +75,11 @@ println( fileInfo.mode )
  */
 function processLargeFile( filePath ) {
     var file = fileOpen( filePath, "read" )
-    
+
     try {
         while ( !fileIsEOF( file ) ) {
             var line = fileReadLine( file )
-            
+
             // Process line
             processLine( line )
         }
@@ -117,7 +117,7 @@ fileWriteBinary( "/path/to/image.jpg", binaryData )
 // Copy uploaded file
 if ( form.keyExists( "uploadField" ) ) {
     var uploadedFile = form.uploadField
-    
+
     fileWrite(
         expandPath( "/uploads/#uploadedFile.serverFile#" ),
         fileReadBinary( uploadedFile.serverFile )
@@ -133,7 +133,7 @@ if ( form.keyExists( "uploadField" ) ) {
  */
 function writeLargeFile( filePath, dataArray ) {
     var file = fileOpen( filePath, "write" )
-    
+
     try {
         dataArray.each( ( line ) => {
             fileWriteLine( file, line )
@@ -322,13 +322,13 @@ function uploadFile( fileField, destination ) {
             message: "No file uploaded"
         }
     }
-    
+
     try {
         // Ensure destination exists
         if ( !directoryExists( destination ) ) {
             directoryCreate( destination, createPath: true )
         }
-        
+
         // Upload file
         var upload = fileUpload(
             destination: destination,
@@ -336,14 +336,14 @@ function uploadFile( fileField, destination ) {
             nameConflict: "makeUnique",
             accept: "image/jpeg,image/png,image/gif"
         )
-        
+
         return {
             success: true,
             serverFile: upload.serverFile,
             clientFile: upload.clientFile,
             fileSize: upload.fileSize
         }
-        
+
     } catch ( any e ) {
         return {
             success: false,
@@ -363,10 +363,10 @@ function readCSV( filePath ) {
     var data = []
     var lines = fileReadLines( filePath )
     var headers = []
-    
+
     lines.each( ( line, index ) => {
         var columns = listToArray( line, "," )
-        
+
         if ( index == 1 ) {
             // First row is headers
             headers = columns
@@ -379,7 +379,7 @@ function readCSV( filePath ) {
             data.append( row )
         }
     } )
-    
+
     return data
 }
 
@@ -388,16 +388,16 @@ function readCSV( filePath ) {
  */
 function writeCSV( filePath, data, headers ) {
     var lines = []
-    
+
     // Add header row
     lines.append( headers.toList() )
-    
+
     // Add data rows
     data.each( ( row ) => {
         var values = headers.map( ( header ) => row[header] ?: "" )
         lines.append( values.toList() )
     } )
-    
+
     fileWrite( filePath, lines.toList( chr(10) ) )
 }
 ```
@@ -441,17 +441,17 @@ function rotateLogFile( logFile, maxSize = 10485760 ) {  // 10MB
     if ( !fileExists( logFile ) ) {
         return
     }
-    
+
     var info = getFileInfo( logFile )
-    
+
     if ( info.size > maxSize ) {
         // Create backup with timestamp
         var timestamp = dateFormat( now(), "yyyymmdd_HHnnss" )
         var backupFile = logFile & "." & timestamp
-        
+
         // Move current log to backup
         fileMove( logFile, backupFile )
-        
+
         // Create new log file
         fileWrite( logFile, "" )
     }

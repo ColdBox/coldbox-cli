@@ -161,11 +161,11 @@ BoxLang provides a powerful templating language (BXCFM) for mixing HTML and BoxL
 <bx:script>
     // BoxLang code
     var total = 0
-    
+
     for ( var item in cart ) {
         total += item.price * item.quantity
     }
-    
+
     var tax = total * 0.08
     var grandTotal = total + tax
 </bx:script>
@@ -187,7 +187,7 @@ BoxLang provides a powerful templating language (BXCFM) for mixing HTML and BoxL
 
 <div class="featured">
     <h2>Featured Products</h2>
-    
+
     <bx:loop array="#featuredProducts#" index="product">
         <div class="product-card">
             <h3>#product.name#</h3>
@@ -233,11 +233,11 @@ BoxLang provides a powerful templating language (BXCFM) for mixing HTML and BoxL
     <header>
         <bx:include template="../includes/header.bxm">
     </header>
-    
+
     <main>
         #renderView()#
     </main>
-    
+
     <footer>
         <bx:include template="../includes/footer.bxm">
     </footer>
@@ -265,7 +265,7 @@ BoxLang provides a powerful templating language (BXCFM) for mixing HTML and BoxL
 
 <div class="alert alert-#type#" role="alert">
     #message#
-    
+
     <bx:if condition="#dismissible#">
         <button type="button" class="close">×</button>
     </bx:if>
@@ -352,12 +352,12 @@ BoxLang provides a powerful templating language (BXCFM) for mixing HTML and BoxL
     <p>Lower: #lCase( text )#</p>
     <p>Length: #len( text )#</p>
     <p>Trim: #trim( text )#</p>
-    
+
     <!-- Substring -->
     <p>First 10: #left( text, 10 )#</p>
     <p>Last 5: #right( text, 5 )#</p>
     <p>Middle: #mid( text, 5, 10 )#</p>
-    
+
     <!-- Replace -->
     <p>#replace( text, "old", "new" )#</p>
     <p>#replaceNoCase( text, "OLD", "new" )#</p>
@@ -371,12 +371,12 @@ BoxLang provides a powerful templating language (BXCFM) for mixing HTML and BoxL
     <!-- Current date/time -->
     <p>Now: #now()#</p>
     <p>Today: #today()#</p>
-    
+
     <!-- Format date -->
     <p>Long: #dateFormat( now(), "full" )#</p>
     <p>Short: #dateFormat( now(), "mm/dd/yyyy" )#</p>
     <p>Time: #timeFormat( now(), "hh:mm:ss tt" )#</p>
-    
+
     <!-- Date math -->
     <p>Tomorrow: #dateAdd( "d", 1, now() )#</p>
     <p>Last Week: #dateAdd( "ww", -1, now() )#</p>
