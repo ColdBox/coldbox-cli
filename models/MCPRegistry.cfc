@@ -37,7 +37,7 @@ component singleton {
 	function getAllKnownServers(){
 		return {
 			// Core Platform
-			"boxlang"           : {
+			"boxlang" : {
 				"name"        : "boxlang",
 				"description" : "BoxLang Language Documentation",
 				"url"         : "https://ai.ortusbooks.com/~gitbook/mcp"
@@ -207,41 +207,41 @@ component singleton {
 	function getModuleServerMap(){
 		return {
 			// Core modules (always added)
-			"coldbox"              : "coldbox",
-			"testbox"              : "testbox",
-			"wirebox"              : "wirebox",
-			"cachebox"             : "cachebox",
-			"logbox"               : "logbox",
-			"commandbox"           : "commandbox",
+			"coldbox"               : "coldbox",
+			"testbox"               : "testbox",
+			"wirebox"               : "wirebox",
+			"cachebox"              : "cachebox",
+			"logbox"                : "logbox",
+			"commandbox"            : "commandbox",
 			// ORM & Database
-			"bxorm"                : "bxorm",
-			"cborm"                : "cborm",
-			"qb"                   : "qb",
-			"quick"                : "quick",
-			"cfmigrations"         : "cfmigrations",
-			"commandbox-migrations": "cfmigrations",
+			"bxorm"                 : "bxorm",
+			"cborm"                 : "cborm",
+			"qb"                    : "qb",
+			"quick"                 : "quick",
+			"cfmigrations"          : "cfmigrations",
+			"commandbox-migrations" : "cfmigrations",
 			// Security
-			"cbsecurity"           : "cbsecurity",
-			"cbauth"               : "cbauth",
-			"cbsso"                : "cbsso",
+			"cbsecurity"            : "cbsecurity",
+			"cbauth"                : "cbauth",
+			"cbsso"                 : "cbsso",
 			// Validation & Data
-			"cbvalidation"         : "cbvalidation",
-			"cbi18n"               : "cbi18n",
-			"cbmailservices"       : "cbmailservices",
+			"cbvalidation"          : "cbvalidation",
+			"cbi18n"                : "cbi18n",
+			"cbmailservices"        : "cbmailservices",
 			// Development
-			"cbdebugger"           : "cbdebugger",
-			"cbelasticsearch"      : "cbelasticsearch",
-			"cbfs"                 : "cbfs",
-			"cfconfig"             : "cfconfig",
+			"cbdebugger"            : "cbdebugger",
+			"cbelasticsearch"       : "cbelasticsearch",
+			"cbfs"                  : "cbfs",
+			"cfconfig"              : "cfconfig",
 			// Modern
-			"cbwire"               : "cbwire",
-			"cbq"                  : "cbq",
-			"megaphone"            : "megaphone",
+			"cbwire"                : "cbwire",
+			"cbq"                   : "cbq",
+			"megaphone"             : "megaphone",
 			// CMS
-			"contentbox"           : "contentbox",
+			"contentbox"            : "contentbox",
 			// API
-			"relax"                : "relax",
-			"cbswagger"            : "relax"
+			"relax"                 : "relax",
+			"cbswagger"             : "relax"
 		}
 	}
 
@@ -272,34 +272,38 @@ component singleton {
 		};
 
 		// Get installed modules from box.json
-		var boxJson = variables.packageService.readPackageDescriptor( arguments.directory );
-		var moduleMap = getModuleServerMap();
+		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory );
+		var moduleMap       = getModuleServerMap();
 		var detectedServers = {};
 
 		// Check dependencies
 		if ( structKeyExists( boxJson, "dependencies" ) ) {
-			boxJson.dependencies.keyArray().each( ( moduleName ) => {
-				if ( structKeyExists( moduleMap, moduleName ) ) {
-					var serverName = moduleMap[ moduleName ];
-					if ( !result.core.findNoCase( serverName ) && !detectedServers.keyExists( serverName ) ) {
-						result.module.append( serverName );
-						detectedServers[ serverName ] = true;
+			boxJson.dependencies
+				.keyArray()
+				.each( ( moduleName ) => {
+					if ( structKeyExists( moduleMap, moduleName ) ) {
+						var serverName = moduleMap[ moduleName ];
+						if ( !result.core.findNoCase( serverName ) && !detectedServers.keyExists( serverName ) ) {
+							result.module.append( serverName );
+							detectedServers[ serverName ] = true;
+						}
 					}
-				}
-			} );
+				} );
 		}
 
 		// Check devDependencies
 		if ( structKeyExists( boxJson, "devDependencies" ) ) {
-			boxJson.devDependencies.keyArray().each( ( moduleName ) => {
-				if ( structKeyExists( moduleMap, moduleName ) ) {
-					var serverName = moduleMap[ moduleName ];
-					if ( !result.core.findNoCase( serverName ) && !detectedServers.keyExists( serverName ) ) {
-						result.module.append( serverName );
-						detectedServers[ serverName ] = true;
+			boxJson.devDependencies
+				.keyArray()
+				.each( ( moduleName ) => {
+					if ( structKeyExists( moduleMap, moduleName ) ) {
+						var serverName = moduleMap[ moduleName ];
+						if ( !result.core.findNoCase( serverName ) && !detectedServers.keyExists( serverName ) ) {
+							result.module.append( serverName );
+							detectedServers[ serverName ] = true;
+						}
 					}
-				}
-			} );
+				} );
 		}
 
 		// Build complete list
@@ -339,7 +343,12 @@ component singleton {
 
 		// Check name doesn't conflict with known servers
 		var allServers = getAllKnownServers();
-		if ( structKeyExists( allServers, arguments.serverConfig.name ) ) {
+		if (
+			structKeyExists(
+				allServers,
+				arguments.serverConfig.name
+			)
+		) {
 			result.valid   = false;
 			result.message = "Server name conflicts with known MCP server: #arguments.serverConfig.name#";
 			return result;
