@@ -30,8 +30,6 @@
 - ✅ Language mode tracking
 - ✅ MCP servers registry (auto-detected + custom)
 
----
-
 ### ✅ Phase 2: CLI Commands (100% Complete - excluding MCP)
 
 **Core Commands (4/4):**
@@ -68,8 +66,6 @@
 - ✅ `coldbox ai mcp add` - Add custom MCP server to project
 - ✅ `coldbox ai mcp remove` - Remove MCP server from project
 - ✅ `coldbox ai mcp help` - MCP server management help
-
----
 
 ### ✅ Phase 3: Application Integration (100% Complete)
 

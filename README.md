@@ -12,11 +12,14 @@
 <p align="center">
 	Copyright Since 2005 ColdBox Platform by Luis Majano and Ortus Solutions, Corp
 	<br>
-	<a href="https://www.coldbox.org">www.coldbox.org</a> |
-	<a href="https://www.ortussolutions.com">www.ortussolutions.com</a>
+	<a href="https://www.coldbox.org">coldbox.org</a> »
+	<a href="https://www.boxlang.io">boxlang.io</a> »
+	<a href="https://www.ortussolutions.com">ortussolutions.com</a>
 </p>
 
 # ColdBox CLI
+
+<img src="coldbox-cli.png" alt="ColdBox CLI" style="width:100%; max-width:800px; margin:20px auto; display:block; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
 
 This is the official ColdBox CLI for CommandBox.  It is a collection of commands to help you work with ColdBox and its ecosystem for building, testing, and deploying BoxLang and CFML applications.  It provides commands for scaffolding applications, creating tests, modules, models, views, and much more.
 
@@ -30,7 +33,6 @@ The CLI matches the major version of ColdBox. **Current version: 8**
 
 - If you are using **ColdBox 8**, use CLI `@8` (recommended)
 - If you are using **ColdBox 7**, use CLI `@7.8.0` (recommended)
-- If you are using **ColdBox 6**, use CLI `@6` (legacy support)
 
 This versioning ensures you get the correct commands and features for your version of ColdBox.
 
@@ -497,8 +499,6 @@ coldbox help
 coldbox create handler --help
 coldbox create model --help
 ```
-
-----
 
 ## Credits & Contributions
 
