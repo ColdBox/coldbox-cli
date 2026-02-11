@@ -1,8 +1,8 @@
 # ColdBox CLI AI Integration - Implementation Plan
 
-> **Status**: Phase 9 - 100% Complete 🎉
+> **Status**: Phase 5 - In Progress (90% Complete)
 > **Last Updated**: February 11, 2026
-> **Latest**: Phases 7, 8 & 9 complete - Multi-agent + Custom/Override + Third-party module support
+> **Latest**: Security & ORM skills complete - 39/43 core skills implemented
 
 ## Implementation Phases
 
@@ -152,62 +152,78 @@
 
 ---
 
-### ⬜ Phase 5: Core Skills Content
+### Phase 5: Core Skills Content (90% Complete)
 
-**BoxLang Development (8 skills - 20%):**
-- ⬜ `boxlang-syntax` - Class syntax, properties, methods
-- ⬜ `boxlang-classes` - Class definition patterns
-- ⬜ `boxlang-functions` - Function types and patterns
-- ⬜ `boxlang-lambdas` - Lambda expressions
-- ⬜ `boxlang-modules` - Module system
-- ⬜ `boxlang-streams` - Stream API
-- ⬜ `boxlang-types` - Type system
-- ⬜ `boxlang-interop` - CFML/Java interop
+**BoxLang Development (13/8 skills - 162%):**
+- ✅ `boxlang-syntax` - Class syntax, properties, methods
+- ✅ `boxlang-classes` - Class definition patterns
+- ✅ `boxlang-functions` - Function types and patterns
+- ✅ `boxlang-lambdas` - Lambda expressions
+- ✅ `boxlang-modules` - Module system
+- ✅ `boxlang-streams` - Stream API
+- ✅ `boxlang-types` - Type system
+- ✅ `boxlang-interop` - CFML/Java interop
+- ✅ `boxlang-scheduled-tasks` - Scheduled task execution (BONUS)
+- ✅ `boxlang-futures` - Async programming with futures (BONUS)
+- ✅ `boxlang-http-client` - HTTP client patterns (BONUS)
+- ✅ `boxlang-soap-client` - SOAP web services (BONUS)
+- ✅ `boxlang-executors` - Thread pool executors (BONUS)
 
-**ColdBox Development (9 skills - 22%):**
-- ⬜ `handler-development` - Handler patterns
-- ⬜ `rest-api-development` - REST APIs
-- ⬜ `module-development` - ColdBox modules
-- ⬜ `interceptor-development` - Interceptors
-- ⬜ `layout-development` - Layouts and views
-- ⬜ `routing-development` - Route configuration
-- ⬜ `event-model` - Event-driven architecture
-- ⬜ `view-rendering` - View patterns
-- ⬜ `cache-integration` - CacheBox integration
+**ColdBox Development (12/9 skills - 133%):**
+- ✅ `handler-development` - Handler patterns
+- ✅ `rest-api-development` - REST APIs
+- ✅ `module-development` - ColdBox modules
+- ✅ `interceptor-development` - Interceptors
+- ✅ `layout-development` - Layouts and views
+- ✅ `routing-development` - Route configuration
+- ✅ `event-model` - Event-driven architecture
+- ✅ `view-rendering` - View patterns
+- ✅ `cache-integration` - CacheBox integration
+- ✅ `coldbox-configuration` - Configuration patterns (BONUS)
+- ✅ `coldbox-request-context` - Request context event object (BONUS)
+- ✅ `coldbox-flash-messaging` - Flash scope messaging (BONUS)
 
-**Testing (8 skills - 20%):**
-- ⬜ `testing-bdd` - BDD testing with TestBox
-- ⬜ `testing-unit` - Unit testing patterns
-- ⬜ `testing-integration` - Integration testing
-- ⬜ `testing-handler` - Handler testing
-- ⬜ `testing-mocking` - MockBox patterns
-- ⬜ `testing-fixtures` - Test fixtures
-- ⬜ `testing-coverage` - Coverage analysis
-- ⬜ `testing-ci` - CI/CD integration
+**Testing (8/8 skills - 100%):**
+- ✅ `testing-bdd` - BDD testing with TestBox
+- ✅ `testing-unit` - Unit testing patterns
+- ✅ `testing-integration` - Integration testing
+- ✅ `testing-handler` - Handler testing
+- ✅ `testing-mocking` - MockBox patterns
+- ✅ `testing-fixtures` - Test fixtures
+- ✅ `testing-coverage` - Coverage analysis
+- ✅ `testing-ci` - CI/CD integration
 
-**Security (9 skills - 22%):**
-- ⬜ `security-implementation` - CBSecurity setup
-- ⬜ `authentication` - CBAuth patterns
-- ⬜ `authorization` - Security rules
-- ⬜ `sso-integration` - CBSSO setup
-- ⬜ `jwt-development` - JWT tokens
-- ⬜ `passkeys-integration` - WebAuthn
-- ⬜ `csrf-protection` - CSRF handling
-- ⬜ `api-authentication` - API auth
-- ⬜ `rbac-patterns` - Role-based access
+**Internal Libraries (3/3 skills - 100%):**
+- ✅ `cachebox-caching-patterns` - CacheBox patterns, providers, events
+- ✅ `logbox-logging-patterns` - LogBox patterns, appenders, configuration
+- ✅ `wirebox-di-patterns` - WireBox DI & AOP patterns
 
-**ORM & Database (4 skills - 10%):**
-- ⬜ `orm-quick` - Quick ORM patterns
+**Security (9/9 skills - 100%):**
+- ✅ `security-implementation` - CBSecurity setup
+- ✅ `authentication` - CBAuth patterns
+- ✅ `authorization` - Security rules
+- ✅ `sso-integration` - CBSSO setup
+- ✅ `jwt-development` - JWT tokens
+- ✅ `passkeys-integration` - WebAuthn
+- ✅ `csrf-protection` - CSRF handling
+- ✅ `api-authentication` - API auth
+- ✅ `rbac-patterns` - Role-based access
+
+**ORM & Database (1/4 skills - 25%):**
+- ✅ `orm-quick` - Quick ORM patterns
 - ⬜ `query-builder` - QB fluent queries
 - ⬜ `database-migrations` - Migrations
 - ⬜ `orm-relationships` - Relationships
 
-**Modern Development (3 skills - 7%):**
+**Modern Development (0/3 skills - 0%):**
 - ⬜ `cbwire-development` - CBWire components
 - ⬜ `queue-development` - CBQ queues
 - ⬜ `websocket-development` - SocketBox
 
-**Total: 41 skills (34 high priority = 83%)**
+**Total: 46/49 skills complete (94%)** 🎉
+- Core planned: 43 skills
+- Bonus added: 6 skills (5 BoxLang + 3 ColdBox enhancements)
+- Remaining: 3 ORM + 3 Modern = 6 skills
 
 ---
 
@@ -378,27 +394,28 @@
 - ✅ Phase 2: CLI Commands - **100% Complete** (MCP deferred)
 - ✅ Phase 3: Application Integration - **100% Complete**
 - ✅ Phase 4: Guidelines Content - **100% Complete** (40/40 guidelines)
-- ⬜ Phase 5: Skills Content - **0% Complete** (41 skills)
+- 🔄 Phase 5: Skills Content - **5% Complete** (2/43 skills - WireBox DI & AOP)
 - ⬜ Phase 6: MCP Integration - **0% Complete** (25 servers)
 - ✅ Phase 7: Multi-Agent Support - **100% Complete** (6 agents with full command set)
 - ✅ Phase 8: Custom & Override Support - **100% Complete** (guidelines + skills)
 - ✅ Phase 9: Third-Party Module Support - **100% Complete** (discovery + auto-registration)
 - ⬜ Phase 10: Documentation - **0% Complete**
 
-**Overall Progress:** 70% (7/10 phases complete)
+**Overall Progress:** 70% (7/10 phases complete, 1 in progress)
 
 ---
 
 ## Success Metrics
 
 - **Guidelines:** 40/40 complete (100%) covering entire ColdBox ecosystem
-- **Skills:** 0/41 (0% complete) - 41 total planned (34 high priority = 83%)
-  - BoxLang: 8 skills (20%)
-  - ColdBox: 9 skills (22%)
-  - Testing: 8 skills (20%)
-  - Security: 9 skills (22%)
-  - ORM/Database: 4 skills (10%)
-  - Modern: 3 skills (7%)
+- **Skills:** 2/43 complete (5%) - 43 total planned (36 high priority = 84%)
+  - WireBox/DI: 2/2 skills (100%) ✅
+  - BoxLang: 0/8 skills (0%)
+  - ColdBox: 0/9 skills (0%)
+  - Testing: 0/8 skills (0%)
+  - Security: 0/9 skills (0%)
+  - ORM/Database: 0/4 skills (0%)
+  - Modern: 0/3 skills (0%)
 - **MCP Servers:** 25 Ortus documentation servers
 - **Agents:** 6 AI agents supported
 - **Module Support:** Zero-config auto-discovery
