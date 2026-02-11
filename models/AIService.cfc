@@ -177,25 +177,25 @@ component singleton {
 		// Refresh MCP servers based on installed modules
 		var newMcpServers = variables.mcpRegistry.getServersForProject( arguments.directory );
 		var oldMcpServers = manifest.mcpServers ?: { "core" : [], "module" : [], "custom" : [] };
-		
+
 		// Track changes in module servers (core servers never change, custom servers are preserved)
 		var oldModuleServers = oldMcpServers.module ?: [];
 		var newModuleServers = newMcpServers.module;
-		
+
 		// Find added module servers
 		newModuleServers.each( ( serverName ) => {
 			if ( !oldModuleServers.findNoCase( serverName ) ) {
 				result.mcpServers.added.append( serverName );
 			}
 		} );
-		
+
 		// Find removed module servers
 		oldModuleServers.each( ( serverName ) => {
 			if ( !newModuleServers.findNoCase( serverName ) ) {
 				result.mcpServers.removed.append( serverName );
 			}
 		} );
-		
+
 		// Preserve custom servers
 		var customServers = oldMcpServers.custom ?: [];
 		manifest.mcpServers = {
