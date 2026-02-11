@@ -1,6 +1,6 @@
 ---
-name: WireBox DI Patterns
-description: Complete guide to WireBox dependency injection, binder DSL, object scopes, providers, AOP, and advanced DI patterns
+name: WireBox Dependency Injection
+description: Complete guide to WireBox dependency injection patterns, binder DSL, object scopes, providers, and advanced DI patterns
 category: wirebox
 priority: high
 triggers:
@@ -10,15 +10,14 @@ triggers:
   - injection
   - binder
   - provider
-  - AOP
-  - aspect oriented
+  - scopes
 ---
 
-# WireBox DI Patterns
+# WireBox Dependency Injection
 
 ## Overview
 
-WireBox is ColdBox's enterprise dependency injection and AOP framework providing constructor, setter, and property injection with powerful object lifecycle management. Proper DI reduces coupling and improves testability.
+WireBox is ColdBox's enterprise dependency injection framework providing constructor, setter, and property injection with powerful object lifecycle management. Proper DI reduces coupling and improves testability.
 
 ## Core Concepts
 
@@ -28,7 +27,6 @@ WireBox is ColdBox's enterprise dependency injection and AOP framework providing
 - **Binder**: DSL for configuring dependencies
 - **Scopes**: Object lifecycle management (singleton, transient, request, session)
 - **Providers**: Lazy-loaded dependencies
-- **AOP**: Aspect-oriented programming (interceptors)
 
 ## Basic Injection
 
@@ -361,6 +359,30 @@ function configure() {
 }
 ```
 
+### Scope Best Practices
+
+```boxlang
+// ✅ Good: Singleton for stateless services
+class singleton {
+    property name="userService" inject="UserService"
+}
+
+// ✅ Good: Transient for stateful objects
+class transient {
+    property name="userDTO"
+}
+
+// ✅ Good: Request scope for request-specific data
+class {
+    property name="requestContext" inject="RequestContext" scope="request"
+}
+
+// ❌ Bad: Singleton for stateful objects
+class singleton {
+    property name="currentUser"  // Thread-safety issue!
+}
+```
+
 ## Providers
 
 ### Using Providers
@@ -422,79 +444,19 @@ class implements="coldbox.system.ioc.IProvider" singleton {
             .configure( settings.database )
     }
 }
+
+// Register custom provider
+map( "DatabaseService" )
+    .toProvider( "DatabaseProvider" )
 ```
 
-## Aspect-Oriented Programming (AOP)
+### Provider Use Cases
 
-### Method Interception
-
-```boxlang
-/**
- * config/WireBox.cfc
- */
-function configure() {
-
-    // Add AOP interceptor
-    map( "UserService" )
-        .to( "models.UserService" )
-        .asSingleton()
-        .addInterceptor( "LoggingInterceptor" )
-}
-
-/**
- * LoggingInterceptor.cfc
- */
-class {
-
-    property name="log" inject="logbox:logger:{this}"
-
-    function before( invocation ) {
-        log.debug( "Calling #invocation.getMethod()#" )
-    }
-
-    function after( invocation, result ) {
-        log.debug( "#invocation.getMethod()# completed" )
-        return result
-    }
-
-    function onException( invocation, exception ) {
-        log.error( "#invocation.getMethod()# failed: #exception.message#" )
-        rethrow
-    }
-}
-```
-
-### Performance Monitoring
-
-```boxlang
-/**
- * PerformanceInterceptor.cfc
- */
-class {
-
-    property name="log" inject="logbox:logger:{this}"
-
-    function around( invocation ) {
-        var start = getTickCount()
-
-        try {
-            var result = invocation.proceed()
-
-            var duration = getTickCount() - start
-
-            if ( duration > 1000 ) {
-                log.warn( "Slow method: #invocation.getMethod()# (#duration#ms)" )
-            }
-
-            return result
-
-        } catch ( any e ) {
-            log.error( "Method failed: #invocation.getMethod()#" )
-            rethrow
-        }
-    }
-}
-```
+1. **Lazy Loading**: Delay expensive object creation
+2. **Circular Dependencies**: Break dependency cycles
+3. **Conditional Creation**: Create objects based on runtime conditions
+4. **Scope Bridging**: Access shorter-scoped objects from longer-scoped ones
+5. **Factory Pattern**: Dynamic object creation
 
 ## Advanced Patterns
 
@@ -577,6 +539,7 @@ map( "IUserRepository" )
 ```boxlang
 /**
  * ServiceLocator.cfc
+ * Note: Use sparingly - prefer direct injection
  */
 class singleton {
 
@@ -617,6 +580,39 @@ function configure() {
         .to( "models.OrderService" )
         .parent( "BaseService" )
 }
+```
+
+### Strategy Pattern
+
+```boxlang
+/**
+ * IPaymentStrategy.cfc
+ */
+interface {
+    function process( amount )
+}
+
+/**
+ * PaymentService.cfc
+ */
+class singleton {
+
+    property name="wirebox" inject="wirebox"
+
+    function processPayment( type, amount ) {
+        var strategy = wirebox.getInstance( "#type#PaymentStrategy" )
+        return strategy.process( amount )
+    }
+}
+
+// Configure strategies
+map( "StripePaymentStrategy" )
+    .to( "models.payment.StripeStrategy" )
+    .asSingleton()
+
+map( "PayPalPaymentStrategy" )
+    .to( "models.payment.PayPalStrategy" )
+    .asSingleton()
 ```
 
 ## Testing with WireBox
@@ -689,39 +685,89 @@ class extends="testbox.system.BaseSpec" {
 }
 ```
 
+### Test Doubles
+
+```boxlang
+/**
+ * Create test doubles for dependencies
+ */
+beforeEach( () => {
+    // Stub - Minimal implementation
+    variables.stubDAO = createStub()
+        .$( "findById", { id: 1, name: "Test" } )
+
+    // Mock - Behavior verification
+    variables.mockLogger = createMock( "coldbox.system.logging.Logger" )
+        .$( "info" )
+        .$( "error" )
+
+    // Spy - Partial mock
+    variables.spyService = createSpy( "models.UserService" )
+
+    variables.service = prepareMock( createObject( "models.OrderService" ) )
+        .$property( "userDAO", "variables", stubDAO )
+        .$property( "log", "variables", mockLogger )
+} )
+```
+
 ## Best Practices
 
 ### Design Guidelines
 
 1. **Interface Programming**: Code to interfaces, not implementations
-2. **Constructor Injection**: Prefer constructor over setter/property injection
-3. **Explicit Dependencies**: Make dependencies explicit
+2. **Constructor Injection**: Prefer constructor over setter/property injection for required dependencies
+3. **Explicit Dependencies**: Make all dependencies explicit and visible
 4. **Single Responsibility**: One responsibility per class
 5. **Avoid Circular Dependencies**: Use providers if needed
-6. **Appropriate Scopes**: Use correct object scopes
-7. **Testability**: Design for easy testing
+6. **Appropriate Scopes**: Use correct object scopes for lifecycle management
+7. **Testability**: Design for easy testing and mocking
 8. **Configuration**: Use binder for complex configurations
-9. **Lazy Loading**: Use providers for expensive objects
-10. **Documentation**: Document injection points
+9. **Lazy Loading**: Use providers for expensive or rarely used objects
+10. **Documentation**: Document injection points and dependencies
 
-### Common Patterns
+### Injection Type Guidelines
 
 ```boxlang
-// ✅ Good: Property injection
-property name="userService" inject="UserService"
-
-// ✅ Good: Constructor injection
-function init( required userService ) {
-    variables.userService = arguments.userService
+// ✅ Constructor injection - Required dependencies
+function init( required userDAO, required log ) {
+    variables.userDAO = arguments.userDAO
+    variables.log = arguments.log
     return this
 }
 
-// ✅ Good: Provider for lazy loading
-property name="mailServiceProvider" inject="provider:MailService"
+// ✅ Property injection - Optional dependencies
+property name="cache" inject="cachebox:default"
 
-// ✅ Good: Singleton scope
+// ✅ Setter injection - Optional configuration
+function setMaxRetries( required numeric maxRetries ) {
+    variables.maxRetries = arguments.maxRetries
+}
+
+// ✅ Provider injection - Lazy loading or circular deps
+property name="mailServiceProvider" inject="provider:MailService"
+```
+
+### Scope Guidelines
+
+```boxlang
+// Singleton - Stateless services, utilities, DAOs
 class singleton {
-    property name="cache" inject="cachebox:default"
+    property name="userDAO" inject="UserDAO"
+}
+
+// Transient - DTOs, value objects, stateful objects
+class transient {
+    property name="data"
+}
+
+// Request - Request-specific state
+class {
+    property name="requestData" scope="request"
+}
+
+// Session - User session state
+class {
+    property name="cart" scope="session"
 }
 ```
 
@@ -730,13 +776,13 @@ class singleton {
 ### Pitfalls to Avoid
 
 1. **Circular Dependencies**: A depends on B, B depends on A
-2. **Wrong Scopes**: Using transient for expensive objects
-3. **Over-Injection**: Injecting too many dependencies
+2. **Wrong Scopes**: Using transient for expensive objects or singleton for stateful objects
+3. **Over-Injection**: Injecting too many dependencies (God object anti-pattern)
 4. **Missing Annotations**: Forgetting injection annotations
 5. **Property Shadowing**: Conflicting variable names
 6. **No Interfaces**: Tight coupling to implementations
-7. **Service Locator Overuse**: Anti-pattern if overused
-8. **Mutable Singletons**: Thread safety issues
+7. **Service Locator Overuse**: Anti-pattern if overused (prefer direct injection)
+8. **Mutable Singletons**: Thread safety issues with shared state
 9. **Constructor Complexity**: Too much logic in init()
 10. **Hard-Coded Dependencies**: Not using DI at all
 
@@ -775,10 +821,21 @@ class {
 class {
     property name="orderServiceProvider" inject="provider:OrderService"
 }
+
+// ❌ Bad: Mutable singleton state
+class singleton {
+    property name="currentUser"  // Shared across all requests!
+}
+
+// ✅ Good: Request-scoped state
+class {
+    property name="currentUser" scope="request"
+}
 ```
 
 ## Related Skills
 
+- [WireBox AOP](wirebox-aop.md) - Aspect-oriented programming patterns
 - [ColdBox Handler Development](../coldbox/handler-development.md) - Handler patterns
 - [LogBox Logging](../logbox/logbox-logging-patterns.md) - Logging patterns
 - [CacheBox Caching](../cachebox/cachebox-caching-patterns.md) - Caching patterns
@@ -788,3 +845,4 @@ class {
 - [WireBox Documentation](https://wirebox.ortusbooks.com/)
 - [Injection DSL](https://wirebox.ortusbooks.com/usage/injection-dsl)
 - [Binder Configuration](https://wirebox.ortusbooks.com/configuration/binder-configuration)
+- [Object Scopes](https://wirebox.ortusbooks.com/usage/scopes)
