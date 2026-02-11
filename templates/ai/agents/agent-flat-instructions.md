@@ -125,6 +125,12 @@ box testbox run
 - Use PRC for internal data, RC only for user input
 - Always validate user input from RC
 
+## MCP Documentation Servers
+
+This project has access to the following Model Context Protocol (MCP) documentation servers for live, up-to-date information:
+
+|MCP_SERVERS|
+
 ## Additional Resources
 
 - ColdBox Docs: https://coldbox.ortusbooks.com

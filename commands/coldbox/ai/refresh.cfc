@@ -32,9 +32,11 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="update" {
 			print.line();
 
 			// Combine all changes for display
-			var totalAdded   = result.guidelines.added.len() + result.skills.added.len();
+			var mcpAdded     = structKeyExists( result, "mcpServers" ) ? result.mcpServers.added.len() : 0;
+			var mcpRemoved   = structKeyExists( result, "mcpServers" ) ? result.mcpServers.removed.len() : 0;
+			var totalAdded   = result.guidelines.added.len() + result.skills.added.len() + mcpAdded;
 			var totalUpdated = result.guidelines.updated.len() + result.skills.updated.len();
-			var totalRemoved = result.guidelines.removed.len() + result.skills.removed.len();
+			var totalRemoved = result.guidelines.removed.len() + result.skills.removed.len() + mcpRemoved;
 
 			if ( totalAdded ) {
 				print.greenLine( "Added (#totalAdded#):" );
@@ -44,6 +46,11 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="update" {
 				result.skills.added.each( function( item ){
 					print.indentedGreenLine( "  + #item# (skill)" );
 				} );
+				if ( structKeyExists( result, "mcpServers" ) ) {
+					result.mcpServers.added.each( function( item ){
+						print.indentedGreenLine( "  + #item# (MCP server)" );
+					} );
+				}
 				print.line();
 			}
 
@@ -66,6 +73,11 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="update" {
 				result.skills.removed.each( function( item ){
 					print.indentedRedLine( "  - #item# (skill)" );
 				} );
+				if ( structKeyExists( result, "mcpServers" ) ) {
+					result.mcpServers.removed.each( function( item ){
+						print.indentedRedLine( "  - #item# (MCP server)" );
+					} );
+				}
 				print.line();
 			}
 

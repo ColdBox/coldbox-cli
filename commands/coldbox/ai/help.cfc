@@ -21,6 +21,7 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.greenLine( "  coldbox ai agents           Manage AI agent configurations (Claude, Copilot, etc.)" )
 			.greenLine( "  coldbox ai guidelines       Manage framework guidelines and documentation" )
 			.greenLine( "  coldbox ai skills           Manage AI skills (how-to cookbooks)" )
+			.greenLine( "  coldbox ai mcp              Manage MCP documentation servers" )
 			.line()
 			.yellowLine( "Examples:" )
 			.line()

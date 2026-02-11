@@ -9,6 +9,7 @@ component singleton {
 	property name="fileSystemUtil" inject="fileSystem";
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
+	property name="mcpRegistry"    inject="MCPRegistry@coldbox-cli";
 
 	static {
 		SUPPORTED_AGENTS = [
@@ -306,6 +307,15 @@ component singleton {
 			"all"
 		)
 
+		// Add MCP servers content
+		var mcpContent = generateMCPServersContent( arguments.directory )
+		content = replaceNoCase(
+			content,
+			"|MCP_SERVERS|",
+			mcpContent,
+			"all"
+		)
+
 		return content
 	}
 
@@ -374,6 +384,67 @@ component singleton {
 
 		// Check for migrations directory
 		return directoryExists( "#arguments.directory#/resources/database/migrations" )
+	}
+
+	/**
+	 * Generate MCP servers content for agent configuration
+	 *
+	 * @directory The project directory
+	 *
+	 * @return String containing formatted MCP server list
+	 */
+	private function generateMCPServersContent( required string directory ){
+		// Load manifest to get MCP servers
+		var aiService = variables.wirebox.getInstance( "AIService@coldbox-cli" )
+		var manifest = aiService.loadManifest( arguments.directory )
+
+		if ( !structKeyExists( manifest, "mcpServers" ) ) {
+			return "No MCP servers configured yet. Run 'coldbox ai refresh' to initialize."
+		}
+
+		var mcpServers = manifest.mcpServers
+		var content = []
+
+		// Core servers
+		if ( mcpServers.core.len() ) {
+			content.append( "**Core Documentation Servers:**" )
+			content.append( "" )
+			mcpServers.core.each( ( server ) => {
+				var serverDef = variables.mcpRegistry.getServerDefinition( server )
+				if ( !serverDef.isEmpty() ) {
+					content.append( "- **#server#**: #serverDef.description#" )
+				}
+			} )
+			content.append( "" )
+		}
+
+		// Module servers
+		if ( mcpServers.module.len() ) {
+			content.append( "**Module Documentation Servers:**" )
+			content.append( "" )
+			mcpServers.module.each( ( server ) => {
+				var serverDef = variables.mcpRegistry.getServerDefinition( server )
+				if ( !serverDef.isEmpty() ) {
+					content.append( "- **#server#**: #serverDef.description#" )
+				}
+			} )
+			content.append( "" )
+		}
+
+		// Custom servers
+		if ( mcpServers.custom.len() ) {
+			content.append( "**Custom Documentation Servers:**" )
+			content.append( "" )
+			mcpServers.custom.each( ( mcpServer ) => {
+				var desc = mcpServer.description ?: "Custom MCP server"
+				content.append( "- **#mcpServer.name#**: #desc#" )
+			} )
+			content.append( "" )
+		}
+
+		content.append( "**Using MCP Servers:** Query these servers when you need current documentation, API references, or code examples. They provide live, up-to-date information directly from official documentation sources." )
+
+		return content.toList( chr( 10 ) )
 	}
 
 }

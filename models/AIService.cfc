@@ -11,6 +11,7 @@ component singleton {
 	property name="guidelineManager" inject="GuidelineManager@coldbox-cli";
 	property name="skillManager"     inject="SkillManager@coldbox-cli";
 	property name="agentRegistry"    inject="AgentRegistry@coldbox-cli";
+	property name="mcpRegistry"      inject="MCPRegistry@coldbox-cli";
 	property name="utility"          inject="Utility@coldbox-cli";
 
 	/**
@@ -63,7 +64,12 @@ component singleton {
 			"templateType"      : templateType,
 			"guidelines"        : [],
 			"skills"            : [],
-			"agents"            : listToArray( arguments.agents )
+			"agents"            : listToArray( arguments.agents ),
+			"mcpServers"        : {
+				"core"   : [],
+				"module" : [],
+				"custom" : []
+			}
 		};
 
 		// Install core guidelines
@@ -79,6 +85,11 @@ component singleton {
 			arguments.language,
 			manifest
 		);
+
+		// Initialize MCP servers
+		var mcpServers = variables.mcpRegistry.getServersForProject( arguments.directory );
+		manifest.mcpServers.core   = mcpServers.core;
+		manifest.mcpServers.module = mcpServers.module;
 
 		// Configure agents
 		result.agents = variables.agentRegistry.configureAgents(
@@ -129,6 +140,10 @@ component singleton {
 				"added"   : [],
 				"updated" : [],
 				"removed" : []
+			},
+			"mcpServers" : {
+				"added"   : [],
+				"removed" : []
 			}
 		};
 
@@ -158,6 +173,36 @@ component singleton {
 		result.skills.added.append( skillChanges.added, true );
 		result.skills.updated.append( skillChanges.updated, true );
 		result.skills.removed.append( skillChanges.removed, true );
+
+		// Refresh MCP servers based on installed modules
+		var newMcpServers = variables.mcpRegistry.getServersForProject( arguments.directory );
+		var oldMcpServers = manifest.mcpServers ?: { "core" : [], "module" : [], "custom" : [] };
+		
+		// Track changes in module servers (core servers never change, custom servers are preserved)
+		var oldModuleServers = oldMcpServers.module ?: [];
+		var newModuleServers = newMcpServers.module;
+		
+		// Find added module servers
+		newModuleServers.each( ( serverName ) => {
+			if ( !oldModuleServers.findNoCase( serverName ) ) {
+				result.mcpServers.added.append( serverName );
+			}
+		} );
+		
+		// Find removed module servers
+		oldModuleServers.each( ( serverName ) => {
+			if ( !newModuleServers.findNoCase( serverName ) ) {
+				result.mcpServers.removed.append( serverName );
+			}
+		} );
+		
+		// Preserve custom servers
+		var customServers = oldMcpServers.custom ?: [];
+		manifest.mcpServers = {
+			"core"   : newMcpServers.core,
+			"module" : newMcpServers.module,
+			"custom" : customServers
+		};
 
 		// Save updated manifest
 		saveManifest( arguments.directory, manifest );
@@ -253,6 +298,18 @@ component singleton {
 		var agentIssues = variables.agentRegistry.diagnose( arguments.directory, manifest );
 		issues.warnings.append( agentIssues.warnings, true );
 		issues.recommendations.append( agentIssues.recommendations, true );
+
+		// Validate MCP servers
+		if ( !structKeyExists( manifest, "mcpServers" ) ) {
+			issues.warnings.append( "MCP servers not configured in manifest" );
+			issues.recommendations.append( "Run 'coldbox ai refresh' to initialize MCP servers" );
+		} else {
+			var coreServers = manifest.mcpServers.core ?: [];
+			if ( !coreServers.len() ) {
+				issues.warnings.append( "No core MCP servers configured" );
+				issues.recommendations.append( "Run 'coldbox ai refresh' to add core servers" );
+			}
+		}
 
 		// Build summary
 		issues.summary = {

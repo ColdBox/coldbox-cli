@@ -159,6 +159,12 @@ docker-compose logs -f
 
 <!-- List external services, APIs, or integrations -->
 
+## MCP Documentation Servers
+
+This project has access to the following Model Context Protocol (MCP) documentation servers for live, up-to-date information:
+
+|MCP_SERVERS|
+
 ## Important Notes
 
 - **File Paths:** Application code uses `/app` paths, public files in `/public`
