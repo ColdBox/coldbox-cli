@@ -87,7 +87,7 @@ component singleton {
 		);
 
 		// Initialize MCP servers
-		var mcpServers = variables.mcpRegistry.getServersForProject( arguments.directory );
+		var mcpServers             = variables.mcpRegistry.getServersForProject( arguments.directory );
 		manifest.mcpServers.core   = mcpServers.core;
 		manifest.mcpServers.module = mcpServers.module;
 
@@ -141,10 +141,7 @@ component singleton {
 				"updated" : [],
 				"removed" : []
 			},
-			"mcpServers" : {
-				"added"   : [],
-				"removed" : []
-			}
+			"mcpServers" : { "added" : [], "removed" : [] }
 		};
 
 		// Load existing manifest
@@ -176,7 +173,11 @@ component singleton {
 
 		// Refresh MCP servers based on installed modules
 		var newMcpServers = variables.mcpRegistry.getServersForProject( arguments.directory );
-		var oldMcpServers = manifest.mcpServers ?: { "core" : [], "module" : [], "custom" : [] };
+		var oldMcpServers = manifest.mcpServers ?: {
+			"core"   : [],
+			"module" : [],
+			"custom" : []
+		};
 
 		// Track changes in module servers (core servers never change, custom servers are preserved)
 		var oldModuleServers = oldMcpServers.module ?: [];
@@ -197,7 +198,7 @@ component singleton {
 		} );
 
 		// Preserve custom servers
-		var customServers = oldMcpServers.custom ?: [];
+		var customServers   = oldMcpServers.custom ?: [];
 		manifest.mcpServers = {
 			"core"   : newMcpServers.core,
 			"module" : newMcpServers.module,

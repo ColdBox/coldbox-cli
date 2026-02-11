@@ -30,7 +30,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Remove MCP Server" );
 
-		var info = ensureInstalled( arguments.directory );
+		var info     = ensureInstalled( arguments.directory );
 		var manifest = loadManifest( arguments.directory );
 
 		// Ensure mcpServers structure exists
@@ -45,7 +45,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( mcpServers.core.findNoCase( arguments.name ) ) {
 			printError( "Cannot remove core MCP server: #arguments.name#" );
 			print.line();
-			printInfo( "Core servers: #mcpServers.core.toList( ', ' )#" );
+			printInfo( "Core servers: #mcpServers.core.toList( ", " )#" );
 			return;
 		}
 

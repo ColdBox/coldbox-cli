@@ -309,7 +309,7 @@ component singleton {
 
 		// Add MCP servers content
 		var mcpContent = generateMCPServersContent( arguments.directory )
-		content = replaceNoCase(
+		content        = replaceNoCase(
 			content,
 			"|MCP_SERVERS|",
 			mcpContent,
@@ -396,14 +396,14 @@ component singleton {
 	private function generateMCPServersContent( required string directory ){
 		// Load manifest to get MCP servers
 		var aiService = variables.wirebox.getInstance( "AIService@coldbox-cli" )
-		var manifest = aiService.loadManifest( arguments.directory )
+		var manifest  = aiService.loadManifest( arguments.directory )
 
 		if ( !structKeyExists( manifest, "mcpServers" ) ) {
 			return "No MCP servers configured yet. Run 'coldbox ai refresh' to initialize."
 		}
 
 		var mcpServers = manifest.mcpServers
-		var content = []
+		var content    = []
 
 		// Core servers
 		if ( mcpServers.core.len() ) {
