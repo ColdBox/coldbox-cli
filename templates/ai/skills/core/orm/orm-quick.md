@@ -54,13 +54,13 @@ moduleSettings = {
  * models/User.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     // Table name (optional - defaults to pluralized entity name)
     variables.table = "users"
-    
+
     // Primary key (optional - defaults to "id")
     variables.key = "id"
-    
+
     // Fillable attributes
     variables.fillable = [
         "firstName",
@@ -68,12 +68,12 @@ class extends="quick.models.BaseEntity" {
         "email",
         "password"
     ]
-    
+
     // Hidden attributes (not included in serialization)
     variables.hidden = [
         "password"
     ]
-    
+
     // Cast attributes
     variables.casts = {
         "isActive": "boolean",
@@ -90,33 +90,33 @@ class extends="quick.models.BaseEntity" {
  * models/User.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     variables.fillable = [
         "name",
         "email"
     ]
-    
+
     /**
      * User has many posts
      */
     function posts() {
         return hasMany( "Post" )
     }
-    
+
     /**
      * User belongs to a role
      */
     function role() {
         return belongsTo( "Role" )
     }
-    
+
     /**
      * User has one profile
      */
     function profile() {
         return hasOne( "Profile" )
     }
-    
+
     /**
      * User belongs to many teams (many-to-many)
      */
@@ -373,21 +373,21 @@ var usersWithPublished = getInstance( "User" )
  * models/User.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     /**
      * Scope: Active users
      */
     function scopeActive( query ) {
         return arguments.query.where( "isActive", true )
     }
-    
+
     /**
      * Scope: Users by role
      */
     function scopeRole( query, required role ) {
         return arguments.query.where( "role", arguments.role )
     }
-    
+
     /**
      * Scope: Recent users
      */
@@ -427,9 +427,9 @@ var activeAdmins = getInstance( "User" )
  * models/ActiveUser.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     variables.table = "users"
-    
+
     /**
      * Apply global scope
      */
@@ -452,14 +452,14 @@ var users = getInstance( "ActiveUser" ).all()
  * models/User.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     /**
      * Get full name
      */
     function getFullNameAttribute() {
         return "#getFirstName()# #getLastName()#"
     }
-    
+
     /**
      * Format phone number
      */
@@ -480,14 +480,14 @@ var fullName = user.getFullName()
  * models/User.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     /**
      * Hash password before saving
      */
     function setPasswordAttribute( value ) {
         return bcrypt( value )
     }
-    
+
     /**
      * Normalize email
      */
@@ -526,21 +526,21 @@ var users = getInstance( "User" )
  * models/User.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     /**
      * Before create
      */
     function preInsert( entity ) {
         entity.setCreatedAt( now() )
     }
-    
+
     /**
      * Before update
      */
     function preUpdate( entity ) {
         entity.setUpdatedAt( now() )
     }
-    
+
     /**
      * After save
      */
@@ -557,10 +557,10 @@ class extends="quick.models.BaseEntity" {
  * models/User.cfc
  */
 class extends="quick.models.BaseEntity" {
-    
+
     variables.softDeletes = true
     variables.deletedAttributeName = "deletedAt"
-    
+
     // Queries automatically exclude soft deleted records
 }
 
