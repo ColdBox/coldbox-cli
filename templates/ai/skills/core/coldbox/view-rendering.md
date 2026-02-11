@@ -36,7 +36,7 @@ Basic view template
 <cfoutput>
 <div class="users-container">
     <h1>#prc.pageTitle#</h1>
-    
+
     <table class="table">
         <thead>
             <tr>
@@ -72,7 +72,7 @@ View with partials
 <div class="page-container">
     <!-- Render header partial -->
     #renderView( "partials/pageHeader" )#
-    
+
     <!-- Render content with arguments -->
     #renderView(
         view = "users/partials/userTable",
@@ -81,10 +81,10 @@ View with partials
             showActions: true
         }
     )#
-    
+
     <!-- Render sidebar widget -->
     #renderView( "widgets/userStats" )#
-    
+
     <!-- Render footer partial -->
     #renderView( "partials/pageFooter" )#
 </div>
@@ -136,10 +136,10 @@ Reusable partial with arguments
  * Render email templates from service
  */
 class EmailService {
-    
+
     @inject
     property name="renderer";
-    
+
     @inject
     property name="mailService";
 
@@ -155,7 +155,7 @@ class EmailService {
                 activationLink: getActivationLink( arguments.user )
             }
         )
-        
+
         mailService.send(
             to = arguments.user.getEmail(),
             from = "noreply@example.com",
@@ -175,7 +175,7 @@ class EmailService {
                 generatedDate: now()
             }
         )
-        
+
         // Convert to PDF
         return pdfService.htmlToPDF( reportHTML )
     }
@@ -203,10 +203,10 @@ Cached partial
 ```boxlang
 // In handler - cache event output
 class Products extends coldbox.system.EventHandler {
-    
+
     function featured( event, rc, prc ) {
         prc.products = productService.getFeatured()
-        
+
         // Cache entire event output
         event.setView(
             view = "products/featured",
@@ -219,7 +219,7 @@ class Products extends coldbox.system.EventHandler {
     function show( event, rc, prc ) {
         var productId = rc.id ?: 0
         prc.product = productService.getById( productId )
-        
+
         // Cache per product
         event.setView(
             view = "products/show",
@@ -235,22 +235,22 @@ class Products extends coldbox.system.EventHandler {
 
 ```boxlang
 class Dashboard extends coldbox.system.EventHandler {
-    
+
     @inject
     property name="themeService";
 
     function index( event, rc, prc ) {
         prc.dashboardData = getDashboardData()
-        
+
         // Select view based on user theme
         var theme = themeService.getUserTheme()
         var viewPath = "dashboard/#theme#/index"
-        
+
         // Check if theme view exists, fallback to default
         if( !fileExists( expandPath( "/views/#viewPath#.cfm" ) ) ){
             viewPath = "dashboard/default/index"
         }
-        
+
         event.setView( viewPath )
     }
 
@@ -267,7 +267,7 @@ class Dashboard extends coldbox.system.EventHandler {
 
     function ajaxWidget( event, rc, prc ) {
         prc.widgetData = getWidgetData()
-        
+
         // Return partial without layout for AJAX
         if( event.isAjax() ){
             event.setView(
@@ -332,26 +332,26 @@ Conditional view content
 <cfoutput>
 <div class="user-profile">
     <h1>#prc.user.getFullName()#</h1>
-    
+
     <!-- Show edit button only if user can edit -->
     <cfif auth().can( "users.edit" )>
         <a href="#event.buildLink( 'users.edit' )#?id=#prc.user.getId()#" class="btn">
             Edit Profile
         </a>
     </cfif>
-    
+
     <!-- Show admin panel only for admins -->
     <cfif prc.user.hasRole( "admin" )>
         #renderView( "users/partials/adminPanel" )#
     </cfif>
-    
+
     <!-- Different content for user's own profile -->
     <cfif prc.user.getId() == auth().userId()>
         #renderView( "users/partials/ownProfile" )#
     <cfelse>
         #renderView( "users/partials/publicProfile" )#
     </cfif>
-    
+
     <!-- Render premium features if subscribed -->
     <cfif prc.user.hasSubscription()>
         #renderView( "users/partials/premiumFeatures" )#
@@ -370,35 +370,35 @@ Using view helpers
 <cfoutput>
 <div class="orders-list">
     <h1>Orders</h1>
-    
+
     <!-- Build links with helper -->
     <a href="#event.buildLink( 'orders.create' )#">New Order</a>
-    
+
     <!-- Build link with query string -->
     <a href="#event.buildLink( event='orders.index', queryString='status=pending' )#">
         Pending Orders
     </a>
-    
+
     <!-- Build route with parameters -->
     <a href="#event.route( name='order.show', params={ id: order.getId() } )#">
         View Order
     </a>
-    
+
     <table class="table">
         <cfloop array="#prc.orders#" index="order">
             <tr>
                 <td>###order.getId()#</td>
                 <td>#order.getCustomerName()#</td>
-                
+
                 <!-- Format currency -->
                 <td>#numberFormat( order.getTotal(), "$999,999.99" )#</td>
-                
+
                 <!-- Format date -->
                 <td>#dateFormat( order.getCreatedDate(), "mm/dd/yyyy" )#</td>
-                
+
                 <!-- Format time -->
                 <td>#timeFormat( order.getCreatedDate(), "h:mm tt" )#</td>
-                
+
                 <!-- Status badge -->
                 <td>
                     <span class="badge badge-#order.getStatusClass()#">
@@ -408,7 +408,7 @@ Using view helpers
             </tr>
         </cfloop>
     </table>
-    
+
     <!-- Pagination helper -->
     #renderView(
         view = "partials/pagination",
@@ -480,20 +480,20 @@ Welcome email template
 <body>
     <div class="container">
         <h1>Welcome, #args.user.getFirstName()#!</h1>
-        
+
         <p>Thank you for joining our platform. We're excited to have you!</p>
-        
+
         <p>To get started, please verify your email address:</p>
-        
+
         <p>
             <a href="#args.activationLink#" class="button">Verify Email</a>
         </p>
-        
+
         <p>
             Or copy this link:<br>
             #args.activationLink#
         </p>
-        
+
         <p>Best regards,<br>The Team</p>
     </div>
 </body>
@@ -505,10 +505,10 @@ Welcome email template
 
 ```boxlang
 class api_Users extends coldbox.system.RestHandler {
-    
+
     function index( event, rc, prc ) {
         var users = userService.list()
-        
+
         // Render structured JSON response
         event.renderData(
             type = "json",
@@ -581,7 +581,7 @@ Optimized view rendering
 )#
 
 <!-- Lazy load images -->
-<img 
+<img
     src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
     data-src="/images/large-image.jpg"
     class="lazy-load"
@@ -600,7 +600,7 @@ Optimized view rendering
 
 ```boxlang
 class ViewRenderingTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
@@ -608,13 +608,13 @@ class ViewRenderingTest extends coldbox.system.testing.BaseTestCase {
 
     function run() {
         describe( "View Rendering", function(){
-            
+
             it( "should render user view with data", function(){
                 var event = execute(
                     event = "users.index",
                     renderResults = true
                 )
-                
+
                 var html = event.getRenderedContent()
                 expect( html ).toInclude( "users-container" )
                 expect( html ).toInclude( "table" )
@@ -630,7 +630,7 @@ class ViewRenderingTest extends coldbox.system.testing.BaseTestCase {
                         })
                     }
                 )
-                
+
                 expect( html ).toInclude( "John Doe" )
             })
 
@@ -641,13 +641,13 @@ class ViewRenderingTest extends coldbox.system.testing.BaseTestCase {
                     cacheTimeout = 60,
                     cacheKey = "test-stats"
                 )
-                
+
                 var html2 = getRenderer().renderView(
                     view = "widgets/stats",
                     cache = true,
                     cacheKey = "test-stats"
                 )
-                
+
                 expect( html1 ).toBe( html2 )
             })
         })

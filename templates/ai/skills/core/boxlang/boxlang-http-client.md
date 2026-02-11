@@ -244,7 +244,7 @@ users = http( "https://api.example.com/users" )
     .transform( ( result ) => {
         // Custom transformation logic
         data = deserializeJSON( result.fileContent )
-        
+
         // Filter and transform data
         return data.users.filter( ( user ) => user.active )
     } )
@@ -302,19 +302,19 @@ class {
     property name="baseURL" default="https://api.github.com"
     property name="token"
     property name="logger"
-    
+
     function init( token ) {
         variables.token = token
         variables.logger = getLogger()
         return this
     }
-    
+
     /**
      * Get repository information
      */
     function getRepository( owner, repo ) {
         url = "#variables.baseURL#/repos/#owner#/#repo#"
-        
+
         return http( url )
             .header( "Authorization", "Bearer #variables.token#" )
             .header( "Accept", "application/vnd.github.v3+json" )
@@ -324,13 +324,13 @@ class {
             .throwOnError( true )
             .send()
     }
-    
+
     /**
      * List repository issues
      */
     function listIssues( owner, repo, state = "open" ) {
         url = "#variables.baseURL#/repos/#owner#/#repo#/issues"
-        
+
         return http( url )
             .header( "Authorization", "Bearer #variables.token#" )
             .header( "Accept", "application/vnd.github.v3+json" )
@@ -341,13 +341,13 @@ class {
             .asJSON()
             .send()
     }
-    
+
     /**
      * Create new issue
      */
     function createIssue( owner, repo, title, body = "" ) {
         url = "#variables.baseURL#/repos/#owner#/#repo#/issues"
-        
+
         return http( url )
             .post()
             .header( "Authorization", "Bearer #variables.token#" )
@@ -361,16 +361,16 @@ class {
             .throwOnError( true )
             .send()
     }
-    
+
     /**
      * Upload file to repository
      */
     function uploadFile( owner, repo, path, content, message ) {
         url = "#variables.baseURL#/repos/#owner#/#repo#/contents/#path#"
-        
+
         // Encode content as base64
         encodedContent = toBase64( content )
-        
+
         return http( url )
             .put()
             .header( "Authorization", "Bearer #variables.token#" )
@@ -403,13 +403,13 @@ println( "Open issues: #arrayLen( issues )#" )
 class {
     property name="baseURL"
     property name="apiKey"
-    
+
     function init( baseURL, apiKey ) {
         variables.baseURL = baseURL
         variables.apiKey = apiKey
         return this
     }
-    
+
     // CREATE - POST
     function create( data ) {
         return http( "#variables.baseURL#/users" )
@@ -421,7 +421,7 @@ class {
             .throwOnError( true )
             .send()
     }
-    
+
     // READ - GET
     function read( id ) {
         return http( "#variables.baseURL#/users/#id#" )
@@ -431,7 +431,7 @@ class {
             .throwOnError( true )
             .send()
     }
-    
+
     // UPDATE - PUT
     function update( id, data ) {
         return http( "#variables.baseURL#/users/#id#" )
@@ -443,7 +443,7 @@ class {
             .throwOnError( true )
             .send()
     }
-    
+
     // DELETE - DELETE
     function delete( id ) {
         return http( "#variables.baseURL#/users/#id#" )
@@ -452,7 +452,7 @@ class {
             .throwOnError( true )
             .send()
     }
-    
+
     // LIST - GET with filters
     function list( filters = {} ) {
         return http( "#variables.baseURL#/users" )
@@ -705,18 +705,18 @@ class OAuth2Client {
     property name="clientSecret"
     property name="accessToken"
     property name="refreshToken"
-    
+
     function init( baseURL, clientId, clientSecret ) {
         variables.baseURL = baseURL
         variables.clientId = clientId
         variables.clientSecret = clientSecret
         return this
     }
-    
+
     function request( path, method = "GET", body = {} ) {
         // Ensure valid token
         ensureValidToken()
-        
+
         // Make authenticated request
         try {
             return http( "#variables.baseURL##path#" )
@@ -735,13 +735,13 @@ class OAuth2Client {
             throw e
         }
     }
-    
+
     private function ensureValidToken() {
         if ( isTokenExpired() ) {
             refreshAccessToken()
         }
     }
-    
+
     private function refreshAccessToken() {
         result = http( "#variables.baseURL#/oauth/token" )
             .post()
@@ -753,7 +753,7 @@ class OAuth2Client {
             } )
             .asJSON()
             .send()
-        
+
         variables.accessToken = result.access_token
         variables.refreshToken = result.refresh_token
     }
@@ -843,16 +843,16 @@ result = http( url )
  * APIServiceSpec.bx
  */
 component extends="testbox.system.BaseSpec" {
-    
+
     function beforeAll() {
         mockHTTPService = createMock( "HTTPService" )
         apiService = new APIService()
         apiService.httpService = mockHTTPService
     }
-    
+
     function run() {
         describe( "API Service", () => {
-            
+
             it( "should fetch user data", () => {
                 // Mock HTTP response
                 mockHTTPService
@@ -862,21 +862,21 @@ component extends="testbox.system.BaseSpec" {
                         statusCode: 200,
                         fileContent: '{"id":123,"name":"John"}'
                     } )
-                
+
                 user = apiService.getUser( 123 )
-                
+
                 expect( user.id ).toBe( 123 )
                 expect( user.name ).toBe( "John" )
             } )
-            
+
             it( "should handle HTTP errors", () => {
                 mockHTTPService
                     .$( "get" )
-                    .$throws( 
+                    .$throws(
                         type = "HTTPException",
                         message = "404 Not Found"
                     )
-                
+
                 expect( () => apiService.getUser( 999 ) )
                     .toThrow( "HTTPException" )
             } )
@@ -934,7 +934,7 @@ result = http( url ).httpVersion( "HTTP/2" ).send()
 function robustAPICall( url, maxRetries = 3 ) {
     retryCount = 0
     lastError = null
-    
+
     while ( retryCount < maxRetries ) {
         try {
             return http( url )
@@ -945,7 +945,7 @@ function robustAPICall( url, maxRetries = 3 ) {
         } catch ( any e ) {
             lastError = e
             retryCount++
-            
+
             if ( retryCount < maxRetries ) {
                 // Exponential backoff
                 waitTime = ( 2 ^ retryCount ) * 1000
@@ -954,9 +954,9 @@ function robustAPICall( url, maxRetries = 3 ) {
             }
         }
     }
-    
+
     // All retries failed
-    throw( 
+    throw(
         type = "APIException",
         message = "API call failed after #maxRetries# retries",
         detail = lastError.message

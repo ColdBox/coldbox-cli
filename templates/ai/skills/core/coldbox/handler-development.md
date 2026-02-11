@@ -39,10 +39,10 @@ Handlers are ColdBox's controllers that:
 
 ```boxlang
 class Users extends coldbox.system.EventHandler {
-    
+
     @inject
     property name="userService";
-    
+
     @inject
     property name="validationManager";
 
@@ -78,13 +78,13 @@ class Users extends coldbox.system.EventHandler {
      */
     function store( event, rc, prc ) {
         var result = userService.create( rc )
-        
+
         if( result.hasErrors() ){
             flash.put( "errors", result.getErrors() )
             flash.put( "data", rc )
             relocate( "users.create" )
         }
-        
+
         flash.put( "success", "User created successfully" )
         relocate( uri = "/users/#result.getId()#" )
     }
@@ -102,13 +102,13 @@ class Users extends coldbox.system.EventHandler {
      */
     function update( event, rc, prc ) {
         var result = userService.update( rc.id ?: 0, rc )
-        
+
         if( result.hasErrors() ){
             flash.put( "errors", result.getErrors() )
             flash.put( "data", rc )
             relocate( "users.edit", { id: rc.id } )
         }
-        
+
         flash.put( "success", "User updated successfully" )
         relocate( uri = "/users/#rc.id#" )
     }
@@ -128,10 +128,10 @@ class Users extends coldbox.system.EventHandler {
 
 ```boxlang
 class Users extends coldbox.system.EventHandler {
-    
+
     @inject
     property name="userService";
-    
+
     @inject
     property name="validationManager";
 
@@ -168,7 +168,7 @@ class Users extends coldbox.system.EventHandler {
 
 ```boxlang
 class Admin extends coldbox.system.EventHandler {
-    
+
     // Secure entire handler - requires authentication
     this.preHandler = "checkAuth"
 
@@ -183,7 +183,7 @@ class Admin extends coldbox.system.EventHandler {
             flash.put( "error", "Please login to continue" )
             relocate( "security.login" )
         }
-        
+
         if( !auth().user().hasRole( "admin" ) ){
             flash.put( "error", "Insufficient permissions" )
             relocate( "main.index" )
@@ -210,7 +210,7 @@ class Admin extends coldbox.system.EventHandler {
 
 ```boxlang
 class api_Users extends coldbox.system.RestHandler {
-    
+
     @inject
     property name="userService";
 
@@ -219,7 +219,7 @@ class api_Users extends coldbox.system.RestHandler {
             page = rc.page ?: 1,
             limit = rc.limit ?: 25
         )
-        
+
         event.renderData(
             data = users,
             statusCode = 200
@@ -228,7 +228,7 @@ class api_Users extends coldbox.system.RestHandler {
 
     function show( event, rc, prc ) {
         var user = userService.getById( rc.id ?: 0 )
-        
+
         if( isNull( user ) ){
             event.renderData(
                 data = { "error": "User not found" },
@@ -236,7 +236,7 @@ class api_Users extends coldbox.system.RestHandler {
             )
             return
         }
-        
+
         event.renderData(
             data = user,
             statusCode = 200
@@ -245,7 +245,7 @@ class api_Users extends coldbox.system.RestHandler {
 
     function create( event, rc, prc ) {
         var result = userService.create( rc )
-        
+
         if( result.hasErrors() ){
             event.renderData(
                 data = { "errors": result.getErrors() },
@@ -253,7 +253,7 @@ class api_Users extends coldbox.system.RestHandler {
             )
             return
         }
-        
+
         event.renderData(
             data = result,
             statusCode = 201
@@ -262,7 +262,7 @@ class api_Users extends coldbox.system.RestHandler {
 
     function update( event, rc, prc ) {
         var result = userService.update( rc.id ?: 0, rc )
-        
+
         if( result.hasErrors() ){
             event.renderData(
                 data = { "errors": result.getErrors() },
@@ -270,7 +270,7 @@ class api_Users extends coldbox.system.RestHandler {
             )
             return
         }
-        
+
         event.renderData(
             data = result,
             statusCode = 200
@@ -279,7 +279,7 @@ class api_Users extends coldbox.system.RestHandler {
 
     function delete( event, rc, prc ) {
         userService.delete( rc.id ?: 0 )
-        
+
         event.renderData(
             data = { "message": "User deleted successfully" },
             statusCode = 204
@@ -292,13 +292,13 @@ class api_Users extends coldbox.system.RestHandler {
 
 ```boxlang
 class Products extends coldbox.system.EventHandler {
-    
+
     // Run before ALL actions
     this.preHandler = "setupDefaults"
-    
+
     // Run after ALL actions
     this.postHandler = "logActivity"
-    
+
     // Run around specific actions
     this.aroundHandler_only = {
         actions: "create,update,delete",
@@ -429,7 +429,7 @@ function store( event, rc, prc ) {
             email: { required: true, type: "email" }
         }
     )
-    
+
     if( result.hasErrors() ){
         // Handle errors
     }
@@ -451,7 +451,7 @@ function delete( event, rc, prc ) {
 
 ```boxlang
 class UsersTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
@@ -459,7 +459,7 @@ class UsersTest extends coldbox.system.testing.BaseTestCase {
 
     function run() {
         describe( "Users Handler", function(){
-            
+
             it( "should display user list", function(){
                 var event = execute( event = "users.index", renderResults = true )
                 expect( event.getRenderedContent() ).toInclude( "Users" )

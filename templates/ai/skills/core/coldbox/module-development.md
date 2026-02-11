@@ -60,23 +60,23 @@ myModule/
  * MyModule Configuration
  */
 class {
-    
+
     // Module properties
     this.title              = "My Module"
     this.author             = "Your Name"
     this.webURL             = "https://www.example.com"
     this.description        = "Module description"
     this.version            = "1.0.0"
-    
+
     // Module entry point
     this.entryPoint         = "myModule"
-    
+
     // Model namespace
     this.modelNamespace     = "myModule"
-    
+
     // CF Mapping
     this.cfmapping          = "myModule"
-    
+
     // Module dependencies
     this.dependencies       = [ "cbvalidation", "cborm" ]
 
@@ -117,11 +117,11 @@ class {
      */
     function onLoad() {
         log.info( "Module #this.title# loaded successfully" )
-        
+
         // Register custom helpers
         binder.map( "DateHelper@myModule" )
             .to( "#moduleMapping#.models.DateHelper" )
-        
+
         // Announce module loaded event
         controller.getInterceptorService().announce( "onMyModuleLoaded" )
     }
@@ -158,7 +158,7 @@ class {
         // Module route prefix: /myModule
         route( "/" )
             .to( "Main.index" )
-        
+
         route( "/api/items" )
             .withHandler( "API" )
             .toAction( {
@@ -167,10 +167,10 @@ class {
                 PUT     = "update",
                 DELETE  = "delete"
             })
-        
+
         // Resource routes
         resources( "products" )
-        
+
         // Group routes with common settings
         group( { prefix: "/admin" }, function( options ){
             route( "/dashboard" ).to( "Admin.dashboard" )
@@ -193,7 +193,7 @@ class {
  * All handlers inherit from the framework handler
  */
 class Main extends coldbox.system.EventHandler {
-    
+
     @inject
     property name="myService";
 
@@ -202,7 +202,7 @@ class Main extends coldbox.system.EventHandler {
      */
     function index( event, rc, prc ) {
         prc.data = myService.getData()
-        
+
         // Render view from module
         event.setView( view = "main/index", module = "myModule" )
     }
@@ -212,7 +212,7 @@ class Main extends coldbox.system.EventHandler {
      */
     function api( event, rc, prc ) {
         var result = myService.process( rc )
-        
+
         event.renderData(
             type = "json",
             data = result,
@@ -230,13 +230,13 @@ class Main extends coldbox.system.EventHandler {
  * Business logic for MyModule
  */
 class MyService {
-    
+
     @inject
     property name="wirebox";
-    
+
     @inject
     property name="log";
-    
+
     @inject
     property name="settings";
 
@@ -253,7 +253,7 @@ class MyService {
      */
     function getData() {
         log.info( "Getting data from MyService" )
-        
+
         return [
             { id: 1, name: "Item 1" },
             { id: 2, name: "Item 2" }
@@ -289,10 +289,10 @@ class MyService {
  * Listen to framework events
  */
 class MyInterceptor {
-    
+
     @inject
     property name="moduleSettings";
-    
+
     @inject
     property name="log";
 
@@ -308,7 +308,7 @@ class MyInterceptor {
      */
     function preProcess( event, interceptData ) {
         log.debug( "MyModule interceptor: preProcess" )
-        
+
         // Add custom data to request
         event.setValue( "moduleProcessed", true )
     }
@@ -391,7 +391,7 @@ class MyInterceptor {
 ```boxlang
 // handlers/Main.cfc
 class Main extends coldbox.system.EventHandler {
-    
+
     // Inject module service
     @inject( "MyService@myModule" )
     property name="myService";
@@ -411,7 +411,7 @@ class Main extends coldbox.system.EventHandler {
 <cfoutput>
     <!-- Include module view -->
     #renderView( view="main/widget", module="myModule" )#
-    
+
     <!-- Access module data -->
     <div class="data">
         #prc.data#
@@ -427,7 +427,7 @@ configure() {
     coldbox = {
         // ... coldbox settings
     }
-    
+
     // Override module settings
     moduleSettings = {
         myModule = {
@@ -448,7 +448,7 @@ configure() {
 class {
     this.title = "Parent Module"
     this.entryPoint = "parentModule"
-    
+
     // Register sub-modules
     this.dependencies = [
         "parentModule.subModule1",
@@ -491,18 +491,18 @@ class {
 
 ```boxlang
 class MyServiceTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
-        
+
         // Get module service
         myService = getInstance( "MyService@myModule" )
     }
 
     function run() {
         describe( "MyService", function(){
-            
+
             it( "should return data", function(){
                 var data = myService.getData()
                 expect( data ).toBeArray()

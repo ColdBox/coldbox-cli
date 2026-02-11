@@ -36,13 +36,13 @@ REST APIs in ColdBox:
  * Base Route: /api/v1/users
  */
 class api_v1_Users extends coldbox.system.RestHandler {
-    
+
     @inject
     property name="userService";
-    
+
     @inject
     property name="validationManager";
-    
+
     // Configure REST handler
     this.ALLOWED_METHODS = {
         index   : "GET",
@@ -64,7 +64,7 @@ class api_v1_Users extends coldbox.system.RestHandler {
             sortDir = rc.sortDir ?: "DESC",
             search  = rc.search ?: ""
         )
-        
+
         event.renderData(
             type = "json",
             data = {
@@ -86,10 +86,10 @@ class api_v1_Users extends coldbox.system.RestHandler {
      */
     function show( event, rc, prc ) {
         var userId = rc.id ?: 0
-        
+
         try {
             var user = userService.getById( userId )
-            
+
             event.renderData(
                 type = "json",
                 data = { "data": user },
@@ -142,7 +142,7 @@ class api_v1_Users extends coldbox.system.RestHandler {
 
         try {
             var user = userService.create( rc )
-            
+
             event.renderData(
                 type = "json",
                 data = {
@@ -199,7 +199,7 @@ class api_v1_Users extends coldbox.system.RestHandler {
 
         try {
             var user = userService.update( userId, rc )
-            
+
             event.renderData(
                 type = "json",
                 data = {
@@ -230,7 +230,7 @@ class api_v1_Users extends coldbox.system.RestHandler {
 
         try {
             userService.delete( userId )
-            
+
             event.renderData(
                 type = "json",
                 data = {
@@ -257,13 +257,13 @@ class api_v1_Users extends coldbox.system.RestHandler {
 
 ```boxlang
 class api_v1_Orders extends coldbox.system.RestHandler {
-    
+
     @inject
     property name="orderService";
-    
+
     @inject
     property name="jwtService";
-    
+
     // Secure entire handler
     this.preHandler = "validateToken"
 
@@ -272,7 +272,7 @@ class api_v1_Orders extends coldbox.system.RestHandler {
      */
     private function validateToken( event, rc, prc, action ) {
         var token = event.getHTTPHeader( "Authorization", "" ).replaceNoCase( "Bearer ", "" )
-        
+
         if( !len( token ) ){
             event.renderData(
                 type = "json",
@@ -305,7 +305,7 @@ class api_v1_Orders extends coldbox.system.RestHandler {
     function index( event, rc, prc ) {
         // Only return orders for authenticated user
         var orders = orderService.getByUserId( prc.user.id )
-        
+
         event.renderData(
             type = "json",
             data = { "data": orders },
@@ -317,7 +317,7 @@ class api_v1_Orders extends coldbox.system.RestHandler {
         // Create order for authenticated user
         rc.userId = prc.user.id
         var order = orderService.create( rc )
-        
+
         event.renderData(
             type = "json",
             data = { "data": order },
@@ -332,37 +332,37 @@ class api_v1_Orders extends coldbox.system.RestHandler {
 ```boxlang
 // config/Router.cfc
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         route( "/" ).to( "Main.index" )
-        
+
         // API v1 routes
         group( {
             prefix: "/api/v1",
             handler: "api.v1"
         }, function( options ){
-            
+
             // Users resource
             resources( "users" )
-            
+
             // Orders resource (authenticated)
             resources( "orders" )
-            
+
             // Products with nested reviews
             resources( resource = "products", handler = "Products" )
                 .resources( resource = "reviews", handler = "Products.Reviews" )
-            
+
             // Custom routes
             route( "/auth/login" ).to( "Auth.login" )
             route( "/auth/logout" ).to( "Auth.logout" )
             route( "/auth/refresh" ).to( "Auth.refresh" )
-            
+
             // Search endpoint
             route( "/search" ).to( "Search.index" )
         })
-        
+
         // API v2 routes
         group( {
             prefix: "/api/v2",
@@ -378,11 +378,11 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class api_Base extends coldbox.system.RestHandler {
-    
+
     /**
      * Standard error response
      */
-    function renderError( 
+    function renderError(
         required string message,
         string code = "",
         numeric statusCode = 500,
@@ -404,7 +404,7 @@ class api_Base extends coldbox.system.RestHandler {
     /**
      * Standard success response
      */
-    function renderSuccess( 
+    function renderSuccess(
         any data = {},
         string message = "",
         numeric statusCode = 200
@@ -423,7 +423,7 @@ class api_Base extends coldbox.system.RestHandler {
 
 // Usage in child handlers
 class api_v1_Products extends api_Base {
-    
+
     function show( event, rc, prc ) {
         try {
             var product = productService.getById( rc.id )
@@ -467,14 +467,14 @@ Accept: application/vnd.myapp.v1+json
 
 ```boxlang
 class api_Users extends coldbox.system.RestHandler {
-    
+
     this.preHandler = "detectVersion"
-    
+
     private function detectVersion( event, rc, prc ) {
         var accept = event.getHTTPHeader( "Accept", "" )
         prc.apiVersion = accept.find( "v1" ) ? "v1" : "v2"
     }
-    
+
     function index( event, rc, prc ) {
         if( prc.apiVersion == "v1" ){
             indexV1( event, rc, prc )
@@ -489,15 +489,15 @@ class api_Users extends coldbox.system.RestHandler {
 
 ```boxlang
 class api_v1_Base extends coldbox.system.RestHandler {
-    
+
     @inject
     property name="rateLimiter";
-    
+
     this.preHandler = "checkRateLimit"
 
     private function checkRateLimit( event, rc, prc ) {
         var clientIP = event.getHTTPHeader( "X-Forwarded-For", cgi.remote_addr )
-        
+
         if( !rateLimiter.check( clientIP, limit = 100, window = 3600 ) ){
             event.renderData(
                 type = "json",
@@ -522,7 +522,7 @@ configure() {
     coldbox = {
         // ... other settings
     }
-    
+
     settings = {
         cors = {
             enabled = true,
@@ -537,15 +537,15 @@ configure() {
 
 // Interceptor to handle CORS
 class CORSInterceptor {
-    
+
     function preProcess( event, interceptData ) {
         var rc = event.getCollection()
-        
+
         // Set CORS headers
         event.setHTTPHeader( name = "Access-Control-Allow-Origin", value = "*" )
         event.setHTTPHeader( name = "Access-Control-Allow-Methods", value = "GET,POST,PUT,PATCH,DELETE,OPTIONS" )
         event.setHTTPHeader( name = "Access-Control-Allow-Headers", value = "Content-Type,Authorization" )
-        
+
         // Handle OPTIONS request
         if( event.getHTTPMethod() == "OPTIONS" ){
             event.renderData( type = "json", data = {}, statusCode = 200 )
@@ -604,7 +604,7 @@ class CORSInterceptor {
 
 ```boxlang
 class UsersAPITest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
@@ -612,11 +612,11 @@ class UsersAPITest extends coldbox.system.testing.BaseTestCase {
 
     function run() {
         describe( "Users REST API", function(){
-            
+
             it( "should list users", function(){
                 var event = GET( "/api/v1/users" )
                 expect( event.getStatusCode() ).toBe( 200 )
-                
+
                 var response = deserializeJSON( event.getRenderedContent() )
                 expect( response ).toHaveKey( "data" )
                 expect( response.data ).toBeArray()
@@ -625,7 +625,7 @@ class UsersAPITest extends coldbox.system.testing.BaseTestCase {
             it( "should get single user", function(){
                 var event = GET( "/api/v1/users/1" )
                 expect( event.getStatusCode() ).toBe( 200 )
-                
+
                 var response = deserializeJSON( event.getRenderedContent() )
                 expect( response.data ).toHaveKey( "id" )
             })
@@ -641,7 +641,7 @@ class UsersAPITest extends coldbox.system.testing.BaseTestCase {
                     }
                 )
                 expect( event.getStatusCode() ).toBe( 201 )
-                
+
                 var response = deserializeJSON( event.getRenderedContent() )
                 expect( response.data ).toHaveKey( "id" )
             })
@@ -652,7 +652,7 @@ class UsersAPITest extends coldbox.system.testing.BaseTestCase {
                     params = { firstName = "John" }
                 )
                 expect( event.getStatusCode() ).toBe( 422 )
-                
+
                 var response = deserializeJSON( event.getRenderedContent() )
                 expect( response ).toHaveKey( "errors" )
             })

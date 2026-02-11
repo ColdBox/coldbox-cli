@@ -129,21 +129,21 @@ println( "Output Type: #operationInfo.outputType#" )
  */
 function inspectSOAPService( wsdlUrl ) {
     ws = soap( wsdlUrl )
-    
+
     documentation = {
         serviceUrl: wsdlUrl,
         operations: [],
         totalOperations: 0
     }
-    
+
     // Get all operations
     operations = ws.getOperations()
     documentation.totalOperations = operations.len()
-    
+
     // Document each operation
     operations.each( ( operationName ) => {
         opInfo = ws.getOperationInfo( operationName )
-        
+
         documentation.operations.append( {
             name: operationName,
             inputParameters: opInfo.inputParameters.map( ( p ) => {
@@ -157,7 +157,7 @@ function inspectSOAPService( wsdlUrl ) {
             description: opInfo.description ?: "No description available"
         } )
     } )
-    
+
     return documentation
 }
 
@@ -244,21 +244,21 @@ class {
     property name="client"
     property name="logger"
     property name="apiKey"
-    
+
     function init( wsdlUrl, apiKey ) {
         variables.logger = getLogger()
         variables.apiKey = apiKey
-        
+
         // Create SOAP client
         variables.client = soap( wsdlUrl )
             .withBasicAuth( "api", apiKey )
             .timeout( 30 )
-        
+
         logger.info( "WeatherService initialized with #client.getOperations().len()# operations" )
-        
+
         return this
     }
-    
+
     /**
      * Get current weather for zip code
      */
@@ -267,13 +267,13 @@ class {
             return client.invoke( "GetCurrentWeather", { zipCode: zipCode } )
         } catch ( any e ) {
             logger.error( "Failed to get weather for #zipCode#: #e.message#" )
-            throw( 
+            throw(
                 type = "WeatherServiceError",
                 message = "Unable to retrieve weather data"
             )
         }
     }
-    
+
     /**
      * Get forecast
      */
@@ -283,7 +283,7 @@ class {
             days: days
         } )
     }
-    
+
     /**
      * Get service statistics
      */
@@ -319,19 +319,19 @@ class {
     property name="client"
     property name="merchantId"
     property name="logger"
-    
+
     function init( wsdlUrl, merchantId, merchantKey ) {
         variables.merchantId = merchantId
         variables.logger = getLogger()
-        
+
         variables.client = soap( wsdlUrl )
             .withBasicAuth( merchantId, merchantKey )
             .timeout( 45 )
             .header( "X-Merchant-ID", merchantId )
-        
+
         return this
     }
-    
+
     /**
      * Process payment
      */
@@ -348,9 +348,9 @@ class {
                 },
                 transactionId: createUUID()
             } )
-            
+
             logger.info( "Payment processed: #result.transactionId#" )
-            
+
             return {
                 success: result.approved,
                 transactionId: result.transactionId,
@@ -366,7 +366,7 @@ class {
             }
         }
     }
-    
+
     /**
      * Refund transaction
      */
@@ -377,7 +377,7 @@ class {
             amount: amount
         } )
     }
-    
+
     /**
      * Get transaction status
      */
@@ -400,18 +400,18 @@ class {
 class {
     property name="client"
     property name="accountNumber"
-    
+
     function init( wsdlUrl, accountNumber, apiKey ) {
         variables.accountNumber = accountNumber
-        
+
         variables.client = soap( wsdlUrl )
             .header( "X-Account-Number", accountNumber )
             .header( "X-API-Key", apiKey )
             .timeout( 30 )
-        
+
         return this
     }
-    
+
     /**
      * Get shipping rates
      */
@@ -442,7 +442,7 @@ class {
             }
         } )
     }
-    
+
     /**
      * Create shipment
      */
@@ -455,7 +455,7 @@ class {
             package: package
         } )
     }
-    
+
     /**
      * Track shipment
      */
@@ -499,11 +499,11 @@ function robustSOAPCall( ws, operation, params ) {
         // Handle different error types
         if ( e.type == "SOAPFault" ) {
             logger.error( "SOAP Fault in #operation#: #e.faultString#" )
-            
+
             // Handle specific fault codes
             switch ( e.faultCode ) {
                 case "Client":
-                    return { 
+                    return {
                         success: false,
                         error: "Invalid request parameters",
                         detail: e.faultDetail
@@ -551,60 +551,60 @@ function robustSOAPCall( ws, operation, params ) {
 class {
     property name="services" type="struct"
     property name="logger"
-    
+
     function init() {
         variables.services = {}
         variables.logger = getLogger()
         return this
     }
-    
+
     /**
      * Register SOAP service
      */
     function registerService( name, wsdlUrl, config = {} ) {
         client = soap( wsdlUrl )
-        
+
         // Apply authentication
         if ( structKeyExists( config, "username" ) && structKeyExists( config, "password" ) ) {
             client.withBasicAuth( config.username, config.password )
         }
-        
+
         // Apply timeout
         if ( structKeyExists( config, "timeout" ) ) {
             client.timeout( config.timeout )
         }
-        
+
         // Apply custom headers
         if ( structKeyExists( config, "headers" ) ) {
             config.headers.each( ( headerName, value ) => {
                 client.header( headerName, value )
             } )
         }
-        
+
         variables.services[ name ] = {
             client: client,
             config: config,
             registeredAt: now()
         }
-        
+
         logger.info( "Registered service '#name#' with #client.getOperations().len()# operations" )
-        
+
         return this
     }
-    
+
     /**
      * Get service client
      */
     function getService( name ) {
         if ( !structKeyExists( variables.services, name ) ) {
-            throw( 
+            throw(
                 type = "ServiceNotFound",
                 message = "Service '#name#' not registered"
             )
         }
         return variables.services[ name ].client
     }
-    
+
     /**
      * Invoke operation on named service
      */
@@ -612,20 +612,20 @@ class {
         service = getService( serviceName )
         return service.invoke( operation, params )
     }
-    
+
     /**
      * Get statistics for all services
      */
     function getAllStatistics() {
         stats = {}
-        
+
         variables.services.each( ( name, serviceData ) => {
             stats[ name ] = serviceData.client.getStatistics()
         } )
-        
+
         return stats
     }
-    
+
     /**
      * List all registered services
      */
@@ -693,14 +693,14 @@ println( "Average Response Time: #stats.avgResponseTime#ms" )
 // Singleton pattern
 component singleton {
     property name="weatherClient"
-    
+
     function init() {
         variables.weatherClient = soap( "http://api.weather.com/service.wsdl" )
             .withBasicAuth( "api", "key" )
             .timeout( 30 )
         return this
     }
-    
+
     function getWeather( zipCode ) {
         return variables.weatherClient.invoke( "GetCurrentWeather", { zipCode: zipCode } )
     }
@@ -722,16 +722,16 @@ function getWeather( zipCode ) {
  * SOAPServiceSpec.bx
  */
 component extends="testbox.system.BaseSpec" {
-    
+
     function beforeAll() {
         mockSOAPClient = createMock( "SOAPClient" )
         service = new MyService()
         service.soapClient = mockSOAPClient
     }
-    
+
     function run() {
         describe( "SOAP Service Integration", () => {
-            
+
             it( "should fetch customer data", () => {
                 // Mock SOAP response
                 mockSOAPClient
@@ -742,23 +742,23 @@ component extends="testbox.system.BaseSpec" {
                         name: "John Doe",
                         email: "john@example.com"
                     } )
-                
+
                 customer = service.getCustomer( 123 )
-                
+
                 expect( customer.id ).toBe( 123 )
                 expect( customer.name ).toBe( "John Doe" )
                 expect( mockSOAPClient.$once( "invoke" ) ).toBeTrue()
             } )
-            
+
             it( "should handle SOAP faults", () => {
                 mockSOAPClient
                     .$( "invoke" )
-                    .$throws( 
+                    .$throws(
                         type = "SOAPFault",
                         message = "Customer not found",
                         faultCode = "Client"
                     )
-                
+
                 expect( () => service.getCustomer( 999 ) )
                     .toThrow( "SOAPFault" )
             } )
@@ -824,25 +824,25 @@ customerName = htmlEditFormat( customerName ) // Prevent injection
 // Debug SOAP client
 try {
     ws = soap( wsdlUrl )
-    
+
     // Check available operations
     operations = ws.getOperations()
     logger.debug( "Available operations: #operations.toList()#" )
-    
+
     // Check operation details
     info = ws.getOperationInfo( "myOperation" )
     logger.debug( "Operation info: #serializeJSON( info )#" )
-    
+
     // Invoke with logging
     logger.debug( "Invoking operation with params: #serializeJSON( params )#" )
     result = ws.invoke( "myOperation", params )
     logger.debug( "Result: #serializeJSON( result )#" )
-    
+
 } catch ( any e ) {
     logger.error( "SOAP Error Type: #e.type#" )
     logger.error( "Message: #e.message#" )
     logger.error( "Detail: #e.detail#" )
-    
+
     if ( structKeyExists( e, "faultCode" ) ) {
         logger.error( "Fault Code: #e.faultCode#" )
         logger.error( "Fault String: #e.faultString#" )

@@ -30,7 +30,7 @@ Cache Box Caching:
 
 ```boxlang
 class ProductService {
-    
+
     @inject
     property name="cachebox";
 
@@ -40,18 +40,18 @@ class ProductService {
     function getAll() {
         var cache = cachebox.getCache( "default" )
         var cacheKey = "products-all-list"
-        
+
         // Check if cached
         if( cache.lookup( cacheKey ) ){
             return cache.get( cacheKey )
         }
-        
+
         // Not cached, fetch from database
         var products = queryExecute( "SELECT * FROM products" )
-        
+
         // Store in cache for 60 minutes
         cache.set( cacheKey, products, 60 )
-        
+
         return products
     }
 
@@ -61,7 +61,7 @@ class ProductService {
     function getById( required numeric id ) {
         var cache = cachebox.getCache( "default" )
         var cacheKey = "product-#arguments.id#"
-        
+
         return cache.getOrSet(
             objectKey = cacheKey,
             produce = function(){
@@ -82,12 +82,12 @@ class ProductService {
 ```boxlang
 // config/ColdBox.cfc
 class ColdBox {
-    
+
     function configure() {
         coldbox = {
             // ... coldbox settings
         }
-        
+
         // CacheBox configuration
         cacheBox = {
             // Default cache
@@ -105,7 +105,7 @@ class ColdBox {
                     objectStore = "ConcurrentStore"
                 }
             },
-            
+
             // Named caches
             caches = {
                 // Short-term cache
@@ -117,7 +117,7 @@ class ColdBox {
                         maxObjects = 100
                     }
                 },
-                
+
                 // Long-term cache
                 "longTerm": {
                     provider = "coldbox.system.cache.providers.CacheBoxProvider",
@@ -127,7 +127,7 @@ class ColdBox {
                         maxObjects = 1000
                     }
                 },
-                
+
                 // Template cache
                 "template": {
                     provider = "coldbox.system.cache.providers.CacheBoxProvider",
@@ -137,7 +137,7 @@ class ColdBox {
                         maxObjects = 200
                     }
                 },
-                
+
                 // Session cache (distributed)
                 "sessions": {
                     provider = "coldbox.system.cache.providers.CacheBoxColdBoxProvider",
@@ -165,7 +165,7 @@ function configure() {
                 maxObjects = 500
             }
         },
-        
+
         caches = {
             "redis": {
                 provider = "coldbox.system.cache.providers.RedisCacheProvider",
@@ -188,7 +188,7 @@ function configure() {
 
 ```boxlang
 class CacheService {
-    
+
     @inject
     property name="cachebox";
 
@@ -197,7 +197,7 @@ class CacheService {
      */
     function set( required string key, required any value, numeric timeout = 60 ) {
         var cache = cachebox.getCache( "default" )
-        
+
         cache.set(
             objectKey = arguments.key,
             object = arguments.value,
@@ -210,11 +210,11 @@ class CacheService {
      */
     function get( required string key, any defaultValue ) {
         var cache = cachebox.getCache( "default" )
-        
+
         if( cache.lookup( arguments.key ) ){
             return cache.get( arguments.key )
         }
-        
+
         return structKeyExists( arguments, "defaultValue" ) ? arguments.defaultValue : javacast( "null", "" )
     }
 
@@ -227,7 +227,7 @@ class CacheService {
         numeric timeout = 60
     ){
         var cache = cachebox.getCache( "default" )
-        
+
         return cache.getOrSet(
             objectKey = arguments.key,
             produce = arguments.provider,
@@ -255,7 +255,7 @@ class CacheService {
     function clearByPattern( required string pattern ) {
         var cache = cachebox.getCache( "default" )
         var keys = cache.getKeys()
-        
+
         keys.each( function( key ){
             if( key.findNoCase( pattern ) ){
                 cache.clear( key )
@@ -275,7 +275,7 @@ class CacheService {
      */
     function getStats() {
         var cache = cachebox.getCache( "default" )
-        
+
         return {
             hits: cache.getStats().getHits(),
             misses: cache.getStats().getMisses(),
@@ -291,7 +291,7 @@ class CacheService {
 
 ```boxlang
 class UserService {
-    
+
     @inject
     property name="cachebox";
 
@@ -301,7 +301,7 @@ class UserService {
     function list() {
         var cache = cachebox.getCache( "default" )
         var cacheKey = "users-list"
-        
+
         return cache.getOrSet(
             objectKey = cacheKey,
             produce = function(){
@@ -321,7 +321,7 @@ class UserService {
     function search( required string term ) {
         var cache = cachebox.getCache( "default" )
         var cacheKey = "users-search-#hash( arguments.term )#"
-        
+
         return cache.getOrSet(
             objectKey = cacheKey,
             produce = function(){
@@ -344,12 +344,12 @@ class UserService {
             "UPDATE users SET firstName = :firstName, lastName = :lastName WHERE id = :id",
             data
         )
-        
+
         // Clear relevant caches
         var cache = cachebox.getCache( "default" )
         cache.clear( "users-list" )
         cache.clear( "user-#arguments.id#" )
-        
+
         // Clear all search caches
         clearSearchCache()
     }
@@ -357,7 +357,7 @@ class UserService {
     private function clearSearchCache() {
         var cache = cachebox.getCache( "default" )
         var keys = cache.getKeys()
-        
+
         keys.each( function( key ){
             if( key.startsWith( "users-search-" ) ){
                 cache.clear( key )
@@ -371,7 +371,7 @@ class UserService {
 
 ```boxlang
 class Dashboard extends coldbox.system.EventHandler {
-    
+
     @inject
     property name="dashboardService";
 
@@ -383,7 +383,7 @@ class Dashboard extends coldbox.system.EventHandler {
         event.setEventCacheable( true )
         event.setEventCacheTimeout( 30 )
         event.setEventCacheKey( "dashboard-index-user-#auth().userId()#" )
-        
+
         prc.stats = dashboardService.getStats()
         event.setView( "dashboard/index" )
     }
@@ -413,7 +413,7 @@ Cache view partial
         cacheTimeout = 15,
         cacheKey = "dashboard-stats-#auth().userId()#"
     )#
-    
+
     <!-- Non-cached real-time widget -->
     #renderView(
         view = "dashboard/widgets/liveActivity",
@@ -427,10 +427,10 @@ Cache view partial
 
 ```boxlang
 class api_Products extends coldbox.system.RestHandler {
-    
+
     @inject
     property name="productService";
-    
+
     @inject
     property name="cachebox";
 
@@ -440,7 +440,7 @@ class api_Products extends coldbox.system.RestHandler {
     function index( event, rc, prc ) {
         var cache = cachebox.getCache( "default" )
         var cacheKey = "api-products-page-#rc.page ?: 1#"
-        
+
         var products = cache.getOrSet(
             objectKey = cacheKey,
             produce = function(){
@@ -451,11 +451,11 @@ class api_Products extends coldbox.system.RestHandler {
             },
             timeout = 10
         )
-        
+
         // Set cache headers
         event.setHTTPHeader( name = "Cache-Control", value = "public, max-age=600" )
         event.setHTTPHeader( name = "ETag", value = hash( serializeJSON( products ) ) )
-        
+
         event.renderData(
             type = "json",
             data = products,
@@ -468,10 +468,10 @@ class api_Products extends coldbox.system.RestHandler {
      */
     function create( event, rc, prc ) {
         var product = productService.create( rc )
-        
+
         // Clear product caches
         clearProductCaches()
-        
+
         event.renderData(
             type = "json",
             data = product,
@@ -482,7 +482,7 @@ class api_Products extends coldbox.system.RestHandler {
     private function clearProductCaches() {
         var cache = cachebox.getCache( "default" )
         var keys = cache.getKeys()
-        
+
         keys.each( function( key ){
             if( key.startsWith( "api-products-" ) ){
                 cache.clear( key )
@@ -500,10 +500,10 @@ class api_Products extends coldbox.system.RestHandler {
  * Automatic cache invalidation
  */
 class CacheInterceptor {
-    
+
     @inject
     property name="cachebox";
-    
+
     @inject
     property name="log";
 
@@ -513,7 +513,7 @@ class CacheInterceptor {
     function postHandler( event, interceptData, rc, prc ) {
         var currentEvent = event.getCurrentEvent()
         var method = event.getHTTPMethod()
-        
+
         // Clear cache on POST, PUT, DELETE
         if( listFindNoCase( "POST,PUT,DELETE", method ) ){
             clearRelatedCaches( currentEvent )
@@ -525,10 +525,10 @@ class CacheInterceptor {
      */
     private function clearRelatedCaches( required string eventName ) {
         var cache = cachebox.getCache( "default" )
-        
+
         // Determine cache keys to clear based on event
         var clearKeys = []
-        
+
         if( eventName.startsWith( "users." ) ){
             clearKeys.append( "users-list" )
             clearKeys.append( "users-search-*" )
@@ -536,7 +536,7 @@ class CacheInterceptor {
             clearKeys.append( "products-list" )
             clearKeys.append( "api-products-*" )
         }
-        
+
         // Clear caches
         clearKeys.each( function( pattern ){
             if( pattern.endsWith( "*" ) ){
@@ -545,14 +545,14 @@ class CacheInterceptor {
                 cache.clear( pattern )
             }
         })
-        
+
         log.debug( "Cleared caches related to: #eventName#" )
     }
 
     private function clearByPattern( required string pattern ) {
         var cache = cachebox.getCache( "default" )
         var keys = cache.getKeys()
-        
+
         keys.each( function( key ){
             if( key.startsWith( pattern ) ){
                 cache.clear( key )
@@ -569,7 +569,7 @@ class CacheInterceptor {
  * Session Service with distributed cache
  */
 class SessionService {
-    
+
     @inject
     property name="cachebox";
 
@@ -579,7 +579,7 @@ class SessionService {
     function set( required string userId, required string key, required any value ) {
         var cache = cachebox.getCache( "sessions" )
         var cacheKey = "session-#arguments.userId#-#arguments.key#"
-        
+
         cache.set(
             objectKey = cacheKey,
             object = arguments.value,
@@ -593,11 +593,11 @@ class SessionService {
     function get( required string userId, required string key, any defaultValue ) {
         var cache = cachebox.getCache( "sessions" )
         var cacheKey = "session-#arguments.userId#-#arguments.key#"
-        
+
         if( cache.lookup( cacheKey ) ){
             return cache.get( cacheKey )
         }
-        
+
         return structKeyExists( arguments, "defaultValue" ) ? arguments.defaultValue : javacast( "null", "" )
     }
 
@@ -607,7 +607,7 @@ class SessionService {
     function clear( required string userId ) {
         var cache = cachebox.getCache( "sessions" )
         var keys = cache.getKeys()
-        
+
         keys.each( function( key ){
             if( key.startsWith( "session-#userId#-" ) ){
                 cache.clear( key )
@@ -625,13 +625,13 @@ class SessionService {
  * Pre-populate caches on application start
  */
 class CacheWarmingService {
-    
+
     @inject
     property name="cachebox";
-    
+
     @inject
     property name="productService";
-    
+
     @inject
     property name="categoryService";
 
@@ -640,30 +640,30 @@ class CacheWarmingService {
      */
     function warmCaches() {
         log.info( "Starting cache warming..." )
-        
+
         var cache = cachebox.getCache( "default" )
-        
+
         // Warm product list cache
         cache.set(
             "products-list",
             productService.list(),
             60
         )
-        
+
         // Warm category cache
         cache.set(
             "categories-all",
             categoryService.getAll(),
             120
         )
-        
+
         // Warm featured products
         cache.set(
             "products-featured",
             productService.getFeatured(),
             60
         )
-        
+
         log.info( "Cache warming completed" )
     }
 
@@ -689,7 +689,7 @@ function onApplicationStart() {
 
 ```boxlang
 class CacheMonitoringService {
-    
+
     @inject
     property name="cachebox";
 
@@ -699,7 +699,7 @@ class CacheMonitoringService {
     function getStats( string cacheName = "default" ) {
         var cache = cachebox.getCache( arguments.cacheName )
         var stats = cache.getStats()
-        
+
         return {
             cacheName: arguments.cacheName,
             size: cache.getSize(),
@@ -718,11 +718,11 @@ class CacheMonitoringService {
     function getAllStats() {
         var caches = cachebox.getCacheNames()
         var allStats = []
-        
+
         caches.each( function( cacheName ){
             allStats.append( getStats( cacheName ) )
         })
-        
+
         return allStats
     }
 
@@ -735,19 +735,19 @@ class CacheMonitoringService {
             status: "healthy",
             warnings: []
         }
-        
+
         // Check performance ratio
         if( stats.performanceRatio < 0.7 ){
             health.warnings.append( "Low cache hit ratio: #stats.performanceRatio#" )
             health.status = "warning"
         }
-        
+
         // Check evictions
         if( stats.evictions > 1000 ){
             health.warnings.append( "High eviction count: #stats.evictions#" )
             health.status = "warning"
         }
-        
+
         return health
     }
 }
@@ -783,7 +783,7 @@ class CacheMonitoringService {
 
 ```boxlang
 class CacheServiceTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
@@ -792,7 +792,7 @@ class CacheServiceTest extends coldbox.system.testing.BaseTestCase {
 
     function run() {
         describe( "Cache Service", function(){
-            
+
             beforeEach( function(){
                 // Clear cache before each test
                 cacheService.clearAll()
@@ -815,7 +815,7 @@ class CacheServiceTest extends coldbox.system.testing.BaseTestCase {
 
             it( "should use lazy loading with getOrSet", function(){
                 var callCount = 0
-                
+
                 var result1 = cacheService.getOrSet(
                     key = "lazy-key",
                     provider = function(){
@@ -823,9 +823,9 @@ class CacheServiceTest extends coldbox.system.testing.BaseTestCase {
                         return "lazy-value"
                     }
                 )
-                
+
                 var result2 = cacheService.get( "lazy-key" )
-                
+
                 expect( result1 ).toBe( "lazy-value" )
                 expect( result2 ).toBe( "lazy-value" )
                 expect( callCount ).toBe( 1 )  // Provider only called once

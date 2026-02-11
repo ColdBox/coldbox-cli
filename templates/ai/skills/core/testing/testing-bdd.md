@@ -35,10 +35,10 @@ TestBox BDD Testing:
  * tests/specs/unit/UserServiceSpec.cfc
  */
 class UserServiceSpec extends testbox.system.BaseSpec {
-    
+
     function run() {
         describe( "UserService", function(){
-            
+
             beforeEach( function(){
                 // Setup before each test
                 userService = getInstance( "UserService" )
@@ -55,9 +55,9 @@ class UserServiceSpec extends testbox.system.BaseSpec {
                     lastName: "Doe",
                     email: "john@example.com"
                 }
-                
+
                 var user = userService.create( userData )
-                
+
                 expect( user ).toBeInstanceOf( "User" )
                 expect( user.getEmail() ).toBe( "john@example.com" )
                 expect( user.getFullName() ).toBe( "John Doe" )
@@ -65,7 +65,7 @@ class UserServiceSpec extends testbox.system.BaseSpec {
 
             it( "should find user by email", function(){
                 var user = userService.findByEmail( "test@example.com" )
-                
+
                 expect( user ).notToBeNull()
                 expect( user.getEmail() ).toBe( "test@example.com" )
             })
@@ -84,26 +84,26 @@ class UserServiceSpec extends testbox.system.BaseSpec {
 
 ```boxlang
 class ProductServiceSpec extends testbox.system.BaseSpec {
-    
+
     function run() {
         describe( "ProductService", function(){
-            
+
             beforeAll( function(){
                 // Run once before all tests in this suite
                 productService = getInstance( "ProductService" )
             })
 
             describe( "CRUD Operations", function(){
-                
+
                 describe( "Create", function(){
-                    
+
                     it( "should create product with valid data", function(){
                         var product = productService.create({
                             name: "Test Product",
                             price: 99.99,
                             sku: "TEST-001"
                         })
-                        
+
                         expect( product.getId() ).toBeGT( 0 )
                         expect( product.getName() ).toBe( "Test Product" )
                     })
@@ -125,7 +125,7 @@ class ProductServiceSpec extends testbox.system.BaseSpec {
                 })
 
                 describe( "Read", function(){
-                    
+
                     it( "should get product by ID", function(){
                         var product = productService.getById( 1 )
                         expect( product ).notToBeNull()
@@ -145,12 +145,12 @@ class ProductServiceSpec extends testbox.system.BaseSpec {
                 })
 
                 describe( "Update", function(){
-                    
+
                     it( "should update product name", function(){
                         var product = productService.update( 1, {
                             name: "Updated Name"
                         })
-                        
+
                         expect( product.getName() ).toBe( "Updated Name" )
                     })
 
@@ -162,7 +162,7 @@ class ProductServiceSpec extends testbox.system.BaseSpec {
                 })
 
                 describe( "Delete", function(){
-                    
+
                     it( "should delete product", function(){
                         var result = productService.delete( 1 )
                         expect( result ).toBeTrue()
@@ -177,16 +177,16 @@ class ProductServiceSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Business Logic", function(){
-                
+
                 it( "should calculate discounted price", function(){
                     var originalPrice = 100
                     var discount = 20  // 20%
-                    
+
                     var discountedPrice = productService.calculateDiscount(
                         originalPrice,
                         discount
                     )
-                    
+
                     expect( discountedPrice ).toBe( 80 )
                 })
 
@@ -210,12 +210,12 @@ class ProductServiceSpec extends testbox.system.BaseSpec {
 
 ```boxlang
 class ExpectationExamplesSpec extends testbox.system.BaseSpec {
-    
+
     function run() {
         describe( "TestBox Expectations", function(){
-            
+
             describe( "Equality Matchers", function(){
-                
+
                 it( "toBe() - strict equality", function(){
                     expect( 1 ).toBe( 1 )
                     expect( "hello" ).toBe( "hello" )
@@ -233,7 +233,7 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Numeric Matchers", function(){
-                
+
                 it( "toBeGT() - greater than", function(){
                     expect( 10 ).toBeGT( 5 )
                 })
@@ -258,7 +258,7 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Type Matchers", function(){
-                
+
                 it( "toBeArray()", function(){
                     expect( [] ).toBeArray()
                     expect( [1, 2, 3] ).toBeArray()
@@ -290,7 +290,7 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Null/Empty Matchers", function(){
-                
+
                 it( "toBeNull()", function(){
                     expect( javacast( "null", "" ) ).toBeNull()
                 })
@@ -313,7 +313,7 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Boolean Matchers", function(){
-                
+
                 it( "toBeTrue()", function(){
                     expect( true ).toBeTrue()
                     expect( 1 == 1 ).toBeTrue()
@@ -326,7 +326,7 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
             })
 
             describe( "String Matchers", function(){
-                
+
                 it( "toInclude() - string contains", function(){
                     expect( "Hello World" ).toInclude( "World" )
                 })
@@ -337,7 +337,7 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Collection Matchers", function(){
-                
+
                 it( "toHaveKey()", function(){
                     expect({ name: "John", age: 30 }).toHaveKey( "name" )
                 })
@@ -353,7 +353,7 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Exception Matchers", function(){
-                
+
                 it( "toThrow() - any exception", function(){
                     expect( function(){
                         throw( message = "Error" )
@@ -387,14 +387,14 @@ class ExpectationExamplesSpec extends testbox.system.BaseSpec {
 
 ```boxlang
 class LifecycleHooksSpec extends testbox.system.BaseSpec {
-    
+
     // Properties available to all tests
     property name="testData";
     property name="service";
 
     function run() {
         describe( "Lifecycle Hooks", function(){
-            
+
             // Runs ONCE before ALL tests in this suite
             beforeAll( function(){
                 // Setup expensive resources
@@ -436,7 +436,7 @@ class LifecycleHooksSpec extends testbox.system.BaseSpec {
             })
 
             describe( "Nested Suite", function(){
-                
+
                 // These hooks only apply to this nested suite
                 beforeEach( function(){
                     testData.nestedData = "value"
@@ -459,10 +459,10 @@ class LifecycleHooksSpec extends testbox.system.BaseSpec {
 
 ```boxlang
 class PendingTestsSpec extends testbox.system.BaseSpec {
-    
+
     function run() {
         describe( "Feature X", function(){
-            
+
             // Mark test as pending (will show as skipped)
             xit( "should implement feature X", function(){
                 // Test implementation pending
@@ -470,7 +470,7 @@ class PendingTestsSpec extends testbox.system.BaseSpec {
 
             // Mark entire suite as pending
             xdescribe( "Future Feature", function(){
-                
+
                 it( "test 1", function(){
                     // This whole suite will be skipped
                 })
@@ -494,23 +494,23 @@ class PendingTestsSpec extends testbox.system.BaseSpec {
 
 ```boxlang
 class AsyncSpec extends testbox.system.BaseSpec {
-    
+
     function run() {
         describe( "Async Operations", function(){
-            
+
             it( "should handle async operation", function(){
                 var result = ""
-                
+
                 // Trigger async operation
                 asyncService.processData( function( data ){
                     result = data
                 })
-                
+
                 // Wait for async operation
                 waitsFor( function(){
                     return len( result ) > 0
                 }, "async operation to complete", 5000 )
-                
+
                 // Verify result
                 runs( function(){
                     expect( result ).notToBeEmpty()
@@ -547,14 +547,14 @@ http://localhost/tests/runner.cfm
 
 ```boxlang
 class CustomMatchersSpec extends testbox.system.BaseSpec {
-    
+
     function run() {
         // Add custom matcher
         addMatchers({
             toBeValidEmail: function( expectation, args = {} ){
                 var actual = arguments.expectation.actual
                 var isValid = reFindNoCase( "^\w+@\w+\.\w+$", actual )
-                
+
                 if( isValid ){
                     return true
                 } else {
@@ -562,11 +562,11 @@ class CustomMatchersSpec extends testbox.system.BaseSpec {
                     return false
                 }
             },
-            
+
             toHavePermission: function( expectation, args = {} ){
                 var user = arguments.expectation.actual
                 var permission = arguments.args.permission ?: ""
-                
+
                 if( user.hasPermission( permission ) ){
                     return true
                 } else {
@@ -577,7 +577,7 @@ class CustomMatchersSpec extends testbox.system.BaseSpec {
         })
 
         describe( "Custom Matchers", function(){
-            
+
             it( "should validate email", function(){
                 expect( "test@example.com" ).toBeValidEmail()
             })
@@ -585,7 +585,7 @@ class CustomMatchersSpec extends testbox.system.BaseSpec {
             it( "should check user permissions", function(){
                 var user = getInstance( "User" ).new()
                 user.addPermission( "admin.access" )
-                
+
                 expect( user ).toHavePermission( permission = "admin.access" )
             })
         })

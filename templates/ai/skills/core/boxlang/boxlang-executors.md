@@ -98,7 +98,7 @@ results = [ future1.get(), future2.get(), future3.get() ]
 
 ```boxlang
 // Create fixed-size thread pool (best for CPU-bound tasks)
-executor = executorNew( 
+executor = executorNew(
     type = "fixed",
     name = "cpu-pool",
     threads = 8 // Number of threads
@@ -145,14 +145,14 @@ for ( task in tasks ) {
 
 ```boxlang
 // Create scheduled executor for delayed/periodic tasks
-executor = executorNew( 
+executor = executorNew(
     type = "scheduled",
     name = "scheduled-pool",
     threads = 5
 )
 
 // Schedule one-time delayed task
-future = executor.scheduleOnce( 
+future = executor.scheduleOnce(
     () => performMaintenance(),
     5,      // delay
     "seconds"
@@ -204,7 +204,7 @@ executor.submit( () => step3() )
 
 ```boxlang
 // Create fork-join pool for recursive divide-and-conquer
-executor = executorNew( 
+executor = executorNew(
     type = "fork_join",
     name = "fork-join-pool",
     parallelism = 8 // Parallelism level
@@ -226,7 +226,7 @@ result = executor.submit( () => {
 
 ```boxlang
 // Create work-stealing pool for balanced load distribution
-executor = executorNew( 
+executor = executorNew(
     type = "work_stealing",
     name = "work-steal-pool",
     parallelism = 8
@@ -306,11 +306,11 @@ executor.shutdownNow()
 // Complete shutdown pattern
 try {
     executor.shutdown()
-    
+
     if ( !executor.awaitTermination( 30, "seconds" ) ) {
         // Timeout - force shutdown
         executor.shutdownNow()
-        
+
         // Wait again for force shutdown
         if ( !executor.awaitTermination( 10, "seconds" ) ) {
             logger.error( "Executor did not terminate" )
@@ -334,9 +334,9 @@ try {
 class {
     property name="executor"
     property name="logger"
-    
+
     function init( parallelism = 8 ) {
-        variables.executor = executorNew( 
+        variables.executor = executorNew(
             type = "work_stealing",
             name = "parallel-processor",
             parallelism = parallelism
@@ -344,19 +344,19 @@ class {
         variables.logger = getLogger()
         return this
     }
-    
+
     /**
      * Process items in parallel batches
      */
     function process( items, processorFunction ) {
         startTime = getTickCount()
         logger.info( "Processing #items.len()# items" )
-        
+
         // Submit all items for parallel processing
         futures = items.map( ( item ) => {
             return executor.submit( () => processorFunction( item ) )
         } )
-        
+
         // Collect results
         results = futures.map( ( future ) => {
             try {
@@ -366,15 +366,15 @@ class {
                 return { success: false, error: e.message }
             }
         } )
-        
+
         duration = getTickCount() - startTime
         successCount = results.filter( ( r ) => r.success ).len()
-        
+
         logger.info( "Processed #successCount# of #items.len()# items in #duration#ms" )
-        
+
         return results
     }
-    
+
     /**
      * Cleanup
      */
@@ -387,7 +387,7 @@ class {
 // Usage
 processor = new ParallelProcessor( parallelism = 8 )
 
-results = processor.process( 
+results = processor.process(
     dataArray,
     ( item ) => {
         // Process each item
@@ -407,7 +407,7 @@ class {
     property name="ioExecutor"
     property name="cpuExecutor"
     property name="logger"
-    
+
     function init() {
         // Use pre-configured executors
         variables.ioExecutor = executorGet( "io-tasks" )
@@ -415,7 +415,7 @@ class {
         variables.logger = getLogger()
         return this
     }
-    
+
     /**
      * Submit I/O-bound job (API calls, database, files)
      */
@@ -432,7 +432,7 @@ class {
             }
         } )
     }
-    
+
     /**
      * Submit CPU-bound job (calculations, transformations)
      */
@@ -449,17 +449,17 @@ class {
             }
         } )
     }
-    
+
     /**
      * Process mixed workload optimally
      */
     function processMixedWorkload( ioTasks, cpuTasks ) {
         // Submit I/O tasks to virtual thread executor
         ioFutures = ioTasks.map( ( task ) => submitIOJob( task ) )
-        
+
         // Submit CPU tasks to fixed thread pool
         cpuFutures = cpuTasks.map( ( task ) => submitCPUJob( task ) )
-        
+
         // Wait for all completions
         return {
             ioResults: ioFutures.map( ( f ) => f.get() ),
@@ -490,9 +490,9 @@ class {
     property name="executor"
     property name="tasks" type="struct"
     property name="logger"
-    
+
     function init() {
-        variables.executor = executorNew( 
+        variables.executor = executorNew(
             type = "scheduled",
             name = "task-scheduler",
             threads = 10
@@ -501,13 +501,13 @@ class {
         variables.logger = getLogger()
         return this
     }
-    
+
     /**
      * Schedule recurring task
      */
     function scheduleRecurring( name, taskFunction, interval, unit = "seconds" ) {
         logger.info( "Scheduling recurring task: #name#" )
-        
+
         future = executor.scheduleAtFixedRate(
             () => {
                 try {
@@ -521,23 +521,23 @@ class {
             interval,   // period
             unit
         )
-        
+
         variables.tasks[ name ] = {
             future: future,
             type: "recurring",
             interval: interval,
             unit: unit
         }
-        
+
         return this
     }
-    
+
     /**
      * Schedule one-time delayed task
      */
     function scheduleOnce( name, taskFunction, delay, unit = "seconds" ) {
         logger.info( "Scheduling one-time task: #name# (delay: #delay# #unit#)" )
-        
+
         future = executor.scheduleOnce(
             () => {
                 try {
@@ -553,17 +553,17 @@ class {
             delay,
             unit
         )
-        
+
         variables.tasks[ name ] = {
             future: future,
             type: "once",
             delay: delay,
             unit: unit
         }
-        
+
         return this
     }
-    
+
     /**
      * Cancel task
      */
@@ -575,7 +575,7 @@ class {
             logger.info( "Cancelled task: #name#" )
         }
     }
-    
+
     /**
      * Get task status
      */
@@ -583,7 +583,7 @@ class {
         if ( !structKeyExists( variables.tasks, name ) ) {
             return { exists: false }
         }
-        
+
         task = variables.tasks[ name ]
         return {
             exists: true,
@@ -592,7 +592,7 @@ class {
             done: task.future.isDone()
         }
     }
-    
+
     /**
      * Shutdown
      */
@@ -607,7 +607,7 @@ class {
 taskManager = new ScheduledTaskManager()
 
 // Schedule recurring health check every 30 seconds
-taskManager.scheduleRecurring( 
+taskManager.scheduleRecurring(
     "health-check",
     () => performHealthCheck(),
     30,
@@ -638,7 +638,7 @@ taskManager.scheduleOnce(
 ```boxlang
 // CPU-bound tasks: cores or cores + 1
 cpuCores = getAvailableProcessors()
-cpuExecutor = executorNew( 
+cpuExecutor = executorNew(
     type = "fixed",
     name = "cpu-pool",
     threads = cpuCores

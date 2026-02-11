@@ -35,22 +35,22 @@ ColdBox Routing:
  * Application route configuration
  */
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         // Enable full URL rewrites
         setFullRewrites( true )
-        
+
         // Set base URL (optional)
         setBaseURL( "http://localhost" )
-        
+
         // Home page
         route( "/" ).to( "Main.index" )
-        
+
         // Simple routes
         route( "/about" ).to( "Main.about" )
         route( "/contact" ).to( "Main.contact" )
         route( "/pricing" ).to( "Main.pricing" )
-        
+
         // Route with default action
         route( "/:handler/:action?" ).to( "handler:action" )
     }
@@ -61,12 +61,12 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         route( "/" ).to( "Main.index" )
-        
+
         // Full RESTful resource
         // Creates all 7 RESTful routes
         resources( "users" )
@@ -81,19 +81,19 @@ class Router extends coldbox.system.web.routing.Router {
         PATCH   /users/:id      -> users.update
         DELETE  /users/:id      -> users.delete
         */
-        
+
         // Resource with only specific actions
         resources(
             resource = "products",
             only = [ "index", "show" ]
         )
-        
+
         // Resource excluding actions
         resources(
             resource = "categories",
             except = [ "new", "edit" ]
         )
-        
+
         // Nested resources
         resources( resource = "posts", handler = "Posts" )
             .resources( resource = "comments", handler = "Posts.Comments" )
@@ -102,7 +102,7 @@ class Router extends coldbox.system.web.routing.Router {
         POST    /posts/:postId/comments          -> posts.comments.create
         GET     /posts/:postId/comments/:id      -> posts.comments.show
         */
-        
+
         // API resources (no new/edit forms)
         resources(
             resource = "api/users",
@@ -117,10 +117,10 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Admin routes group
         group( {
             prefix: "/admin",
@@ -132,7 +132,7 @@ class Router extends coldbox.system.web.routing.Router {
             resources( "products" )
             resources( "orders" )
         })
-        
+
         // API v1 routes group
         group( {
             prefix: "/api/v1",
@@ -142,13 +142,13 @@ class Router extends coldbox.system.web.routing.Router {
             route( "/login" ).withHandler( "Auth" ).toAction( { POST: "login" } )
             route( "/logout" ).withHandler( "Auth" ).toAction( { POST: "logout" } )
             route( "/refresh" ).withHandler( "Auth" ).toAction( { POST: "refresh" } )
-            
+
             // Protected resources
             resources( "users" )
             resources( "products" )
             resources( "orders" )
         })
-        
+
         // API v2 routes group
         group( {
             prefix: "/api/v2",
@@ -157,7 +157,7 @@ class Router extends coldbox.system.web.routing.Router {
             resources( "users" )
             resources( "products" )
         })
-        
+
         // Nested groups
         group( { prefix: "/portal" }, function(){
             group( { prefix: "/admin" }, function(){
@@ -172,26 +172,26 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Numeric ID constraint
         route( "/users/:id" )
             .withHandler( "Users" )
             .toAction( { GET: "show" } )
             .constraints( { id: "[0-9]+" } )
-        
+
         // UUID constraint
         route( "/orders/:uuid" )
             .to( "Orders.show" )
             .constraints( { uuid: "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}" } )
-        
+
         // Slug constraint
         route( "/blog/:slug" )
             .to( "Blog.show" )
             .constraints( { slug: "[a-z0-9-]+" } )
-        
+
         // Multiple constraints
         route( "/archive/:year/:month/:day" )
             .to( "Archive.show" )
@@ -200,7 +200,7 @@ class Router extends coldbox.system.web.routing.Router {
                 month: "[0-9]{2}",
                 day: "[0-9]{2}"
             })
-        
+
         // Year must be between 2000-2099
         route( "/posts/:year" )
             .to( "Posts.byYear" )
@@ -213,22 +213,22 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // GET only
         route( pattern = "/users", target = "Users.index" )
             .withVerbs( "GET" )
-        
+
         // POST only
         route( pattern = "/users", target = "Users.create" )
             .withVerbs( "POST" )
-        
+
         // Multiple HTTP methods
         route( pattern = "/users/:id", target = "Users.update" )
             .withVerbs( "PUT,PATCH" )
-        
+
         // Map different methods to different actions
         route( "/api/products" )
             .withHandler( "api.Products" )
@@ -236,7 +236,7 @@ class Router extends coldbox.system.web.routing.Router {
                 GET: "index",
                 POST: "create"
             })
-        
+
         route( "/api/products/:id" )
             .withHandler( "api.Products" )
             .toAction({
@@ -253,19 +253,19 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Named route
         route( "/" )
             .to( "Main.index" )
             .as( "home" )
-        
+
         route( "/users/:id" )
             .to( "Users.show" )
             .as( "user.show" )
-        
+
         route( "/blog/:year/:month/:slug" )
             .to( "Blog.show" )
             .as( "blog.post" )
@@ -298,21 +298,21 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Optional action parameter
         route( "/:handler/:action?" ).to( "handler:action" )
-        
+
         // Optional page parameter for pagination
         route( "/products/page/:page?" )
             .to( "Products.index" )
-        
+
         // Multiple optional parameters
         route( "/search/:category?/:tags?" )
             .to( "Search.index" )
-        
+
         // With defaults
         route( "/api/:version?/:resource" )
             .to( "api.Router.dispatch" )
@@ -325,10 +325,10 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Routes for specific domain
         group({
             domain: "api.mysite.com"
@@ -336,7 +336,7 @@ class Router extends coldbox.system.web.routing.Router {
             resources( "users" )
             resources( "products" )
         })
-        
+
         // Routes with subdomain capture
         group({
             domain: ":account.mysite.com"
@@ -344,7 +344,7 @@ class Router extends coldbox.system.web.routing.Router {
             route( "/" ).to( "Tenant.dashboard" )
             route( "/settings" ).to( "Tenant.settings" )
         })
-        
+
         // Multiple subdomains
         group({
             domain: ":tenant.:region.mysite.com"
@@ -359,24 +359,24 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Conditional routing based on environment
         if( getSetting( "environment" ) == "production" ){
             route( "/debug" ).to( "Main.notFound" )
         } else {
             route( "/debug" ).to( "Debug.index" )
         }
-        
+
         // Feature flag routing
         if( getSetting( "features" ).newDashboard ){
             route( "/dashboard" ).to( "DashboardV2.index" )
         } else {
             route( "/dashboard" ).to( "Dashboard.index" )
         }
-        
+
         // Mobile routes
         if( rc.isMobile ){
             route( "/" ).to( "Mobile.index" )
@@ -390,16 +390,16 @@ class Router extends coldbox.system.web.routing.Router {
 ```boxlang
 // modules/blog/config/Router.cfc
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         // Module routes are automatically prefixed with /blog
-        
+
         route( "/" ).to( "Main.index" )              // /blog
         route( "/post/:slug" ).to( "Posts.show" )    // /blog/post/:slug
         route( "/category/:name" ).to( "Categories.show" )  // /blog/category/:name
-        
+
         resources( "posts" )  // /blog/posts/*
-        
+
         // API routes within module
         group({ prefix: "/api" }, function(){
             resources( "posts" )  // /blog/api/posts/*
@@ -412,26 +412,26 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Permanent redirect (301)
         route( "/old-url" )
             .redirect( target="/new-url", statusCode=301 )
-        
+
         // Temporary redirect (302)
         route( "/temp" )
             .redirect( target="/temporary-location" )
-        
+
         // Redirect to named route
         route( "/old-home" )
             .redirect( routeName="home", statusCode=301 )
-        
+
         // Redirect with parameters
         route( "/old-users/:id" )
             .redirect( target="/users/:id", statusCode=301 )
-        
+
         // Redirect to external URL
         route( "/docs" )
             .redirect( target="https://docs.example.com", statusCode=302 )
@@ -443,10 +443,10 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Admin namespace
         group({
             prefix: "/admin",
@@ -456,7 +456,7 @@ class Router extends coldbox.system.web.routing.Router {
             resources( "users" )      // maps to admin.Users handler
             resources( "products" )   // maps to admin.Products handler
         })
-        
+
         // API versioning with namespace
         group({
             prefix: "/api/v1",
@@ -474,15 +474,15 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Define specific routes first
         route( "/" ).to( "Main.index" )
         resources( "users" )
         resources( "products" )
-        
+
         // Catch-all route (must be last)
         route( "/:slug*" ).to( "Pages.show" )
     }
@@ -493,14 +493,14 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class Router extends coldbox.system.web.routing.Router {
-    
+
     function configure() {
         setFullRewrites( true )
-        
+
         // Custom route handler function
         route( "/custom/:pattern" ).to( customHandler )
     }
-    
+
     function customHandler( event, rc, prc ) {
         // Custom logic
         return "Pages.dynamicPage"
@@ -512,7 +512,7 @@ class Router extends coldbox.system.web.routing.Router {
 
 ```boxlang
 class RouterTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
@@ -520,7 +520,7 @@ class RouterTest extends coldbox.system.testing.BaseTestCase {
 
     function run() {
         describe( "Application Routes", function(){
-            
+
             it( "should route home page", function(){
                 var event = execute( route = "/" )
                 expect( event.getCurrentHandler() ).toBe( "Main" )
@@ -585,7 +585,7 @@ class RouterTest extends coldbox.system.testing.BaseTestCase {
 ```boxlang
 // In handler or interceptor
 class DebugInterceptor {
-    
+
     function preProcess( event, interceptData, rc, prc ) {
         writeDump({
             route: event.getCurrentRoute(),

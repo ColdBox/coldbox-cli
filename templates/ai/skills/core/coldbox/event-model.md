@@ -29,26 +29,26 @@ The ColdBox Event Object:
 
 ```boxlang
 class Users extends coldbox.system.EventHandler {
-    
+
     function index( event, rc, prc ) {
         // event = Request context object
         // rc = Request collection (public data from form/URL)
         // prc = Private request collection (app-private data)
-        
+
         // Get current route information
         var handler = event.getCurrentHandler()     // "Users"
         var action = event.getCurrentAction()       // "index"
         var routedURL = event.getCurrentRoutedURL() // "/users"
         var fullEvent = event.getCurrentEvent()     // "users.index"
-        
+
         // Get HTTP method
         var method = event.getHTTPMethod()  // GET, POST, PUT, DELETE
-        
+
         // Check if AJAX request
         if( event.isAjax() ){
             // Handle AJAX request
         }
-        
+
         // Check if secure request (HTTPS)
         if( event.isSSL() ){
             // Secure connection
@@ -61,7 +61,7 @@ class Users extends coldbox.system.EventHandler {
 
 ```boxlang
 class Users extends coldbox.system.EventHandler {
-    
+
     @inject
     property name="userService";
 
@@ -70,45 +70,45 @@ class Users extends coldbox.system.EventHandler {
         var page = rc.page ?: 1
         var search = rc.search ?: ""
         var sortBy = rc.sortBy ?: "name"
-        
+
         // Check if key exists
         if( structKeyExists( rc, "filter" ) ){
             // Apply filter
         }
-        
+
         // Get value with default
         var limit = event.getValue( "limit", 25 )
-        
+
         // Get value and cast type
         var id = event.getValue( name="id", defaultValue=0, type="numeric" )
-        
+
         // Set value in rc
         event.setValue( "processed", true )
-        
+
         // Bulk set values
         event.setValues({
             page: 1,
             limit: 50,
             sorted: true
         })
-        
+
         // Remove value from rc
         event.removeValue( "tempData" )
-        
+
         // Get entire rc as struct
         var requestData = event.getCollection()
-        
+
         // Replace entire rc
         event.setCollection({
             newData: "value"
         })
-        
+
         prc.users = userService.list(
             page = page,
             search = search,
             sortBy = sortBy
         )
-        
+
         event.setView( "users/index" )
     }
 
@@ -119,9 +119,9 @@ class Users extends coldbox.system.EventHandler {
             lastName: rc.lastName ?: "",
             email: rc.email ?: ""
         }
-        
+
         var user = userService.create( userData )
-        
+
         relocate( uri = "/users/#user.getId()#" )
     }
 }
@@ -131,7 +131,7 @@ class Users extends coldbox.system.EventHandler {
 
 ```boxlang
 class Products extends coldbox.system.EventHandler {
-    
+
     @inject
     property name="productService";
 
@@ -139,38 +139,38 @@ class Products extends coldbox.system.EventHandler {
         // Store data for views in prc (not accessible from URL/form)
         prc.products = productService.list()
         prc.categories = productService.getCategories()
-        
+
         // Set page metadata
         prc.pageTitle = "Products"
         prc.pageDescription = "Browse our product catalog"
-        
+
         // Store authenticated user
         prc.user = auth().user()
-        
+
         // Store configuration
         prc.settings = {
             perPage: 25,
             allowFilters: true
         }
-        
+
         // prc data is accessible in views but NOT from URL parameters
         event.setView( "products/index" )
     }
 
     function show( event, rc, prc ) {
         var productId = rc.id ?: 0
-        
+
         // Store data for view
         prc.product = productService.getById( productId )
         prc.relatedProducts = productService.getRelated( productId )
-        
+
         // Add breadcrumbs
         prc.breadcrumbs = [
             { title: "Home", url: "/" },
             { title: "Products", url: "/products" },
             { title: prc.product.getName(), url: "" }
         ]
-        
+
         event.setView( "products/show" )
     }
 }
@@ -180,31 +180,31 @@ class Products extends coldbox.system.EventHandler {
 
 ```boxlang
 class Pages extends coldbox.system.EventHandler {
-    
+
     function index( event, rc, prc ) {
         prc.pageData = getPageData()
-        
+
         // Set view
         event.setView( "pages/index" )
-        
+
         // Set view with layout
         event.setView(
             view = "pages/index",
             layout = "Main"
         )
-        
+
         // Set view without layout
         event.setView(
             view = "pages/raw",
             nolayout = true
         )
-        
+
         // Set view from module
         event.setView(
             view = "dashboard/main",
             module = "admin"
         )
-        
+
         // Set view with arguments
         event.setView(
             view = "widgets/chart",
@@ -213,7 +213,7 @@ class Pages extends coldbox.system.EventHandler {
                 title: "Sales Report"
             }
         )
-        
+
         // Cache view output
         event.setView(
             view = "pages/cached",
@@ -237,10 +237,10 @@ class Pages extends coldbox.system.EventHandler {
     function setLayout( event, rc, prc ) {
         // Set layout only
         event.setLayout( "Modern" )
-        
+
         // Set layout from module
         event.setLayout( name = "Dashboard", module = "admin" )
-        
+
         // Get current layout
         var currentLayout = event.getCurrentLayout()
     }
@@ -251,27 +251,27 @@ class Pages extends coldbox.system.EventHandler {
 
 ```boxlang
 class api_Products extends coldbox.system.RestHandler {
-    
+
     @inject
     property name="productService";
 
     function index( event, rc, prc ) {
         var products = productService.list()
-        
+
         // Render JSON
         event.renderData(
             type = "json",
             data = products,
             statusCode = 200
         )
-        
+
         // Render XML
         event.renderData(
             type = "xml",
             data = products,
             statusCode = 200
         )
-        
+
         // Render with custom content type
         event.renderData(
             type = "json",
@@ -279,14 +279,14 @@ class api_Products extends coldbox.system.RestHandler {
             contentType = "application/vnd.api+json",
             statusCode = 200
         )
-        
+
         // Render plain text
         event.renderData(
             type = "plain",
             data = "Hello World",
             statusCode = 200
         )
-        
+
         // Render HTML
         event.renderData(
             type = "html",
@@ -298,7 +298,7 @@ class api_Products extends coldbox.system.RestHandler {
     function create( event, rc, prc ) {
         try {
             var product = productService.create( rc )
-            
+
             event.renderData(
                 type = "json",
                 data = {
@@ -328,36 +328,36 @@ class api_Products extends coldbox.system.RestHandler {
 
 ```boxlang
 class Users extends coldbox.system.EventHandler {
-    
+
     function create( event, rc, prc ) {
         var user = userService.create( rc )
-        
+
         // Simple relocate to event
         relocate( "users.index" )
-        
+
         // Relocate with query string
         relocate( event = "users.show", queryString = "id=#user.getId()#" )
-        
+
         // Relocate to URI
         relocate( uri = "/users/#user.getId()#" )
-        
+
         // Relocate with status code
         relocate( uri = "/users", statusCode = 301 )
-        
+
         // Relocate with message
         flash.put( "success", "User created successfully" )
         relocate( "users.index" )
-        
+
         // Relocate and persist data
         relocate( event = "users.edit", persist = "userForm" )
-        
+
         // Relocate with SSL
         relocate( event = "secure.payment", ssl = true )
     }
 
     function delete( event, rc, prc ) {
         userService.delete( rc.id )
-        
+
         // Relocate with addToken (adds CSRF token to URL)
         relocate(
             event = "users.index",
@@ -377,7 +377,7 @@ class Users extends coldbox.system.EventHandler {
             data = { error: "Unauthorized" },
             statusCode = 401
         )
-        
+
         // No need for return, renderData stops execution
     }
 }
@@ -387,26 +387,26 @@ class Users extends coldbox.system.EventHandler {
 
 ```boxlang
 class Downloads extends coldbox.system.EventHandler {
-    
+
     function file( event, rc, prc ) {
         // Set HTTP header
         event.setHTTPHeader(
             name = "Content-Type",
             value = "application/pdf"
         )
-        
+
         // Set multiple headers
         event.setHTTPHeader( name = "Cache-Control", value = "no-cache" )
         event.setHTTPHeader( name = "Pragma", value = "no-cache" )
-        
+
         // Get HTTP header
         var userAgent = event.getHTTPHeader( "User-Agent", "" )
         var authToken = event.getHTTPHeader( "Authorization", "" )
         var apiKey = event.getHTTPHeader( "X-API-Key", "" )
-        
+
         // Get all headers
         var headers = event.getHTTPHeaders()
-        
+
         // Set status code
         event.setHTTPStatus( statusCode = 404, statusText = "Not Found" )
     }
@@ -424,7 +424,7 @@ class Downloads extends coldbox.system.EventHandler {
 
 ```boxlang
 class Debug extends coldbox.system.EventHandler {
-    
+
     function requestInfo( event, rc, prc ) {
         prc.info = {
             // Routing
@@ -435,27 +435,27 @@ class Debug extends coldbox.system.EventHandler {
             route: event.getCurrentRoute(),
             routedURL: event.getCurrentRoutedURL(),
             routedNamespace: event.getCurrentRoutedNamespace(),
-            
+
             // HTTP
             method: event.getHTTPMethod(),
             isAjax: event.isAjax(),
             isSSL: event.isSSL(),
             isProxyRequest: event.isProxyRequest(),
-            
+
             // Request data
             clientIP: event.getHTTPHeader( "X-Forwarded-For", cgi.remote_addr ),
             userAgent: event.getHTTPHeader( "User-Agent", "" ),
             referer: event.getHTTPHeader( "Referer", "" ),
-            
+
             // Collections
             rc: event.getCollection(),
             prc: event.getPrivateCollection(),
-            
+
             // Context
             isEventCacheable: event.isEventCacheable(),
             eventCacheKey: event.getEventCacheKey()
         }
-        
+
         event.renderData(
             type = "json",
             data = prc.info
@@ -468,13 +468,13 @@ class Debug extends coldbox.system.EventHandler {
 
 ```boxlang
 class Products extends coldbox.system.EventHandler {
-    
+
     function featured( event, rc, prc ) {
         // Cache this event handler's output
         event.setEventCacheable( true )
         event.setEventCacheTimeout( 60 )  // Cache for 60 minutes
         event.setEventCacheKey( "products-featured" )
-        
+
         prc.products = productService.getFeatured()
         event.setView( "products/featured" )
     }
@@ -482,7 +482,7 @@ class Products extends coldbox.system.EventHandler {
     function clearCache( event, rc, prc ) {
         // Clear specific event cache
         event.clearEvent( "products.featured" )
-        
+
         // Clear all event caches
         event.clearAllEvents()
     }
@@ -493,17 +493,17 @@ class Products extends coldbox.system.EventHandler {
 
 ```boxlang
 class CustomEventDecorator {
-    
+
     function configure( event ) {
         // Add custom methods to event object
         event.getCurrentUser = function(){
             return auth().user()
         }
-        
+
         event.can = function( permission ){
             return auth().can( arguments.permission )
         }
-        
+
         event.getClientIP = function(){
             return this.getHTTPHeader( "X-Forwarded-For", cgi.remote_addr )
         }
@@ -513,11 +513,11 @@ class CustomEventDecorator {
 // Use in handler
 function index( event, rc, prc ) {
     prc.currentUser = event.getCurrentUser()
-    
+
     if( event.can( "admin.access" ) ){
         // Allow access
     }
-    
+
     var ip = event.getClientIP()
 }
 ```
@@ -526,17 +526,17 @@ function index( event, rc, prc ) {
 
 ```boxlang
 class Advanced extends coldbox.system.EventHandler {
-    
+
     function parameterBinding( event, rc, prc ) {
         // Event parameter exists
         if( event.valueExists( "id" ) ){
             // Process id
         }
-        
+
         // Get parameter as specific type
         var id = event.getValue( name="id", defaultValue=0, type="numeric" )
         var active = event.getValue( name="active", defaultValue=false, type="boolean" )
-        
+
         // Validate parameter
         if( event.getValue( "id", 0 ) <= 0 ){
             flash.put( "error", "Invalid ID" )
@@ -547,13 +547,13 @@ class Advanced extends coldbox.system.EventHandler {
     function privateData( event, rc, prc ) {
         // Store private data
         event.setPrivateValue( "internalFlag", true )
-        
+
         // Get private value
         var flag = event.getPrivateValue( "internalFlag", false )
-        
+
         // Get entire private collection
         var privateData = event.getPrivateCollection()
-        
+
         // Set entire private collection
         event.setPrivateCollection({
             user: getCurrentUser(),
@@ -564,12 +564,12 @@ class Advanced extends coldbox.system.EventHandler {
     function renderingControl( event, rc, prc ) {
         // Get rendering data
         var renderData = event.getRenderData()
-        
+
         // Check if NoRender
         if( event.isNoRender() ){
             // Response already rendered
         }
-        
+
         // Set NoRender (prevent rendering)
         event.noRender()
     }
@@ -580,7 +580,7 @@ class Advanced extends coldbox.system.EventHandler {
 
 ```boxlang
 class UsersHandlerTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
@@ -588,7 +588,7 @@ class UsersHandlerTest extends coldbox.system.testing.BaseTestCase {
 
     function run() {
         describe( "Users Handler", function(){
-            
+
             it( "should handle user list request", function(){
                 var event = execute(
                     event = "users.index",
@@ -597,7 +597,7 @@ class UsersHandlerTest extends coldbox.system.testing.BaseTestCase {
                         limit: 50
                     }
                 )
-                
+
                 expect( event.getCurrentHandler() ).toBe( "users" )
                 expect( event.getCurrentAction() ).toBe( "index" )
                 expect( event.getValue( "page" ) ).toBe( 2 )
@@ -613,16 +613,16 @@ class UsersHandlerTest extends coldbox.system.testing.BaseTestCase {
                         email: "john@example.com"
                     }
                 )
-                
+
                 expect( event.getValue( "relocate_URI", "" ) ).toInclude( "/users/" )
             })
 
             it( "should return JSON for API request", function(){
                 prepareMock( event ).$( "isAjax", true )
-                
+
                 var event = execute( event = "api.users.index" )
                 var renderData = event.getRenderData()
-                
+
                 expect( renderData.type ).toBe( "json" )
                 expect( renderData.statusCode ).toBe( 200 )
             })

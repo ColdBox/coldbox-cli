@@ -40,29 +40,29 @@ Default application layout
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>#prc.pageTitle ?: "My Application"#</title>
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="/css/app.css">
     #html.addAsset( "/css/custom.css" )#
-    
+
     <!-- Head assets -->
     #html.renderAssets( "css" )#
 </head>
 <body>
     <!-- Header -->
     #renderView( "partials/header" )#
-    
+
     <!-- Flash messages -->
     #renderView( "partials/messages" )#
-    
+
     <!-- Main content area -->
     <main class="container">
         #renderView()#
     </main>
-    
+
     <!-- Footer -->
     #renderView( "partials/footer" )#
-    
+
     <!-- JavaScript -->
     <script src="/js/app.js"></script>
     #html.renderAssets( "js" )#
@@ -102,28 +102,28 @@ Admin-specific layout
             Logged in as: #prc.user.getName()#
         </div>
     </header>
-    
+
     <!-- Sidebar -->
     <aside class="admin-sidebar">
         #renderView( "admin/partials/sidebar" )#
     </aside>
-    
+
     <!-- Main Content -->
     <main class="admin-content">
         <!-- Breadcrumbs -->
         <nav class="breadcrumbs">
             #renderView( "partials/breadcrumbs" )#
         </nav>
-        
+
         <!-- Flash Messages -->
         #renderView( "partials/messages" )#
-        
+
         <!-- View Content -->
         <div class="content-wrapper">
             #renderView()#
         </div>
     </main>
-    
+
     <script src="/js/admin.js"></script>
     #html.renderAssets( "js" )#
 </body>
@@ -141,13 +141,13 @@ List users view
 <cfoutput>
 <div class="users-list">
     <h1>#prc.pageTitle#</h1>
-    
+
     <div class="actions">
         <a href="#event.buildLink( 'users.create' )#" class="btn btn-primary">
             Add New User
         </a>
     </div>
-    
+
     <table class="table">
         <thead>
             <tr>
@@ -185,7 +185,7 @@ Create user form
 <cfoutput>
 <div class="user-form">
     <h1>Create New User</h1>
-    
+
     <!-- Display validation errors -->
     <cfif flash.exists( "errors" )>
         <div class="alert alert-danger">
@@ -196,58 +196,58 @@ Create user form
             </ul>
         </div>
     </cfif>
-    
+
     <form method="POST" action="#event.buildLink( 'users.store' )#">
         <!-- CSRF token -->
         #csrf()#
-        
+
         <div class="form-group">
             <label for="firstName">First Name</label>
-            <input 
-                type="text" 
-                name="firstName" 
+            <input
+                type="text"
+                name="firstName"
                 id="firstName"
                 value="#flash.get( 'data.firstName', '' )#"
                 class="form-control"
                 required
             >
         </div>
-        
+
         <div class="form-group">
             <label for="lastName">Last Name</label>
-            <input 
-                type="text" 
-                name="lastName" 
+            <input
+                type="text"
+                name="lastName"
                 id="lastName"
                 value="#flash.get( 'data.lastName', '' )#"
                 class="form-control"
                 required
             >
         </div>
-        
+
         <div class="form-group">
             <label for="email">Email</label>
-            <input 
-                type="email" 
-                name="email" 
+            <input
+                type="email"
+                name="email"
                 id="email"
                 value="#flash.get( 'data.email', '' )#"
                 class="form-control"
                 required
             >
         </div>
-        
+
         <div class="form-group">
             <label for="password">Password</label>
-            <input 
-                type="password" 
-                name="password" 
+            <input
+                type="password"
+                name="password"
                 id="password"
                 class="form-control"
                 required
             >
         </div>
-        
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">Create User</button>
             <a href="#event.buildLink( 'users.index' )#" class="btn btn-secondary">Cancel</a>
@@ -272,7 +272,7 @@ Header partial
                 <img src="/images/logo.png" alt="Logo">
             </a>
         </div>
-        
+
         <nav class="main-nav">
             <ul>
                 <li><a href="#event.buildLink( 'home' )#">Home</a></li>
@@ -351,10 +351,10 @@ Print layout that extends Main layout
 ```boxlang
 // In handler
 class Main extends coldbox.system.EventHandler {
-    
+
     function index( event, rc, prc ) {
         prc.users = userService.list()
-        
+
         // Set layout dynamically
         if( event.isAjax() ){
             event.setLayout( "Ajax" )
@@ -363,7 +363,7 @@ class Main extends coldbox.system.EventHandler {
         } else {
             event.setLayout( "Main" )
         }
-        
+
         event.setView( "users/index" )
     }
 }
@@ -375,19 +375,19 @@ class Main extends coldbox.system.EventHandler {
 
 ```boxlang
 class Users extends coldbox.system.EventHandler {
-    
+
     function index( event, rc, prc ) {
         prc.users = userService.list()
-        
+
         // Default view (users/index.cfm)
         event.setView( "users/index" )
-        
+
         // Specific view with layout
         event.setView( view = "users/index", layout = "Admin" )
-        
+
         // View without layout
         event.setView( view = "users/index", nolayout = true )
-        
+
         // Module view
         event.setView( view = "main/index", module = "myModule" )
     }
@@ -425,10 +425,10 @@ class Users extends coldbox.system.EventHandler {
 
 ```boxlang
 class EmailService {
-    
+
     @inject
     property name="renderer";
-    
+
     @inject
     property name="mailService";
 
@@ -437,7 +437,7 @@ class EmailService {
             view = "emails/welcome",
             args = { user: arguments.user }
         )
-        
+
         mailService.send(
             to = arguments.user.getEmail(),
             subject = "Welcome!",
@@ -457,26 +457,26 @@ Using view helpers
 <cfoutput>
 <div class="users-list">
     <h1>#prc.pageTitle#</h1>
-    
+
     <!-- Build links -->
     <a href="#event.buildLink( 'users.create' )#">Add User</a>
-    
+
     <!-- Include assets -->
     #html.addAsset( "/css/users.css" )#
     #html.addAsset( "/js/users.js" )#
-    
+
     <!-- Form helpers -->
     #html.startForm( action="users.search", method="GET" )#
         #html.textField( name="search", label="Search Users" )#
         #html.submitButton( "Search" )#
     #html.endForm()#
-    
+
     <!-- Date formatting -->
     <p>Generated: #dateFormat( now(), "mm/dd/yyyy" )# at #timeFormat( now(), "h:mm tt" )#</p>
-    
+
     <!-- Number formatting -->
     <p>Total Users: #numberFormat( prc.users.len() )#</p>
-    
+
     <!-- Truncate text -->
     <p>#left( prc.description, 100 )#...</p>
 </div>
@@ -488,10 +488,10 @@ Using view helpers
 ```boxlang
 // In handler
 class Products extends coldbox.system.EventHandler {
-    
+
     function featured( event, rc, prc ) {
         prc.products = productService.getFeatured()
-        
+
         // Cache view for 60 minutes
         event.setView(
             view = "products/featured",
@@ -533,11 +533,11 @@ modules/shop/
 ```boxlang
 // Module handler
 class Main extends coldbox.system.EventHandler {
-    
+
     function index( event, rc, prc ) {
         // Use module layout
         event.setLayout( name = "Shop", module = "shop" )
-        
+
         // Use module view
         event.setView( view = "main/index", module = "shop" )
     }
@@ -602,7 +602,7 @@ Optimize view rendering
 
 ```boxlang
 class UsersViewTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
@@ -610,13 +610,13 @@ class UsersViewTest extends coldbox.system.testing.BaseTestCase {
 
     function run() {
         describe( "Users View", function(){
-            
+
             it( "should render users list", function(){
                 var event = execute(
                     event = "users.index",
                     renderResults = true
                 )
-                
+
                 var html = event.getRenderedContent()
                 expect( html ).toInclude( "users-list" )
                 expect( html ).toInclude( "Add New User" )
@@ -629,12 +629,12 @@ class UsersViewTest extends coldbox.system.testing.BaseTestCase {
 
             it( "should render user form with errors", function(){
                 flash.put( "errors", [{ message: "Email is required" }] )
-                
+
                 var event = execute(
                     event = "users.create",
                     renderResults = true
                 )
-                
+
                 var html = event.getRenderedContent()
                 expect( html ).toInclude( "Email is required" )
             })

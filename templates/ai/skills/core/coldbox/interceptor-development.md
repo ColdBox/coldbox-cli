@@ -34,7 +34,7 @@ ColdBox Interceptors:
  * Listen to framework events
  */
 class BasicInterceptor {
-    
+
     @inject
     property name="log";
 
@@ -71,10 +71,10 @@ class BasicInterceptor {
  * Check authentication and authorization
  */
 class SecurityInterceptor {
-    
+
     @inject
     property name="authService";
-    
+
     @inject
     property name="log";
 
@@ -94,7 +94,7 @@ class SecurityInterceptor {
      */
     function preHandler( event, interceptData, rc, prc ) {
         var currentRoute = event.getCurrentRoutedURL()
-        
+
         // Skip security for public routes
         if( isPublicRoute( currentRoute ) ){
             return
@@ -109,7 +109,7 @@ class SecurityInterceptor {
 
         // Check if user has required permissions
         var requiredPermission = getRequiredPermission( event )
-        
+
         if( len( requiredPermission ) && !authService.can( requiredPermission ) ){
             log.warn( "Forbidden access attempt: #currentRoute# by user: #authService.getUserId()#" )
             flash.put( "error", "Insufficient permissions" )
@@ -133,7 +133,7 @@ class SecurityInterceptor {
     private function getRequiredPermission( required event ) {
         var handler = event.getCurrentHandler()
         var action = event.getCurrentAction()
-        
+
         // This would check handler metadata for @permission annotation
         // Implementation depends on your security requirements
         return ""
@@ -149,7 +149,7 @@ class SecurityInterceptor {
  * Log detailed request information
  */
 class RequestLoggerInterceptor {
-    
+
     @inject
     property name="log";
 
@@ -159,7 +159,7 @@ class RequestLoggerInterceptor {
     function preProcess( event, interceptData, rc, prc ) {
         // Store request start time
         request.startTime = getTickCount()
-        
+
         var logData = {
             event: event.getCurrentEvent(),
             route: event.getCurrentRoutedURL(),
@@ -167,7 +167,7 @@ class RequestLoggerInterceptor {
             ip: event.getHTTPHeader( "X-Forwarded-For", cgi.remote_addr ),
             userAgent: event.getHTTPHeader( "User-Agent", "" )
         }
-        
+
         log.info( "Request started", logData )
     }
 
@@ -176,13 +176,13 @@ class RequestLoggerInterceptor {
      */
     function postProcess( event, interceptData, rc, prc ) {
         var duration = getTickCount() - request.startTime
-        
+
         var logData = {
             event: event.getCurrentEvent(),
             duration: "#duration#ms",
             statusCode: event.getStatusCode()
         }
-        
+
         if( duration > 1000 ){
             log.warn( "Slow request detected", logData )
         } else {
@@ -195,7 +195,7 @@ class RequestLoggerInterceptor {
      */
     function onException( event, interceptData, rc, prc ) {
         var exception = interceptData.exception
-        
+
         log.error(
             "Exception in #event.getCurrentEvent()#: #exception.message#",
             exception
@@ -212,10 +212,10 @@ class RequestLoggerInterceptor {
  * Cache handler responses
  */
 class CachingInterceptor {
-    
+
     @inject
     property name="cachebox";
-    
+
     @inject
     property name="log";
 
@@ -231,7 +231,7 @@ class CachingInterceptor {
      */
     function preHandler( event, interceptData, rc, prc ) {
         var currentEvent = event.getCurrentEvent()
-        
+
         // Only cache configured events
         if( !variables.cacheable.find( currentEvent ) ){
             return
@@ -239,18 +239,18 @@ class CachingInterceptor {
 
         var cacheKey = getCacheKey( event, rc )
         var cache = cachebox.getCache( "default" )
-        
+
         if( cache.lookup( cacheKey ) ){
             var cachedData = cache.get( cacheKey )
-            
+
             log.debug( "Cache hit: #cacheKey#" )
-            
+
             // Render cached response and abort handler execution
             event.renderData(
                 type = cachedData.type,
                 data = cachedData.data
             )
-            
+
             // Prevent handler from executing
             event.overrideEvent( "" )
         }
@@ -261,21 +261,21 @@ class CachingInterceptor {
      */
     function postHandler( event, interceptData, rc, prc ) {
         var currentEvent = event.getCurrentEvent()
-        
+
         if( !variables.cacheable.find( currentEvent ) ){
             return
         }
 
         var cacheKey = getCacheKey( event, rc )
         var renderedData = event.getRenderData()
-        
+
         if( !isNull( renderedData ) ){
             cachebox.getCache( "default" ).set(
                 cacheKey,
                 renderedData,
                 60 // Cache for 60 minutes
             )
-            
+
             log.debug( "Cached response: #cacheKey#" )
         }
     }
@@ -285,12 +285,12 @@ class CachingInterceptor {
      */
     private function getCacheKey( required event, required rc ) {
         var key = event.getCurrentEvent()
-        
+
         // Include relevant RC keys in cache key
         if( structKeyExists( rc, "id" ) ){
             key &= "-#rc.id#"
         }
-        
+
         return key
     }
 }
@@ -304,7 +304,7 @@ class CachingInterceptor {
  * Handle Cross-Origin Resource Sharing
  */
 class CORSInterceptor {
-    
+
     @inject
     property name="settings";
 
@@ -314,30 +314,30 @@ class CORSInterceptor {
     function preProcess( event, interceptData, rc, prc ) {
         // Get CORS settings
         var cors = settings.cors ?: {}
-        
+
         // Set CORS headers
         event.setHTTPHeader(
             name = "Access-Control-Allow-Origin",
             value = cors.allowOrigins ?: "*"
         )
-        
+
         event.setHTTPHeader(
             name = "Access-Control-Allow-Methods",
             value = cors.allowMethods ?: "GET,POST,PUT,DELETE,OPTIONS"
         )
-        
+
         event.setHTTPHeader(
             name = "Access-Control-Allow-Headers",
             value = cors.allowHeaders ?: "Content-Type,Authorization"
         )
-        
+
         if( cors.allowCredentials ?: false ){
             event.setHTTPHeader(
                 name = "Access-Control-Allow-Credentials",
                 value = "true"
             )
         }
-        
+
         // Handle OPTIONS preflight request
         if( event.getHTTPMethod() == "OPTIONS" ){
             event.renderData(
@@ -359,7 +359,7 @@ class CORSInterceptor {
  * Limit API requests per client
  */
 class RateLimitInterceptor {
-    
+
     @inject
     property name="cachebox";
 
@@ -375,7 +375,7 @@ class RateLimitInterceptor {
         var clientIP = event.getHTTPHeader( "X-Forwarded-For", cgi.remote_addr )
         var limit = 100 // requests per window
         var window = 3600 // 1 hour in seconds
-        
+
         if( !checkRateLimit( clientIP, limit, window ) ){
             event.renderData(
                 type = "json",
@@ -401,11 +401,11 @@ class RateLimitInterceptor {
         var cache = cachebox.getCache( "default" )
         var cacheKey = "ratelimit_#arguments.clientId#"
         var requests = cache.get( cacheKey, 0 )
-        
+
         if( requests >= arguments.limit ){
             return false
         }
-        
+
         cache.set( cacheKey, requests + 1, arguments.window )
         return true
     }
@@ -431,10 +431,10 @@ configure() {
 // Fire custom interception point
 function placeOrder( event, rc, prc ) {
     var order = orderService.create( rc )
-    
+
     // Announce custom event
     announce( "onOrderCreated", { order: order } )
-    
+
     return order
 }
 
@@ -442,13 +442,13 @@ function placeOrder( event, rc, prc ) {
 class OrderInterceptor {
     function onOrderCreated( event, interceptData ) {
         var order = interceptData.order
-        
+
         // Send order confirmation email
         mailService.sendOrderConfirmation( order )
-        
+
         // Create invoice
         invoiceService.create( order )
-        
+
         // Log order
         log.info( "Order created: #order.getId()#" )
     }
@@ -464,13 +464,13 @@ configure() {
     coldbox = {
         // ... other settings
     }
-    
+
     // Register interceptors
     interceptors = [
         { class: "interceptors.SecurityInterceptor" },
         { class: "interceptors.RequestLoggerInterceptor" },
         { class: "interceptors.CachingInterceptor", priority: 1 },
-        { 
+        {
             class: "interceptors.RateLimitInterceptor",
             properties: {
                 limit: 100,
@@ -556,18 +556,18 @@ postModuleUnload( eventArgs )
 
 ```boxlang
 class SecurityInterceptorTest extends coldbox.system.testing.BaseTestCase {
-    
+
     function beforeAll() {
         super.beforeAll()
         setup()
-        
+
         // Get interceptor instance
         interceptor = getInstance( "SecurityInterceptor" )
     }
 
     function run() {
         describe( "SecurityInterceptor", function(){
-            
+
             it( "should allow access to public routes", function(){
                 var event = execute( event = "security.login" )
                 expect( event.getValue( "relocate_URI", "" ) ).toBe( "" )
@@ -583,7 +583,7 @@ class SecurityInterceptorTest extends coldbox.system.testing.BaseTestCase {
                 prepareMock( getInstance( "AuthService" ) )
                     .$( "isAuthenticated", true )
                     .$( "getUser", { id: 1, name: "Test User" } )
-                
+
                 var event = execute( event = "users.index" )
                 expect( prc.user ).toBeStruct()
                 expect( prc.user.id ).toBe( 1 )
