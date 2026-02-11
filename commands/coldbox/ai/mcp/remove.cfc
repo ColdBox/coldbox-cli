@@ -15,6 +15,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
 	property name="mcpRegistry" inject="MCPRegistry@coldbox-cli";
+	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
 
 	/**
 	 * Run the command
@@ -50,11 +51,18 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Check if it's a custom server
-		var customIndex = mcpServers.custom.findAll( ( mcpServer ) => mcpServer.name == arguments.name );
+		var serverName  = arguments.name;
+		var customIndex = mcpServers.custom.findAll( ( mcpServer ) => mcpServer.name == serverName );
 		if ( customIndex.len() ) {
 			mcpServers.custom.deleteAt( customIndex[ 1 ] );
 			saveManifest( arguments.directory, manifest );
-			regenerateAgentConfigs( arguments.directory );
+
+			// Regenerate all agent config files
+			var directory = arguments.directory;
+			var language  = manifest.language ?: "boxlang";
+			manifest.agents.each( ( agent ) => {
+				variables.agentRegistry.configureAgent( directory, agent, language );
+			} );
 
 			print.line();
 			printSuccess( "Custom MCP server '#arguments.name#' removed successfully!" );
@@ -76,7 +84,13 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 			mcpServers.module.deleteAt( moduleIndex );
 			saveManifest( arguments.directory, manifest );
-			regenerateAgentConfigs( arguments.directory );
+
+			// Regenerate all agent config files
+			var directory = arguments.directory;
+			var language  = manifest.language ?: "boxlang";
+			manifest.agents.each( ( agent ) => {
+				variables.agentRegistry.configureAgent( directory, agent, language );
+			} );
 
 			print.line();
 			printSuccess( "Module MCP server '#arguments.name#' removed!" );

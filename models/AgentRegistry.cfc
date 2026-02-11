@@ -409,10 +409,10 @@ component singleton {
 		if ( mcpServers.core.len() ) {
 			content.append( "**Core Documentation Servers:**" )
 			content.append( "" )
-			mcpServers.core.each( ( server ) => {
-				var serverDef = variables.mcpRegistry.getServerDefinition( server )
+			mcpServers.core.each( ( mcpServer ) => {
+				var serverDef = variables.mcpRegistry.getServerDefinition( mcpServer )
 				if ( !serverDef.isEmpty() ) {
-					content.append( "- **#server#**: #serverDef.description#" )
+					content.append( "- **#mcpServer#**: #serverDef.description#" )
 				}
 			} )
 			content.append( "" )
@@ -422,10 +422,10 @@ component singleton {
 		if ( mcpServers.module.len() ) {
 			content.append( "**Module Documentation Servers:**" )
 			content.append( "" )
-			mcpServers.module.each( ( server ) => {
-				var serverDef = variables.mcpRegistry.getServerDefinition( server )
+			mcpServers.module.each( ( mcpServer ) => {
+				var serverDef = variables.mcpRegistry.getServerDefinition( mcpServer )
 				if ( !serverDef.isEmpty() ) {
-					content.append( "- **#server#**: #serverDef.description#" )
+					content.append( "- **#mcpServer#**: #serverDef.description#" )
 				}
 			} )
 			content.append( "" )

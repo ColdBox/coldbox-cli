@@ -14,6 +14,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
 	property name="mcpRegistry" inject="MCPRegistry@coldbox-cli";
+	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
 
 	/**
 	 * Run the command
@@ -73,7 +74,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Check if custom server already exists
-		var existingIndex = manifest.mcpServers.custom.findAll( ( mcpServer ) => mcpServer.name == arguments.name );
+		var serverName    = arguments.name;
+		var existingIndex = manifest.mcpServers.custom.findAll( ( mcpServer ) => mcpServer.name == serverName );
 		if ( existingIndex.len() ) {
 			printWarn( "Custom MCP server '#arguments.name#' already exists" );
 			print.line();
@@ -91,8 +93,12 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Save manifest
 		saveManifest( arguments.directory, manifest );
 
-		// Regenerate agent configs with updated MCP servers
-		regenerateAgentConfigs( arguments.directory );
+		// Regenerate all agent config files
+		var directory = arguments.directory;
+		var language  = manifest.language ?: "boxlang";
+		manifest.agents.each( ( agent ) => {
+			variables.agentRegistry.configureAgent( directory, agent, language );
+		} );
 
 		print.line();
 		printSuccess( "Custom MCP server '#arguments.name#' added successfully!" );
