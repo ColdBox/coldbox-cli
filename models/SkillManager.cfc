@@ -475,8 +475,12 @@ component singleton {
 			directoryCreate( skillDir );
 		}
 
-		// Create SKILL.md file with frontmatter
-		var content = getSkillContent( arguments.skillName );
+		// Create SKILL.md file with frontmatter (check if module ships its own)
+		var content = getSkillContent(
+			skillName = arguments.skillName,
+			directory = arguments.directory,
+			moduleSlug = arguments.source != "core" ? arguments.source : ""
+		);
 		fileWrite( "#skillDir#/SKILL.md", content );
 
 		// Update manifest
@@ -533,18 +537,32 @@ component singleton {
 	}
 
 	/**
-	 * Get skill content (reads from template files)
+	 * Get skill content (reads from template files or module-shipped skills)
 	 *
 	 * @skillName The name of the skill to retrieve content for
+	 * @directory Optional project directory (for checking module-shipped skills)
+	 * @moduleSlug Optional module slug (for module-specific skills)
 	 */
-	private function getSkillContent( required string skillName ){
-		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/#arguments.skillName#.md";
+	private function getSkillContent(
+		required string skillName,
+		string directory = "",
+		string moduleSlug = ""
+	){
+		// 1. If moduleSlug provided, check if module ships its own skill at .ai/skills/<skillName>/SKILL.md
+		if ( arguments.moduleSlug.len() && arguments.directory.len() ) {
+			var moduleSkill = "#arguments.directory#/modules/#arguments.moduleSlug#/.ai/skills/#arguments.skillName#/SKILL.md"
+			if ( fileExists( moduleSkill ) ) {
+				return fileRead( moduleSkill )
+			}
+		}
 
+		// 2. Check coldbox-cli bundled template
+		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/#arguments.skillName#.md";
 		if ( fileExists( templatePath ) ) {
 			return fileRead( templatePath );
 		}
 
-		// Try generic template
+		// 3. Try generic template
 		templatePath = variables.utility.getTemplatesPath() & "/ai/skills/skill-template.md";
 		if ( fileExists( templatePath ) ) {
 			var content = fileRead( templatePath );
@@ -554,7 +572,7 @@ component singleton {
 			return content;
 		}
 
-		// Final fallback
+		// 4. Final fallback
 		return "---
 name: #arguments.skillName#
 description: Implementation patterns for #arguments.skillName#

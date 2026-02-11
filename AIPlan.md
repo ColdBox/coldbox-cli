@@ -1,7 +1,8 @@
 # ColdBox CLI AI Integration - Implementation Plan
 
-> **Status**: Phase 4 - 100% Complete 🎉
-> **Last Updated**: February 10, 2026
+> **Status**: Phase 9 - 100% Complete 🎉
+> **Last Updated**: February 11, 2026
+> **Latest**: Phases 7, 8 & 9 complete - Multi-agent + Custom/Override + Third-party module support
 
 ## Implementation Phases
 
@@ -45,11 +46,13 @@
 - ✅ `coldbox ai guidelines create` - Create custom guideline
 - ✅ `coldbox ai guidelines override` - Override core/module guideline (template-based)
 
-**Skills Management (4/4):**
-- ✅ `coldbox ai skills list` - Show available skills
+**Skills Management (6/6):**
+- ✅ `coldbox ai skills list` - Show available skills (with type grouping including overrides)
 - ✅ `coldbox ai skills refresh` - Sync with modules
 - ✅ `coldbox ai skills create` - Create custom skill (with --boxlang/--cfml language flags)
-- ✅ `coldbox ai skills remove` - Remove skill (with explicit --core|--module|--custom flags)
+- ✅ `coldbox ai skills override` - Override core/module skill (template-based)
+- ✅ `coldbox ai skills remove` - Remove skill (with explicit --core|--module|--custom|--override flags)
+- ✅ `coldbox ai skills help` - Comprehensive help including overrides
 
 **Agent Management (5/5):**
 - ✅ `coldbox ai agents list` - Show configured agents
@@ -247,69 +250,104 @@
 
 ---
 
-### ⬜ Phase 7: Multi-Agent Support
+### ✅ Phase 7: Multi-Agent Support (100% Complete)
 
-**Agent Detection:**
-- ⬜ Agent detection logic
-- ⬜ Agent capability detection
-- ⬜ Auto-detect from environment
+**Agent Registry:**
+- ✅ AgentRegistry.cfc - Central agent management service
+- ✅ Agent detection and configuration
+- ✅ Template-based agent file generation
 
 **Agent Support (6 agents):**
-- ⬜ Claude - `CLAUDE.md`
-- ⬜ GitHub Copilot - `.github/copilot-instructions.md`
-- ⬜ Codex - Codex-specific config
-- ⬜ Gemini - Gemini-specific files
-- ⬜ OpenCode - `.opencode/` config
-- ⬜ Universal - `AGENTS.md` fallback
+- ✅ Claude - `CLAUDE.md`
+- ✅ GitHub Copilot - `.github/copilot-instructions.md`
+- ✅ Cursor - `.cursorrules`
+- ✅ Codex - `.codex/instructions.md`
+- ✅ Gemini - `.gemini/instructions.md`
+- ✅ OpenCode - `.opencode/instructions.md`
+
+**Agent Commands (5/5):**
+- ✅ `coldbox ai agents list` - Show configured agents
+- ✅ `coldbox ai agents add` - Add agent configuration
+- ✅ `coldbox ai agents remove` - Remove agent
+- ✅ `coldbox ai agents active` - Show/set active agent
+- ✅ `coldbox ai agents open` - Open agent config in editor
 
 **Agent Integration:**
-- ⬜ MCP configuration per agent
-- ⬜ Agent-specific formatting
-- ⬜ Test with each agent platform
+- ✅ Layout-specific templates (modern, flat)
+- ✅ Project context detection (Vite, Docker, ORM, Migrations)
+- ✅ Multi-agent support (configure multiple agents simultaneously)
 
 ---
 
-### ⬜ Phase 8: Custom Guidelines & Overrides
+### ✅ Phase 8: Custom Guidelines & Overrides (100% Complete)
 
 **Custom Guidelines:**
-- ⬜ `.ai/guidelines/custom/` structure
-- ⬜ Guidelines discovery
-- ⬜ Validation
-- ⬜ Documentation
+- ✅ `.ai/guidelines/custom/` structure
+- ✅ `coldbox ai guidelines create` command
+- ✅ Automatic discovery and sync via refresh
+- ✅ Custom type tracking in manifest
 
-**Core Overrides:**
-- ⬜ Override mechanism
-- ⬜ Priority system (custom > override > core)
-- ⬜ Copy core as starting point
-- ⬜ Override warnings
-- ⬜ Documentation
+**Guideline Overrides:**
+- ✅ `.ai/guidelines/overrides/` structure
+- ✅ `coldbox ai guidelines override` command
+- ✅ Template-based override creation (copies original + adds override header)
+- ✅ Priority system working (override > core/module)
+- ✅ Override-specific removal with `--override` flag
+- ✅ Automatic sync from filesystem
+- ✅ List command shows overrides separately with 🎯 icon
 
 **Custom Skills:**
-- ⬜ `.ai/skills/custom/` structure
-- ⬜ Skill validation (YAML)
-- ⬜ Discovery and registration
-- ⬜ Documentation
+- ✅ `.ai/skills/custom/` directory structure (skill-name/SKILL.md)
+- ✅ `coldbox ai skills create` command (with --boxlang/--cfml language variants)
+- ✅ Automatic discovery and registration
+- ✅ Custom type tracking in manifest
+
+**Skill Overrides:**
+- ✅ `.ai/skills/overrides/` structure
+- ✅ `coldbox ai skills override` command
+- ✅ Template-based override creation (copies original + adds override header)
+- ✅ Priority system working (override > core/module)
+- ✅ Override-specific removal with `--override` flag
+- ✅ Automatic sync from filesystem
+- ✅ List command shows overrides separately with 🎯 icon
+- ✅ Help command documents override workflow
 
 ---
 
-### ⬜ Phase 9: Third-Party Module Support
+### ✅ Phase 9: Third-Party Module Support (100% Complete)
 
-**Module Guidelines:**
-- ⬜ Scan `resources/coldbox-cli/ai/guidelines/`
-- ⬜ Auto-register discovered guidelines
-- ⬜ Version matching
-- ⬜ Priority handling
+**Module Creation with AI:**
+- ✅ `coldbox create module --ai` flag support
+- ✅ Creates `.ai/guidelines/` structure at module root
+- ✅ Creates `.ai/skills/` structure at module root
+- ✅ ModuleGuidelineTemplate.txt for new modules
+- ✅ Helpful guidance printed after creation
+- ✅ Path consistency enforced (always `.ai/`, never `resources/`)
 
-**Module Skills:**
-- ⬜ Scan `resources/coldbox-cli/ai/skills/`
-- ⬜ Auto-register discovered skills
-- ⬜ Activation based on module presence
+**Module Guidelines Discovery:**
+- ✅ 3-tier fallback system for module guidelines:
+  1. Check `modules/<slug>/.ai/guideline.md` (module-shipped, standard location)
+  2. Check coldbox-cli bundled templates (`templates/ai/guidelines/modules/<slug>.md`)
+  3. Auto-generate from template (marked as auto-generated)
+- ✅ Auto-register discovered guidelines from installed modules
+- ✅ Version matching and tracking (detectModuleVersion)
+- ✅ Auto-generated flag tracking in manifest
+- ✅ Path consistency: always uses `.ai/` convention
 
-**Module Author Docs:**
-- ⬜ Guidelines for including AI files
-- ⬜ Example module structure
-- ⬜ Best practices
-- ⬜ Template files
+**Module Skills Discovery:**
+- ✅ Skill-to-module mapping system (`getSkillModuleMap()`)
+- ✅ Auto-install skills when modules detected in box.json
+- ✅ Module skills tracked separately from core skills
+- ✅ Auto-removal when modules uninstalled (via refresh)
+- ✅ Discovery from `modules/<slug>/.ai/skills/` directory
+- ✅ Path consistency: always uses `.ai/` convention
+
+**Integration:**
+- ✅ Automatic detection during `coldbox ai install`
+- ✅ Automatic sync during `coldbox ai refresh`
+- ✅ Module guidelines/skills shown separately in list commands
+
+**Note:** Module author documentation will be maintained in a separate repository.
 
 ---
 
@@ -342,12 +380,12 @@
 - ✅ Phase 4: Guidelines Content - **100% Complete** (40/40 guidelines)
 - ⬜ Phase 5: Skills Content - **0% Complete** (41 skills)
 - ⬜ Phase 6: MCP Integration - **0% Complete** (25 servers)
-- ⬜ Phase 7: Multi-Agent - **0% Complete** (6 agents)
-- ⬜ Phase 8: Custom Support - **0% Complete**
-- ⬜ Phase 9: Module Support - **0% Complete**
+- ✅ Phase 7: Multi-Agent Support - **100% Complete** (6 agents with full command set)
+- ✅ Phase 8: Custom & Override Support - **100% Complete** (guidelines + skills)
+- ✅ Phase 9: Third-Party Module Support - **100% Complete** (discovery + auto-registration)
 - ⬜ Phase 10: Documentation - **0% Complete**
 
-**Overall Progress:** 40% (4/10 phases complete)
+**Overall Progress:** 70% (7/10 phases complete)
 
 ---
 

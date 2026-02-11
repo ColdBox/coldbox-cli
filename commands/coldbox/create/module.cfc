@@ -144,9 +144,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 			printInfo( "🤖 Setting up AI integration for module..." )
 
-			// Create AI structure
-			directoryCreate( "#modulePath#/resources/coldbox-cli/ai/guidelines", true )
-			directoryCreate( "#modulePath#/resources/coldbox-cli/ai/skills", true )
+			// Create AI structure (.ai folder at module root)
+			directoryCreate( "#modulePath#/.ai/guidelines", true )
+			directoryCreate( "#modulePath#/.ai/skills", true )
 
 			// Read and process module guideline template
 			var guidelineContent = fileRead( "#variables.settings.templatesPath#/ai/ModuleGuidelineTemplate.txt" )
@@ -154,12 +154,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 			// Write guideline file
 			fileWrite(
-				"#modulePath#/resources/coldbox-cli/ai/guidelines/core.md",
+				"#modulePath#/.ai/guidelines/core.md",
 				guidelineContent
 			)
 
 			printSuccess( "✅ AI support added to module!" )
-			printHelp( "👉  Edit: #modulePath#/resources/coldbox-cli/ai/guidelines/core.md" )
+			printHelp( "👉  Edit: #modulePath#/.ai/guidelines/core.md" )
 			printHelp( "👉  When users install this module, AI guidelines will be auto-discovered" )
 		}
 	}
