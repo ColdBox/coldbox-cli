@@ -243,6 +243,23 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line( "  Guidelines: ~#arguments.stats.contextEstimate.guidelinesKB# KB" );
 		print.line( "  Skills: ~#arguments.stats.contextEstimate.skillsKB# KB" );
 		print.boldLine( "  Total: ~#arguments.stats.contextEstimate.totalKB# KB" );
+
+		// Show usage indicator based on common AI models (using GPT-4 128K as baseline)
+		var estimatedTokens = arguments.stats.contextEstimate.totalKB * 300;
+		var baselineTokens = 128000; // GPT-4 context window
+		var percentage = ( estimatedTokens / baselineTokens ) * 100;
+
+		print.toConsole( "  Usage: " );
+		if ( percentage < 30 ) {
+			print.greenLine( "✓ Low (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+		} else if ( percentage < 60 ) {
+			print.yellowLine( "⚠ Moderate (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+		} else if ( percentage < 90 ) {
+			print.orangeLine( "⚠ High (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+		} else {
+			print.redLine( "⛔ Very High (#numberFormat( percentage, '9.1' )#% of typical AI context)" );
+			print.dim( "  Consider reducing guidelines/skills for better AI performance" );
+		}
 		print.line();
 
 		// Context window estimates for popular AI models
