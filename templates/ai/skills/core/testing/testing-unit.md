@@ -44,10 +44,10 @@ it( "should calculate total price correctly", () => {
     calculator = new PriceCalculator()
     price = 100
     taxRate = 0.08
-    
+
     // Act
     total = calculator.calculateTotal( price, taxRate )
-    
+
     // Assert
     expect( total ).toBe( 108 )
 } )
@@ -63,19 +63,19 @@ it( "should calculate total price correctly", () => {
  * Unit tests for UserService component
  */
 component extends="testbox.system.BaseSpec" {
-    
+
     /*********************************** LIFE CYCLE Methods ***********************************/
-    
+
     function beforeAll() {
         // Runs once before all tests in this spec
         userService = new models.UserService()
     }
-    
+
     function afterAll() {
         // Runs once after all tests in this spec
         structClear( variables )
     }
-    
+
     function beforeEach() {
         // Runs before each test
         testUser = {
@@ -85,61 +85,61 @@ component extends="testbox.system.BaseSpec" {
             active: true
         }
     }
-    
+
     function afterEach() {
         // Runs after each test
         testUser = {}
     }
-    
+
     /*********************************** TEST SUITES ***********************************/
-    
+
     function run() {
         describe( "UserService", () => {
-            
+
             describe( "validateEmail()", () => {
-                
+
                 it( "should validate correct email format", () => {
                     result = userService.validateEmail( "john@example.com" )
                     expect( result ).toBeTrue()
                 } )
-                
+
                 it( "should reject invalid email format", () => {
                     result = userService.validateEmail( "invalid-email" )
                     expect( result ).toBeFalse()
                 } )
-                
+
                 it( "should reject empty email", () => {
                     result = userService.validateEmail( "" )
                     expect( result ).toBeFalse()
                 } )
             } )
-            
+
             describe( "formatName()", () => {
-                
+
                 it( "should capitalize first and last name", () => {
                     result = userService.formatName( "john", "doe" )
                     expect( result ).toBe( "John Doe" )
                 } )
-                
+
                 it( "should handle single name", () => {
                     result = userService.formatName( "john", "" )
                     expect( result ).toBe( "John" )
                 } )
-                
+
                 it( "should trim whitespace", () => {
                     result = userService.formatName( "  john  ", "  doe  " )
                     expect( result ).toBe( "John Doe" )
                 } )
             } )
-            
+
             describe( "calculateAge()", () => {
-                
+
                 it( "should calculate age from birthdate", () => {
                     birthDate = createDate( 1990, 1, 1 )
                     age = userService.calculateAge( birthDate )
                     expect( age ).toBeGTE( 34 )
                 } )
-                
+
                 it( "should return 0 for future dates", () => {
                     futureDate = dateAdd( "yyyy", 1, now() )
                     age = userService.calculateAge( futureDate )
@@ -159,31 +159,31 @@ component extends="testbox.system.BaseSpec" {
  * xUnit style unit tests
  */
 component extends="testbox.system.BaseSpec" {
-    
+
     function beforeTests() {
         calculator = new models.Calculator()
     }
-    
+
     function testAdd() {
         result = calculator.add( 5, 3 )
         $assert.isEqual( result, 8 )
     }
-    
+
     function testSubtract() {
         result = calculator.subtract( 10, 3 )
         $assert.isEqual( result, 7 )
     }
-    
+
     function testMultiply() {
         result = calculator.multiply( 4, 5 )
         $assert.isEqual( result, 20 )
     }
-    
+
     function testDivide() {
         result = calculator.divide( 10, 2 )
         $assert.isEqual( result, 5 )
     }
-    
+
     function testDivideByZero() {
         $assert.throws( () => calculator.divide( 10, 0 ) )
     }
@@ -239,7 +239,7 @@ expect( value ).toBeBoolean()
 // Create custom matcher
 function toBeValidEmail( expectation, args = {} ) {
     regex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$"
-    
+
     if ( reFindNoCase( regex, arguments.expectation.actual ) ) {
         expectation.pass( "Expected [#arguments.expectation.actual#] to be valid email" )
     } else {
@@ -257,25 +257,25 @@ expect( email ).toBeValidEmail()
 
 ```boxlang
 describe( "Calculator operations", () => {
-    
+
     it( "should return correct sum", () => {
         result = calculator.add( 5, 3 )
         expect( result ).toBe( 8 )
         expect( result ).toBeNumeric()
     } )
-    
+
     it( "should return struct with multiple values", () => {
         result = calculator.getStatistics()
-        
+
         expect( result ).toBeStruct()
         expect( result ).toHaveKey( "total" )
         expect( result ).toHaveKey( "average" )
         expect( result.total ).toBeNumeric()
     } )
-    
+
     it( "should return array of results", () => {
         results = calculator.calculateBatch( [ 1, 2, 3 ] )
-        
+
         expect( results ).toBeArray()
         expect( results ).toHaveLength( 3 )
         expect( results[1] ).toBe( 2 )
@@ -287,22 +287,22 @@ describe( "Calculator operations", () => {
 
 ```boxlang
 describe( "Error handling", () => {
-    
+
     it( "should throw exception for invalid input", () => {
         expect( () => calculator.divide( 10, 0 ) )
             .toThrow()
     } )
-    
+
     it( "should throw specific exception type", () => {
         expect( () => calculator.divide( 10, 0 ) )
             .toThrow( "DivisionByZeroException" )
     } )
-    
+
     it( "should throw exception with message", () => {
         expect( () => calculator.divide( 10, 0 ) )
             .toThrow( message = "Cannot divide by zero" )
     } )
-    
+
     it( "should not throw exception for valid input", () => {
         expect( () => calculator.divide( 10, 2 ) )
             .notToThrow()
@@ -314,32 +314,32 @@ describe( "Error handling", () => {
 
 ```boxlang
 describe( "Edge cases", () => {
-    
+
     it( "should handle null values", () => {
         result = userService.formatName( null, null )
         expect( result ).toBe( "" )
     } )
-    
+
     it( "should handle empty strings", () => {
         result = userService.formatName( "", "" )
         expect( result ).toBe( "" )
     } )
-    
+
     it( "should handle very large numbers", () => {
         result = calculator.add( 999999999, 1 )
         expect( result ).toBe( 1000000000 )
     } )
-    
+
     it( "should handle very small numbers", () => {
         result = calculator.multiply( 0.0001, 0.0001 )
         expect( result ).toBeCloseTo( 0.00000001, 0.000000001 )
     } )
-    
+
     it( "should handle empty arrays", () => {
         result = arrayService.sum( [] )
         expect( result ).toBe( 0 )
     } )
-    
+
     it( "should handle single item arrays", () => {
         result = arrayService.sum( [ 42 ] )
         expect( result ).toBe( 42 )
@@ -351,19 +351,19 @@ describe( "Edge cases", () => {
 
 ```boxlang
 describe( "Boolean operations", () => {
-    
+
     it( "should validate active user", () => {
         user = { active: true, verified: true }
         result = userService.canLogin( user )
         expect( result ).toBeTrue()
     } )
-    
+
     it( "should reject inactive user", () => {
         user = { active: false, verified: true }
         result = userService.canLogin( user )
         expect( result ).toBeFalse()
     } )
-    
+
     it( "should check multiple conditions", () => {
         user = { age: 25, hasLicense: true, insured: true }
         result = rentalService.canRent( user )
@@ -378,7 +378,7 @@ describe( "Boolean operations", () => {
 
 ```boxlang
 describe( "Email validation with data provider", () => {
-    
+
     // Define test data
     emailTestCases = [
         { email: "valid@example.com", expected: true },
@@ -389,7 +389,7 @@ describe( "Email validation with data provider", () => {
         { email: "no-at-sign.com", expected: false },
         { email: "", expected: false }
     ]
-    
+
     // Run test for each case
     emailTestCases.each( ( testCase ) => {
         it( "should validate '#testCase.email#' as #testCase.expected#", () => {
@@ -404,7 +404,7 @@ describe( "Email validation with data provider", () => {
 
 ```boxlang
 describe( "Calculator with multiple inputs", () => {
-    
+
     testData = [
         { a: 2, b: 2, expected: 4 },
         { a: 5, b: 3, expected: 8 },
@@ -412,7 +412,7 @@ describe( "Calculator with multiple inputs", () => {
         { a: -5, b: 5, expected: 0 },
         { a: 100, b: -50, expected: 50 }
     ]
-    
+
     testData.each( ( data ) => {
         it( "should add #data.a# + #data.b# = #data.expected#", () => {
             result = calculator.add( data.a, data.b )
@@ -429,14 +429,14 @@ describe( "Calculator with multiple inputs", () => {
 ```boxlang
 // Test private methods through public interface
 describe( "UserService public methods", () => {
-    
+
     it( "should validate and format user data", () => {
         // processUser() internally calls private _validateData() and _formatData()
         result = userService.processUser( {
             name: "john doe",
             email: "test@example.com"
         } )
-        
+
         expect( result.success ).toBeTrue()
         expect( result.name ).toBe( "John Doe" ) // formatted by private method
     } )
@@ -448,17 +448,17 @@ describe( "UserService public methods", () => {
 ```boxlang
 // Access private method using getMetadata
 describe( "Private method testing", () => {
-    
+
     it( "should test private validation method", () => {
         // Get component metadata
         metadata = getMetadata( userService )
-        
+
         // Find private method
         privateMethod = metadata.functions.find( ( f ) => f.name == "_validateEmail" )
-        
+
         // Invoke private method
         result = invoke( userService, "_validateEmail", { email: "test@example.com" } )
-        
+
         expect( result ).toBeTrue()
     } )
 } )
@@ -470,24 +470,24 @@ describe( "Private method testing", () => {
 
 ```boxlang
 describe( "Pure utility functions", () => {
-    
+
     it( "should format currency consistently", () => {
         result1 = utils.formatCurrency( 1234.56 )
         result2 = utils.formatCurrency( 1234.56 )
-        
+
         expect( result1 ).toBe( result2 )
         expect( result1 ).toBe( "$1,234.56" )
     } )
-    
+
     it( "should calculate percentage", () => {
         result = mathUtils.percentage( 50, 200 )
         expect( result ).toBe( 25 )
     } )
-    
+
     it( "should convert temperature", () => {
         fahrenheit = tempUtils.celsiusToFahrenheit( 0 )
         expect( fahrenheit ).toBe( 32 )
-        
+
         celsius = tempUtils.fahrenheitToCelsius( 32 )
         expect( celsius ).toBe( 0 )
     } )
@@ -500,36 +500,36 @@ describe( "Pure utility functions", () => {
 
 ```boxlang
 describe( "ShoppingCart state management", () => {
-    
+
     beforeEach( () => {
         cart = new models.ShoppingCart()
     } )
-    
+
     it( "should start with empty cart", () => {
         expect( cart.getItemCount() ).toBe( 0 )
         expect( cart.getTotal() ).toBe( 0 )
     } )
-    
+
     it( "should add item to cart", () => {
         cart.addItem( { id: 1, name: "Product", price: 10 } )
-        
+
         expect( cart.getItemCount() ).toBe( 1 )
         expect( cart.getTotal() ).toBe( 10 )
     } )
-    
+
     it( "should update quantities", () => {
         cart.addItem( { id: 1, name: "Product", price: 10 } )
         cart.addItem( { id: 1, name: "Product", price: 10 } )
-        
+
         expect( cart.getItemCount() ).toBe( 1 )
         expect( cart.getItemQuantity( 1 ) ).toBe( 2 )
         expect( cart.getTotal() ).toBe( 20 )
     } )
-    
+
     it( "should remove item from cart", () => {
         cart.addItem( { id: 1, name: "Product", price: 10 } )
         cart.removeItem( 1 )
-        
+
         expect( cart.getItemCount() ).toBe( 0 )
         expect( cart.getTotal() ).toBe( 0 )
     } )
@@ -542,28 +542,28 @@ describe( "ShoppingCart state management", () => {
 
 ```boxlang
 describe( "Performance tests", () => {
-    
+
     it( "should execute search within acceptable time", () => {
         startTime = getTickCount()
-        
+
         results = searchService.search( "test query" )
-        
+
         duration = getTickCount() - startTime
-        
+
         expect( duration ).toBeLT( 100 ) // Less than 100ms
         expect( results ).toBeArray()
     } )
-    
+
     it( "should handle large datasets efficiently", () => {
         largeDataset = []
         for ( i = 1; i <= 10000; i++ ) {
             largeDataset.append( { id: i, value: "item#i#" } )
         }
-        
+
         startTime = getTickCount()
         result = dataProcessor.process( largeDataset )
         duration = getTickCount() - startTime
-        
+
         expect( duration ).toBeLT( 1000 ) // Less than 1 second
     } )
 } )
@@ -575,32 +575,32 @@ describe( "Performance tests", () => {
 
 ```boxlang
 describe( "UserService", () => {
-    
+
     describe( "User Creation", () => {
         it( "should create user with valid data", () => {
             // Test implementation
         } )
-        
+
         it( "should reject duplicate email", () => {
             // Test implementation
         } )
     } )
-    
+
     describe( "User Validation", () => {
         it( "should validate email format", () => {
             // Test implementation
         } )
-        
+
         it( "should validate password strength", () => {
             // Test implementation
         } )
     } )
-    
+
     describe( "User Updates", () => {
         it( "should update user profile", () => {
             // Test implementation
         } )
-        
+
         it( "should prevent unauthorized updates", () => {
             // Test implementation
         } )
@@ -763,11 +763,11 @@ it( "should return complete user object", () => {
 // Debug failing tests
 it( "should process data", () => {
     result = service.process( testData )
-    
+
     // Add debug output
     writeDump( var = result, label = "Result" )
     writeDump( var = testData, label = "Input" )
-    
+
     expect( result.success ).toBeTrue()
 } )
 

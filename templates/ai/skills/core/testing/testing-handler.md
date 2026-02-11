@@ -48,41 +48,41 @@ Testing ColdBox handlers ensures that your application controllers properly hand
  * Integration tests for Users handler
  */
 component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
-    
+
     /*********************************** LIFE CYCLE Methods ***********************************/
-    
+
     function beforeAll() {
         super.beforeAll()
-        
+
         // Setup ColdBox application
         super.setup()
-        
+
         // Dependency injection for mocks
         mockUserService = createMock( "models.UserService" )
-        
+
         // Inject mock into handler
         getController()
             .getWireBox()
             .getInstance( "UsersHandler" )
             .setUserService( mockUserService )
     }
-    
+
     function afterAll() {
         super.afterAll()
     }
-    
+
     /*********************************** TEST SUITES ***********************************/
-    
+
     function run() {
         describe( "Users Handler", () => {
-            
+
             beforeEach( () => {
                 // Reset mocks before each test
                 mockUserService.$reset()
             } )
-            
+
             describe( "index action", () => {
-                
+
                 it( "should display user list", () => {
                     // Mock service response
                     mockUsers = [
@@ -90,119 +90,119 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
                         { id: 2, name: "Jane Smith" }
                     ]
                     mockUserService.$( "list" ).$results( mockUsers )
-                    
+
                     // Execute event
                     event = execute( event = "users.index", renderResults = true )
-                    
+
                     // Get request context
                     rc = event.getCollection()
                     prc = event.getPrivateCollection()
-                    
+
                     // Assertions
                     expect( prc.users ).toBeArray()
                     expect( prc.users ).toHaveLength( 2 )
                     expect( event.getValue( "cbox_rendered_content" ) ).toInclude( "John Doe" )
                 } )
-                
+
                 it( "should handle empty user list", () => {
                     mockUserService.$( "list" ).$results( [] )
-                    
+
                     event = execute( event = "users.index", renderResults = true )
                     prc = event.getPrivateCollection()
-                    
+
                     expect( prc.users ).toBeEmpty()
                 } )
             } )
-            
+
             describe( "show action", () => {
-                
+
                 it( "should display user details", () => {
                     mockUser = { id: 1, name: "John Doe", email: "john@example.com" }
                     mockUserService.$( "find" ).$args( 1 ).$results( mockUser )
-                    
-                    event = execute( 
+
+                    event = execute(
                         event = "users.show",
                         eventArguments = { id: 1 },
                         renderResults = true
                     )
-                    
+
                     prc = event.getPrivateCollection()
-                    
+
                     expect( prc.user.id ).toBe( 1 )
                     expect( prc.user.name ).toBe( "John Doe" )
                 } )
-                
+
                 it( "should redirect when user not found", () => {
                     mockUserService.$( "find" ).$args( 999 ).$results( null )
-                    
-                    event = execute( 
+
+                    event = execute(
                         event = "users.show",
                         eventArguments = { id: 999 }
                     )
-                    
+
                     expect( event.getValue( "relocate_URI" ) ).toBe( "/users" )
                 } )
             } )
-            
+
             describe( "create action", () => {
-                
+
                 it( "should render create form", () => {
                     event = execute( event = "users.create", renderResults = true )
-                    
+
                     expect( event.getRenderedContent() ).toInclude( "Create User" )
                     expect( event.getRenderedContent() ).toInclude( "form" )
                 } )
             } )
-            
+
             describe( "store action", () => {
-                
+
                 it( "should create new user with valid data", () => {
                     mockUserService
                         .$( "create" )
                         .$results( { id: 1, name: "John Doe" } )
-                    
-                    event = execute( 
+
+                    event = execute(
                         event = "users.store",
                         eventArguments = {
                             name: "John Doe",
                             email: "john@example.com"
                         }
                     )
-                    
+
                     // Verify service was called
                     expect( mockUserService.$once( "create" ) ).toBeTrue()
-                    
+
                     // Verify redirect
                     expect( event.getValue( "relocate_URI" ) ).toInclude( "/users" )
                 } )
-                
+
                 it( "should reject invalid email", () => {
                     mockUserService
                         .$( "create" )
                         .$throw( type = "ValidationException", message = "Invalid email" )
-                    
-                    event = execute( 
+
+                    event = execute(
                         event = "users.store",
                         eventArguments = {
                             name: "John Doe",
                             email: "invalid-email"
                         }
                     )
-                    
+
                     // Should re-render form with errors
                     expect( event.getValue( "cbox_rendered_content" ) ).toInclude( "Invalid email" )
                 } )
             } )
-            
+
             describe( "update action", () => {
-                
+
                 it( "should update existing user", () => {
                     mockUserService
                         .$( "update" )
                         .$args( 1 )
                         .$results( true )
-                    
-                    event = execute( 
+
+                    event = execute(
                         event = "users.update",
                         eventArguments = {
                             id: 1,
@@ -210,22 +210,22 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
                             email: "john@example.com"
                         }
                     )
-                    
+
                     expect( mockUserService.$once( "update" ) ).toBeTrue()
                     expect( event.getValue( "relocate_URI" ) ).toInclude( "/users/1" )
                 } )
             } )
-            
+
             describe( "delete action", () => {
-                
+
                 it( "should delete user", () => {
                     mockUserService.$( "delete" ).$args( 1 ).$results( true )
-                    
-                    event = execute( 
+
+                    event = execute(
                         event = "users.delete",
                         eventArguments = { id: 1 }
                     )
-                    
+
                     expect( mockUserService.$once( "delete" ) ).toBeTrue()
                     expect( event.getValue( "relocate_URI" ) ).toBe( "/users" )
                 } )
@@ -242,7 +242,7 @@ component extends="coldbox.system.testing.BaseTestCase" appMapping="/root" {
 ```boxlang
 it( "should process form submission", () => {
     // Prepare request collection
-    event = execute( 
+    event = execute(
         event = "users.store",
         eventArguments = {
             name: "John Doe",
@@ -250,11 +250,11 @@ it( "should process form submission", () => {
             age: 30
         }
     )
-    
+
     // Access collections
     rc = event.getCollection()
     prc = event.getPrivateCollection()
-    
+
     // Verify data
     expect( rc.name ).toBe( "John Doe" )
     expect( rc.email ).toBe( "john@example.com" )
@@ -266,10 +266,10 @@ it( "should process form submission", () => {
 ```boxlang
 it( "should store data in private collection", () => {
     mockUserService.$( "find" ).$results( { id: 1, name: "John" } )
-    
+
     event = execute( event = "users.show", eventArguments = { id: 1 } )
     prc = event.getPrivateCollection()
-    
+
     // Handler should store user in prc
     expect( prc ).toHaveKey( "user" )
     expect( prc.user.id ).toBe( 1 )
@@ -282,26 +282,26 @@ it( "should store data in private collection", () => {
 
 ```boxlang
 describe( "GET requests", () => {
-    
+
     it( "should handle GET /users", () => {
         mockUserService.$( "list" ).$results( [] )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.index",
             renderResults = true
         )
-        
+
         expect( event.getRenderedContent() ).toInclude( "Users" )
     } )
-    
+
     it( "should handle GET /users/:id", () => {
         mockUserService.$( "find" ).$results( { id: 1 } )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.show",
             eventArguments = { id: 1 }
         )
-        
+
         expect( event.getPrivateValue( "user" ) ).toHaveKey( "id" )
     } )
 } )
@@ -311,18 +311,18 @@ describe( "GET requests", () => {
 
 ```boxlang
 describe( "POST requests", () => {
-    
+
     it( "should handle POST /users", () => {
         mockUserService.$( "create" ).$results( { id: 1 } )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.store",
             eventArguments = {
                 name: "John Doe",
                 email: "john@example.com"
             }
         )
-        
+
         expect( mockUserService.$once( "create" ) ).toBeTrue()
     } )
 } )
@@ -332,18 +332,18 @@ describe( "POST requests", () => {
 
 ```boxlang
 describe( "PUT requests", () => {
-    
+
     it( "should handle PUT /users/:id", () => {
         mockUserService.$( "update" ).$results( true )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.update",
             eventArguments = {
                 id: 1,
                 name: "John Updated"
             }
         )
-        
+
         expect( mockUserService.$once( "update" ) ).toBeTrue()
     } )
 } )
@@ -353,15 +353,15 @@ describe( "PUT requests", () => {
 
 ```boxlang
 describe( "DELETE requests", () => {
-    
+
     it( "should handle DELETE /users/:id", () => {
         mockUserService.$( "delete" ).$results( true )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.delete",
             eventArguments = { id: 1 }
         )
-        
+
         expect( mockUserService.$once( "delete" ) ).toBeTrue()
         expect( event.getValue( "relocate_URI" ) ).toBe( "/users" )
     } )
@@ -375,12 +375,12 @@ describe( "DELETE requests", () => {
 ```boxlang
 it( "should redirect after successful creation", () => {
     mockUserService.$( "create" ).$results( { id: 1 } )
-    
-    event = execute( 
+
+    event = execute(
         event = "users.store",
         eventArguments = { name: "John" }
     )
-    
+
     // Check relocation occurred
     expect( event.getValue( "relocate_URI", "" ) ).notToBeEmpty()
     expect( event.getValue( "relocate_URI" ) ).toInclude( "/users" )
@@ -388,12 +388,12 @@ it( "should redirect after successful creation", () => {
 
 it( "should redirect with status messages", () => {
     mockUserService.$( "create" ).$results( { id: 1 } )
-    
-    event = execute( 
+
+    event = execute(
         event = "users.store",
         eventArguments = { name: "John" }
     )
-    
+
     // Check flash scope
     flash = event.getFlash()
     expect( flash.exists( "success" ) ).toBeTrue()
@@ -410,10 +410,10 @@ it( "should render user list view", () => {
         { id: 1, name: "John" },
         { id: 2, name: "Jane" }
     ] )
-    
+
     event = execute( event = "users.index", renderResults = true )
     rendered = event.getRenderedContent()
-    
+
     expect( rendered ).toInclude( "John" )
     expect( rendered ).toInclude( "Jane" )
     expect( rendered ).toInclude( "<table" )
@@ -423,13 +423,13 @@ it( "should display error messages", () => {
     mockUserService
         .$( "create" )
         .$throw( message = "Email already exists" )
-    
-    event = execute( 
+
+    event = execute(
         event = "users.store",
         eventArguments = { email: "duplicate@test.com" },
         renderResults = true
     )
-    
+
     rendered = event.getRenderedContent()
     expect( rendered ).toInclude( "Email already exists" )
 } )
@@ -441,46 +441,46 @@ it( "should display error messages", () => {
 
 ```boxlang
 describe( "REST API Users Handler", () => {
-    
+
     it( "should return JSON user list", () => {
         mockUserService.$( "list" ).$results( [
             { id: 1, name: "John" }
         ] )
-        
+
         event = execute( event = "api.users.index" )
-        
+
         // Get rendered data
         data = event.getRenderData()
-        
+
         expect( data.type ).toBe( "JSON" )
         expect( data.statusCode ).toBe( 200 )
-        
+
         // Parse JSON data
         jsonData = deserializeJSON( data.data )
         expect( jsonData.data ).toBeArray()
         expect( jsonData.data[1].name ).toBe( "John" )
     } )
-    
+
     it( "should return 404 for missing user", () => {
         mockUserService.$( "find" ).$results( null )
-        
-        event = execute( 
+
+        event = execute(
             event = "api.users.show",
             eventArguments = { id: 999 }
         )
-        
+
         data = event.getRenderData()
         expect( data.statusCode ).toBe( 404 )
     } )
-    
+
     it( "should return 201 on successful creation", () => {
         mockUserService.$( "create" ).$results( { id: 1 } )
-        
-        event = execute( 
+
+        event = execute(
             event = "api.users.store",
             eventArguments = { name: "John", email: "john@test.com" }
         )
-        
+
         data = event.getRenderData()
         expect( data.statusCode ).toBe( 201 )
     } )
@@ -491,14 +491,14 @@ describe( "REST API Users Handler", () => {
 
 ```boxlang
 it( "should return 422 for validation errors", () => {
-    event = execute( 
+    event = execute(
         event = "api.users.store",
         eventArguments = { name: "", email: "invalid" }
     )
-    
+
     data = event.getRenderData()
     expect( data.statusCode ).toBe( 422 )
-    
+
     jsonData = deserializeJSON( data.data )
     expect( jsonData.errors ).toBeStruct()
 } )
@@ -507,12 +507,12 @@ it( "should return 500 for server errors", () => {
     mockUserService
         .$( "create" )
         .$throw( type = "DatabaseException" )
-    
-    event = execute( 
+
+    event = execute(
         event = "api.users.store",
         eventArguments = { name: "John" }
     )
-    
+
     data = event.getRenderData()
     expect( data.statusCode ).toBe( 500 )
 } )
@@ -524,22 +524,22 @@ it( "should return 500 for server errors", () => {
 
 ```boxlang
 describe( "Handler security", () => {
-    
+
     it( "should allow access for authenticated users", () => {
         // Mock authenticated user
         event = execute( event = "users.index" )
         event.setPrivateValue( "oCurrentUser", { id: 1, name: "Admin" } )
-        
+
         // Execute protected action
         event = execute( event = "users.create" )
-        
+
         expect( event.getValue( "relocate_URI", "" ) ).toBeEmpty()
     } )
-    
+
     it( "should redirect unauthorized users", () => {
         // No authenticated user
         event = execute( event = "users.create" )
-        
+
         expect( event.getValue( "relocate_URI" ) ).toInclude( "/login" )
     } )
 } )
@@ -549,34 +549,34 @@ describe( "Handler security", () => {
 
 ```boxlang
 describe( "Authorization", () => {
-    
+
     it( "should allow admin to delete users", () => {
         mockAuthService
             .$( "hasPermission" )
             .$args( "deleteUser" )
             .$results( true )
-        
+
         mockUserService.$( "delete" ).$results( true )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.delete",
             eventArguments = { id: 1 }
         )
-        
+
         expect( mockUserService.$once( "delete" ) ).toBeTrue()
     } )
-    
+
     it( "should deny non-admin delete access", () => {
         mockAuthService
             .$( "hasPermission" )
             .$args( "deleteUser" )
             .$results( false )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.delete",
             eventArguments = { id: 1 }
         )
-        
+
         // Should redirect or show error
         expect( event.getValue( "relocate_URI" ) ).toInclude( "/unauthorized" )
     } )
@@ -589,44 +589,44 @@ describe( "Authorization", () => {
 
 ```boxlang
 describe( "Form validation", () => {
-    
+
     it( "should validate required fields", () => {
-        event = execute( 
+        event = execute(
             event = "users.store",
             eventArguments = { name: "", email: "" },
             renderResults = true
         )
-        
+
         rendered = event.getRenderedContent()
         expect( rendered ).toInclude( "Name is required" )
         expect( rendered ).toInclude( "Email is required" )
     } )
-    
+
     it( "should validate email format", () => {
-        event = execute( 
+        event = execute(
             event = "users.store",
-            eventArguments = { 
+            eventArguments = {
                 name: "John",
                 email: "invalid-email"
             },
             renderResults = true
         )
-        
+
         rendered = event.getRenderedContent()
         expect( rendered ).toInclude( "Invalid email format" )
     } )
-    
+
     it( "should pass validation with valid data", () => {
         mockUserService.$( "create" ).$results( { id: 1 } )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.store",
-            eventArguments = { 
+            eventArguments = {
                 name: "John Doe",
                 email: "john@example.com"
             }
         )
-        
+
         expect( mockUserService.$once( "create" ) ).toBeTrue()
     } )
 } )
@@ -639,12 +639,12 @@ describe( "Form validation", () => {
 ```boxlang
 it( "should set success message in flash", () => {
     mockUserService.$( "create" ).$results( { id: 1 } )
-    
-    event = execute( 
+
+    event = execute(
         event = "users.store",
         eventArguments = { name: "John" }
     )
-    
+
     flash = getController().getRequestService().getFlashScope()
     expect( flash.exists( "success" ) ).toBeTrue()
     expect( flash.get( "success" ) ).toInclude( "created successfully" )
@@ -652,12 +652,12 @@ it( "should set success message in flash", () => {
 
 it( "should set error message in flash", () => {
     mockUserService.$( "create" ).$throw( message = "Error occurred" )
-    
-    event = execute( 
+
+    event = execute(
         event = "users.store",
         eventArguments = { name: "John" }
     )
-    
+
     flash = getController().getRequestService().getFlashScope()
     expect( flash.exists( "error" ) ).toBeTrue()
 } )
@@ -669,36 +669,36 @@ it( "should set error message in flash", () => {
 
 ```boxlang
 describe( "Handler with mocked dependencies", () => {
-    
+
     beforeEach( () => {
         mockUserService = createMock( "models.UserService" )
         mockMailService = createMock( "models.MailService" )
-        
+
         // Get handler and inject mocks
         handler = getController()
             .getWireBox()
             .getInstance( "UsersHandler" )
-        
+
         handler.setUserService( mockUserService )
         handler.setMailService( mockMailService )
     } )
-    
+
     it( "should send welcome email after user creation", () => {
-        mockUserService.$( "create" ).$results( { 
+        mockUserService.$( "create" ).$results( {
             id: 1,
             email: "john@example.com"
         } )
-        
+
         mockMailService.$( "sendWelcome" )
-        
-        event = execute( 
+
+        event = execute(
             event = "users.store",
-            eventArguments = { 
+            eventArguments = {
                 name: "John",
                 email: "john@example.com"
             }
         )
-        
+
         // Verify both service calls
         expect( mockUserService.$once( "create" ) ).toBeTrue()
         expect( mockMailService.$once( "sendWelcome" ) ).toBeTrue()
