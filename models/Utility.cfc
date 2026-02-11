@@ -4,9 +4,36 @@ component singleton {
 	property name="moduleService" inject="ModuleService";
 	property name="wirebox"       inject="wirebox";
 	property name="print"         inject="PrintBuffer";
+	property name="settings"       inject="box:modulesettings:coldbox-cli";
+	property name="config"       inject="box:moduleConfig:coldbox-cli";
 
 	this.BREAK = chr( 13 ) & chr( 10 );
 	this.TAB   = chr( 9 );
+
+	/**
+	 * Get the ColdBox CLI module version
+	 *
+	 * @return The version string from box.json
+	 */
+	function getColdboxCliVersion(){
+		var boxJsonPath = variables.config.path & "/box.json"
+
+		if ( fileExists( boxJsonPath ) ) {
+			var boxJson = deserializeJSON( fileRead( boxJsonPath ) )
+			return boxJson.version ?: "1.0.0"
+		}
+
+		return "1.0.0"
+	}
+
+	/**
+	 * Get the templates path for the ColdBox CLI module
+	 *
+	 * @return The absolute path to the templates directory
+	 */
+	function getTemplatesPath(){
+		return variables.settings.templatesPath
+	}
 
 	/**
 	 * Verify that the TestBox module is installed
@@ -156,6 +183,20 @@ component singleton {
 	 */
 	function camelCaseUpper( required target ){
 		return camelCase( arguments.target, true );
+	}
+
+	/**
+	 * Detect the ColdBox template type (flat or modern) based on project structure
+	 *
+	 * @directory The project directory
+	 *
+	 * @return string "modern" if app/ and public/ exist, "flat" otherwise
+	 */
+	function detectTemplateType( required string directory ){
+		var hasAppFolder = directoryExists( "#arguments.directory#/app" )
+		var hasPublicFolder = directoryExists( "#arguments.directory#/public" )
+
+		return ( hasAppFolder && hasPublicFolder ) ? "modern" : "flat"
 	}
 
 }

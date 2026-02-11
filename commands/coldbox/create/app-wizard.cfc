@@ -58,6 +58,39 @@ component extends="app" aliases="" {
 			arguments.migrations = false;
 		}
 
+		// AI Integration
+		print.line()
+		print.cyanLine( "🤖 AI Integration" )
+		print.line()
+
+		if ( confirm( "Enable AI assistance for this project? [y/n]" ) ) {
+			arguments.ai = true;
+
+			var agentChoices = [
+				"1. Claude (Anthropic) - Best for code generation",
+				"2. GitHub Copilot - Integrated with GitHub",
+				"3. Cursor - Modern AI-first IDE",
+				"4. Multiple - Install for whole team"
+			]
+
+			print.line()
+			agentChoices.each( ( choice ) => print.line( choice ) )
+			print.line()
+
+			var agentChoice = ask( "Select AI agent [1-4]: " )
+
+			var agentMap = {
+				"1": "claude",
+				"2": "copilot",
+				"3": "cursor",
+				"4": "claude,copilot,cursor"
+			}
+
+			arguments.aiAgent = agentMap[ agentChoice ] ?: "claude"
+		} else {
+			arguments.ai = false;
+		}
+
 		variables.print
 			.boldGreenLine( "🍳 Creating your site..." )
 			.line()

@@ -76,6 +76,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @vite 					Setup Vite for frontend asset building (For BoxLang or Modern apps only)
 	 * @rest        Is this a REST API project? (For BoxLang apps only)
 	 * @cfml        Set the language to CFML explicitly (overrides boxlang)
+	 * @ai                  Enable AI integration for the application
+	 * @aiAgent             The AI agent(s) to configure (claude, copilot, cursor, etc.), this can be a comma separated list for multiple agents, default is "claude"
 	 **/
 	function run(
 		name               = defaultAppName,
@@ -90,7 +92,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		boolean docker     = false,
 		boolean vite       = false,
 		boolean rest       = false,
-		boolean cfml       = false
+		boolean cfml       = false,
+		boolean ai         = false,
+		string aiAgent     = "claude"
 	){
 		// Check for wizard argument
 		if ( arguments.wizard ) {
@@ -166,9 +170,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 		printInfo( "✏️  Setting Up Your box.json" )
 
 		if ( arguments.boxlang ) {
-			command( "package set" ).params( language: "BoxLang" ).run();
+			command( "package set" ).params( language: "BoxLang" ).run( returnOutput: true );
 		} else {
-			command( "package set" ).params( language: "CFML" ).run();
+			command( "package set" ).params( language: "CFML" ).run( returnOutput: true );
 		}
 
 		// Prepare defaults on box.json so we remove template based ones
@@ -181,12 +185,12 @@ component extends="coldbox-cli.models.BaseCommand" {
 				ignore     : "[]",
 				description: "A ColdBox Application created with the ColdBox CLI"
 			)
-			.run();
+			.run( returnOutput: true );
 
 		// set the server name if the user provided one
 		variables.print.line().toConsole();
 		printInfo( "📡  Preparing server and support files" );
-		command( "server set" ).params( name = arguments.name ).run();
+		command( "server set" ).params( name: arguments.name ).run( returnOutput:true );
 
 		// ENV File
 		var envFile = arguments.directory & ".env";
@@ -205,38 +209,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 			}
 		} else {
 			printWarn( "⏭️  .env file already exists, skipping creation." )
-		}
-
-		// Copilot instructions
-		printInfo( "🤖 Preparing GitHub Copilot configuration" );
-		var githubDir   = arguments.directory & ".github";
-		var copilotFile = githubDir & "/copilot-instructions.md";
-		if ( !directoryExists( githubDir ) ) {
-			directoryCreate( githubDir, true )
-		}
-		if ( !fileExists( copilotFile ) ) {
-			printInfo( "🥊 Creating copilot file" )
-			// If the template has a copilot-instructions.md, use it, otherwise use the default one
-			if ( fileExists( arguments.directory & "resources/copilot-instructions.md" ) ) {
-				fileCopy(
-					arguments.directory & "resources/copilot-instructions.md",
-					copilotFile
-				);
-			} else {
-				if ( arguments.skeleton == "modern" ) {
-					fileCopy(
-						variables.settings.templatesPath & "modern-copilot-instructions.md",
-						copilotFile
-					);
-				} else {
-					fileCopy(
-						variables.settings.templatesPath & "flat-copilot-instructions.md",
-						copilotFile
-					);
-				}
-			}
-		} else {
-			printWarn( "⏭️  Copilot Instructions already exist, skipping creation." )
 		}
 
 		// Run migrations init
@@ -452,10 +424,23 @@ component extends="coldbox-cli.models.BaseCommand" {
 			)
 		}
 
-		printSuccess( "🥊  Your ColdBox BoxLang application is ready to roll!" )
-		printHelp( "👉  Run 'server start' to launch the development server." )
-		printHelp( "👉  Run 'coldbox help' to see a list of available commands from the ColdBox CLI" )
-		printHelp( "🗳️  Happy coding!" )
+		// AI Integration Setup
+		if ( arguments.ai ) {
+			printInfo( "🤖 Setting up AI integration..." )
+
+			// Determine language from skeleton and flags
+			var language = arguments.boxlang ? "boxlang" : "cfml"
+
+			command( "coldbox ai install" )
+				.params(
+					agent    = arguments.aiAgent,
+					language  = language,
+					directory = arguments.directory,
+					showBanner = false
+				)
+				.run()
+		}
+
 	}
 
 	/**

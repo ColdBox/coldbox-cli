@@ -13,7 +13,7 @@ component {
 	this.cfmapping = "coldbox-cli";
 
 	function configure(){
-		settings = { templatesPath : modulePath & "/templates" }
+		variables.settings = { templatesPath : modulePath & "/templates" }
 	}
 
 	function onLoad(){
