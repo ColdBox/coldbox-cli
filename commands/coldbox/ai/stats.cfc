@@ -253,13 +253,13 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.toConsole( "  Usage: " );
 		if ( percentage < 30 ) {
-			print.greenLine( "✓ Low (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
+			print.greenLine( "✓ Low (#numberFormat( percentage, "_._" )#% of typical AI context)" );
 		} else if ( percentage < 60 ) {
-			print.yellowLine( "⚠ Moderate (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
+			print.yellowLine( "⚠ Moderate (#numberFormat( percentage, "_._" )#% of typical AI context)" );
 		} else if ( percentage < 90 ) {
-			print.orangeLine( "⚠ High (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
+			print.orangeLine( "⚠ High (#numberFormat( percentage, "_._" )#% of typical AI context)" );
 		} else {
-			print.redLine( "⛔ Very High (#numberFormat( percentage, "9.1" )#% of typical AI context)" );
+			print.redLine( "⛔ Very High (#numberFormat( percentage, "_._" )#% of typical AI context)" );
 			print.dim( "  Consider reducing guidelines/skills for better AI performance" );
 		}
 		print.line();
@@ -312,11 +312,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.toConsole( "    " );
 
 		if ( color == "green" ) {
-			print.greenText( "#numberFormat( percentage, "9.2" )#%" );
+			print.greenText( "#numberFormat( percentage, "_._" )#%" );
 		} else if ( color == "yellow" ) {
-			print.yellowText( "#numberFormat( percentage, "9.2" )#%" );
+			print.yellowText( "#numberFormat( percentage, "_._" )#%" );
 		} else {
-			print.redText( "#numberFormat( percentage, "9.2" )#%" );
+			print.redText( "#numberFormat( percentage, "_._" )#%" );
 		}
 
 		print.line( " (~#numberFormat( estimatedTokens )# tokens of #numberFormat( arguments.contextTokens )#)" );
@@ -329,9 +329,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( arguments.bytes < 1024 ) {
 			return "#arguments.bytes# B";
 		} else if ( arguments.bytes < 1048576 ) {
-			return "#numberFormat( arguments.bytes / 1024, "9.2" )# KB";
+			return "#numberFormat( arguments.bytes / 1024, "_._" )# KB";
 		} else {
-			return "#numberFormat( arguments.bytes / 1048576, "9.2" )# MB";
+			return "#numberFormat( arguments.bytes / 1048576, "_._" )# MB";
 		}
 	}
 
