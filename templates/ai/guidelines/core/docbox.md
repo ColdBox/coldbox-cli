@@ -41,7 +41,7 @@ DocBox uses JavaDoc-style comment blocks placed above components, properties, fu
 /**
  * This is a DocBox comment block
  * Multiple lines are supported
- * 
+ *
  * @author Your Name
  * @version 1.0.0
  */
@@ -53,7 +53,7 @@ DocBox uses JavaDoc-style comment blocks placed above components, properties, fu
 /**
  * UserService handles all user-related business logic
  * including registration, authentication, and profile management.
- * 
+ *
  * @author Luis Majano
  * @version 2.1.0
  * @since 1.0.0
@@ -69,7 +69,7 @@ component singleton {
 ```boxlang
 /**
  * Collection of user role assignments
- * 
+ *
  * @type array
  * @doc_generic models.Role
  */
@@ -83,7 +83,7 @@ property name="email" type="string";
 
 /**
  * Internal caching mechanism
- * 
+ *
  * @deprecated Use injected cache instead
  */
 property name="localCache";
@@ -94,10 +94,10 @@ property name="localCache";
 ```boxlang
 /**
  * Retrieves a user by their unique identifier
- * 
+ *
  * @id The numeric user ID to lookup
  * @id.doc_generic numeric
- * 
+ *
  * @return User entity object
  * @throws EntityNotFoundException When user ID is not found
  * @throws DatabaseException On database connection errors
@@ -108,17 +108,17 @@ function getById( required numeric id ) {
 
 /**
  * Creates a new user account with validation
- * 
+ *
  * @data User data structure containing email, password, and profile info
  * @data.doc_generic struct
  * @sendWelcome Whether to send welcome email (default: true)
- * 
+ *
  * @return Newly created user entity
  * @throws ValidationException When data fails validation rules
  */
-function create( 
+function create(
     required struct data,
-    boolean sendWelcome = true 
+    boolean sendWelcome = true
 ) {
     // Implementation
 }
@@ -129,14 +129,14 @@ function create(
 ```boxlang
 /**
  * Searches users by various criteria
- * 
+ *
  * @query Search query string
  * @filters.doc_generic struct
  * @filters Additional filter criteria as key-value pairs
  * @page Page number for pagination (1-indexed)
  * @perPage Number of results per page
  * @perPage.hint Maximum 100 records per page
- * 
+ *
  * @return Paginated array of user entities
  * @doc_generic Array<models.User>
  */
@@ -171,25 +171,25 @@ function search(
 ```boxlang
 /**
  * PaymentService processes all payment transactions
- * 
+ *
  * @author Luis Majano <[email protected]>
  * @version 3.2.1
  * @since 1.0.0
  */
 component singleton {
-    
+
     /**
      * Process a credit card payment
-     * 
+     *
      * @amount Transaction amount in USD
      * @cardNumber Credit card number (will be encrypted)
      * @cardNumber.deprecated Use tokenized payment method instead
-     * 
+     *
      * @return Payment confirmation structure
      * @doc_generic struct
      * @throws PaymentException On gateway errors
      * @throws ValidationException On invalid card data
-     * 
+     *
      * @deprecated As of 3.0.0, use processTokenPayment() instead
      */
     function processPayment(
@@ -210,7 +210,7 @@ Mark components as abstract (alternative to `abstract` attribute):
 ```boxlang
 /**
  * Base class for all service objects
- * 
+ *
  * @doc_abstract true
  */
 component {
@@ -230,7 +230,7 @@ Specify generic types for arrays, structs, or any types:
 ```boxlang
 /**
  * Get all active users
- * 
+ *
  * @return Array of User entities
  * @doc_generic models.User
  */
@@ -240,9 +240,9 @@ function getActiveUsers() {
 
 /**
  * Get user preferences as key-value map
- * 
+ *
  * @userId User identifier
- * 
+ *
  * @return User preferences structure
  * @doc_generic string,any
  */
@@ -252,7 +252,7 @@ function getPreferences( required numeric userId ) {
 
 /**
  * Batch create users from import data
- * 
+ *
  * @users.doc_generic struct
  * @users Array of user data structures
  */
@@ -268,17 +268,17 @@ DocBox will document any custom tags you create:
 ```boxlang
 /**
  * External API integration service
- * 
+ *
  * @api_version 2.1
  * @api_endpoint https://api.example.com/v2
  * @rate_limit 1000 requests per hour
  * @cache_duration 300 seconds
  */
 component singleton {
-    
+
     /**
      * Fetch user data from external API
-     * 
+     *
      * @complexity O(1) - Direct API call
      * @cache_key user-{id}
      * @metrics_tracked true
@@ -368,7 +368,7 @@ docbox.addStrategy( "HTML", {
     projectTitle: "E-Commerce Platform API",
     outputDir: expandPath( "./docs/api" ),
     theme: "default",
-    
+
     // Additional metadata
     metadata: {
         version: "3.2.1",
@@ -379,17 +379,17 @@ docbox.addStrategy( "HTML", {
 
 // Multiple source directories
 var sources = [
-    { 
+    {
         dir: expandPath( "./models/services" ),
-        mapping: "services" 
+        mapping: "services"
     },
-    { 
+    {
         dir: expandPath( "./models/entities" ),
-        mapping: "entities" 
+        mapping: "entities"
     },
-    { 
+    {
         dir: expandPath( "./modules/api/models" ),
-        mapping: "api.models" 
+        mapping: "api.models"
     }
 ]
 
@@ -469,31 +469,31 @@ component {
     function run() {
         // Generate API documentation
         generateDocs()
-        
+
         // Run tests
         runTests()
-        
+
         // Package application
         packageApp()
     }
-    
+
     function generateDocs() {
         print.line( "Generating API documentation..." )
-        
+
         var docbox = new docbox.DocBox()
-        
+
         docbox.addStrategy( "HTML", {
             projectTitle: "MyApp v#getVersion()#",
             outputDir: expandPath( "./docs/api" ),
             theme: "default"
         } )
-        
+
         docbox.generate(
             source = expandPath( "./models" ),
             mapping = "models",
             excludes = "tests"
         )
-        
+
         print.greenLine( "✓ Documentation generated successfully" )
     }
 }
@@ -559,15 +559,15 @@ component {
 /**
  * UserService manages user lifecycle operations including
  * registration, authentication, profile management, and deactivation.
- * 
+ *
  * All operations are logged and cached for performance.
- * 
+ *
  * Example usage:
- * var user = userService.create({ 
+ * var user = userService.create({
  *     email: "user@example.com",
  *     password: "secure123"
  * })
- * 
+ *
  * @author Security Team
  * @version 2.0.0
  * @since 1.0.0

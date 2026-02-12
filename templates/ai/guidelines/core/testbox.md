@@ -24,19 +24,19 @@ class extends="testbox.system.BaseSpec" {
             beforeEach( () => {
                 variables.userService = new models.UserService()
             } )
-            
+
             it( "can create a new user", () => {
                 var user = userService.create( {
                     email: "test@example.com",
                     firstName: "John",
                     lastName: "Doe"
                 } )
-                
+
                 expect( user ).toBeStruct()
                 expect( user ).toHaveKey( "id" )
                 expect( user.email ).toBe( "test@example.com" )
             } )
-            
+
             it( "throws exception for invalid email", () => {
                 expect( () => {
                     userService.create( { email: "invalid" } )
@@ -56,21 +56,21 @@ class extends="testbox.system.BaseSpec" {
     function beforeAll() {
         variables.userService = new models.UserService()
     }
-    
+
     function testUserCreation() {
         var user = userService.create( {
             email: "test@example.com"
         } )
-        
+
         expect( user ).toBeStruct()
         expect( user.id ).toBeNumeric()
     }
-    
+
     @test
     function canUpdateUser() {
         var user = userService.create( { email: "test@test.com" } )
         var updated = userService.update( user.id, { firstName: "Updated" } )
-        
+
         expect( updated.firstName ).toBe( "Updated" )
     }
 }
@@ -90,22 +90,22 @@ describe( "User Registration Feature", () => {
             password: "SecurePass123!"
         }
     } )
-    
+
     // Teardown code
     afterEach( () => {
         // Cleanup if needed
     } )
-    
+
     it( "creates user with valid data", () => {
         var user = userService.register( testData )
         expect( user ).toHaveKey( "id" )
     } )
-    
+
     it( "sends welcome email after registration", () => {
         var user = userService.register( testData )
         // Verify email sent
     } )
-    
+
     // Nested describe blocks
     describe( "Password Validation", () => {
         it( "requires minimum 8 characters", () => {
@@ -114,7 +114,7 @@ describe( "User Registration Feature", () => {
                 userService.register( testData )
             } ).toThrow( "ValidationException" )
         } )
-        
+
         it( "requires at least one number", () => {
             testData.password = "NoNumbers!"
             expect( () => {
@@ -135,19 +135,19 @@ story( "As a user, I want to reset my password", () => {
             password: "OldPass123!"
         } )
     } )
-    
+
     when( "I request a password reset", () => {
         variables.resetToken = userService.requestPasswordReset( user.email )
     } )
-    
+
     then( "I should receive a reset token", () => {
         expect( resetToken ).notToBeEmpty()
     } )
-    
+
     then( "I can reset my password with the token", () => {
-        var success = userService.resetPassword( 
-            resetToken, 
-            "NewPass123!" 
+        var success = userService.resetPassword(
+            resetToken,
+            "NewPass123!"
         )
         expect( success ).toBeTrue()
     } )
@@ -164,22 +164,22 @@ describe( "Test Suite", () => {
     beforeAll( () => {
         variables.database = setupTestDatabase()
     } )
-    
+
     // Runs once after all tests in this suite
     afterAll( () => {
         teardownTestDatabase()
     } )
-    
+
     // Runs before each test
     beforeEach( ( currentSpec ) => {
         variables.user = createTestUser()
     } )
-    
+
     // Runs after each test
     afterEach( ( currentSpec ) => {
         deleteTestUser( variables.user )
     } )
-    
+
     // Wraps each test completely
     aroundEach( ( spec, suite ) => {
         transaction {
@@ -307,36 +307,36 @@ describe( "OrderService Tests", () => {
     beforeEach( () => {
         // Create empty mock (no methods)
         variables.mockPaymentGateway = createEmptyMock( "services.PaymentGateway" )
-        
+
         // Create spy (real object with call logging)
         variables.spyEmailService = createMock( "services.EmailService" )
-        
+
         // Create stub (empty object with methods)
         variables.stubLogger = createStub()
     } )
-    
+
     it( "processes payment through gateway", () => {
         // Setup mock behavior
         mockPaymentGateway.$( "processPayment" ).$results( {
             success: true,
             transactionId: "TXN-123"
         } )
-        
+
         var orderService = new models.OrderService( mockPaymentGateway )
         var result = orderService.checkout( orderId=1, amount=100 )
-        
+
         // Verify mock was called
         expect( mockPaymentGateway.$once( "processPayment" ) ).toBeTrue()
         expect( mockPaymentGateway.$times( 1, "processPayment" ) ).toBeTrue()
     } )
-    
+
     it( "sends confirmation email", () => {
         // Setup spy
         spyEmailService.$( "send" ).$results( true )
-        
+
         var orderService = new models.OrderService( emailService=spyEmailService )
         orderService.completeOrder( 1 )
-        
+
         // Verify method was called with specific arguments
         expect( spyEmailService.$once( "send" ) ).toBeTrue()
         var callLog = spyEmailService.$callLog().send
@@ -357,7 +357,7 @@ mock.$( "methodName" )
     .$results( secondValue )
 
 // Throw exception
-mock.$( "methodName" ).$throws( 
+mock.$( "methodName" ).$throws(
     type="CustomException",
     message="Error message"
 )
@@ -388,16 +388,16 @@ class extends="coldbox.system.testing.BaseTestCase" {
         super.beforeAll()
         // ColdBox app is available
     }
-    
+
     function testHandlerExecution() {
         // Execute event
         var event = execute( event="users.index", renderResults=true )
-        
+
         // Assert on event
         expect( event.getValue( "users", "" ) ).toBeArray()
         expect( event.getCurrentView() ).toBe( "users/index" )
     }
-    
+
     function testAPIEndpoint() {
         // Execute with POST data
         var event = execute(
@@ -406,7 +406,7 @@ class extends="coldbox.system.testing.BaseTestCase" {
             route = "/api/users",
             method = "POST"
         )
-        
+
         var response = event.getValue( "data", {} )
         expect( response ).toHaveKey( "id" )
         expect( event.getValue( "statusCode" ) ).toBe( 201 )

@@ -27,16 +27,16 @@ BoxLang is a modern, dynamic JVM language that compiles to Java bytecode. It com
 class UserService {
     property name="userDAO" inject;
     property name="log" inject="logbox:logger:{this}";
-    
+
     function getAll() {
         return userDAO.findAll()
     }
-    
+
     function create( required struct data ) {
         log.info( "Creating user: #data.email#" )
         return userDAO.create( data )
     }
-    
+
     function getById( required numeric id ) {
         return userDAO.find( id )
     }
@@ -66,14 +66,14 @@ property name="status" type="string" default="pending";
 class User {
     property name="firstName";
     property name="lastName";
-    
+
     // Constructor (optional - auto-generated if not provided)
     function init( required string firstName, required string lastName ) {
         variables.firstName = arguments.firstName
         variables.lastName = arguments.lastName
         return this
     }
-    
+
     function getFullName() {
         return "#firstName# #lastName#"
     }
@@ -215,10 +215,10 @@ class DataProcessor {
         var list = new ArrayList()
         list.add( "item1" )
         list.add( "item2" )
-        
+
         var map = new HashMap()
         map.put( "key", "value" )
-        
+
         return { list: list, map: map }
     }
 }
@@ -322,7 +322,7 @@ try {
 class Users extends coldbox.system.EventHandler {
     property name="userService" inject;
     property name="log" inject="logbox:logger:{this}";
-    
+
     function index( event, rc, prc ) {
         prc.users = userService.getAll()
             .filter( ( user ) => user.active )
@@ -333,10 +333,10 @@ class Users extends coldbox.system.EventHandler {
                     email: user.email
                 }
             } )
-        
+
         event.setView( "users/index" )
     }
-    
+
     function create( event, rc, prc ) {
         try {
             var user = userService.create( rc )

@@ -18,11 +18,11 @@ CFML supports two syntax styles that can be mixed in the same file:
 ```cfml
 component {
     property name="userService" inject;
-    
+
     function getAll() {
         return userService.findAll();
     }
-    
+
     function create( required struct data ) {
         return userService.create( data );
     }
@@ -51,19 +51,19 @@ component {
     property name="firstName";
     property name="lastName";
     property name="email";
-    
+
     // Constructor
     function init( required string firstName, required string lastName ) {
         variables.firstName = arguments.firstName;
         variables.lastName = arguments.lastName;
         return this;
     }
-    
+
     // Methods
     function getFullName() {
         return variables.firstName & " " & variables.lastName;
     }
-    
+
     function setEmail( required string email ) {
         variables.email = arguments.email;
     }
@@ -112,11 +112,11 @@ public array function getActiveUsers() {
 }
 
 // Function with default arguments
-function sendEmail( 
-    required string to, 
-    required string subject, 
+function sendEmail(
+    required string to,
+    required string subject,
     string from = "noreply@example.com",
-    boolean html = true 
+    boolean html = true
 ) {
     // Email logic
 }
@@ -360,17 +360,17 @@ var parsed = parseDateTime( "2024-01-01" );
 component extends="coldbox.system.EventHandler" {
     property name="userService" inject;
     property name="log" inject="logbox:logger:{this}";
-    
+
     function index( event, rc, prc ) {
         prc.users = userService.getAll();
         event.setView( "users/index" );
     }
-    
+
     function show( event, rc, prc ) {
         prc.user = userService.getById( rc.id ?: 0 );
         event.setView( "users/show" );
     }
-    
+
     function save( event, rc, prc ) {
         try {
             if ( rc.id ?: 0 ) {
@@ -378,7 +378,7 @@ component extends="coldbox.system.EventHandler" {
             } else {
                 var user = userService.create( rc );
             }
-            
+
             flash.put( "notice", "User saved successfully" );
             relocate( "users.show", { id: user.id } );
         } catch ( ValidationException e ) {
@@ -397,20 +397,20 @@ component singleton {
     property name="userDAO" inject;
     property name="cache" inject="cachebox:default";
     property name="log" inject="logbox:logger:{this}";
-    
+
     function getAll() {
         return cache.getOrSet( "userList", function() {
             return userDAO.findAll();
         }, 60 );
     }
-    
+
     function getById( required numeric id ) {
         var cacheKey = "user-#arguments.id#";
         return cache.getOrSet( cacheKey, function() {
             return userDAO.find( arguments.id );
         }, 30 );
     }
-    
+
     function create( required struct data ) {
         transaction {
             try {
@@ -425,7 +425,7 @@ component singleton {
             }
         }
     }
-    
+
     function update( required numeric id, required struct data ) {
         var user = userDAO.update( arguments.id, arguments.data );
         cache.clear( "user-#arguments.id#" );
