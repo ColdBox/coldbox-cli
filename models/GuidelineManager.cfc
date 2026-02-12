@@ -822,7 +822,7 @@ component singleton {
 			if ( fileExists( path ) ) {
 				var content = fileRead( path );
 				// Strip frontmatter if present
-				var parsed = variables.utility.parseFrontmatter( content );
+				var parsed  = variables.utility.parseFrontmatter( content );
 				return parsed.content;
 			}
 		}
