@@ -116,14 +116,14 @@ var salt = bcryptSalt( 12 )
 component singleton {
     property name="userDAO" inject;
     property name="bcrypt" inject="@bcrypt";
-    
+
     function register( required struct data ) {
         // Hash password before storing
         data.password = bcrypt.hashPassword( data.password )
-        
+
         // Create user
         var user = userDAO.create( data )
-        
+
         return user
     }
 }
@@ -135,18 +135,18 @@ component singleton {
 component singleton {
     property name="userDAO" inject;
     property name="bcrypt" inject="@bcrypt";
-    
+
     function authenticate( required string username, required string password ) {
         // Get user
         var user = userDAO.findByUsername( arguments.username )
-        
+
         if ( isNull( user ) ) {
             throw(
                 type = "InvalidCredentials",
                 message = "Invalid username or password"
             )
         }
-        
+
         // Check password
         if ( !bcrypt.checkPassword( arguments.password, user.getPassword() ) ) {
             throw(
@@ -154,7 +154,7 @@ component singleton {
                 message = "Invalid username or password"
             )
         }
-        
+
         return user
     }
 }
@@ -166,14 +166,14 @@ component singleton {
 component singleton {
     property name="userDAO" inject;
     property name="bcrypt" inject="@bcrypt";
-    
+
     function changePassword(
         required numeric userId,
         required string currentPassword,
         required string newPassword
     ) {
         var user = userDAO.find( arguments.userId )
-        
+
         // Verify current password
         if ( !bcrypt.checkPassword( arguments.currentPassword, user.getPassword() ) ) {
             throw(
@@ -181,11 +181,11 @@ component singleton {
                 message = "Current password is incorrect"
             )
         }
-        
+
         // Hash and save new password
         user.setPassword( bcrypt.hashPassword( arguments.newPassword ) )
         user.save()
-        
+
         return true
     }
 }
@@ -197,23 +197,23 @@ component singleton {
 component singleton {
     property name="userDAO" inject;
     property name="bcrypt" inject="@bcrypt";
-    
+
     function resetPassword( required string token, required string newPassword ) {
         // Validate reset token
         var user = userDAO.findByResetToken( arguments.token )
-        
+
         if ( isNull( user ) || user.isResetTokenExpired() ) {
             throw(
                 type = "InvalidToken",
                 message = "Password reset token is invalid or expired"
             )
         }
-        
+
         // Hash new password
         user.setPassword( bcrypt.hashPassword( arguments.newPassword ) )
         user.clearResetToken()
         user.save()
-        
+
         return user
     }
 }
@@ -227,17 +227,17 @@ Upgrade existing password hashes during login:
 component singleton {
     property name="userDAO" inject;
     property name="bcrypt" inject="@bcrypt";
-    
+
     function authenticateAndUpgrade(
         required string username,
         required string password
     ) {
         var user = userDAO.findByUsername( arguments.username )
-        
+
         if ( isNull( user ) ) {
             throw( type="InvalidCredentials" )
         }
-        
+
         // Check if already using bcrypt
         if ( left( user.getPassword(), 4 ) == "$2a$" || left( user.getPassword(), 4 ) == "$2b$" ) {
             // BCrypt hash - check normally
@@ -247,16 +247,16 @@ component singleton {
         } else {
             // Legacy hash (MD5/SHA) - check and upgrade
             var legacyHash = hash( arguments.password, "SHA-512" )
-            
+
             if ( legacyHash != user.getPassword() ) {
                 throw( type="InvalidCredentials" )
             }
-            
+
             // Upgrade to bcrypt
             user.setPassword( bcrypt.hashPassword( arguments.password ) )
             user.save()
         }
-        
+
         return user
     }
 }

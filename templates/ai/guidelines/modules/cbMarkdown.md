@@ -57,7 +57,7 @@ var html = markdown.toHTML( markdown )
 component {
     property name="markdown" inject="Processor@cbmarkdown";
     property name="postDAO" inject;
-    
+
     function renderPost( required post ) {
         return {
             id: post.getId(),

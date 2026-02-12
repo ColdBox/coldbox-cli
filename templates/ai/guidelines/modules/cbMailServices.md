@@ -24,10 +24,10 @@ moduleSettings = {
     cbmailservices = {
         // Default protocol
         defaultProtocol = "smtp",
-        
+
         // Token replacements
         tokenMarker = "@",
-        
+
         // Protocols
         protocols = {
             smtp = {

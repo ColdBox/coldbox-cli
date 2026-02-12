@@ -59,7 +59,7 @@ messagebox.clearAll()
 
 ```boxlang
 // Override default templates
-messagebox.setTemplate( 
+messagebox.setTemplate(
     "<div class='alert alert-{type}'>{message}</div>"
 )
 ```

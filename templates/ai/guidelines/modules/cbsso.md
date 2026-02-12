@@ -24,7 +24,7 @@ moduleSettings = {
     cbsso = {
         // SSO Provider
         provider = "SAML@cbsso",
-        
+
         // Provider properties
         properties = {
             entityId = "https://myapp.com",

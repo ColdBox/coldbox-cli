@@ -24,22 +24,22 @@ moduleSettings = {
     cors = {
         // Auto-register interceptor (default: true)
         autoRegisterInterceptor = true,
-        
+
         // Allowed origins (function or string/array)
         allowOrigins = "*",
-        
+
         // Allowed HTTP methods
         allowMethods = "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-        
+
         // Allowed headers
         allowHeaders = "Content-Type,Authorization,X-Requested-With",
-        
+
         // Max age for preflight cache (in seconds)
         maxAge = 86400, // 24 hours
-        
+
         // Allow credentials
         allowCredentials = true,
-        
+
         // Event pattern to apply CORS
         eventPattern = ".*"
     }
@@ -81,17 +81,17 @@ cors = {
     allowOrigins = ( event ) => {
         var origin = event.getHTTPHeader( "Origin", "" )
         var allowedDomains = [ "myapp.com", "staging.myapp.com" ]
-        
+
         // Check if origin ends with allowed domain
         for ( var domain in allowedDomains ) {
             if ( origin.endsWith( domain ) ) {
                 return origin
             }
         }
-        
+
         return ""
     },
-    
+
     allowMethods = ( event ) => {
         // Allow different methods for different routes
         if ( event.getCurrentEvent().findNoCase( "api.admin" ) ) {
@@ -99,11 +99,11 @@ cors = {
         }
         return "GET,POST"
     },
-    
+
     allowHeaders = ( event ) => {
-        var requestHeaders = event.getHTTPHeader( 
-            "Access-Control-Request-Headers", 
-            "" 
+        var requestHeaders = event.getHTTPHeader(
+            "Access-Control-Request-Headers",
+            ""
         )
         return requestHeaders
     }
@@ -175,8 +175,8 @@ moduleSettings = {
 ```boxlang
 moduleSettings = {
     cors = {
-        allowOrigins = getSetting( "environment" ) == "development" 
-            ? "*" 
+        allowOrigins = getSetting( "environment" ) == "development"
+            ? "*"
             : getSetting( "allowedOrigins" ),
         allowMethods = "*",
         allowHeaders = "*",
@@ -200,8 +200,8 @@ cors = {
 ### CORS Error in Browser Console
 
 ```
-Access to fetch at 'https://api.example.com/users' from origin 
-'https://app.example.com' has been blocked by CORS policy: 
+Access to fetch at 'https://api.example.com/users' from origin
+'https://app.example.com' has been blocked by CORS policy:
 No 'Access-Control-Allow-Origin' header is present.
 ```
 

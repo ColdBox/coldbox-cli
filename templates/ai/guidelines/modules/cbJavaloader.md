@@ -24,10 +24,10 @@ moduleSettings = {
     cbjavaloader = {
         // Paths to load JARs from
         loadPaths = [ "lib", "jars", "libs/external" ],
-        
+
         // Load ColdFusion classpath
         loadColdFusionClassPath = false,
-        
+
         // Reload on each request (dev only)
         reloadOnEveryRequest = false
     }

@@ -24,7 +24,7 @@ moduleSettings = {
     cbq = {
         // Default connection
         defaultConnection = "default",
-        
+
         // Connections
         connections = {
             default = {
@@ -35,7 +35,7 @@ moduleSettings = {
                 }
             }
         },
-        
+
         // Worker pools
         workerPools = {
             default = {
@@ -59,7 +59,7 @@ component extends="cbq.models.Jobs.AbstractJob" {
     property name="to";
     property name="subject";
     property name="body";
-    
+
     function handle() {
         mailService.send(
             to = getTo(),

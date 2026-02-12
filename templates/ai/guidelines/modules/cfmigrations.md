@@ -89,7 +89,7 @@ component {
             table.timestamp( "updated_at" ).nullable()
         } )
     }
-    
+
     function down( schema, query ) {
         schema.drop( "users" )
     }
@@ -105,32 +105,32 @@ function up( schema, query ) {
     schema.create( "posts", ( table ) => {
         // Primary key
         table.increments( "id" )
-        
+
         // String columns
         table.string( "title" )
         table.string( "slug" ).unique()
         table.text( "body" )
-        
+
         // Numeric columns
         table.integer( "view_count" ).default( 0 )
         table.decimal( "rating", 3, 2 ) // precision, scale
-        
+
         // Boolean
         table.boolean( "published" ).default( false )
-        
+
         // Dates
         table.date( "published_date" ).nullable()
         table.datetime( "scheduled_at" ).nullable()
         table.timestamp( "created_at" )
         table.timestamp( "updated_at" )
-        
+
         // Foreign keys
         table.unsignedInteger( "user_id" )
         table.foreignKey( "user_id" ).references( "id" ).onTable( "users" ).onDelete( "CASCADE" )
-        
+
         // JSON column
         table.json( "metadata" ).nullable()
-        
+
         // Indexes
         table.index( "title" )
         table.index( [ "user_id", "published" ], "idx_user_published" )
@@ -214,24 +214,24 @@ function up( schema, query ) {
         // Add columns
         table.addColumn( table.string( "phone" ).nullable() )
         table.addColumn( table.integer( "login_count" ).default( 0 ) )
-        
+
         // Rename column
         table.renameColumn( "email", "email_address" )
-        
+
         // Modify column
         table.modifyColumn( "username", table.string( "username", 100 ) )
-        
+
         // Drop column
         table.dropColumn( "old_field" )
-        
+
         // Add index
         table.addIndex( "email" )
         table.addIndex( [ "last_name", "first_name" ], "idx_name" )
-        
+
         // Drop index
         table.dropIndex( "email" )
         table.dropIndex( "idx_name" )
-        
+
         // Add foreign key
         table.addConstraint(
             table.foreignKey( "role_id" )
@@ -239,7 +239,7 @@ function up( schema, query ) {
                 .onTable( "roles" )
                 .onDelete( "CASCADE" )
         )
-        
+
         // Drop foreign key
         table.dropConstraint( "fk_users_role_id" )
     } )
@@ -268,14 +268,14 @@ schema.create( "posts", ( table ) => {
     table.increments( "id" )
     table.string( "title" )
     table.unsignedInteger( "user_id" )
-    
+
     // Method 1: Inline
     table.foreignKey( "user_id" )
         .references( "id" )
         .onTable( "users" )
         .onDelete( "CASCADE" )
         .onUpdate( "CASCADE" )
-    
+
     // Method 2: Combined
     table.unsignedInteger( "category_id" )
         .references( "id" )
@@ -306,13 +306,13 @@ schema.create( "users", ( table ) => {
     table.string( "email" ).unique()
     table.string( "first_name" )
     table.string( "last_name" )
-    
+
     // Single column index
     table.index( "email" )
-    
+
     // Multi-column index
     table.index( [ "first_name", "last_name" ], "idx_full_name" )
-    
+
     // Unique index
     table.unique( [ "username", "tenant_id" ] )
 } )
@@ -375,7 +375,7 @@ function up( schema, query ) {
         table.string( "name" ).unique()
         table.timestamp( "created_at" )
     } )
-    
+
     // Insert data with query
     query.table( "roles" ).insert( [
         { name: "admin", created_at: now() },
@@ -407,7 +407,7 @@ function up( schema, query ) {
         table.timestamp( "created_at" )
         table.timestamp( "updated_at" )
         table.timestamp( "deleted_at" ).nullable()
-        
+
         table.index( "email" )
         table.index( "active" )
     } )
@@ -422,16 +422,16 @@ function up( schema, query ) {
         table.unsignedInteger( "user_id" )
         table.unsignedInteger( "role_id" )
         table.timestamp( "created_at" )
-        
+
         // Composite primary key
         table.primaryKey( [ "user_id", "role_id" ] )
-        
+
         // Foreign keys
         table.foreignKey( "user_id" )
             .references( "id" )
             .onTable( "users" )
             .onDelete( "CASCADE" )
-        
+
         table.foreignKey( "role_id" )
             .references( "id" )
             .onTable( "roles" )

@@ -24,10 +24,10 @@ moduleSettings = {
     cbswagger = {
         // Route prefixes to document (default: ["api"])
         routes = [ "api", "v1", "v2" ],
-        
+
         // Default output format: json or yml
         defaultFormat = "json",
-        
+
         // API metadata
         info = {
             title = "My API",
@@ -43,7 +43,7 @@ moduleSettings = {
                 url = "https://www.apache.org/licenses/LICENSE-2.0"
             }
         },
-        
+
         // Servers
         servers = [
             {
@@ -55,7 +55,7 @@ moduleSettings = {
                 description = "Staging"
             }
         ],
-        
+
         // Security schemes
         securityDefinitions = {
             bearerAuth = {
@@ -93,7 +93,7 @@ http://localhost:8080/cbswagger/ui
 ```boxlang
 /**
  * User management API endpoints
- * 
+ *
  * @route /api/v1/users
  * @tags users
  */
@@ -107,16 +107,16 @@ class Users extends coldbox.system.EventHandler {
 ```boxlang
 /**
  * List all users
- * 
+ *
  * @route (GET) /api/v1/users
  * @tags users
  * @summary Get all users
  * @description Returns a paginated list of users
- * 
+ *
  * @x-parameters-page (query) Page number (default: 1)
  * @x-parameters-perPage (query) Results per page (default: 25)
  * @x-parameters-status (query) Filter by status
- * 
+ *
  * @response-200 ~users/index.json
  * @response-401 Unauthorized
  */
@@ -125,19 +125,19 @@ function index( event, rc, prc ) {
         page = rc.page ?: 1,
         perPage = rc.perPage ?: 25
     )
-    
+
     event.renderData( data = prc.users )
 }
 
 /**
  * Get user by ID
- * 
+ *
  * @route (GET) /api/v1/users/:id
  * @tags users
  * @summary Get a single user
- * 
+ *
  * @x-parameters-id (path) User ID (required)
- * 
+ *
  * @response-200 ~users/show.json
  * @response-404 User not found
  */
@@ -148,13 +148,13 @@ function show( event, rc, prc ) {
 
 /**
  * Create new user
- * 
+ *
  * @route (POST) /api/v1/users
  * @tags users
  * @summary Create a user
- * 
+ *
  * @x-requestBody ~users/create.json
- * 
+ *
  * @response-201 User created successfully
  * @response-422 Validation errors
  */
@@ -165,14 +165,14 @@ function create( event, rc, prc ) {
 
 /**
  * Update user
- * 
+ *
  * @route (PUT) /api/v1/users/:id
  * @tags users
  * @summary Update a user
- * 
+ *
  * @x-parameters-id (path) User ID (required)
  * @x-requestBody ~users/update.json
- * 
+ *
  * @response-200 User updated successfully
  * @response-404 User not found
  * @response-422 Validation errors
@@ -184,13 +184,13 @@ function update( event, rc, prc ) {
 
 /**
  * Delete user
- * 
+ *
  * @route (DELETE) /api/v1/users/:id
  * @tags users
  * @summary Delete a user
- * 
+ *
  * @x-parameters-id (path) User ID (required)
- * 
+ *
  * @response-204 User deleted successfully
  * @response-404 User not found
  */
@@ -229,10 +229,10 @@ Create JSON schema files for responses:
 ```boxlang
 /**
  * Get protected resource
- * 
+ *
  * @route (GET) /api/v1/protected
  * @security bearerAuth
- * 
+ *
  * @response-200 Success
  * @response-401 Unauthorized
  */
@@ -277,13 +277,13 @@ function listPosts( event, rc, prc ) {}
 ```boxlang
 /**
  * User API
- * 
+ *
  * @route /api/v1/users
  * @tags users
  */
 class Users extends coldbox.system.EventHandler {
     property name="userService" inject;
-    
+
     /**
      * @route (GET) /api/v1/users
      * @summary List all users
@@ -292,7 +292,7 @@ class Users extends coldbox.system.EventHandler {
      * @response-200 ~users/list.json
      */
     function index( event, rc, prc ) {}
-    
+
     /**
      * @route (GET) /api/v1/users/:id
      * @summary Get user by ID
@@ -301,7 +301,7 @@ class Users extends coldbox.system.EventHandler {
      * @response-404 Not found
      */
     function show( event, rc, prc ) {}
-    
+
     /**
      * @route (POST) /api/v1/users
      * @summary Create user
@@ -310,7 +310,7 @@ class Users extends coldbox.system.EventHandler {
      * @response-422 Validation error
      */
     function create( event, rc, prc ) {}
-    
+
     /**
      * @route (PUT) /api/v1/users/:id
      * @summary Update user
@@ -320,7 +320,7 @@ class Users extends coldbox.system.EventHandler {
      * @response-404 Not found
      */
     function update( event, rc, prc ) {}
-    
+
     /**
      * @route (DELETE) /api/v1/users/:id
      * @summary Delete user

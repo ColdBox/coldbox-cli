@@ -6,7 +6,7 @@ description: Canonical flat ColdBox directory layout for legacy or simplified ap
 ```
 /config          - Application configuration
 /handlers        - Event handlers (controllers)
-/models          - Business logic and services  
+/models          - Business logic and services
 /views           - View templates
 /layouts         - Layout wrappers
 /interceptors    - Event interceptors (AOP)

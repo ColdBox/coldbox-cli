@@ -24,16 +24,16 @@ moduleSettings = {
     qb = {
         // Default grammar (MySQL, Postgres, Oracle, SqlServer, SQLite)
         defaultGrammar = "MySQLGrammar@qb",
-        
+
         // Prevent duplicate joins
         preventDuplicateJoins = false,
-        
+
         // Strict date detection
         strictDateDetection = true,
-        
+
         // Default numeric SQL type
         numericSQLType = "CF_SQL_NUMERIC",
-        
+
         // Return format (array or query)
         defaultReturnFormat = "array"
     }
@@ -502,7 +502,7 @@ var pagination = {
 ```boxlang
 function searchUsers( struct filters = {} ) {
     var q = qb.from( "users" )
-    
+
     // Search term
     if ( filters.keyExists( "search" ) && len( filters.search ) ) {
         q.where( ( subQuery ) => {
@@ -510,21 +510,21 @@ function searchUsers( struct filters = {} ) {
                    .orWhere( "email", "LIKE", "%#filters.search#%" )
         } )
     }
-    
+
     // Status filter
     if ( filters.keyExists( "status" ) ) {
         q.where( "status", filters.status )
     }
-    
+
     // Date range
     if ( filters.keyExists( "startDate" ) ) {
         q.where( "created_at", ">=", filters.startDate )
     }
-    
+
     if ( filters.keyExists( "endDate" ) ) {
         q.where( "created_at", "<=", filters.endDate )
     }
-    
+
     return q.orderBy( "created_at", "desc" ).get()
 }
 ```
@@ -534,31 +534,31 @@ function searchUsers( struct filters = {} ) {
 ```boxlang
 component singleton {
     property name="qb" inject="QueryBuilder@qb";
-    
+
     function getAll() {
         return qb.from( "users" )
             .orderBy( "name" )
             .get()
     }
-    
+
     function getById( required numeric id ) {
         return qb.from( "users" )
             .where( "id", arguments.id )
             .first()
     }
-    
+
     function create( required struct data ) {
         var id = qb.table( "users" ).insertGetId( arguments.data )
         return getById( id )
     }
-    
+
     function update( required numeric id, required struct data ) {
         qb.table( "users" )
             .where( "id", arguments.id )
             .update( arguments.data )
         return getById( id )
     }
-    
+
     function delete( required numeric id ) {
         return qb.table( "users" )
             .where( "id", arguments.id )

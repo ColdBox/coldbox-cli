@@ -24,7 +24,7 @@ moduleSettings = {
     cbfs = {
         // Default disk
         defaultDisk = "local",
-        
+
         // Disk configurations
         disks = {
             local = {
@@ -97,17 +97,17 @@ function uploadFile( event, rc, prc ) {
         "image/jpeg,image/png",
         "makeUnique"
     )
-    
+
     // Store to S3
     var filePath = "uploads/#uploadResult.serverFile#"
     cbfs.disk( "s3" ).put(
         filePath,
         fileReadBinary( uploadResult.serverDirectory & "/" & uploadResult.serverFile )
     )
-    
+
     // Clean up temp file
     fileDelete( uploadResult.serverDirectory & "/" & uploadResult.serverFile )
-    
+
     return filePath
 }
 ```
