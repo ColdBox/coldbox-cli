@@ -19,7 +19,7 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.greenLine( "  • Configure AI integration for enhanced development" )
 			.greenLine( "  • Reinit and watch your application during development" )
 			.line()
-			.yellowLine( "Tip: Type 'coldbox create --help' or 'help coldbox <command>' for more details" )
+			.yellowLine( "Tip: Type 'coldbox create --help' or 'coldbox ai --help' for namespace commands" )
 			.line()
 			.dim( "Quick start: coldbox create app-wizard | coldbox ai install" )
 			.line()
