@@ -236,7 +236,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			var estimatedTokens = arguments.stats.contextEstimate.baseContextKB * 300
 			var tableData       = [
 				[
-					"Claude 4.5",
+					"Claude Sonnet 4.5",
 					numberFormat( 200000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
@@ -255,19 +255,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				],
 				[
 					"GPT-5.2",
-					numberFormat( 128000 ),
+					numberFormat( 400000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
-						( estimatedTokens / 128000 ) * 100,
+						( estimatedTokens / 400000 ) * 100,
 						"_._"
 					) & "%"
 				],
 				[
 					"GPT-4.1",
-					numberFormat( 128000 ),
+					numberFormat( 1000000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
-						( estimatedTokens / 128000 ) * 100,
+						( estimatedTokens / 1000000 ) * 100,
 						"_._"
 					) & "%"
 				],
@@ -290,20 +290,20 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					) & "%"
 				],
 				[
-					"Grok 4",
-					numberFormat( 128000 ),
+					"Grok 4.1 Fast",
+					numberFormat( 2000000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
-						( estimatedTokens / 128000 ) * 100,
+						( estimatedTokens / 2000000 ) * 100,
 						"_._"
 					) & "%"
 				],
 				[
-					"Grok 3",
-					numberFormat( 128000 ),
+					"Grok 4",
+					numberFormat( 2000000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
-						( estimatedTokens / 128000 ) * 100,
+						( estimatedTokens / 2000000 ) * 100,
 						"_._"
 					) & "%"
 				]
