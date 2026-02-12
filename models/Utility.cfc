@@ -232,13 +232,16 @@ component singleton {
 		}
 
 		// Find the closing delimiter
-		var lines        = listToArray( arguments.content, chr( 10 ) & chr( 13 ) )
+		var lines = listToArray(
+			arguments.content,
+			chr( 10 ) & chr( 13 )
+		)
 		var frontmatterLines = []
-		var inFrontmatter = false
-		var frontmatterEnd = 0
+		var inFrontmatter    = false
+		var frontmatterEnd   = 0
 
 		for ( var i = 1; i <= lines.len(); i++ ) {
-			var line = lines[ i ]
+			var line        = lines[ i ]
 			var trimmedLine = trim( line )
 
 			// First line should be opening delimiter
@@ -263,10 +266,10 @@ component singleton {
 		if ( frontmatterEnd > 0 ) {
 			frontmatterLines.each( ( line ) => {
 				if ( line.find( ":" ) > 0 ) {
-					var key = trim( listFirst( line, ":" ) )
-					var value = trim( listRest( line, ":" ) )
+					var key                   = trim( listFirst( line, ":" ) )
+					var value                 = trim( listRest( line, ":" ) )
 					// Remove quotes if present
-					value = reReplace( value, "^[""']|[""']$", "", "all" )
+					value                     = reReplace( value, "^[""']|[""']$", "", "all" )
 					result.frontmatter[ key ] = value
 				}
 			} )
