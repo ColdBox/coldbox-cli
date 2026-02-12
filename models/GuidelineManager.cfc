@@ -785,6 +785,52 @@ component singleton {
 	}
 
 	/**
+	 * Get the content of a guideline file
+	 *
+	 * @directory The project directory
+	 * @name The guideline name
+	 * @type The guideline type (core, module, custom, override)
+	 *
+	 * @return The guideline content or empty string if not found
+	 */
+	function getGuidelineContent(
+		required string directory,
+		required string name,
+		string type = "core"
+	){
+		var possiblePaths = [];
+
+		// Build path list based on type
+		if ( arguments.type == "core" ) {
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md" );
+		} else if ( arguments.type == "module" ) {
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/modules/#arguments.name#.md" );
+		} else if ( arguments.type == "custom" ) {
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md" );
+		} else if ( arguments.type == "override" ) {
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md" );
+		} else {
+			// Try all locations
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md" );
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/modules/#arguments.name#.md" );
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md" );
+			possiblePaths.append( "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md" );
+		}
+
+		// Try each path
+		for ( var path in possiblePaths ) {
+			if ( fileExists( path ) ) {
+				var content = fileRead( path );
+				// Strip frontmatter if present
+				var parsed = variables.utility.parseFrontmatter( content );
+				return parsed.content;
+			}
+		}
+
+		return "";
+	}
+
+	/**
 	 * Remove a guideline (internal version for refresh)
 	 *
 	 * @directory The project directory

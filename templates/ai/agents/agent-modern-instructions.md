@@ -60,15 +60,13 @@ This is a ColdBox HMVC application using the **modern template structure** with 
 
 ## Framework Knowledge
 
-**Important:** For ColdBox framework documentation, refer to the **ColdBox guideline** which covers:
-- Event handlers and routing
-- Request context (event object)
-- Dependency injection (WireBox)
-- Interceptors (AOP)
-- Modules
-- Configuration patterns
+**Important:** The following sections contain essential framework documentation that is always available in your context. These guidelines cover core concepts, conventions, and best practices for ColdBox development.
 
-Additional framework guidelines are available for TestBox, WireBox, CacheBox, and LogBox.
+|INLINE_GUIDELINES|
+
+## AI Integration & Resources
+
+This project includes AI-powered development assistance with on-demand guidelines, skills, and MCP documentation servers.
 
 ## Project-Specific Conventions
 
@@ -198,10 +196,27 @@ The `.ai/manifest.json` file contains the complete AI integration configuration:
 
 ### Using Guidelines & Skills
 
-- **Guidelines** provide framework documentation, conventions, and best practices
-- **Skills** offer step-by-step implementation patterns for common tasks
-- Consult relevant guidelines before implementing features
-- Load applicable skills when you need detailed how-to instructions
+**Core framework guidelines (ColdBox and language) are already included above.** Additional guidelines and all skills are available on request:
+
+- **Module Guidelines** provide documentation for installed ColdBox modules
+- **Skills** offer step-by-step implementation patterns for specific features
+- Request specific guidelines or skills by name when you need them
+
+### Available Guidelines
+
+The following additional guidelines are available for this project. Request them by name when needed:
+
+|GUIDELINES_INVENTORY|
+
+**To load a guideline:** Request it by name when you need detailed framework or module documentation.
+
+### Available Skills
+
+The following skills provide step-by-step implementation patterns. Request specific skills when you need detailed how-to instructions:
+
+|SKILLS_INVENTORY|
+
+**To load a skill:** Request it by name when implementing specific features or patterns.
 
 ## MCP Documentation Servers
 

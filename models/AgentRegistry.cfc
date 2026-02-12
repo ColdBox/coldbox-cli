@@ -307,6 +307,39 @@ component singleton {
 			"all"
 		)
 
+		// Add inline guidelines (core framework knowledge)
+		var inlineGuidelinesContent = generateInlineGuidelinesContent(
+			arguments.directory,
+			arguments.language
+		)
+		content = replaceNoCase(
+			content,
+			"|INLINE_GUIDELINES|",
+			inlineGuidelinesContent,
+			"all"
+		)
+
+		// Add guidelines inventory (module and additional guidelines only)
+		var guidelinesContent = generateGuidelinesContent(
+			arguments.directory,
+			arguments.language
+		)
+		content = replaceNoCase(
+			content,
+			"|GUIDELINES_INVENTORY|",
+			guidelinesContent,
+			"all"
+		)
+
+		// Add skills inventory
+		var skillsContent = generateSkillsContent( arguments.directory )
+		content           = replaceNoCase(
+			content,
+			"|SKILLS_INVENTORY|",
+			skillsContent,
+			"all"
+		)
+
 		// Add MCP servers content
 		var mcpContent = generateMCPServersContent( arguments.directory )
 		content        = replaceNoCase(
@@ -384,6 +417,200 @@ component singleton {
 
 		// Check for migrations directory
 		return directoryExists( "#arguments.directory#/resources/database/migrations" )
+	}
+
+	/**
+	 * Generate inline guidelines content (core framework guidelines only)
+	 *
+	 * @directory The project directory
+	 * @language The project language (boxlang, cfml, hybrid)
+	 *
+	 * @return String containing full content of core framework guidelines
+	 */
+	private function generateInlineGuidelinesContent(
+		required string directory,
+		required string language
+	){
+		var content           = [];
+		var guidelineManager  = variables.wirebox.getInstance( "GuidelineManager@coldbox-cli" );
+		var aiService         = variables.wirebox.getInstance( "AIService@coldbox-cli" );
+		var manifest          = aiService.loadManifest( arguments.directory );
+		var coreGuidelines    = manifest.guidelines.filter( ( g ) => g.type == "core" );
+
+		// Determine which guidelines to inline
+		var guidelinesToInline = [ "coldbox" ];
+		if ( arguments.language == "boxlang" || arguments.language == "hybrid" ) {
+			guidelinesToInline.append( "boxlang" );
+		}
+		if ( arguments.language == "cfml" || arguments.language == "hybrid" ) {
+			guidelinesToInline.append( "cfml" );
+		}
+
+		// Store directory in local variable for closure access
+		var projectDirectory = arguments.directory;
+
+		// Load and inline each guideline
+		guidelinesToInline.each( ( guidelineName ) => {
+			// Check if guideline is installed
+			var installed = coreGuidelines.filter( ( g ) => g.name == guidelineName );
+			if ( !installed.len() ) {
+				return;
+			}
+
+			// Get guideline content
+			var guidelineContent = guidelineManager.getGuidelineContent(
+				projectDirectory,
+				guidelineName,
+				"core"
+			);
+
+			if ( guidelineContent.len() ) {
+				content.append( "---" );
+				content.append( "" );
+				content.append( guidelineContent );
+				content.append( "" );
+			}
+		} );
+
+		if ( !content.len() ) {
+			return "No core guidelines available. Run 'coldbox ai refresh' to initialize.";
+		}
+
+		return content.toList( chr( 10 ) );
+	}
+
+	/**
+	 * Generate guidelines inventory for agent configuration
+	 * Excludes inlined guidelines (core framework guidelines)
+	 *
+	 * @directory The project directory
+	 * @language The project language (boxlang, cfml, hybrid)
+	 *
+	 * @return String containing formatted guidelines inventory
+	 */
+	private function generateGuidelinesContent(
+		required string directory,
+		required string language
+	){
+		// Load manifest to get guidelines
+		var aiService = variables.wirebox.getInstance( "AIService@coldbox-cli" )
+		var manifest  = aiService.loadManifest( arguments.directory )
+
+		if ( !structKeyExists( manifest, "guidelines" ) || !manifest.guidelines.len() ) {
+			return "No guidelines installed yet. Run 'coldbox ai install' to get started."
+		}
+
+		var content = [];
+
+		// Determine which guidelines are inlined (should be excluded from inventory)
+		var inlinedGuidelines = [ "coldbox" ];
+		if ( arguments.language == "boxlang" || arguments.language == "hybrid" ) {
+			inlinedGuidelines.append( "boxlang" );
+		}
+		if ( arguments.language == "cfml" || arguments.language == "hybrid" ) {
+			inlinedGuidelines.append( "cfml" );
+		}
+
+		// Group guidelines by type, excluding inlined ones
+		var coreGuidelines   = manifest.guidelines.filter( ( g ) => {
+			return g.type == "core" && !inlinedGuidelines.find( g.name )
+		} );
+		var moduleGuidelines = manifest.guidelines.filter( ( g ) => g.type == "module" );
+		var customGuidelines = manifest.guidelines.filter( ( g ) => g.type == "custom" );
+
+		// Core guidelines (only non-inlined ones)
+		if ( coreGuidelines.len() ) {
+			content.append( "**Additional Framework Guidelines (Available on request):**" );
+			content.append( "" );
+			coreGuidelines.each( ( guideline ) => {
+				var desc = structKeyExists( guideline, "description" ) ? guideline.description : "Framework guideline";
+				content.append( "- **#guideline.name#** - #desc#" );
+			} );
+			content.append( "" );
+		}
+
+		// Module guidelines
+		if ( moduleGuidelines.len() ) {
+			content.append( "**Module Guidelines (Available on request):**" )
+			content.append( "" )
+			moduleGuidelines.each( ( guideline ) => {
+				var desc = structKeyExists( guideline, "description" ) ? guideline.description : "Module guideline"
+				content.append( "- **#guideline.name#** - #desc#" )
+			} )
+			content.append( "" )
+		}
+
+		// Custom guidelines
+		if ( customGuidelines.len() ) {
+			content.append( "**Custom Guidelines:**" )
+			content.append( "" )
+			customGuidelines.each( ( guideline ) => {
+				var desc = structKeyExists( guideline, "description" ) ? guideline.description : "Custom guideline"
+				content.append( "- **#guideline.name#** - #desc#" )
+			} )
+			content.append( "" )
+		}
+
+		return content.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate skills inventory for agent configuration
+	 *
+	 * @directory The project directory
+	 *
+	 * @return String containing formatted skills inventory
+	 */
+	private function generateSkillsContent( required string directory ){
+		// Load manifest to get skills
+		var aiService = variables.wirebox.getInstance( "AIService@coldbox-cli" )
+		var manifest  = aiService.loadManifest( arguments.directory )
+
+		if ( !structKeyExists( manifest, "skills" ) || !manifest.skills.len() ) {
+			return "No skills installed yet. Run 'coldbox ai install' to get started."
+		}
+
+		var content = []
+
+		// Group skills by source
+		var coreSkills   = manifest.skills.filter( ( s ) => s.source == "core" )
+		var moduleSkills = manifest.skills.filter( ( s ) => s.source != "core" && s.source != "custom" )
+		var customSkills = manifest.skills.filter( ( s ) => s.source == "custom" )
+
+		// Core skills
+		if ( coreSkills.len() ) {
+			content.append( "**Core Skills (Available on request):**" )
+			content.append( "" )
+			coreSkills.each( ( skill ) => {
+				var desc = structKeyExists( skill, "description" ) ? skill.description : "Development skill"
+				content.append( "- **#skill.name#** - #desc#" )
+			} )
+			content.append( "" )
+		}
+
+		// Module skills
+		if ( moduleSkills.len() ) {
+			content.append( "**Module Skills (Available on request):**" )
+			content.append( "" )
+			moduleSkills.each( ( skill ) => {
+				var desc = structKeyExists( skill, "description" ) ? skill.description : "Module skill"
+				content.append( "- **#skill.name#** - #desc#" )
+			} )
+			content.append( "" )
+		}
+
+		// Custom skills
+		if ( customSkills.len() ) {
+			content.append( "**Custom Skills:**" )
+			content.append( "" )
+			customSkills.each( ( skill ) => {
+				var desc = structKeyExists( skill, "description" ) ? skill.description : "Custom skill"
+				content.append( "- **#skill.name#** - #desc#" )
+			} )
+			content.append( "" )
+		}
+
+		return content.toList( chr( 10 ) )
 	}
 
 	/**
