@@ -135,35 +135,52 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 			// Build table data
 			var estimatedTokens = arguments.stats.contextEstimate.totalKB * 300
-			var tableData = [
+			var tableData       = [
 				[
 					"Claude 3.5 Sonnet",
 					numberFormat( 200000 ),
 					numberFormat( estimatedTokens ),
-					numberFormat( (estimatedTokens/200000)*100, "_._" ) & "%"
+					numberFormat(
+						( estimatedTokens / 200000 ) * 100,
+						"_._"
+					) & "%"
 				],
 				[
 					"GPT-4",
 					numberFormat( 128000 ),
 					numberFormat( estimatedTokens ),
-					numberFormat( (estimatedTokens/128000)*100, "_._" ) & "%"
+					numberFormat(
+						( estimatedTokens / 128000 ) * 100,
+						"_._"
+					) & "%"
 				],
 				[
 					"GPT-3.5-Turbo",
 					numberFormat( 16000 ),
 					numberFormat( estimatedTokens ),
-					numberFormat( (estimatedTokens/16000)*100, "_._" ) & "%"
+					numberFormat(
+						( estimatedTokens / 16000 ) * 100,
+						"_._"
+					) & "%"
 				],
 				[
 					"Gemini 1.5 Pro",
 					numberFormat( 1000000 ),
 					numberFormat( estimatedTokens ),
-					numberFormat( (estimatedTokens/1000000)*100, "_._" ) & "%"
+					numberFormat(
+						( estimatedTokens / 1000000 ) * 100,
+						"_._"
+					) & "%"
 				]
 			]
 
 			print.table(
-				headerNames = [ "Model", "Window Size", "Used Tokens", "Utilization" ],
+				headerNames = [
+					"Model",
+					"Window Size",
+					"Used Tokens",
+					"Utilization"
+				],
 				data = tableData
 			)
 			print.line()
