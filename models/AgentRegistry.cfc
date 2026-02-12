@@ -431,11 +431,11 @@ component singleton {
 		required string directory,
 		required string language
 	){
-		var content           = [];
-		var guidelineManager  = variables.wirebox.getInstance( "GuidelineManager@coldbox-cli" );
-		var aiService         = variables.wirebox.getInstance( "AIService@coldbox-cli" );
-		var manifest          = aiService.loadManifest( arguments.directory );
-		var coreGuidelines    = manifest.guidelines.filter( ( g ) => g.type == "core" );
+		var content          = [];
+		var guidelineManager = variables.wirebox.getInstance( "GuidelineManager@coldbox-cli" );
+		var aiService        = variables.wirebox.getInstance( "AIService@coldbox-cli" );
+		var manifest         = aiService.loadManifest( arguments.directory );
+		var coreGuidelines   = manifest.guidelines.filter( ( g ) => g.type == "core" );
 
 		// Determine which guidelines to inline
 		var guidelinesToInline = [ "coldbox" ];
@@ -512,7 +512,7 @@ component singleton {
 		}
 
 		// Group guidelines by type, excluding inlined ones
-		var coreGuidelines   = manifest.guidelines.filter( ( g ) => {
+		var coreGuidelines = manifest.guidelines.filter( ( g ) => {
 			return g.type == "core" && !inlinedGuidelines.find( g.name )
 		} );
 		var moduleGuidelines = manifest.guidelines.filter( ( g ) => g.type == "module" );
