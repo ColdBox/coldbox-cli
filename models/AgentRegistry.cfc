@@ -436,7 +436,7 @@ component singleton {
 			content.append( "**Custom Documentation Servers:**" )
 			content.append( "" )
 			mcpServers.custom.each( ( mcpServer ) => {
-				var desc = mcpServer.description ?: "Custom MCP server"
+				var desc    = mcpServer.description ?: "Custom MCP server"
 				var details = ""
 				if ( structKeyExists( mcpServer, "url" ) ) {
 					details = " - #mcpServer.url#"
