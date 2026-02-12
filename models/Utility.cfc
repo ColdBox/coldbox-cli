@@ -212,4 +212,74 @@ component singleton {
 		}
 	}
 
+	/**
+	 * Parse YAML frontmatter from markdown file content
+	 * Extracts metadata between opening and closing --- delimiters
+	 *
+	 * @content The markdown file content
+	 *
+	 * @return Struct with 'frontmatter' (parsed metadata) and 'content' (remaining markdown)
+	 */
+	function parseFrontmatter( required string content ){
+		var result = {
+			"frontmatter" : {},
+			"content"     : arguments.content
+		}
+
+		// Check if content starts with frontmatter delimiter
+		if ( left( trim( arguments.content ), 3 ) != "---" ) {
+			return result
+		}
+
+		// Find the closing delimiter
+		var lines        = listToArray( arguments.content, chr( 10 ) & chr( 13 ) )
+		var frontmatterLines = []
+		var inFrontmatter = false
+		var frontmatterEnd = 0
+
+		for ( var i = 1; i <= lines.len(); i++ ) {
+			var line = lines[ i ]
+			var trimmedLine = trim( line )
+
+			// First line should be opening delimiter
+			if ( i == 1 && trimmedLine == "---" ) {
+				inFrontmatter = true
+				continue;
+			}
+
+			// Found closing delimiter
+			if ( inFrontmatter && trimmedLine == "---" ) {
+				frontmatterEnd = i
+				break;
+			}
+
+			// Collect frontmatter lines
+			if ( inFrontmatter ) {
+				frontmatterLines.append( line )
+			}
+		}
+
+		// Parse frontmatter as simple key:value pairs
+		if ( frontmatterEnd > 0 ) {
+			frontmatterLines.each( ( line ) => {
+				if ( line.find( ":" ) > 0 ) {
+					var key = trim( listFirst( line, ":" ) )
+					var value = trim( listRest( line, ":" ) )
+					// Remove quotes if present
+					value = reReplace( value, "^[""']|[""']$", "", "all" )
+					result.frontmatter[ key ] = value
+				}
+			} )
+
+			// Extract content after frontmatter
+			var contentLines = []
+			for ( var i = frontmatterEnd + 1; i <= lines.len(); i++ ) {
+				contentLines.append( lines[ i ] )
+			}
+			result.content = contentLines.toList( chr( 10 ) )
+		}
+
+		return result
+	}
+
 }

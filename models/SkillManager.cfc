@@ -130,17 +130,27 @@ component singleton {
 			customDirs.each( ( dirName ) => {
 				var skillPath = "#customDir#/#dirName#/SKILL.md"
 				if ( fileExists( skillPath ) ) {
+					// Parse frontmatter for description
+					var content     = fileRead( skillPath )
+					var parsed      = variables.utility.parseFrontmatter( content )
+					var description = parsed.frontmatter.description ?: ""
+
 					// Check if in manifest
 					var existing = manifest.skills.filter( ( s ) => s.name == dirName )
 					if ( !existing.len() ) {
 						// Add to manifest
-						manifest.skills.append( {
+						var skillEntry = {
 							"name"             : dirName,
 							"source"           : "custom",
 							"type"             : "custom",
 							"installedVersion" : variables.utility.getColdboxCliVersion(),
-							"syncedAt"         : dateTimeFormat( now(), "iso" )
-						} )
+							"syncedAt"         : dateTimeFormat( now(), "iso" ),
+							"description" : ""
+						}
+						if ( description.len() ) {
+							skillEntry.description = description
+						}
+						manifest.skills.append( skillEntry )
 						changes.added.append( dirName )
 					}
 				}
@@ -155,17 +165,27 @@ component singleton {
 				var baseName     = replaceNoCase( fileName, ".md", "" )
 				var manifestName = "#baseName#-override"
 
+				// Parse frontmatter for description
+				var filePath    = "#overridesDir#/#fileName#"
+				var content     = fileRead( filePath )
+				var parsed      = variables.utility.parseFrontmatter( content )
+				var description = parsed.frontmatter.description ?: ""
+
 				// Check if in manifest
 				var existing = manifest.skills.filter( ( s ) => s.name == manifestName )
 				if ( !existing.len() ) {
 					// Add to manifest
-					manifest.skills.append( {
+					var skillEntry = {
 						"name"             : manifestName,
 						"source"           : "user",
 						"type"             : "override",
 						"installedVersion" : variables.utility.getColdboxCliVersion(),
 						"syncedAt"         : dateTimeFormat( now(), "iso" )
-					} )
+					}
+					if ( description.len() ) {
+						skillEntry.description = description
+					}
+					manifest.skills.append( skillEntry )
 					changes.added.append( manifestName )
 				}
 			} )
@@ -514,6 +534,10 @@ component singleton {
 		);
 		fileWrite( "#skillDir#/SKILL.md", content );
 
+		// Parse frontmatter to extract description
+		var parsed      = variables.utility.parseFrontmatter( content )
+		var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
+
 		// Update manifest
 		var existingIndex = 0;
 		for ( var i = 1; i <= arguments.manifest.skills.len(); i++ ) {
@@ -527,8 +551,14 @@ component singleton {
 			"name"             : arguments.skillName,
 			"source"           : arguments.source,
 			"installedVersion" : variables.utility.getColdboxCliVersion(),
-			"syncedAt"         : dateTimeFormat( now(), "iso" )
-		};
+			"syncedAt"         : dateTimeFormat( now(), "iso" ),
+			"description" : ""
+		}
+
+		// Add description if provided
+		if ( description.len() ) {
+			skillEntry.description = description
+		}
 
 		if ( existingIndex ) {
 			arguments.manifest.skills[ existingIndex ] = skillEntry;
@@ -587,14 +617,28 @@ component singleton {
 			}
 		}
 
-		// 2. Check coldbox-cli bundled template
-		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/#arguments.skillName#.md";
-		if ( fileExists( templatePath ) ) {
-			return fileRead( templatePath );
+		// 2. Check coldbox-cli bundled template in category subdirectories
+		var templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/core/"
+		var categories    = [ "coldbox", "boxlang", "testing", "orm", "cachebox", "logbox", "wirebox", "security", "modern", "coldbox-cli" ]
+
+		for ( var category in categories ) {
+			var skillPath = templatesPath & category & "/#arguments.skillName#.md"
+			if ( fileExists( skillPath ) ) {
+				return fileRead( skillPath )
+			}
 		}
 
-		// 3. Try generic template
-		templatePath = variables.utility.getTemplatesPath() & "/ai/skills/skill-template.md";
+		// 3. Check module skills directory
+		templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/modules/"
+		if ( directoryExists( templatesPath ) ) {
+			var moduleSkillPath = templatesPath & arguments.skillName & ".md"
+			if ( fileExists( moduleSkillPath ) ) {
+				return fileRead( moduleSkillPath )
+			}
+		}
+
+		// 4. Try generic template
+		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/skill-template.md";
 		if ( fileExists( templatePath ) ) {
 			var content = fileRead( templatePath );
 			// Replace placeholder with actual skill name
@@ -613,7 +657,7 @@ component singleton {
 			return content;
 		}
 
-		// 4. Final fallback
+		// 5. Final fallback
 		return "---
 name: #arguments.skillName#
 description: Implementation patterns for #arguments.skillName#

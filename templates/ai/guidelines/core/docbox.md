@@ -1,3 +1,8 @@
+---
+title: DocBox API Documentation Guidelines
+description: DocBox API documentation generator for BoxLang/CFML, docblock syntax, annotations, and generating documentation
+---
+
 # DocBox API Documentation Guidelines
 
 ## Overview

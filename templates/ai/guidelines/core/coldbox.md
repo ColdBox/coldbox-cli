@@ -1,3 +1,8 @@
+---
+title: ColdBox Framework Core Guidelines
+description: ColdBox HMVC framework conventions, structure, handlers, models, views, REST APIs, testing, and integrations
+---
+
 # ColdBox Framework Core Guidelines
 
 ## Overview

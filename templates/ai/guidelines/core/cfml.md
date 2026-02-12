@@ -1,3 +1,8 @@
+---
+title: CFML Core Guidelines
+description: CFML syntax styles, components, functions, scopes, queries, error handling, and best practices
+---
+
 # CFML Core Guidelines
 
 ## Overview

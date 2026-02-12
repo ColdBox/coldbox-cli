@@ -1,3 +1,8 @@
+---
+title: BoxLang Core Guidelines
+description: BoxLang modern JVM language syntax, class structure, data types, collections, interoperability, and best practices
+---
+
 # BoxLang Core Guidelines
 
 ## Overview
