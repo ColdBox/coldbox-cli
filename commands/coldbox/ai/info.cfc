@@ -53,7 +53,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					return compare( a.name, b.name );
 				} );
 				sortedGuidelines.each( function( guideline ){
-					print.indentedLine( "  🦮  #guideline.name# (from #guideline.source#)" );
+					print.indentedLine( "  📝  #guideline.name# (from #guideline.source#)" );
 				} );
 			} else {
 				print.indentedLine( "  No guidelines installed" );
@@ -104,7 +104,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					if ( agent == activeAgent ) {
 						print.indentedGreenLine( "  ▶ #agent# (active)" );
 					} else {
-						print.indentedLine( "  ⊕ #agent#" );
+						print.indentedLine( "  🤖 #agent#" );
 					}
 				} );
 			} else {

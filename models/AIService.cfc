@@ -99,6 +99,12 @@ component singleton {
 			arguments.language
 		);
 
+		// If only 1 agent is configured, automatically set it as active
+		var agentsList = listToArray( arguments.agents )
+		if ( agentsList.len() == 1 ) {
+			manifest.activeAgent = agentsList.first()
+		}
+
 		// Save manifest
 		saveManifest( arguments.directory, manifest );
 		result.manifest = manifest;
