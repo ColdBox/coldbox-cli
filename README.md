@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="https://raw.githubusercontent.com/Ortus-Solutions/ortus-artwork/refs/heads/main/coldbox/SVG/coldbox-logo-full-dark-M.svg">
+	<img src="https://raw.githubusercontent.com/Ortus-Solutions/ortus-artwork/refs/heads/main/coldbox/SVG/coldbox-logo-full-dark-M.svg" alt="ColdBox Platform Logo">
 </p>
 
 <p align="center">
@@ -30,43 +30,43 @@ This is the official ColdBox CLI for CommandBox.  It is a collection of commands
 - [ColdBox CLI Versions](#coldbox-cli-versions)
 - [Installation](#installation)
 - [Usage](#usage)
-	- [📱 Application Creation](#-application-creation)
-		- [🧙‍♂️ Interactive App Wizard](#️-interactive-app-wizard)
-	- [Application Templates](#application-templates)
-		- [🥊 BoxLang Templates (Recommended)](#-boxlang-templates-recommended)
-		- [📜 Legacy CFML Templates](#-legacy-cfml-templates)
-		- [🚀 Template Features](#-template-features)
-		- [⚡ Vite Integration](#-vite-integration)
-		- [🐳 Docker Integration](#-docker-integration)
-	- [🎯 Handlers (Controllers)](#-handlers-controllers)
-	- [📊 Models \& Services](#-models--services)
-	- [🎨 Views \& Layouts](#-views--layouts)
-	- [🔧 Resources \& CRUD](#-resources--crud)
-	- [📦 Modules](#-modules)
-	- [🧪 Testing](#-testing)
-	- [🗄️ ORM \& Database](#️-orm--database)
-	- [🔗 Interceptors](#-interceptors)
-	- [🔄 Development Workflow](#-development-workflow)
-	- [🎛️ Global Options](#️-global-options)
-		- [Application-Specific Flags](#application-specific-flags)
-		- [Language Generation Control](#language-generation-control)
-	- [💡 BoxLang Support](#-boxlang-support)
-		- [🔍 Automatic Detection](#-automatic-detection)
-		- [⚙️ Configuration Examples](#️-configuration-examples)
-			- [Method 1: Language Property (Recommended)](#method-1-language-property-recommended)
-			- [Method 2: TestBox Runner Setting](#method-2-testbox-runner-setting)
-		- [🚀 Usage Examples](#-usage-examples)
-		- [📝 Generated Code Differences](#-generated-code-differences)
-	- [🤖 AI Integration](#-ai-integration)
-		- [Setup \& Management](#setup--management)
-		- [AI Agents](#ai-agents)
-		- [Guidelines](#guidelines)
-		- [Skills](#skills)
-		- [MCP Servers](#mcp-servers)
-		- [AI Context Management](#ai-context-management)
-	- [📖 Getting Help](#-getting-help)
+ 	- [📱 Application Creation](#-application-creation)
+  		- [🧙‍♂️ Interactive App Wizard](#️-interactive-app-wizard)
+ 	- [Application Templates](#application-templates)
+  		- [🥊 BoxLang Templates (Recommended)](#-boxlang-templates-recommended)
+  		- [📜 Legacy CFML Templates](#-legacy-cfml-templates)
+  		- [🚀 Template Features](#-template-features)
+  		- [⚡ Vite Integration](#-vite-integration)
+  		- [🐳 Docker Integration](#-docker-integration)
+ 	- [🎯 Handlers (Controllers)](#-handlers-controllers)
+ 	- [📊 Models \& Services](#-models--services)
+ 	- [🎨 Views \& Layouts](#-views--layouts)
+ 	- [🔧 Resources \& CRUD](#-resources--crud)
+ 	- [📦 Modules](#-modules)
+ 	- [🧪 Testing](#-testing)
+ 	- [🗄️ ORM \& Database](#️-orm--database)
+ 	- [🔗 Interceptors](#-interceptors)
+ 	- [🔄 Development Workflow](#-development-workflow)
+ 	- [🎛️ Global Options](#️-global-options)
+  		- [Application-Specific Flags](#application-specific-flags)
+  		- [Language Generation Control](#language-generation-control)
+ 	- [💡 BoxLang Support](#-boxlang-support)
+  		- [🔍 Automatic Detection](#-automatic-detection)
+  		- [⚙️ Configuration Examples](#️-configuration-examples)
+   			- [Method 1: Language Property (Recommended)](#method-1-language-property-recommended)
+   			- [Method 2: TestBox Runner Setting](#method-2-testbox-runner-setting)
+  		- [🚀 Usage Examples](#-usage-examples)
+  		- [📝 Generated Code Differences](#-generated-code-differences)
+ 	- [🤖 AI Integration](#-ai-integration)
+  		- [Setup \& Management](#setup--management)
+  		- [AI Agents](#ai-agents)
+  		- [Guidelines](#guidelines)
+  		- [Skills](#skills)
+  		- [MCP Servers](#mcp-servers)
+  		- [AI Context Management](#ai-context-management)
+ 	- [📖 Getting Help](#-getting-help)
 - [Credits \& Contributions](#credits--contributions)
-	- [The Daily Bread](#the-daily-bread)
+ 	- [The Daily Bread](#the-daily-bread)
 
 ## License
 
@@ -602,12 +602,18 @@ coldbox ai mcp config                 # Generate agent-specific configs
 
 #### AI Context Management
 
+**Subagent Pattern**: ColdBox CLI uses an optimized architecture that reduces context by 58% while maintaining full capability:
+
+- **Core Guidelines Inlined** (~20KB): ColdBox framework + language always embedded in agent files
+- **Resource Inventories** (~13KB): Module guidelines and skills listed with descriptions for on-demand loading
+- **Total Base Context**: ~33KB / ~8,400 tokens (down from ~62KB / ~15,000+ tokens)
+
 The CLI tracks and analyzes your AI context usage:
 
 - **Context Estimation**: Calculates total KB and token usage
-- **Usage Indicators**: Shows Low/Moderate/High/Very High warnings
+- **Usage Indicators**: Shows Low/Moderate/High/Very High warnings  
 - **Model Compatibility**: Displays utilization for Claude, GPT-4, GPT-3.5-Turbo, Gemini
-- **Optimization Tips**: Alerts when context is too large for optimal AI performance
+- **Optimization Tips**: Monitors context efficiency with the subagent pattern
 
 ```bash
 coldbox ai stats                      # Quick overview
