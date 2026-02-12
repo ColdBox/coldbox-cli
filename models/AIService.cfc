@@ -92,12 +92,6 @@ component singleton {
 		manifest.mcpServers.module = mcpServers.module;
 		result.mcpServers.core     = mcpServers.core;
 		result.mcpServers.module   = mcpServers.module;
-		// Configure agents
-		result.agents              = variables.agentRegistry.configureAgents(
-			arguments.directory,
-			arguments.agents,
-			arguments.language
-		);
 
 		// If only 1 agent is configured, automatically set it as active
 		var agentsList = listToArray( arguments.agents )
@@ -105,8 +99,16 @@ component singleton {
 			manifest.activeAgent = agentsList.first()
 		}
 
-		// Save manifest
+		// Save manifest BEFORE configuring agents so they can read MCP servers
 		saveManifest( arguments.directory, manifest );
+
+		// Configure agents (reads manifest for MCP servers)
+		result.agents = variables.agentRegistry.configureAgents(
+			arguments.directory,
+			arguments.agents,
+			arguments.language
+		);
+
 		result.manifest = manifest;
 
 		// Update box.json with AI configuration
@@ -214,6 +216,15 @@ component singleton {
 
 		// Save updated manifest
 		saveManifest( arguments.directory, manifest );
+
+		// Regenerate agent configuration files with updated content
+		// This ensures MCP servers and other changes are reflected in agent instruction files
+		if ( structKeyExists( manifest, "agents" ) && manifest.agents.len() ) {
+			var language = manifest.language ?: "boxlang";
+			manifest.agents.each( ( agent ) => {
+				variables.agentRegistry.configureAgent( directory, agent, language );
+			} );
+		}
 
 		result.message = "AI integration refreshed successfully!";
 		return result;

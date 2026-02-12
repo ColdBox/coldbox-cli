@@ -9,6 +9,9 @@
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
+	// DI
+	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
+
 	/**
 	 * Run the command
 	 *
@@ -53,17 +56,29 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Overview
 		print.boldCyanLine( "📊 Overview" )
-		print.line( "  Language: #arguments.stats.language#" )
-		print.line( "  Template: #arguments.stats.templateType#" )
-		print.line( "  Last Sync: #arguments.stats.lastSync#" )
+		var overviewData = [
+			[ "Language", arguments.stats.language ],
+			[ "Template", arguments.stats.templateType ],
+			[ "Last Sync", arguments.stats.lastSync ]
+		]
+		print.table(
+			headerNames = [ "Property", "Value" ],
+			data = overviewData
+		)
 		print.line()
 
 		// Guidelines
 		print.boldGreenLine( "📚 Guidelines (#arguments.stats.guidelines.total#)" )
-		print.line( "  Core: #arguments.stats.guidelines.core#" )
-		print.line( "  Module: #arguments.stats.guidelines.module#" )
-		print.line( "  Custom: #arguments.stats.guidelines.custom#" )
-		print.line( "  Override: #arguments.stats.guidelines.override#" )
+		var guidelinesData = [
+			[ "Core", arguments.stats.guidelines.core ],
+			[ "Module", arguments.stats.guidelines.module ],
+			[ "Custom", arguments.stats.guidelines.custom ],
+			[ "Override", arguments.stats.guidelines.override ]
+		]
+		print.table(
+			headerNames = [ "Type", "Count" ],
+			data = guidelinesData
+		)
 
 		if ( arguments.verbose && arguments.stats.guidelines.totalSize > 0 ) {
 			print.dim( "  Total Size: #variables.utility.formatBytes( arguments.stats.guidelines.totalSize )#" )
@@ -74,10 +89,16 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Skills
 		print.boldYellowLine( "🎯 Skills (#arguments.stats.skills.total#)" )
-		print.line( "  Core: #arguments.stats.skills.core#" )
-		print.line( "  Module: #arguments.stats.skills.module#" )
-		print.line( "  Custom: #arguments.stats.skills.custom#" )
-		print.line( "  Override: #arguments.stats.skills.override#" )
+		var skillsData = [
+			[ "Core", arguments.stats.skills.core ],
+			[ "Module", arguments.stats.skills.module ],
+			[ "Custom", arguments.stats.skills.custom ],
+			[ "Override", arguments.stats.skills.override ]
+		]
+		print.table(
+			headerNames = [ "Type", "Count" ],
+			data = skillsData
+		)
 
 		if ( arguments.verbose && arguments.stats.skills.totalSize > 0 ) {
 			print.dim( "  Total Size: #variables.utility.formatBytes( arguments.stats.skills.totalSize )#" )
@@ -88,9 +109,16 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Agents
 		print.boldMagentaLine( "🤖 Agents (#arguments.stats.agents.total#)" )
 		if ( arguments.stats.agents.total > 0 ) {
+			var agentFiles = variables.agentRegistry.getAgentConfigPaths()
+			var agentsData = []
 			arguments.stats.agents.configured.each( ( agent ) => {
-				print.line( "  • #agent#" )
+				var configFile = agentFiles[ agent ] ?: "Unknown"
+				agentsData.append( [ agent, configFile ] )
 			} )
+			print.table(
+				headerNames = [ "Agent", "Config File" ],
+				data = agentsData
+			)
 		} else {
 			print.dimLine( "  (none configured)" )
 		}
@@ -99,16 +127,29 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// MCP Servers
 		print.boldCyanLine( "🌐 MCP Servers (#arguments.stats.mcpServers.total#)" )
-		print.line( "  Core: #arguments.stats.mcpServers.core#" )
-		print.line( "  Module: #arguments.stats.mcpServers.module#" )
-		print.line( "  Custom: #arguments.stats.mcpServers.custom#" )
+		var mcpData = [
+			[ "Core", arguments.stats.mcpServers.core ],
+			[ "Module", arguments.stats.mcpServers.module ],
+			[ "Custom", arguments.stats.mcpServers.custom ]
+		]
+		print.table(
+			headerNames = [ "Type", "Count" ],
+			data = mcpData
+		)
 		print.line()
 
 		// Context Estimate
 		print.boldWhiteLine( "💾 Estimated AI Context Usage" )
-		print.line( "  Guidelines: ~#arguments.stats.contextEstimate.guidelinesKB# KB" )
-		print.line( "  Skills: ~#arguments.stats.contextEstimate.skillsKB# KB" )
-		print.boldLine( "  Total: ~#arguments.stats.contextEstimate.totalKB# KB" )
+		var contextData = [
+			[ "Guidelines", "~#arguments.stats.contextEstimate.guidelinesKB# KB" ],
+			[ "Skills", "~#arguments.stats.contextEstimate.skillsKB# KB" ],
+			[ "Total", "~#arguments.stats.contextEstimate.totalKB# KB" ]
+		]
+		print.table(
+			headerNames = [ "Component", "Size" ],
+			data = contextData
+		)
+		print.line()
 
 		// Show usage indicator based on common AI models (using GPT-4 128K as baseline)
 		var estimatedTokens = arguments.stats.contextEstimate.totalKB * 300
@@ -171,7 +212,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Tips
 		printTip( "Run 'coldbox ai tree' to see the structure" )
-		printTip( "Run 'coldbox ai stats --verbose' for detailed breakdown" )
+
+		if( !arguments.verbose ){
+			printTip( "Run 'coldbox ai stats --verbose' for detailed breakdown" )
+		}
 	}
 
 }
