@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved readme and help commands
 - Name question in app-wizard if not provided
 - Install `bx-compat-cfml` when doing `--rest` due to needing some CFML compatibility
+- New help and consistency on all help commands
 
 #### AI Integration - Complete System
 
