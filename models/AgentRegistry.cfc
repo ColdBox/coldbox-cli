@@ -412,7 +412,7 @@ component singleton {
 			mcpServers.core.each( ( mcpServer ) => {
 				var serverDef = variables.mcpRegistry.getServerDefinition( mcpServer )
 				if ( !serverDef.isEmpty() ) {
-					content.append( "- **#mcpServer#**: #serverDef.description#" )
+					content.append( "- **#mcpServer#**: #serverDef.description# - #serverDef.url#" )
 				}
 			} )
 			content.append( "" )
@@ -425,7 +425,7 @@ component singleton {
 			mcpServers.module.each( ( mcpServer ) => {
 				var serverDef = variables.mcpRegistry.getServerDefinition( mcpServer )
 				if ( !serverDef.isEmpty() ) {
-					content.append( "- **#mcpServer#**: #serverDef.description#" )
+					content.append( "- **#mcpServer#**: #serverDef.description# - #serverDef.url#" )
 				}
 			} )
 			content.append( "" )
@@ -437,7 +437,13 @@ component singleton {
 			content.append( "" )
 			mcpServers.custom.each( ( mcpServer ) => {
 				var desc = mcpServer.description ?: "Custom MCP server"
-				content.append( "- **#mcpServer.name#**: #desc#" )
+				var details = ""
+				if ( structKeyExists( mcpServer, "url" ) ) {
+					details = " - #mcpServer.url#"
+				} else if ( structKeyExists( mcpServer, "command" ) ) {
+					details = " - Command: #mcpServer.command#"
+				}
+				content.append( "- **#mcpServer.name#**: #desc##details#" )
 			} )
 			content.append( "" )
 		}
