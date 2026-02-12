@@ -18,6 +18,7 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.greenLine( "  • Add Docker, Vite, and database migrations support" )
 			.greenLine( "  • Configure AI integration for enhanced development" )
 			.greenLine( "  • Reinit and watch your application during development" )
+			.greenLine( "  • Inspect project structure with coldbox info" )
 			.line()
 			.yellowLine( "Tip: Type 'coldbox create --help' or 'coldbox ai --help' for namespace commands" )
 			.line()
