@@ -228,16 +228,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printHelp( "On-demand resources are loaded only when needed via subagent pattern" )
 		print.line()
 
-		// Context window estimates for popular AI models
+		// Context window estimates for popular AI models (top 2 per provider)
 		if ( arguments.verbose ) {
-			print.line()
 			print.cyanLine( "📈 Context Window Utilization (Base Context):" )
 
 			// Build table data - use BASE CONTEXT (what's actually loaded)
 			var estimatedTokens = arguments.stats.contextEstimate.baseContextKB * 300
 			var tableData       = [
 				[
-					"Claude 3.5 Sonnet",
+					"Claude 4.5",
 					numberFormat( 200000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
@@ -246,7 +245,16 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					) & "%"
 				],
 				[
-					"GPT-4",
+					"Claude Opus 4.6",
+					numberFormat( 200000 ),
+					numberFormat( estimatedTokens ),
+					numberFormat(
+						( estimatedTokens / 200000 ) * 100,
+						"_._"
+					) & "%"
+				],
+				[
+					"GPT-5.2",
 					numberFormat( 128000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
@@ -255,20 +263,47 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					) & "%"
 				],
 				[
-					"GPT-3.5-Turbo",
-					numberFormat( 16000 ),
+					"GPT-4.1",
+					numberFormat( 128000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
-						( estimatedTokens / 16000 ) * 100,
+						( estimatedTokens / 128000 ) * 100,
 						"_._"
 					) & "%"
 				],
 				[
-					"Gemini 1.5 Pro",
+					"Gemini 3 Pro",
+					numberFormat( 2000000 ),
+					numberFormat( estimatedTokens ),
+					numberFormat(
+						( estimatedTokens / 2000000 ) * 100,
+						"_._"
+					) & "%"
+				],
+				[
+					"Gemini 3 Flash",
 					numberFormat( 1000000 ),
 					numberFormat( estimatedTokens ),
 					numberFormat(
 						( estimatedTokens / 1000000 ) * 100,
+						"_._"
+					) & "%"
+				],
+				[
+					"Grok 4",
+					numberFormat( 128000 ),
+					numberFormat( estimatedTokens ),
+					numberFormat(
+						( estimatedTokens / 128000 ) * 100,
+						"_._"
+					) & "%"
+				],
+				[
+					"Grok 3",
+					numberFormat( 128000 ),
+					numberFormat( estimatedTokens ),
+					numberFormat(
+						( estimatedTokens / 128000 ) * 100,
 						"_._"
 					) & "%"
 				]
@@ -283,8 +318,17 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				],
 				data = tableData
 			)
-			print.dim( "  * Utilization shown for base context only (agent files + inlined guidelines)" )
-			print.dim( "  * On-demand resources (~#arguments.stats.contextEstimate.onDemandKB# KB) loaded via subagent as needed" )
+			print.line()
+			print.dimLine( "  * Utilization shown for base context only (agent files + inlined guidelines)" )
+			print.dimLine( "  * On-demand resources (~#arguments.stats.contextEstimate.onDemandKB# KB) loaded via subagent as needed" )
+			print.line()
+
+			// Model comparison links
+			print.dimLine( "  Model Comparison Resources:" )
+			print.dimLine( "    • Claude: https://platform.claude.com/docs/en/about-claude/models/overview##latest-models-comparison" )
+			print.dimLine( "    • OpenAI: https://developers.openai.com/api/docs/models/compare" )
+			print.dimLine( "    • Gemini: https://ai.google.dev/gemini-api/docs/models" )
+			print.dimLine( "    • Grok: https://docs.x.ai/developers/models" )
 			print.line()
 		}
 
