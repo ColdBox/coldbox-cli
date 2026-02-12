@@ -159,6 +159,50 @@ docker-compose logs -f
 
 <!-- List external services, APIs, or integrations -->
 
+## AI Integration
+
+This project includes AI-powered development assistance with guidelines, skills, and MCP documentation servers.
+
+### Directory Structure
+
+```
+/.ai/
+  /manifest.json       - AI configuration (language, agents, guidelines, skills, MCP servers)
+  /guidelines/         - Framework documentation and best practices
+    /core/             - Core ColdBox/BoxLang guidelines
+    /modules/          - Module-specific guidelines
+    /custom/           - Your custom guidelines
+    /overrides/        - Override core guidelines
+  /skills/             - Implementation cookbooks (how-to guides)
+    /core/             - Core development patterns
+    /modules/          - Module-specific patterns
+    /custom/           - Your custom skills
+    /overrides/        - Override core skills
+  /mcp-servers/        - MCP server configurations
+```
+
+### Manifest
+
+The `.ai/manifest.json` file contains the complete AI integration configuration:
+
+- **language**: Project language mode (boxlang, cfml, hybrid)
+- **templateType**: Application template (modern, flat)
+- **guidelines**: Array of installed guideline names
+- **skills**: Array of installed skill names
+- **agents**: Array of configured AI agents
+- **mcpServers**: Configured MCP documentation servers (core, module, custom)
+- **activeAgent**: Currently active AI agent (if set)
+- **lastSync**: Last synchronization timestamp
+
+**Reading the manifest** helps you understand available resources and project configuration.
+
+### Using Guidelines & Skills
+
+- **Guidelines** provide framework documentation, conventions, and best practices
+- **Skills** offer step-by-step implementation patterns for common tasks
+- Consult relevant guidelines before implementing features
+- Load applicable skills when you need detailed how-to instructions
+
 ## MCP Documentation Servers
 
 This project has access to the following Model Context Protocol (MCP) documentation servers for live, up-to-date information:
