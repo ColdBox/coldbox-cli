@@ -199,4 +199,17 @@ component singleton {
 		return ( hasAppFolder && hasPublicFolder ) ? "modern" : "flat"
 	}
 
+	/**
+	 * Format bytes to human readable
+	 */
+	function formatBytes( required numeric bytes ){
+		if ( arguments.bytes < 1024 ) {
+			return "#arguments.bytes# B";
+		} else if ( arguments.bytes < 1048576 ) {
+			return "#numberFormat( arguments.bytes / 1024, "_._" )# KB";
+		} else {
+			return "#numberFormat( arguments.bytes / 1048576, "_._" )# MB";
+		}
+	}
+
 }
