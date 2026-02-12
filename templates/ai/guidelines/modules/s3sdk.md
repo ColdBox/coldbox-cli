@@ -1,3 +1,8 @@
+---
+title: S3SDK - Amazon S3 Integration
+description: Amazon S3 SDK for cloud storage operations with buckets and objects
+---
+
 # S3SDK - Amazon S3 Integration
 
 > **Module**: s3sdk

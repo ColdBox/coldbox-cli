@@ -1,3 +1,8 @@
+---
+title: |guidelineName| Guideline
+description: |guidelineDescription|
+---
+
 # |guidelineName| Guideline
 
 ## Overview

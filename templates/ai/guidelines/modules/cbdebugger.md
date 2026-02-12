@@ -1,3 +1,8 @@
+---
+title: CBDebugger Module Guidelines
+description: Visual debugger and profiler with request tracking, SQL logging, and performance metrics
+---
+
 # CBDebugger Module Guidelines
 
 ## Overview

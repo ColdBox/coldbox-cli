@@ -1,3 +1,8 @@
+---
+title: CBi18n Internationalization Module Guidelines
+description: Internationalization and localization support with resource bundles and language switching
+---
+
 # CBi18n Internationalization Module Guidelines
 
 ## Overview

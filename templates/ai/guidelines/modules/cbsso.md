@@ -1,3 +1,8 @@
+---
+title: CBSSO Single Sign-On Module Guidelines
+description: Single Sign-On integration for enterprise authentication and identity federation
+---
+
 # CBSSO Single Sign-On Module Guidelines
 
 ## Overview

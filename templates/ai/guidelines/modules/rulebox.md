@@ -1,3 +1,8 @@
+---
+title: RuleBox Business Rules Engine Module Guidelines
+description: Business rules engine for declarative rule evaluation and decision logic
+---
+
 # RuleBox Business Rules Engine Module Guidelines
 
 ## Overview

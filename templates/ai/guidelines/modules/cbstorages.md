@@ -1,3 +1,8 @@
+---
+title: CBStorages - Storage Provider Abstraction
+description: Pluggable storage providers for sessions, cache, and application state management
+---
+
 # CBStorages - Storage Provider Abstraction
 
 > **Module**: cbstorages

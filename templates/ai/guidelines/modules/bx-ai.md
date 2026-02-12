@@ -1,3 +1,8 @@
+---
+title: BoxLang AI Module
+description: BoxLang AI integration for LLM interactions, embeddings, vector search, and AI agents
+---
+
 # BoxLang AI Module
 
 > **Module**: bx-ai

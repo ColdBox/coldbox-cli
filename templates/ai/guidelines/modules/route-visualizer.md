@@ -1,3 +1,8 @@
+---
+title: Route Visualizer Module Guideline
+description: Visual route inspector and documentation for ColdBox routing configurations
+---
+
 # Route Visualizer Module Guideline
 
 ## Overview

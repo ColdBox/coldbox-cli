@@ -1,3 +1,8 @@
+---
+title: CBWire Module Guidelines
+description: Reactive components framework for building interactive user interfaces with server-side rendering
+---
+
 # CBWire Module Guidelines
 
 ## Overview

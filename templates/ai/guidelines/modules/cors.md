@@ -1,3 +1,8 @@
+---
+title: CORS Module Guidelines
+description: CORS (Cross-Origin Resource Sharing) middleware for API access control
+---
+
 # CORS Module Guidelines
 
 ## Overview

@@ -1,3 +1,8 @@
+---
+title: CBFS File System Module Guidelines
+description: Abstract file system interface supporting multiple storage providers and cloud services
+---
+
 # CBFS File System Module Guidelines
 
 ## Overview

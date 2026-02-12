@@ -1,3 +1,8 @@
+---
+title: CBMessagebox Module Guidelines
+description: Flash messaging system for displaying notifications and alerts across requests
+---
+
 # CBMessagebox Module Guidelines
 
 ## Overview

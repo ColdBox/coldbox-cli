@@ -1,3 +1,8 @@
+---
+title: CBJavaloader Module Guidelines
+description: Dynamic Java class loading and integration for using Java libraries in CFML
+---
+
 # CBJavaloader Module Guidelines
 
 ## Overview

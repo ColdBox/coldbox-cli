@@ -1,3 +1,8 @@
+---
+title: CBMockData - Test Data Generation
+description: Realistic mock data generator for testing with customizable data types and localization
+---
+
 # CBMockData - Test Data Generation
 
 > **Module**: cbmockdata

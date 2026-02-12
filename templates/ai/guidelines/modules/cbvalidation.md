@@ -1,3 +1,8 @@
+---
+title: CBValidation Module Guidelines
+description: Server-side and client-side validation engine with constraints, validators, and declarative rules
+---
+
 # CBValidation Module Guidelines
 
 ## Overview

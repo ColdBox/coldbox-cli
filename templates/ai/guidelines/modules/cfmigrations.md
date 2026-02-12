@@ -1,3 +1,8 @@
+---
+title: CFMigrations Module Guidelines
+description: Database migration framework with SQL and schema builder support
+---
+
 # CFMigrations Module Guidelines
 
 ## Overview

@@ -1,3 +1,8 @@
+---
+title: CBElasticsearch - Elasticsearch Integration
+description: Elasticsearch integration for full-text search, analytics, and document storage
+---
+
 # CBElasticsearch - Elasticsearch Integration
 
 > **Module**: cbelasticsearch

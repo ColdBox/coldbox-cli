@@ -1,3 +1,8 @@
+---
+title: CBMarkdown Module Guidelines
+description: Markdown parsing and rendering with extensions and syntax highlighting
+---
+
 # CBMarkdown Module Guidelines
 
 ## Overview

@@ -1,3 +1,8 @@
+---
+title: CBPlaywright - End-to-End Browser Testing
+description: Playwright integration for browser automation, testing, and web scraping
+---
+
 # CBPlaywright - End-to-End Browser Testing
 
 > **Module**: cbplaywright

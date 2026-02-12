@@ -1,3 +1,8 @@
+---
+title: CBCSRF - Cross-Site Request Forgery Protection
+description: Cross-Site Request Forgery (CSRF) protection with token generation and validation
+---
+
 # CBCSRF - Cross-Site Request Forgery Protection
 
 > **Module**: cbcsrf

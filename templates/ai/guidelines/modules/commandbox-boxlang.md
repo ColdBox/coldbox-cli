@@ -1,3 +1,8 @@
+---
+title: CommandBox BoxLang Module Guideline
+description: CommandBox BoxLang runtime integration and module management
+---
+
 # CommandBox BoxLang Module Guideline
 
 ## Overview

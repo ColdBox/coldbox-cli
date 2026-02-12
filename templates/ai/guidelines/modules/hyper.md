@@ -1,3 +1,8 @@
+---
+title: Hyper HTTP Client Module Guidelines
+description: Modern HTTP client for CFML with fluent interface, async requests, and comprehensive HTTP support
+---
+
 # Hyper HTTP Client Module Guidelines
 
 ## Overview

@@ -1,3 +1,8 @@
+---
+title: CBFeeds Module Guidelines
+description: RSS and Atom feed reader and generator for content syndication
+---
+
 # CBFeeds Module Guidelines
 
 ## Overview

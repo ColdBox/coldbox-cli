@@ -1,3 +1,8 @@
+---
+title: CBPaginator - Pagination Helpers
+description: Pagination library for large datasets with customizable page sizes and navigation
+---
+
 # CBPaginator - Pagination Helpers
 
 > **Module**: cbpaginator

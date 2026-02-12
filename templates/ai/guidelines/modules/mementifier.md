@@ -1,3 +1,8 @@
+---
+title: Mementifier Module Guideline
+description: Object to struct serialization with control over properties, includes, excludes, and nesting
+---
+
 # Mementifier Module Guideline
 
 ## Overview

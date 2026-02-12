@@ -1,3 +1,8 @@
+---
+title: QB (Query Builder) Module Guidelines
+description: Fluent query builder for database-agnostic SQL generation and query construction
+---
+
 # QB (Query Builder) Module Guidelines
 
 ## Overview

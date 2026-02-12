@@ -1,3 +1,8 @@
+---
+title: CBAuth Authentication Module Guidelines
+description: Simple authentication module for user login, session management, and identity verification
+---
+
 # CBAuth Authentication Module Guidelines
 
 ## Overview

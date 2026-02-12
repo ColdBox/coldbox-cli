@@ -1,3 +1,8 @@
+---
+title: CommandBox Migrations Module Guidelines
+description: Database migration tool for schema versioning, changes tracking, and environment synchronization
+---
+
 # CommandBox Migrations Module Guidelines
 
 ## Overview

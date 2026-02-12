@@ -1,3 +1,8 @@
+---
+title: Quick ORM Module Guidelines
+description: ActiveRecord ORM for CFML with relationships, eager loading, scopes, and fluent query interface
+---
+
 # Quick ORM Module Guidelines
 
 ## Overview

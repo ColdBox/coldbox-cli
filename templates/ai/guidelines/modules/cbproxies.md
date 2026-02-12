@@ -1,3 +1,8 @@
+---
+title: CBProxies - Proxy Pattern Implementation
+description: Java proxy objects and futures for async operations and concurrent programming
+---
+
 # CBProxies - Proxy Pattern Implementation
 
 > **Module**: cbproxies

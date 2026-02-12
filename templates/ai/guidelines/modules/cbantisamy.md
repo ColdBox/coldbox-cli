@@ -1,3 +1,8 @@
+---
+title: CBAntiSamy - XSS Prevention Library
+description: XSS prevention library with HTML sanitization and security policy enforcement
+---
+
 # CBAntiSamy - XSS Prevention Library
 
 > **Module**: cbantisamy

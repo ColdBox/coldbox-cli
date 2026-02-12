@@ -1,3 +1,8 @@
+---
+title: CBSecurity Module Guidelines
+description: Enterprise security framework for authentication, authorization, JWT, CSRF protection, and security headers
+---
+
 # CBSecurity Module Guidelines
 
 ## Overview

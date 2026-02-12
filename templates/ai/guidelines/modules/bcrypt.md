@@ -1,3 +1,8 @@
+---
+title: BCrypt Module Guidelines
+description: BCrypt password hashing library for secure password storage and verification
+---
+
 # BCrypt Module Guidelines
 
 ## Overview

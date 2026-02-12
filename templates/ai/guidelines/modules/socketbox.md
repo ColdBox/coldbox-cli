@@ -1,3 +1,8 @@
+---
+title: SocketBox - WebSocket Real-Time Communication
+description: WebSocket server implementation for real-time bidirectional client-server communication
+---
+
 # SocketBox - WebSocket Real-Time Communication
 
 > **Module**: socketbox

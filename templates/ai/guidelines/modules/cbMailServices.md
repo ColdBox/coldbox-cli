@@ -1,3 +1,8 @@
+---
+title: CBMailServices Module Guidelines
+description: Email sending abstraction with templates, protocols, and delivery tracking
+---
+
 # CBMailServices Module Guidelines
 
 ## Overview

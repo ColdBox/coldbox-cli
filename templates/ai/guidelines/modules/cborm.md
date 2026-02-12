@@ -1,3 +1,8 @@
+---
+title: CBORM Module Guidelines
+description: Integration layer for ColdBox and Hibernate ORM with virtual entity services and active entity pattern
+---
+
 # CBORM Module Guidelines
 
 ## Overview

@@ -1,3 +1,8 @@
+---
+title: CBQ Job Queues Module Guidelines
+description: ColdBox task queues and job processing for asynchronous background work
+---
+
 # CBQ Job Queues Module Guidelines
 
 ## Overview
