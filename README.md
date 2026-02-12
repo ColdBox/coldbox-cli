@@ -611,7 +611,7 @@ coldbox ai mcp config                 # Generate agent-specific configs
 The CLI tracks and analyzes your AI context usage:
 
 - **Context Estimation**: Calculates total KB and token usage
-- **Usage Indicators**: Shows Low/Moderate/High/Very High warnings  
+- **Usage Indicators**: Shows Low/Moderate/High/Very High warnings
 - **Model Compatibility**: Displays utilization for Claude, GPT-4, GPT-3.5-Turbo, Gemini
 - **Optimization Tips**: Monitors context efficiency with the subagent pattern
 

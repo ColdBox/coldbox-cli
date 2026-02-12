@@ -334,14 +334,14 @@ flowchart LR
     subgraph "Inlined (Always Present)"
         Core["⚡ Core Guidelines<br/>~20 KB<br/>ColdBox + Language"]
     end
-    
+
     subgraph "On-Demand (Inventory Only)"
         ModuleG["📦 Module Guidelines<br/>~65 KB<br/>Load when needed"]
         Skills["🎯 Skills<br/>~124 KB<br/>Load when needed"]
     end
-    
+
     AgentFile["📄 Agent File<br/>~33 KB<br/>~8,400 tokens"]
-    
+
     Core --> AgentFile
     ModuleG -.-|"Inventory + Description"| AgentFile
     Skills -.-|"Inventory + Description"| AgentFile
