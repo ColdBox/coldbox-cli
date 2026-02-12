@@ -470,14 +470,14 @@ component singleton {
 
 		var stats = {
 			"guidelines" : {
-				"total"     : info.guidelines.len(),
-				"core"      : 0,
-				"module"    : 0,
-				"custom"    : 0,
-				"override"  : 0,
-				"totalSize" : 0,
-				"avgSize"   : 0,
-				"inlinedSize" : 0,
+				"total"        : info.guidelines.len(),
+				"core"         : 0,
+				"module"       : 0,
+				"custom"       : 0,
+				"override"     : 0,
+				"totalSize"    : 0,
+				"avgSize"      : 0,
+				"inlinedSize"  : 0,
 				"onDemandSize" : 0
 			},
 			"skills" : {
@@ -558,7 +558,9 @@ component singleton {
 		// Calculate total guidelines size
 		if ( directoryExists( guidelinesDir ) ) {
 			stats.guidelines.totalSize = calculateDirectorySize( guidelinesDir );
-			stats.guidelines.avgSize   = stats.guidelines.total > 0 ? int( stats.guidelines.totalSize / stats.guidelines.total ) : 0;
+			stats.guidelines.avgSize   = stats.guidelines.total > 0 ? int(
+				stats.guidelines.totalSize / stats.guidelines.total
+			) : 0;
 		}
 
 		// Count skills by type (all skills are on-demand)
@@ -608,13 +610,15 @@ component singleton {
 
 		// Calculate context estimates
 		// Base context = agent files (includes inlined guidelines + inventories)
-		stats.contextEstimate.baseContextKB = int( stats.agents.filesSize / 1024 );
+		stats.contextEstimate.baseContextKB    = int( stats.agents.filesSize / 1024 );
 		// Inlined guidelines (part of base context, shown separately for clarity)
-		stats.contextEstimate.inlinedKB = int( stats.guidelines.inlinedSize / 1024 );
+		stats.contextEstimate.inlinedKB        = int( stats.guidelines.inlinedSize / 1024 );
 		// On-demand resources (not in base context, but available)
-		stats.contextEstimate.onDemandKB = int( ( stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024 );
+		stats.contextEstimate.onDemandKB       = int( ( stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024 );
 		// Total available if all resources were loaded
-		stats.contextEstimate.totalAvailableKB = int( ( stats.agents.filesSize + stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024 );
+		stats.contextEstimate.totalAvailableKB = int(
+			( stats.agents.filesSize + stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024
+		);
 
 		return stats;
 	}
