@@ -174,53 +174,67 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		)
 		print.line()
 
-		// Context Estimate
-		print.boldWhiteLine( "💾 Estimated AI Context Usage" )
+		// Context Estimate - Subagent Pattern
+		print.boldWhiteLine( "💾 AI Context Usage (Subagent Pattern)" )
 		var contextData = [
 			[
-				"Guidelines",
-				"~#arguments.stats.contextEstimate.guidelinesKB# KB"
+				"Base Context",
+				"~#arguments.stats.contextEstimate.baseContextKB# KB",
+				"Agent files loaded at startup"
 			],
 			[
-				"Skills",
-				"~#arguments.stats.contextEstimate.skillsKB# KB"
+				"  ├─ Inlined",
+				"~#arguments.stats.contextEstimate.inlinedKB# KB",
+				"Core guidelines embedded in agents"
 			],
 			[
-				"Total",
-				"~#arguments.stats.contextEstimate.totalKB# KB"
+				"  └─ Agent Files",
+				"~#arguments.stats.contextEstimate.baseContextKB - arguments.stats.contextEstimate.inlinedKB# KB",
+				"Agent configuration overhead"
+			],
+			[
+				"On-Demand",
+				"~#arguments.stats.contextEstimate.onDemandKB# KB",
+				"Available but not loaded (inventoried)"
+			],
+			[
+				"Total Available",
+				"~#arguments.stats.contextEstimate.totalAvailableKB# KB",
+				"If all resources were loaded"
 			]
 		]
 		print.table(
-			headerNames = [ "Component", "Size" ],
+			headerNames = [ "Component", "Size", "Description" ],
 			data        = contextData
 		)
 		print.line()
 
-		// Show usage indicator based on common AI models (using GPT-4 128K as baseline)
-		var estimatedTokens = arguments.stats.contextEstimate.totalKB * 300
+		// Show usage indicator based on BASE CONTEXT (what's actually loaded)
+		var estimatedTokens = arguments.stats.contextEstimate.baseContextKB * 300
 		var baselineTokens  = 128000 // GPT-4 context window
 		var percentage      = ( estimatedTokens / baselineTokens ) * 100
 
-		print.toConsole( "  Usage: " )
+		print.toConsole( "  Base Context Usage: " )
 		if ( percentage < 30 ) {
-			print.greenLine( "✓ Low (#numberFormat( percentage, "_._" )#% of typical AI context)" )
+			printSuccess( "✓ Low (#numberFormat( percentage, "_._" )#% of typical AI context)" )
 		} else if ( percentage < 60 ) {
-			print.yellowLine( "⚠ Moderate (#numberFormat( percentage, "_._" )#% of typical AI context)" )
+			printInfo( "⚠ Moderate (#numberFormat( percentage, "_._" )#% of typical AI context)" )
 		} else if ( percentage < 90 ) {
-			print.orangeLine( "⚠ High (#numberFormat( percentage, "_._" )#% of typical AI context)" )
+			printWarn( "⚠ High (#numberFormat( percentage, "_._" )#% of typical AI context)" )
 		} else {
-			print.redLine( "⛔ Very High (#numberFormat( percentage, "_._" )#% of typical AI context)" )
-			print.dim( "  Consider reducing guidelines/skills for better AI performance" )
+			printError( "⛔ Very High (#numberFormat( percentage, "_._" )#% of typical AI context)" )
+			print.dimLine( "  Consider reducing inlined guidelines for better AI performance" )
 		}
+		printHelp( "On-demand resources are loaded only when needed via subagent pattern" )
 		print.line()
 
 		// Context window estimates for popular AI models
 		if ( arguments.verbose ) {
 			print.line()
-			print.cyanLine( "📈 Context Window Utilization:" )
+			print.cyanLine( "📈 Context Window Utilization (Base Context):" )
 
-			// Build table data
-			var estimatedTokens = arguments.stats.contextEstimate.totalKB * 300
+			// Build table data - use BASE CONTEXT (what's actually loaded)
+			var estimatedTokens = arguments.stats.contextEstimate.baseContextKB * 300
 			var tableData       = [
 				[
 					"Claude 3.5 Sonnet",
@@ -269,6 +283,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				],
 				data = tableData
 			)
+			print.dim( "  * Utilization shown for base context only (agent files + inlined guidelines)" )
+			print.dim( "  * On-demand resources (~#arguments.stats.contextEstimate.onDemandKB# KB) loaded via subagent as needed" )
 			print.line()
 		}
 

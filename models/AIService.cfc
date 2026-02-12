@@ -476,7 +476,9 @@ component singleton {
 				"custom"    : 0,
 				"override"  : 0,
 				"totalSize" : 0,
-				"avgSize"   : 0
+				"avgSize"   : 0,
+				"inlinedSize" : 0,
+				"onDemandSize" : 0
 			},
 			"skills" : {
 				"total"     : info.skills.len(),
@@ -489,7 +491,8 @@ component singleton {
 			},
 			"agents" : {
 				"total"      : manifest.agents.len(),
-				"configured" : manifest.agents
+				"configured" : manifest.agents,
+				"filesSize"  : 0
 			},
 			"mcpServers" : {
 				"total"  : 0,
@@ -501,21 +504,64 @@ component singleton {
 			"templateType"    : manifest.templateType ?: "unknown",
 			"lastSync"        : manifest.lastSync ?: "never",
 			"contextEstimate" : {
-				"totalKB"      : 0,
-				"guidelinesKB" : 0,
-				"skillsKB"     : 0
+				"baseContextKB"    : 0,
+				"inlinedKB"        : 0,
+				"onDemandKB"       : 0,
+				"totalAvailableKB" : 0
 			}
 		};
 
-		// Count guidelines by type
+		// Determine which guidelines are inlined based on language
+		var inlinedGuidelines = [ "coldbox" ];
+		if ( stats.language == "boxlang" || stats.language == "hybrid" ) {
+			inlinedGuidelines.append( "boxlang" );
+		}
+		if ( stats.language == "cfml" || stats.language == "hybrid" ) {
+			inlinedGuidelines.append( "cfml" );
+		}
+
+		// Count guidelines by type and calculate sizes
+		var aiDir         = arguments.directory & "/.ai";
+		var guidelinesDir = aiDir & "/guidelines";
 		info.guidelines.each( ( guideline ) => {
 			var type = guideline.type ?: "module";
 			if ( structKeyExists( stats.guidelines, type ) ) {
 				stats.guidelines[ type ]++;
 			}
+
+			// Calculate if this guideline is inlined or on-demand
+			if ( type == "core" && inlinedGuidelines.find( guideline.name ) ) {
+				// Core inlined guideline - calculate actual file size
+				var guidelineFile = guidelinesDir & "/core/" & guideline.name & ".md";
+				if ( fileExists( guidelineFile ) ) {
+					stats.guidelines.inlinedSize += getFileInfo( guidelineFile ).size;
+				}
+			} else {
+				// On-demand guideline - only description counts in base context
+				// Full file counts toward on-demand total
+				var guidelinePath = "";
+				if ( type == "core" ) {
+					guidelinePath = guidelinesDir & "/core/" & guideline.name & ".md";
+				} else if ( type == "module" ) {
+					guidelinePath = guidelinesDir & "/modules/" & guideline.name & ".md";
+				} else if ( type == "custom" ) {
+					guidelinePath = guidelinesDir & "/custom/" & guideline.name & ".md";
+				} else if ( type == "override" ) {
+					guidelinePath = guidelinesDir & "/overrides/" & guideline.name & ".md";
+				}
+				if ( len( guidelinePath ) && fileExists( guidelinePath ) ) {
+					stats.guidelines.onDemandSize += getFileInfo( guidelinePath ).size;
+				}
+			}
 		} );
 
-		// Count skills by type
+		// Calculate total guidelines size
+		if ( directoryExists( guidelinesDir ) ) {
+			stats.guidelines.totalSize = calculateDirectorySize( guidelinesDir );
+			stats.guidelines.avgSize   = stats.guidelines.total > 0 ? int( stats.guidelines.totalSize / stats.guidelines.total ) : 0;
+		}
+
+		// Count skills by type (all skills are on-demand)
 		info.skills.each( ( skill ) => {
 			var type   = skill.type ?: "module";
 			var source = skill.source ?: "";
@@ -531,6 +577,14 @@ component singleton {
 			}
 		} );
 
+		// Skills size (all on-demand)
+		var skillsDir = aiDir & "/skills";
+		if ( directoryExists( skillsDir ) ) {
+			var skillsSize         = calculateDirectorySize( skillsDir );
+			stats.skills.totalSize = skillsSize;
+			stats.skills.avgSize   = stats.skills.total > 0 ? int( skillsSize / stats.skills.total ) : 0;
+		}
+
 		// Count MCP servers
 		var mcpServers = manifest.mcpServers ?: {
 			"core"   : [],
@@ -542,28 +596,25 @@ component singleton {
 		stats.mcpServers.custom = mcpServers.custom.len();
 		stats.mcpServers.total  = stats.mcpServers.core + stats.mcpServers.module + stats.mcpServers.custom;
 
-		// Calculate file sizes
-		var aiDir         = arguments.directory & "/.ai";
-		// Guidelines size
-		var guidelinesDir = aiDir & "/guidelines";
-		if ( directoryExists( guidelinesDir ) ) {
-			var guidelineSize                  = calculateDirectorySize( guidelinesDir );
-			stats.guidelines.totalSize         = guidelineSize;
-			stats.guidelines.avgSize           = stats.guidelines.total > 0 ? int( guidelineSize / stats.guidelines.total ) : 0;
-			stats.contextEstimate.guidelinesKB = int( guidelineSize / 1024 );
+		// Calculate agent files size (the actual base context)
+		if ( manifest.agents.len() ) {
+			manifest.agents.each( ( agent ) => {
+				var agentPath = variables.agentRegistry.getAgentConfigPath( directory, agent );
+				if ( fileExists( agentPath ) ) {
+					stats.agents.filesSize += getFileInfo( agentPath ).size;
+				}
+			} );
 		}
 
-		// Skills size
-		var skillsDir = aiDir & "/skills";
-		if ( directoryExists( skillsDir ) ) {
-			var skillsSize                 = calculateDirectorySize( skillsDir );
-			stats.skills.totalSize         = skillsSize;
-			stats.skills.avgSize           = stats.skills.total > 0 ? int( skillsSize / stats.skills.total ) : 0;
-			stats.contextEstimate.skillsKB = int( skillsSize / 1024 );
-		}
-
-		// Total context estimate
-		stats.contextEstimate.totalKB = stats.contextEstimate.guidelinesKB + stats.contextEstimate.skillsKB;
+		// Calculate context estimates
+		// Base context = agent files (includes inlined guidelines + inventories)
+		stats.contextEstimate.baseContextKB = int( stats.agents.filesSize / 1024 );
+		// Inlined guidelines (part of base context, shown separately for clarity)
+		stats.contextEstimate.inlinedKB = int( stats.guidelines.inlinedSize / 1024 );
+		// On-demand resources (not in base context, but available)
+		stats.contextEstimate.onDemandKB = int( ( stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024 );
+		// Total available if all resources were loaded
+		stats.contextEstimate.totalAvailableKB = int( ( stats.agents.filesSize + stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024 );
 
 		return stats;
 	}
