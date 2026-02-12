@@ -441,4 +441,144 @@ component singleton {
 		variables.packageService.writePackageDescriptor( boxJson, packageDir );
 	}
 
+	/**
+	 * Get AI integration statistics
+	 *
+	 * @directory The project directory
+	 *
+	 * @return Struct with detailed statistics about guidelines, skills, agents, MCP servers, and context usage
+	 */
+	function getStats( required string directory ){
+		// Load manifest and info
+		var manifest = loadManifest( arguments.directory );
+		var info     = getInfo( arguments.directory );
+
+		var stats = {
+			"guidelines" : {
+				"total"     : info.guidelines.len(),
+				"core"      : 0,
+				"module"    : 0,
+				"custom"    : 0,
+				"override"  : 0,
+				"totalSize" : 0,
+				"avgSize"   : 0
+			},
+			"skills" : {
+				"total"     : info.skills.len(),
+				"core"      : 0,
+				"module"    : 0,
+				"custom"    : 0,
+				"override"  : 0,
+				"totalSize" : 0,
+				"avgSize"   : 0
+			},
+			"agents" : {
+				"total"      : manifest.agents.len(),
+				"configured" : manifest.agents
+			},
+			"mcpServers" : {
+				"total"  : 0,
+				"core"   : 0,
+				"module" : 0,
+				"custom" : 0
+			},
+			"language"        : manifest.language ?: "unknown",
+			"templateType"    : manifest.templateType ?: "unknown",
+			"lastSync"        : manifest.lastSync ?: "never",
+			"contextEstimate" : {
+				"totalKB"      : 0,
+				"guidelinesKB" : 0,
+				"skillsKB"     : 0
+			}
+		};
+
+		// Count guidelines by type
+		info.guidelines.each( ( guideline ) => {
+			var type = guideline.type ?: "module";
+			if ( structKeyExists( stats.guidelines, type ) ) {
+				stats.guidelines[ type ]++;
+			}
+		} );
+
+		// Count skills by type
+		info.skills.each( ( skill ) => {
+			var type   = skill.type ?: "module";
+			var source = skill.source ?: "";
+
+			if ( type == "override" ) {
+				stats.skills.override++;
+			} else if ( source == "core" ) {
+				stats.skills.core++;
+			} else if ( source == "custom" || type == "custom" ) {
+				stats.skills.custom++;
+			} else {
+				stats.skills.module++;
+			}
+		} );
+
+		// Count MCP servers
+		var mcpServers = manifest.mcpServers ?: {
+			"core"   : [],
+			"module" : [],
+			"custom" : []
+		};
+		stats.mcpServers.core   = mcpServers.core.len();
+		stats.mcpServers.module = mcpServers.module.len();
+		stats.mcpServers.custom = mcpServers.custom.len();
+		stats.mcpServers.total  = stats.mcpServers.core + stats.mcpServers.module + stats.mcpServers.custom;
+
+		// Calculate file sizes
+		var aiDir = arguments.directory & "/.ai";
+		// Guidelines size
+		var guidelinesDir = aiDir & "/guidelines";
+		if ( directoryExists( guidelinesDir ) ) {
+			var guidelineSize                  = calculateDirectorySize( guidelinesDir );
+			stats.guidelines.totalSize         = guidelineSize;
+			stats.guidelines.avgSize           = stats.guidelines.total > 0 ? int( guidelineSize / stats.guidelines.total ) : 0;
+			stats.contextEstimate.guidelinesKB = int( guidelineSize / 1024 );
+		}
+
+		// Skills size
+		var skillsDir = aiDir & "/skills";
+		if ( directoryExists( skillsDir ) ) {
+			var skillsSize                 = calculateDirectorySize( skillsDir );
+			stats.skills.totalSize         = skillsSize;
+			stats.skills.avgSize           = stats.skills.total > 0 ? int( skillsSize / stats.skills.total ) : 0;
+			stats.contextEstimate.skillsKB = int( skillsSize / 1024 );
+		}
+
+		// Total context estimate
+		stats.contextEstimate.totalKB = stats.contextEstimate.guidelinesKB + stats.contextEstimate.skillsKB;
+
+		return stats;
+	}
+
+	/**
+	 * Calculate directory size recursively (only .md and .txt files)
+	 *
+	 * @path The directory path
+	 *
+	 * @return Total size in bytes
+	 */
+	private function calculateDirectorySize( required string path ){
+		var totalSize = 0;
+
+		if ( !directoryExists( arguments.path ) ) {
+			return 0;
+		}
+
+		var files = directoryList(
+			arguments.path,
+			true,
+			"path",
+			"*.md|*.txt"
+		);
+
+		files.each( ( target ) => {
+			totalSize += getFileInfo( target ).size;
+		} );
+
+		return totalSize;
+	}
+
 }
