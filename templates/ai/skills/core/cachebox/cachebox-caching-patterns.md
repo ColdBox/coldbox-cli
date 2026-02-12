@@ -492,34 +492,123 @@ function index( event, rc, prc ) {
 }
 ```
 
-## Cache Providers
+## Object Stores
 
-### CacheBox Provider
+CacheBox supports multiple object stores for different performance and persistence needs.
+
+### ConcurrentStore
+
+High-performance concurrent hash maps (default). Best for in-memory caching.
 
 ```boxlang
-// Default in-memory provider
+properties: {
+    objectStore: "ConcurrentStore"
+}
+```
+
+### ConcurrentSoftReferenceStore
+
+Memory-sensitive caching using Java soft references. JVM can reclaim memory when needed. Best for large datasets that can be regenerated.
+
+```boxlang
+properties: {
+    objectStore: "ConcurrentSoftReferenceStore"
+}
+```
+
+### DiskStore
+
+Persist cache to disk using Java serialization.
+
+```boxlang
+properties: {
+    objectStore: "coldbox.system.cache.store.DiskStore",
+    diskPath: "/cachePath",
+    autoExpandPath: true,
+    directoryPath: "/app/cache"
+}
+```
+
+### JDBCStore
+
+Persist cache to database using Java serialization.
+
+```boxlang
+properties: {
+    objectStore: "coldbox.system.cache.store.JDBCStore",
+    dsn: "myDatasource",
+    table: "cacheStore"
+}
+```
+
+## Cache Providers
+
+### CacheBoxProvider
+
+Standalone CacheBox provider for any CFML application.
+
+```boxlang
+defaultCache: {
+    provider: "coldbox.system.cache.providers.CacheBoxProvider",
+    properties: {
+        objectDefaultTimeout: 60,
+        maxObjects: 500,
+        evictionPolicy: "LRU"
+    }
+}
+```
+
+### CacheBoxColdBoxProvider
+
+ColdBox-enhanced provider with event caching and view fragment caching support.
+
+```boxlang
 defaultCache: {
     provider: "coldbox.system.cache.providers.CacheBoxColdBoxProvider",
     properties: {
         objectDefaultTimeout: 60,
         objectDefaultLastAccessTimeout: 30,
         maxObjects: 500,
-        evictionPolicy: "LRU",  // LRU, LFU, FIFO
+        evictionPolicy: "LRU",
         objectStore: "ConcurrentSoftReferenceStore"
     }
 }
 ```
 
-### ColdBox Provider (Session-Backed)
+### CFProvider / CFColdBoxProvider
+
+Leverage native ColdFusion (EHCache) caching engine.
 
 ```boxlang
-sessionCache: {
-    provider: "coldbox.system.cache.providers.ColdBoxProvider",
+cfCache: {
+    provider: "coldbox.system.cache.providers.CFColdBoxProvider",
     properties: {
-        objectDefaultTimeout: 30
+        cacheName: "object",  // CF cache name
+        clearOnFlush: true,
+        maxElementsInMemory: 10000
     }
 }
 ```
+
+### LuceeProvider / LuceeColdBoxProvider
+
+Leverage native Lucee caching engine.
+
+```boxlang
+luceeCache: {
+    provider: "coldbox.system.cache.providers.LuceeColdBoxProvider",
+    properties: {
+        cacheName: "object"
+    }
+}
+```
+
+## Eviction Policies
+
+- **LRU (Least Recently Used)** - Default, evicts least recently accessed items
+- **LFU (Least Frequently Used)** - Evicts least frequently accessed items
+- **FIFO (First In First Out)** - Evicts oldest items first
+- **LIFO (Last In First Out)** - Evicts newest items first
 
 ### Custom Provider
 

@@ -16,13 +16,7 @@ component singleton {
 		CORE_GUIDELINES = [
 			"boxlang",
 			"cfml",
-			"coldbox",
-			"coldbox-cli",
-			"cachebox",
-			"docbox",
-			"logbox",
-			"testbox",
-			"wirebox"
+			"coldbox"
 		]
 		MODULE_GUIDELINES = [
 			"bcrypt",
@@ -64,6 +58,7 @@ component singleton {
 			"rulebox",
 			"s3sdk",
 			"socketbox",
+			"testbox",
 			"unleashsdk"
 		]
 	}
@@ -312,8 +307,7 @@ component singleton {
 		};
 
 		// Check for missing core guidelines
-		var coreGuidelines = [ "coldbox", "testbox", "wirebox" ];
-		coreGuidelines.each( ( name ) => {
+		static.CORE_GUIDELINES.each( ( name ) => {
 			var found = manifest.guidelines.filter( ( g ) => {
 				return g.name == name
 			} )

@@ -1,4 +1,19 @@
-# TestBox CLI Guidelines
+---
+name: TestBox CLI Commands & Test Execution
+description: Complete guide to TestBox CLI commands for test creation, execution, watching, and CI/CD integration. Covers BDD, xUnit, runners, and output formats.
+category: testing
+priority: high
+triggers:
+  - testbox cli
+  - test command
+  - testbox run
+  - testbox watch
+  - testbox create
+  - test runner
+  - test execution
+---
+
+# TestBox CLI Commands & Test Execution
 
 ## Overview
 
@@ -519,9 +534,9 @@ testbox run outputFormats="json,junit" outputFile="build/reports/test-results"
 
 ## Related Skills
 
-- [TestBox Testing](testbox.md) - TestBox framework and testing patterns
-- [ColdBox Testing](coldbox.md) - ColdBox application testing
-- [CommandBox](commandbox.md) - CommandBox CLI usage
+- [TestBox Testing](testbox-testing.md) - TestBox framework and testing patterns
+- [ColdBox Testing](../coldbox/coldbox-testing.md) - ColdBox application testing
+- [Handler Testing](../coldbox/handler-development.md) - Handler test patterns
 
 ## References
 

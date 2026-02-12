@@ -1,4 +1,21 @@
-# ColdBox CLI Guidelines
+---
+name: ColdBox CLI Commands & Code Generation
+description: Complete guide to ColdBox CLI commands for scaffolding, code generation, AI integration, and development workflows. Includes BoxLang and CFML support.
+category: coldbox-cli
+priority: high
+triggers:
+  - cli
+  - command
+  - generate
+  - create
+  - scaffold
+  - coldbox cli
+  - ai commands
+  - coldbox create
+  - coldbox ai
+---
+
+# ColdBox CLI Commands & Code Generation
 
 ## Overview
 
@@ -1205,10 +1222,14 @@ coldbox ai uninstall
 coldbox ai install
 ```
 
-## CLI Information
+## Related Skills
 
-- **Repository:** github.com/coldbox/coldbox-cli
-- **Documentation:** coldbox.ortusbooks.com/getting-started/conventions/cli
-- **ForgeBox:** forgebox.io/view/coldbox-cli
-- **Requirements:** CommandBox 6+
-- **Version Matching:** CLI version matches ColdBox major version
+- [Handler Development](../coldbox/handler-development.md) - Handler patterns and best practices
+- [Module Development](../coldbox/module-development.md) - Module creation and structure
+- [Testing Patterns](../testing/testbox-testing.md) - Testing strategies and patterns
+
+## References
+
+- [ColdBox CLI Repository](https://github.com/coldbox/coldbox-cli)
+- [ColdBox Documentation](https://coldbox.ortusbooks.com/getting-started/conventions/cli)
+- [ForgeBox Package](https://forgebox.io/view/coldbox-cli)

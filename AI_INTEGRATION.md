@@ -1,83 +1,39 @@
-# ColdBox AI Integration
+---
+description: >-
+  The ColdBox CLI has tons of AI features to help build context and skills for
+  any LLM and Agent
+icon: terminal
+---
+
+# Agentic ColdBox
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Introduction](#introduction)
-- [Installation](#installation)
- 	- [Quick Start](#quick-start)
- 	- [Keeping Resources Updated](#keeping-resources-updated)
- 	- [Setting Up AI Agents](#setting-up-ai-agents)
-- [Core Concepts](#core-concepts)
- 	- [Guidelines vs Skills](#guidelines-vs-skills)
- 	- [Context Management](#context-management)
- 	- [Multi-Language Support](#multi-language-support)
-- [AI Guidelines](#ai-guidelines)
- 	- [Available Guidelines](#available-guidelines)
-  		- [Core Framework (8)](#core-framework-8)
-  		- [Testing \& Quality (4)](#testing--quality-4)
-  		- [Data Layer (6)](#data-layer-6)
-  		- [Web Development (8)](#web-development-8)
-  		- [Specialized (15+)](#specialized-15)
- 	- [Guideline Types](#guideline-types)
- 	- [Custom Guidelines](#custom-guidelines)
- 	- [Overriding Guidelines](#overriding-guidelines)
- 	- [Module Guidelines](#module-guidelines)
-- [AI Skills](#ai-skills)
- 	- [Available Skills](#available-skills)
-  		- [Scaffolding \& Creation (12)](#scaffolding--creation-12)
-  		- [Testing \& Quality (8)](#testing--quality-8)
-  		- [Configuration \& Setup (6)](#configuration--setup-6)
-  		- [Database \& ORM (10)](#database--orm-10)
-  		- [REST APIs (8)](#rest-apis-8)
-  		- [Security (6)](#security-6)
-  		- [Performance \& Optimization (6)](#performance--optimization-6)
-  		- [Web Development (6+)](#web-development-6)
- 	- [Custom Skills](#custom-skills)
- 	- [Overriding Skills](#overriding-skills)
- 	- [Module Skills](#module-skills)
-- [AI Agents](#ai-agents)
- 	- [Supported Agents](#supported-agents)
- 	- [Agent Configuration](#agent-configuration)
- 	- [Multi-Agent Development](#multi-agent-development)
-- [MCP Servers](#mcp-servers)
- 	- [Built-in MCP Servers](#built-in-mcp-servers)
-  		- [Development Tools (10)](#development-tools-10)
-  		- [Database (5)](#database-5)
-  		- [Cloud \& Infrastructure (7)](#cloud--infrastructure-7)
-  		- [Productivity (8)](#productivity-8)
- 	- [Custom MCP Servers](#custom-mcp-servers)
- 	- [MCP Configuration](#mcp-configuration)
-- [CLI Commands](#cli-commands)
- 	- [Setup \& Management](#setup--management)
- 	- [Component Management](#component-management)
- 	- [Diagnostics \& Analytics](#diagnostics--analytics)
-- [Developer Experience](#developer-experience)
- 	- [Visual Tree Structure](#visual-tree-structure)
- 	- [Context Usage Statistics](#context-usage-statistics)
- 	- [Health Diagnostics](#health-diagnostics)
-- [Module Integration](#module-integration)
- 	- [Automatic Discovery](#automatic-discovery)
- 	- [Creating Module Guidelines](#creating-module-guidelines)
- 	- [Creating Module Skills](#creating-module-skills)
-- [Best Practices](#best-practices)
- 	- [Managing Context Size](#managing-context-size)
- 	- [Project-Specific Customization](#project-specific-customization)
- 	- [Team Collaboration](#team-collaboration)
+* Introduction
+* Installation
+* Core Concepts
+* AI Guidelines
+* AI Skills
+* AI Agents
+* MCP Servers
+* CLI Commands
+* Developer Experience
+* Module Integration
+* Best Practices
 
----
+***
 
 ## Introduction
 
 ColdBox AI Integration supercharges your development workflow by providing comprehensive AI assistance for both **BoxLang** and **CFML** applications. Unlike single-framework solutions, ColdBox AI Integration offers:
 
-- **Dual-Language Support**: First-class support for BoxLang and CFML with automatic detection
-- **Multi-Agent Ecosystem**: Works with Claude, GitHub Copilot, Cursor, Codex, Gemini, and OpenCode
-- **30+ MCP Servers**: Extensive Model Context Protocol server registry for enhanced AI capabilities
-- **Module Awareness**: Automatically integrates guidelines and skills from installed modules
-- **Context Analytics**: Built-in tools to visualize and optimize AI context usage
-- **Override System**: Flexible customization at core, module, and project levels
-- **Health Diagnostics**: Intelligent validation and troubleshooting tools
+* **Dual-Language Support**: First-class support for BoxLang and CFML with automatic detection
+* **Multi-Agent Ecosystem**: Works with Claude, GitHub Copilot, Cursor, Codex, Gemini, and OpenCode
+* **30+ MCP Servers**: Extensive Model Context Protocol server registry for enhanced AI capabilities
+* **Module Awareness**: Automatically integrates guidelines and skills from installed modules
+* **Context Analytics**: Built-in tools to visualize and optimize AI context usage
+* **Override System**: Flexible customization at core, module, and project levels
+* **Health Diagnostics**: Intelligent validation and troubleshooting tools
 
 The system combines four key components:
 
@@ -87,6 +43,10 @@ The system combines four key components:
 4. **MCP Servers** - Context protocol servers for enhanced AI capabilities
 
 Together, these components ensure AI assistants generate high-quality, idiomatic code that follows ColdBox conventions and leverages the full power of the BoxLang/CFML ecosystem.
+
+{% hint style="info" %}
+To start, make sure you are on the latest `coldbox-cli` in your CommandBox installation.
+{% endhint %}
 
 ### System Architecture
 
@@ -137,7 +97,7 @@ graph TB
     style MCP fill:#e8f5e9,stroke:#1b5e20
 ```
 
----
+***
 
 ## Installation
 
@@ -149,7 +109,7 @@ Install ColdBox AI Integration using CommandBox:
 # Install ColdBox CLI (if not already installed)
 box install coldbox-cli
 
-# Set up AI integration with interactive wizard
+# Set up AI integration with an interactive wizard
 coldbox ai install
 ```
 
@@ -182,6 +142,8 @@ flowchart TD
     style SelectMCP fill:#00bcd4,color:#fff
 ```
 
+
+
 After installation, the following structure is created in your project:
 
 ```
@@ -200,8 +162,10 @@ After installation, the following structure is created in your project:
 └── manifest.json       # AI integration metadata
 ```
 
+
+
 ```mermaid
-graph TD
+graph LR
     Root[".ai/"]
 
     Root --> Guidelines["📚 guidelines/"]
@@ -209,7 +173,8 @@ graph TD
     Root --> MCP["🌐 mcp-servers/"]
     Root --> Manifest["📋 manifest.json"]
 
-    Guidelines --> GCore["⚙️ core/<br/>(8 guidelines)"]    Guidelines --> GModules["📦 modules/<br/>(28 guidelines)"]
+    Guidelines --> GCore["⚙️ core/<br/>(8 guidelines)"]
+    Guidelines --> GModules["📦 modules/<br/>(28 guidelines)"]
     Guidelines --> GCustom["📝 custom/<br/>(Your guidelines)"]
     Guidelines --> GOverride["🎯 overrides/<br/>(Customizations)"]
 
@@ -234,14 +199,16 @@ graph TD
     style Manifest fill:#ff9800,color:#fff
 ```
 
-Additionally, agent configuration files are created:
 
-- `CLAUDE.md` - Claude Desktop/Code assistant
-- `.github/copilot-instructions.md` - GitHub Copilot
-- `.cursorrules` - Cursor IDE
-- `.codex/instructions.md` - Codex
-- `.gemini/instructions.md` - Gemini CLI
-- `.opencode/instructions.md` - OpenCode
+
+Additionally, agent configuration files are created for you:
+
+* `CLAUDE.md` - Claude Desktop/Code assistant
+* `.github/copilot-instructions.md` - GitHub Copilot
+* `.cursorrules` - Cursor IDE
+* `.codex/instructions.md` - Codex
+* `.gemini/instructions.md` - Gemini CLI
+* `.opencode/instructions.md` - OpenCode
 
 ### Keeping Resources Updated
 
@@ -272,25 +239,29 @@ Automate updates by adding to your CommandBox scripts in `box.json`:
 After installation, configure your AI agents:
 
 **Claude Desktop:**
+
 1. Open Claude Desktop settings
 2. Enable the MCP server for your project
 3. Restart Claude Desktop
 
 **GitHub Copilot (VS Code):**
+
 1. Agent configuration is automatically in `.github/copilot-instructions.md`
 2. Reload VS Code window
 3. Copilot will use the instructions automatically
 
 **Cursor:**
+
 1. The `.cursorrules` file is automatically recognized
 2. Restart Cursor IDE
 3. Rules are applied to all AI interactions
 
 **Other Agents:**
-- Follow the specific agent's documentation for loading instruction files
-- Configuration files are generated during `coldbox ai install`
 
----
+* Follow the specific agent's documentation for loading instruction files
+* Configuration files are generated during `coldbox ai install`
+
+***
 
 ## Core Concepts
 
@@ -298,18 +269,20 @@ After installation, configure your AI agents:
 
 ColdBox AI Integration uses two complementary approaches to provide context:
 
-| Aspect | Guidelines | Skills |
-|--------|-----------|--------|
-| **When Loaded** | Upfront, always present | On-demand, when invoked |
-| **Scope** | Broad, architectural | Focused, task-specific |
-| **Purpose** | Framework conventions & patterns | Step-by-step implementation guides |
-| **Content** | "What" and "Why" | "How" and "When" |
-| **Size** | Concise (1-3KB typically) | Detailed (2-10KB typically) |
-| **Examples** | ColdBox MVC structure, Handler conventions | Creating REST APIs, Async programming |
+| Aspect          | Guidelines                                 | Skills                                |
+| --------------- | ------------------------------------------ | ------------------------------------- |
+| **When Loaded** | Upfront, always present                    | On-demand, when invoked               |
+| **Scope**       | Broad, architectural                       | Focused, task-specific                |
+| **Purpose**     | Framework conventions & patterns           | Step-by-step implementation guides    |
+| **Content**     | "What" and "Why"                           | "How" and "When"                      |
+| **Size**        | Concise (1-3KB typically)                  | Detailed (2-10KB typically)           |
+| **Examples**    | ColdBox MVC structure, Handler conventions | Creating REST APIs, Async programming |
 
 **Guidelines** provide foundational knowledge that applies broadly across your codebase. They're loaded when the AI agent starts and inform every interaction.
 
 **Skills** are activated on-demand when working on specific tasks. This reduces context bloat while providing deep expertise exactly when needed.
+
+
 
 ```mermaid
 graph LR
@@ -356,10 +329,10 @@ graph LR
 
 ColdBox AI Integration includes sophisticated context tracking:
 
-- **Automatic Estimation**: Calculates total context size in KB and tokens
-- **Usage Indicators**: Color-coded warnings (Low/Moderate/High/Very High)
-- **Model Compatibility**: Shows utilization for Claude, GPT-4, GPT-3.5-Turbo, Gemini
-- **Optimization Alerts**: Warns when context exceeds recommended thresholds
+* **Automatic Estimation**: Calculates total context size in KB and tokens
+* **Usage Indicators**: Color-coded warnings (Low/Moderate/High/Very High)
+* **Model Compatibility**: Shows utilization for Claude, GPT-4, GPT-3.5-Turbo, Gemini
+* **Optimization Alerts**: Warns when context exceeds recommended thresholds
 
 Use the stats command to monitor context usage:
 
@@ -368,6 +341,8 @@ coldbox ai stats                 # Quick overview
 coldbox ai stats --verbose       # Detailed model breakdowns
 coldbox ai stats --json          # Machine-readable output
 ```
+
+
 
 ```mermaid
 flowchart LR
@@ -395,21 +370,24 @@ flowchart LR
 ColdBox AI Integration is **the only AI system with native BoxLang and CFML support**:
 
 **Automatic Language Detection:**
-- Server engine detection (BoxLang runtime)
-- `box.json` configuration (`language` property)
-- TestBox runner settings
+
+* Server engine detection (BoxLang runtime)
+* `box.json` configuration (`language` property)
+* TestBox runner settings
 
 **Language-Specific Content:**
-- Separate templates for BoxLang and CFML
-- Syntax-appropriate code examples
-- Version-specific best practices
+
+* Separate templates for BoxLang and CFML
+* Syntax-appropriate code examples
+* Version-specific best practices
 
 **Seamless Switching:**
-- Override detection with `--boxlang` or `--cfml` flags
-- Per-guideline language targeting
-- Mixed-language project support
 
----
+* Override detection with `--boxlang` or `--cfml` flags
+* Per-guideline language targeting
+* Mixed-language project support
+
+***
 
 ## AI Guidelines
 
@@ -419,54 +397,54 @@ Guidelines are instructional documents that teach AI agents about framework conv
 
 ColdBox AI Integration includes **41+ built-in guidelines** covering the entire ecosystem:
 
-#### Core Framework (8)
+**Core Framework (8)**
 
-- **boxlang** - BoxLang language features and syntax
-- **cfml** - CFML language fundamentals
-- **coldbox** - ColdBox framework architecture and conventions
-- **coldbox-routing** - URL routing and SES URLs
-- **wirebox** - Dependency injection and IoC
-- **logbox** - Logging and debugging
-- **cachebox** - Caching strategies
-- **async** - Asynchronous programming patterns
+* **boxlang** - BoxLang language features and syntax
+* **cfml** - CFML language fundamentals
+* **coldbox** - ColdBox framework architecture and conventions
+* **coldbox-routing** - URL routing and SES URLs
+* **wirebox** - Dependency injection and IoC
+* **logbox** - Logging and debugging
+* **cachebox** - Caching strategies
+* **async** - Asynchronous programming patterns
 
-#### Testing & Quality (4)
+**Testing & Quality (4)**
 
-- **testbox** - BDD/TDD testing framework
-- **testbox-cli** - TestBox command-line tools
-- **mocking** - Test doubles and mocking
-- **integration-testing** - Full-stack testing strategies
+* **testbox** - BDD/TDD testing framework
+* **testbox-cli** - TestBox command-line tools
+* **mocking** - Test doubles and mocking
+* **integration-testing** - Full-stack testing strategies
 
-#### Data Layer (6)
+**Data Layer (6)**
 
-- **qb** - Query Builder
-- **cborm** - ORM integration
-- **migrations** - Database migrations (commandbox-migrations)
-- **quick** - Active Record ORM
-- **cbvalidation** - Data validation
-- **cbsecurity** - Authentication and authorization
+* **qb** - Query Builder
+* **cborm** - ORM integration
+* **migrations** - Database migrations (commandbox-migrations)
+* **quick** - Active Record ORM
+* **cbvalidation** - Data validation
+* **cbsecurity** - Authentication and authorization
 
-#### Web Development (8)
+**Web Development (8)**
 
-- **cbswagger** - API documentation
-- **cbdebugger** - Debugging tools
-- **cbstreams** - Stream processing
-- **cbjavaloader** - Java integration
-- **cbmailservices** - Email handling
-- **cbmarked** - Markdown processing
-- **elixir** - Asset pipeline
-- **vite** - Modern frontend tooling
+* **cbswagger** - API documentation
+* **cbdebugger** - Debugging tools
+* **cbstreams** - Stream processing
+* **cbjavaloader** - Java integration
+* **cbmailservices** - Email handling
+* **cbmarked** - Markdown processing
+* **elixir** - Asset pipeline
+* **vite** - Modern frontend tooling
 
-#### Specialized (15+)
+**Specialized (15+)**
 
-- **cbmessagebox** - Flash messages
-- **cbstorages** - Storage abstractions
-- **cbfeeds** - RSS/Atom feeds
-- **cbguard** - Security middleware
-- **cbcommons** - Common utilities
-- **cbpaginator** - Pagination
-- **cbproxies** - Proxy patterns
-- And more...
+* **cbmessagebox** - Flash messages
+* **cbstorages** - Storage abstractions
+* **cbfeeds** - RSS/Atom feeds
+* **cbguard** - Security middleware
+* **cbcommons** - Common utilities
+* **cbpaginator** - Pagination
+* **cbproxies** - Proxy patterns
+* And more...
 
 View installed guidelines:
 
@@ -485,6 +463,8 @@ Guidelines are organized into four tiers:
 4. **Override** - Custom versions replacing core/module guidelines
 
 This hierarchy allows seamless integration from framework to module to project level.
+
+
 
 ```mermaid
 graph TD
@@ -529,7 +509,11 @@ Add project-specific guidelines to tailor AI assistance to your codebase:
 touch .ai/guidelines/custom/payment-processing.md
 ```
 
+
+
 Example guideline structure:
+
+
 
 ```markdown
 # Payment Processing
@@ -587,6 +571,7 @@ Overrides take precedence over core/module guidelines, allowing you to adapt sta
 CommandBox module authors can include AI guidelines in their packages:
 
 **Directory Structure:**
+
 ```
 your-module/
 ├── ModuleConfig.cfc
@@ -631,7 +616,7 @@ moduleService.doSomething();
 
 Keep module guidelines concise (1-3KB). Users can override them if needed.
 
----
+***
 
 ## AI Skills
 
@@ -641,91 +626,91 @@ Skills are on-demand coding cookbooks that provide detailed, step-by-step guidan
 
 ColdBox AI Integration includes **62+ built-in skills**:
 
-#### Scaffolding & Creation (12)
+**Scaffolding & Creation (12)**
 
-- **creating-applications** - New app generation
-- **creating-handlers** - Controller creation
-- **creating-models** - Model and service creation
-- **creating-views** - View templates
-- **creating-layouts** - Layout templates
-- **creating-resources** - RESTful resources
-- **creating-interceptors** - AOP interceptors
-- **creating-modules** - Module scaffolding
-- **generating-crud** - Complete CRUD generation
-- **generating-migrations** - Database migrations
-- **generating-tests** - Test case creation
-- **scaffolding-commands** - CLI command creation
+* **creating-applications** - New app generation
+* **creating-handlers** - Controller creation
+* **creating-models** - Model and service creation
+* **creating-views** - View templates
+* **creating-layouts** - Layout templates
+* **creating-resources** - RESTful resources
+* **creating-interceptors** - AOP interceptors
+* **creating-modules** - Module scaffolding
+* **generating-crud** - Complete CRUD generation
+* **generating-migrations** - Database migrations
+* **generating-tests** - Test case creation
+* **scaffolding-commands** - CLI command creation
 
-#### Testing & Quality (8)
+**Testing & Quality (8)**
 
-- **writing-unit-tests** - Unit testing patterns
-- **writing-integration-tests** - Integration test strategies
-- **writing-bdd-specs** - BDD specification style
-- **using-mocks** - Test doubles and mocking
-- **testing-handlers** - Controller testing
-- **testing-models** - Model testing
-- **testing-interceptors** - Interceptor testing
-- **test-driven-development** - TDD workflow
+* **writing-unit-tests** - Unit testing patterns
+* **writing-integration-tests** - Integration test strategies
+* **writing-bdd-specs** - BDD specification style
+* **using-mocks** - Test doubles and mocking
+* **testing-handlers** - Controller testing
+* **testing-models** - Model testing
+* **testing-interceptors** - Interceptor testing
+* **test-driven-development** - TDD workflow
 
-#### Configuration & Setup (6)
+**Configuration & Setup (6)**
 
-- **configuring-environments** - Environment management
-- **configuring-datasources** - Database configuration
-- **configuring-routes** - Routing setup
-- **configuring-wirebox** - DI configuration
-- **configuring-caching** - Cache configuration
-- **configuring-logging** - Logger setup
+* **configuring-environments** - Environment management
+* **configuring-datasources** - Database configuration
+* **configuring-routes** - Routing setup
+* **configuring-wirebox** - DI configuration
+* **configuring-caching** - Cache configuration
+* **configuring-logging** - Logger setup
 
-#### Database & ORM (10)
+**Database & ORM (10)**
 
-- **using-qb** - Query Builder patterns
-- **using-cborm** - ORM usage
-- **using-quick** - Quick ORM
-- **creating-migrations** - Migration authoring
-- **database-seeding** - Test data seeding
-- **query-optimization** - SQL optimization
-- **using-transactions** - Transaction management
-- **database-relationships** - Entity relationships
-- **using-scopes** - Query scopes
-- **database-testing** - Database test strategies
+* **using-qb** - Query Builder patterns
+* **using-cborm** - ORM usage
+* **using-quick** - Quick ORM
+* **creating-migrations** - Migration authoring
+* **database-seeding** - Test data seeding
+* **query-optimization** - SQL optimization
+* **using-transactions** - Transaction management
+* **database-relationships** - Entity relationships
+* **using-scopes** - Query scopes
+* **database-testing** - Database test strategies
 
-#### REST APIs (8)
+**REST APIs (8)**
 
-- **building-rest-apis** - RESTful API design
-- **api-authentication** - API auth strategies
-- **api-versioning** - version management
-- **api-documentation** - OpenAPI/Swagger
-- **api-error-handling** - Error responses
-- **api-testing** - API testing
-- **jwt-authentication** - JWT implementation
-- **oauth-integration** - OAuth flows
+* **building-rest-apis** - RESTful API design
+* **api-authentication** - API auth strategies
+* **api-versioning** - version management
+* **api-documentation** - OpenAPI/Swagger
+* **api-error-handling** - Error responses
+* **api-testing** - API testing
+* **jwt-authentication** - JWT implementation
+* **oauth-integration** - OAuth flows
 
-#### Security (6)
+**Security (6)**
 
-- **implementing-authentication** - Auth systems
-- **implementing-authorization** - Permission systems
-- **using-cbsecurity** - CBSecurity module
-- **securing-endpoints** - Endpoint protection
-- **csrf-protection** - CSRF mitigation
-- **input-validation** - Request validation
+* **implementing-authentication** - Auth systems
+* **implementing-authorization** - Permission systems
+* **using-cbsecurity** - CBSecurity module
+* **securing-endpoints** - Endpoint protection
+* **csrf-protection** - CSRF mitigation
+* **input-validation** - Request validation
 
-#### Performance & Optimization (6)
+**Performance & Optimization (6)**
 
-- **caching-strategies** - Cache patterns
-- **async-programming** - Async execution
-- **background-jobs** - Job queues
-- **performance-monitoring** - Performance tracking
-- **query-optimization** - Database optimization
-- **memory-management** - Memory optimization
+* **caching-strategies** - Cache patterns
+* **async-programming** - Async execution
+* **background-jobs** - Job queues
+* **performance-monitoring** - Performance tracking
+* **query-optimization** - Database optimization
+* **memory-management** - Memory optimization
 
-#### Web Development (6+)
+**Web Development (6+)**
 
-- **handling-forms** - Form processing
-- **file-uploads** - Upload handling
-- **sending-email** - Email delivery
-- **working-with-sessions** - Session management
-- **flash-messaging** - Flash message patterns
-- **asset-management** - Frontend assets
+* **handling-forms** - Form processing
+* **file-uploads** - Upload handling
+* **sending-email** - Email delivery
+* **working-with-sessions** - Session management
+* **flash-messaging** - Flash message patterns
+* **asset-management** - Frontend assets
 
 View installed skills:
 
@@ -767,7 +752,7 @@ Use this skill when deploying ColdBox applications to Kubernetes clusters using 
 
 ## Deployment Steps
 
-### 1. Configure Helm Values
+## 1. Configure Helm Values
 
 Edit `kubernetes/values.yaml`:
 
@@ -782,7 +767,7 @@ database:
   name: myapp_production
 \`\`\`
 
-### 2. Deploy Application
+## 2. Deploy Application
 
 \`\`\`bash
 helm upgrade --install my-app ./kubernetes/chart \
@@ -790,7 +775,7 @@ helm upgrade --install my-app ./kubernetes/chart \
   --namespace production
 \`\`\`
 
-### 3. Verify Deployment
+## 3. Verify Deployment
 
 \`\`\`bash
 kubectl get pods -n production
@@ -842,6 +827,7 @@ edit .ai/skills/overrides/creating-handlers/SKILL.md
 Module authors can bundle skills with their packages:
 
 **Directory Structure:**
+
 ```
 your-module/
 ├── ModuleConfig.cfc
@@ -900,10 +886,10 @@ function doSomething( event, rc, prc ){
 
 ## Common Patterns
 
-### Pattern 1: Async Processing
+## Pattern 1: Async Processing
 [Details...]
 
-### Pattern 2: Error Handling
+## Pattern 2: Error Handling
 [Details...]
 
 ## Best Practices
@@ -913,7 +899,7 @@ function doSomething( event, rc, prc ){
 3. Use event listeners for notifications
 ```
 
----
+***
 
 ## AI Agents
 
@@ -921,14 +907,14 @@ ColdBox AI Integration supports **6 major AI agents** with automatic configurati
 
 ### Supported Agents
 
-| Agent | Config File | Description |
-|-------|-------------|-------------|
-| **Claude** | `CLAUDE.md` | Claude Desktop and Claude Code |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | VS Code Copilot integration |
-| **Cursor** | `.cursorrules` | Cursor IDE rules |
-| **Codex** | `.codex/instructions.md` | Codex AI assistant |
-| **Gemini** | `.gemini/instructions.md` | Gemini CLI integration |
-| **OpenCode** | `.opencode/instructions.md` | OpenCode assistant |
+| Agent              | Config File                       | Description                    |
+| ------------------ | --------------------------------- | ------------------------------ |
+| **Claude**         | `CLAUDE.md`                       | Claude Desktop and Claude Code |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | VS Code Copilot integration    |
+| **Cursor**         | `.cursorrules`                    | Cursor IDE rules               |
+| **Codex**          | `.codex/instructions.md`          | Codex AI assistant             |
+| **Gemini**         | `.gemini/instructions.md`         | Gemini CLI integration         |
+| **OpenCode**       | `.opencode/instructions.md`       | OpenCode assistant             |
 
 ### Agent Configuration
 
@@ -949,11 +935,12 @@ coldbox ai agents refresh
 ```
 
 Each agent configuration includes:
-- All active guidelines (core, module, custom, overrides)
-- Available skills (with invocation instructions)
-- MCP server configurations (where supported)
-- Language-specific context (BoxLang/CFML)
-- Project metadata and conventions
+
+* All active guidelines (core, module, custom, overrides)
+* Available skills (with invocation instructions)
+* MCP server configurations (where supported)
+* Language-specific context (BoxLang/CFML)
+* Project metadata and conventions
 
 ### Multi-Agent Development
 
@@ -968,10 +955,13 @@ coldbox ai agents add claude copilot cursor codex
 ```
 
 Benefits:
-- **Team Flexibility**: Developers choose their preferred tools
-- **Consistent Standards**: All agents follow same guidelines
-- **Cross-Agent Testing**: Verify AI-generated code across multiple assistants
-- **Redundancy**: Switch agents if one has issues
+
+* **Team Flexibility**: Developers choose their preferred tools
+* **Consistent Standards**: All agents follow same guidelines
+* **Cross-Agent Testing**: Verify AI-generated code across multiple assistants
+* **Redundancy**: Switch agents if one has issues
+
+
 
 ```mermaid
 graph TB
@@ -1017,7 +1007,7 @@ graph TB
     style Standards fill:#9c27b0,color:#fff
 ```
 
----
+***
 
 ## MCP Servers
 
@@ -1027,47 +1017,49 @@ Model Context Protocol (MCP) servers provide extended capabilities to AI agents.
 
 **30+ Core MCP Servers** organized by category:
 
-#### Development Tools (10)
+**Development Tools (10)**
 
-- **@modelcontextprotocol/server-filesystem** - File system operations
-- **@modelcontextprotocol/server-github** - GitHub integration
-- **@modelcontextprotocol/server-gitlab** - GitLab integration
-- **@modelcontextprotocol/server-git** - Git operations
-- **@modelcontextprotocol/server-brave-search** - Web search
-- **@modelcontextprotocol/server-fetch** - HTTP requests
-- **@modelcontextprotocol/server-memory** - Persistent memory
-- **@modelcontextprotocol/server-sequential-thinking** - Reasoning chains
-- **@modelcontextprotocol/server-everart** - Image generation
-- **@modelcontextprotocol/server-slack** - Slack integration
+* **@modelcontextprotocol/server-filesystem** - File system operations
+* **@modelcontextprotocol/server-github** - GitHub integration
+* **@modelcontextprotocol/server-gitlab** - GitLab integration
+* **@modelcontextprotocol/server-git** - Git operations
+* **@modelcontextprotocol/server-brave-search** - Web search
+* **@modelcontextprotocol/server-fetch** - HTTP requests
+* **@modelcontextprotocol/server-memory** - Persistent memory
+* **@modelcontextprotocol/server-sequential-thinking** - Reasoning chains
+* **@modelcontextprotocol/server-everart** - Image generation
+* **@modelcontextprotocol/server-slack** - Slack integration
 
-#### Database (5)
+**Database (5)**
 
-- **@modelcontextprotocol/server-postgres** - PostgreSQL
-- **@modelcontextprotocol/server-mysql** - MySQL/MariaDB
-- **@modelcontextprotocol/server-sqlite** - SQLite
-- **@modelcontextprotocol/server-mssql** - SQL Server
-- **@modelcontextprotocol/server-mongodb** - MongoDB
+* **@modelcontextprotocol/server-postgres** - PostgreSQL
+* **@modelcontextprotocol/server-mysql** - MySQL/MariaDB
+* **@modelcontextprotocol/server-sqlite** - SQLite
+* **@modelcontextprotocol/server-mssql** - SQL Server
+* **@modelcontextprotocol/server-mongodb** - MongoDB
 
-#### Cloud & Infrastructure (7)
+**Cloud & Infrastructure (7)**
 
-- **@modelcontextprotocol/server-aws-kb-retrieval-server** - AWS Knowledge Bases
-- **@modelcontextprotocol/server-cloudflare-ai** - Cloudflare AI
-- **@modelcontextprotocol/server-google-drive** - Google Drive
-- **@modelcontextprotocol/server-google-maps** - Google Maps API
-- **@modelcontextprotocol/server-gdrive** - Advanced Drive integration
-- **@modelcontextprotocol/server-kubernetes** - K8s cluster management
-- **@modelcontextprotocol/server-docker** - Docker operations
+* **@modelcontextprotocol/server-aws-kb-retrieval-server** - AWS Knowledge Bases
+* **@modelcontextprotocol/server-cloudflare-ai** - Cloudflare AI
+* **@modelcontextprotocol/server-google-drive** - Google Drive
+* **@modelcontextprotocol/server-google-maps** - Google Maps API
+* **@modelcontextprotocol/server-gdrive** - Advanced Drive integration
+* **@modelcontextprotocol/server-kubernetes** - K8s cluster management
+* **@modelcontextprotocol/server-docker** - Docker operations
 
-#### Productivity (8)
+**Productivity (8)**
 
-- **@modelcontextprotocol/server-puppeteer** - Browser automation
-- **@modelcontextprotocol/server-playwright** - Browser testing
-- **@modelcontextprotocol/server-sentry** - Error tracking
-- **@modelcontextprotocol/server-linear** - Project management
-- **@modelcontextprotocol/server-obsidian** - Note management
-- **@modelcontextprotocol/server-raycast** - Raycast integration
-- **@modelcontextprotocol/server-time** - Time operations
-- **@modelcontextprotocol/server-youtube-transcript** - YouTube transcripts
+* **@modelcontextprotocol/server-puppeteer** - Browser automation
+* **@modelcontextprotocol/server-playwright** - Browser testing
+* **@modelcontextprotocol/server-sentry** - Error tracking
+* **@modelcontextprotocol/server-linear** - Project management
+* **@modelcontextprotocol/server-obsidian** - Note management
+* **@modelcontextprotocol/server-raycast** - Raycast integration
+* **@modelcontextprotocol/server-time** - Time operations
+* **@modelcontextprotocol/server-youtube-transcript** - YouTube transcripts
+
+
 
 View configured MCP servers:
 
@@ -1137,7 +1129,7 @@ Example generated `.mcp.json`:
 }
 ```
 
----
+***
 
 ## CLI Commands
 
@@ -1162,6 +1154,7 @@ coldbox ai refresh                  # Sync with installed modules
 ### Component Management
 
 **Guidelines:**
+
 ```bash
 coldbox ai guidelines list                    # List installed
 coldbox ai guidelines list --verbose          # With descriptions
@@ -1171,6 +1164,7 @@ coldbox ai guidelines refresh                 # Update from modules
 ```
 
 **Skills:**
+
 ```bash
 coldbox ai skills list                        # List installed
 coldbox ai skills list --verbose              # With descriptions
@@ -1180,6 +1174,7 @@ coldbox ai skills refresh                     # Update from modules
 ```
 
 **Agents:**
+
 ```bash
 coldbox ai agents list                        # List available
 coldbox ai agents add claude copilot          # Add agents
@@ -1188,6 +1183,7 @@ coldbox ai agents refresh                     # Regenerate configs
 ```
 
 **MCP Servers:**
+
 ```bash
 coldbox ai mcp list                           # List servers
 coldbox ai mcp info                           # Show configuration
@@ -1213,7 +1209,7 @@ coldbox ai tree                     # Component hierarchy
 coldbox ai tree --verbose           # With file paths
 ```
 
----
+***
 
 ## Developer Experience
 
@@ -1336,15 +1332,16 @@ coldbox ai doctor
 ```
 
 The doctor command validates:
-- ✅ Installation completeness
-- ✅ File structure integrity
-- ✅ Configuration validity
-- ✅ Module guideline sync
-- ✅ Agent configuration correctness
-- ✅ Context size optimization
-- ⚠️ Potential issues and solutions
 
----
+* ✅ Installation completeness
+* ✅ File structure integrity
+* ✅ Configuration validity
+* ✅ Module guideline sync
+* ✅ Agent configuration correctness
+* ✅ Context size optimization
+* ⚠️ Potential issues and solutions
+
+***
 
 ## Module Integration
 
@@ -1370,15 +1367,18 @@ coldbox ai skills list | grep qb
 ```
 
 **Discovery Process:**
+
 1. Scans installed modules in `/modules/`
 2. Looks for `resources/coldbox-cli/ai/` directory
 3. Loads `guidelines/` and `skills/` subdirectories
 4. Integrates content into agent configurations
 5. Updates `.ai/manifest.json` with module sources
 
+
+
 ```mermaid
 flowchart TD
-    Install["box install qb"]]
+    Install["box install qb"]
     Install --> Scan["🔍 Scan /modules/ directory"]
     Scan --> Check{"Has resources/<br/>coldbox-cli/ai/?"}
     Check -->|Yes| Load["📥 Load guidelines & skills"]
@@ -1404,6 +1404,7 @@ flowchart TD
     style Complete fill:#4caf50,color:#fff
     style Load fill:#ff9800,color:#fff
     style Integrate fill:#9c27b0,color:#fff
+
 ```
 
 ### Creating Module Guidelines
@@ -1411,6 +1412,7 @@ flowchart TD
 Module authors: Include AI guidelines in your packages:
 
 **Directory Structure:**
+
 ```
 your-module/
 ├── box.json
@@ -1478,17 +1480,19 @@ function example( event, rc, prc ){
 ```
 
 **Guidelines Best Practices:**
-- Keep under 3KB when possible
-- Focus on "what" and "why", not exhaustive "how"
-- Include practical code examples
-- Mention gotchas and common mistakes
-- Reference official docs for deep dives
+
+* Keep under 3KB when possible
+* Focus on "what" and "why", not exhaustive "how"
+* Include practical code examples
+* Mention gotchas and common mistakes
+* Reference official docs for deep dives
 
 ### Creating Module Skills
 
 Module authors: Include AI skills for complex tasks:
 
 **Directory Structure:**
+
 ```
 your-module/
 ├── box.json
@@ -1533,13 +1537,13 @@ Use this skill when:
 
 ## Step-by-Step Guide
 
-### 1. Installation
+## 1. Installation
 
 \`\`\`bash
 box install your-module
 \`\`\`
 
-### 2. Configuration
+## 2. Configuration
 
 Add to `config/ColdBox.cfc`:
 
@@ -1554,7 +1558,7 @@ moduleSettings = {
 };
 \`\`\`
 
-### 3. Basic Implementation
+## 3. Basic Implementation
 
 Create a service that uses the module:
 
@@ -1589,7 +1593,7 @@ component singleton {
 }
 \`\`\`
 
-### 4. Handler Integration
+## 4. Handler Integration
 
 Use in your handlers:
 
@@ -1606,7 +1610,7 @@ component {
 }
 \`\`\`
 
-### 5. Testing
+## 5. Testing
 
 Create tests for your integration:
 
@@ -1628,7 +1632,7 @@ component extends="testbox.system.BaseSpec" {
 
 ## Common Patterns
 
-### Pattern 1: Async Processing
+## Pattern 1: Async Processing
 
 For long-running operations:
 
@@ -1641,7 +1645,7 @@ runAsync( () => {
 });
 \`\`\`
 
-### Pattern 2: Retry Logic
+## Pattern 2: Retry Logic
 
 With built-in retries:
 
@@ -1664,13 +1668,13 @@ function processWithRetry( data ){
 
 ## Troubleshooting
 
-### Issue: "Module not initialized"
+## Issue: "Module not initialized"
 **Solution**: Ensure module is loaded in `config/ColdBox.cfc` modules array
 
-### Issue: API timeouts
+## Issue: API timeouts
 **Solution**: Increase `timeout` setting or implement async processing
 
-### Issue: Cache invalidation
+## Issue: Cache invalidation
 **Solution**: Call `moduleService.clearCache()` after data modifications
 
 ## Performance Tips
@@ -1688,21 +1692,23 @@ function processWithRetry( data ){
 ```
 
 **Skills Best Practices:**
-- Include YAML frontmatter (name, description, version)
-- Provide complete, runnable code examples
-- Cover common patterns and edge cases
-- Include troubleshooting section
-- Link to detailed documentation
-- Keep focused on one main workflow
-- Size: 2-10KB typical
 
----
+* Include YAML frontmatter (name, description, version)
+* Provide complete, runnable code examples
+* Cover common patterns and edge cases
+* Include troubleshooting section
+* Link to detailed documentation
+* Keep focused on one main workflow
+* Size: 2-10KB typical
+
+***
 
 ## Best Practices
 
 ### Managing Context Size
 
 **Monitor Usage Regularly:**
+
 ```bash
 coldbox ai stats
 ```
@@ -1715,27 +1721,31 @@ coldbox ai stats
 4. **Modular Guidelines**: Split large guidelines into focused ones
 
 **Warning Thresholds:**
-- ✅ **Low** (< 30%): Optimal, plenty of room for code context
-- ⚠️ **Moderate** (30-60%): Good, monitor growth
-- ⚠️ **High** (60-90%): Consider optimization
-- ⛔ **Very High** (> 90%): Reduce immediately for best AI performance
+
+* ✅ **Low** (< 30%): Optimal, plenty of room for code context
+* ⚠️ **Moderate** (30-60%): Good, monitor growth
+* ⚠️ **High** (60-90%): Consider optimization
+* ⛔ **Very High** (> 90%): Reduce immediately for best AI performance
 
 ### Project-Specific Customization
 
 **Use Custom Guidelines for:**
-- Business domain concepts
-- Project architecture decisions
-- Third-party service integrations
-- Team conventions and standards
-- Deployment procedures
+
+* Business domain concepts
+* Project architecture decisions
+* Third-party service integrations
+* Team conventions and standards
+* Deployment procedures
 
 **Use Custom Skills for:**
-- Company-specific workflows
-- Internal tool usage
-- Complex deployment procedures
-- Domain-specific test patterns
+
+* Company-specific workflows
+* Internal tool usage
+* Complex deployment procedures
+* Domain-specific test patterns
 
 **Example Structure:**
+
 ```
 .ai/
 ├── guidelines/
@@ -1753,6 +1763,7 @@ coldbox ai stats
 ### Team Collaboration
 
 **Version Control:**
+
 ```gitignore
 # .gitignore
 
@@ -1772,12 +1783,14 @@ CLAUDE.md
 ```
 
 **Team Workflow:**
+
 1. **Agree on Agents**: Team decides which agents to support
 2. **Share Custom Content**: Commit custom guidelines/skills to repo
 3. **Individual Setup**: Each developer runs `coldbox ai install`
 4. **Stay Synced**: Run `coldbox ai refresh` after pulling updates
 
 **Documentation:**
-- Document custom guidelines/skills in `README.md`
-- Explain project-specific conventions
-- Note any overrides and why they exist
+
+* Document custom guidelines/skills in `README.md`
+* Explain project-specific conventions
+* Note any overrides and why they exist
