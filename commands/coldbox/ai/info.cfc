@@ -26,25 +26,25 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 
 			// Load manifest to get active agent
-		var manifest        = loadManifest( arguments.directory );
-		var activeAgent     = manifest.activeAgent ?: "none";
-		var totalMcpServers = info.mcpServers.core.len() + info.mcpServers.module.len() + info.mcpServers.custom.len();
+			var manifest        = loadManifest( arguments.directory );
+			var activeAgent     = manifest.activeAgent ?: "none";
+			var totalMcpServers = info.mcpServers.core.len() + info.mcpServers.module.len() + info.mcpServers.custom.len();
 
-		// Print configuration in a table
-		print.line();
-		print.table(
-			headerNames = [ "Setting", "Value" ],
-			data        = [
-				[
-					"ColdBox CLI Version",
-					info.coldboxCliVersion
-				],
-				[ "Language Mode", info.language ],
-				[ "App Type", info.templateType ],
-				[ "Active Agent", activeAgent ],
-				[ "Guidelines", info.guidelines.len() ],
-				[ "Skills", info.skills.len() ],
-				[ "MCP Servers", totalMcpServers ],
+			// Print configuration in a table
+			print.line();
+			print.table(
+				headerNames = [ "Setting", "Value" ],
+				data        = [
+					[
+						"ColdBox CLI Version",
+						info.coldboxCliVersion
+					],
+					[ "Language Mode", info.language ],
+					[ "App Type", info.templateType ],
+					[ "Active Agent", activeAgent ],
+					[ "Guidelines", info.guidelines.len() ],
+					[ "Skills", info.skills.len() ],
+					[ "MCP Servers", totalMcpServers ]
 				]
 			);
 			print.line();

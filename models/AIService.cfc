@@ -236,7 +236,11 @@ component singleton {
 			"guidelines"        : manifest.guidelines ?: [],
 			"skills"            : manifest.skills ?: [],
 			"agents"            : manifest.agents ?: [],
-			"mcpServers"        : manifest.mcpServers ?: { "core" : [], "module" : [], "custom" : [] }
+			"mcpServers"        : manifest.mcpServers ?: {
+				"core"   : [],
+				"module" : [],
+				"custom" : []
+			}
 		};
 	}
 
