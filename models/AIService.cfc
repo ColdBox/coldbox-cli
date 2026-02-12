@@ -235,7 +235,8 @@ component singleton {
 			"lastSync"          : manifest.lastSync ?: "never",
 			"guidelines"        : manifest.guidelines ?: [],
 			"skills"            : manifest.skills ?: [],
-			"agents"            : manifest.agents ?: []
+			"agents"            : manifest.agents ?: [],
+			"mcpServers"        : manifest.mcpServers ?: { "core" : [], "module" : [], "custom" : [] }
 		};
 	}
 

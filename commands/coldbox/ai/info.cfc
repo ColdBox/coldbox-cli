@@ -26,22 +26,25 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 
 			// Load manifest to get active agent
-			var manifest    = loadManifest( arguments.directory );
-			var activeAgent = manifest.activeAgent ?: "none";
+		var manifest        = loadManifest( arguments.directory );
+		var activeAgent     = manifest.activeAgent ?: "none";
+		var totalMcpServers = info.mcpServers.core.len() + info.mcpServers.module.len() + info.mcpServers.custom.len();
 
-			// Print configuration in a table
-			print.line();
-			print.table(
-				headerNames = [ "Setting", "Value" ],
-				data        = [
-					[
-						"ColdBox CLI Version",
-						info.coldboxCliVersion
-					],
-					[ "Language Mode", info.language ],
-					[ "App Type", info.templateType ],
-					[ "Active Agent", activeAgent ],
-					[ "Last Sync", info.lastSync ]
+		// Print configuration in a table
+		print.line();
+		print.table(
+			headerNames = [ "Setting", "Value" ],
+			data        = [
+				[
+					"ColdBox CLI Version",
+					info.coldboxCliVersion
+				],
+				[ "Language Mode", info.language ],
+				[ "App Type", info.templateType ],
+				[ "Active Agent", activeAgent ],
+				[ "Guidelines", info.guidelines.len() ],
+				[ "Skills", info.skills.len() ],
+				[ "MCP Servers", totalMcpServers ],
 				]
 			);
 			print.line();
@@ -109,6 +112,32 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				} );
 			} else {
 				print.indentedLine( "  No agents configured" );
+			}
+			print.line();
+
+			// MCP Servers
+			printInfo( "MCP Servers (#totalMcpServers#):" );
+			if ( totalMcpServers > 0 ) {
+				if ( info.mcpServers.core.len() ) {
+					print.indentedCyanLine( "  Core (#info.mcpServers.core.len()#):" );
+					info.mcpServers.core.each( ( mcpServer ) => {
+						print.indentedLine( "    🔌 #mcpServer#" );
+					} );
+				}
+				if ( info.mcpServers.module.len() ) {
+					print.indentedCyanLine( "  Module (#info.mcpServers.module.len()#):" );
+					info.mcpServers.module.each( ( mcpServer ) => {
+						print.indentedLine( "    🔌 #mcpServer#" );
+					} );
+				}
+				if ( info.mcpServers.custom.len() ) {
+					print.indentedCyanLine( "  Custom (#info.mcpServers.custom.len()#):" );
+					info.mcpServers.custom.each( ( mcpServer ) => {
+						print.indentedLine( "    🔌 #mcpServer#" );
+					} );
+				}
+			} else {
+				print.indentedLine( "  No MCP servers configured" );
 			}
 			print.line();
 			// Quick health check
