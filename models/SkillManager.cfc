@@ -145,7 +145,7 @@ component singleton {
 							"type"             : "custom",
 							"installedVersion" : variables.utility.getColdboxCliVersion(),
 							"syncedAt"         : dateTimeFormat( now(), "iso" ),
-							"description" : ""
+							"description"      : ""
 						}
 						if ( description.len() ) {
 							skillEntry.description = description
@@ -552,7 +552,7 @@ component singleton {
 			"source"           : arguments.source,
 			"installedVersion" : variables.utility.getColdboxCliVersion(),
 			"syncedAt"         : dateTimeFormat( now(), "iso" ),
-			"description" : ""
+			"description"      : ""
 		}
 
 		// Add description if provided
@@ -619,7 +619,18 @@ component singleton {
 
 		// 2. Check coldbox-cli bundled template in category subdirectories
 		var templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/core/"
-		var categories    = [ "coldbox", "boxlang", "testing", "orm", "cachebox", "logbox", "wirebox", "security", "modern", "coldbox-cli" ]
+		var categories    = [
+			"coldbox",
+			"boxlang",
+			"testing",
+			"orm",
+			"cachebox",
+			"logbox",
+			"wirebox",
+			"security",
+			"modern",
+			"coldbox-cli"
+		]
 
 		for ( var category in categories ) {
 			var skillPath = templatesPath & category & "/#arguments.skillName#.md"
