@@ -58,26 +58,44 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.boldCyanLine( "📊 Overview" )
 		var overviewData = [
 			[ "Language", arguments.stats.language ],
-			[ "Template", arguments.stats.templateType ],
-			[ "Last Sync", arguments.stats.lastSync ]
+			[
+				"Template",
+				arguments.stats.templateType
+			],
+			[
+				"Last Sync",
+				arguments.stats.lastSync
+			]
 		]
 		print.table(
 			headerNames = [ "Property", "Value" ],
-			data = overviewData
+			data        = overviewData
 		)
 		print.line()
 
 		// Guidelines
 		print.boldGreenLine( "📚 Guidelines (#arguments.stats.guidelines.total#)" )
 		var guidelinesData = [
-			[ "Core", arguments.stats.guidelines.core ],
-			[ "Module", arguments.stats.guidelines.module ],
-			[ "Custom", arguments.stats.guidelines.custom ],
-			[ "Override", arguments.stats.guidelines.override ]
+			[
+				"Core",
+				arguments.stats.guidelines.core
+			],
+			[
+				"Module",
+				arguments.stats.guidelines.module
+			],
+			[
+				"Custom",
+				arguments.stats.guidelines.custom
+			],
+			[
+				"Override",
+				arguments.stats.guidelines.override
+			]
 		]
 		print.table(
 			headerNames = [ "Type", "Count" ],
-			data = guidelinesData
+			data        = guidelinesData
 		)
 
 		if ( arguments.verbose && arguments.stats.guidelines.totalSize > 0 ) {
@@ -91,13 +109,22 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.boldYellowLine( "🎯 Skills (#arguments.stats.skills.total#)" )
 		var skillsData = [
 			[ "Core", arguments.stats.skills.core ],
-			[ "Module", arguments.stats.skills.module ],
-			[ "Custom", arguments.stats.skills.custom ],
-			[ "Override", arguments.stats.skills.override ]
+			[
+				"Module",
+				arguments.stats.skills.module
+			],
+			[
+				"Custom",
+				arguments.stats.skills.custom
+			],
+			[
+				"Override",
+				arguments.stats.skills.override
+			]
 		]
 		print.table(
 			headerNames = [ "Type", "Count" ],
-			data = skillsData
+			data        = skillsData
 		)
 
 		if ( arguments.verbose && arguments.stats.skills.totalSize > 0 ) {
@@ -117,7 +144,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			} )
 			print.table(
 				headerNames = [ "Agent", "Config File" ],
-				data = agentsData
+				data        = agentsData
 			)
 		} else {
 			print.dimLine( "  (none configured)" )
@@ -128,26 +155,44 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// MCP Servers
 		print.boldCyanLine( "🌐 MCP Servers (#arguments.stats.mcpServers.total#)" )
 		var mcpData = [
-			[ "Core", arguments.stats.mcpServers.core ],
-			[ "Module", arguments.stats.mcpServers.module ],
-			[ "Custom", arguments.stats.mcpServers.custom ]
+			[
+				"Core",
+				arguments.stats.mcpServers.core
+			],
+			[
+				"Module",
+				arguments.stats.mcpServers.module
+			],
+			[
+				"Custom",
+				arguments.stats.mcpServers.custom
+			]
 		]
 		print.table(
 			headerNames = [ "Type", "Count" ],
-			data = mcpData
+			data        = mcpData
 		)
 		print.line()
 
 		// Context Estimate
 		print.boldWhiteLine( "💾 Estimated AI Context Usage" )
 		var contextData = [
-			[ "Guidelines", "~#arguments.stats.contextEstimate.guidelinesKB# KB" ],
-			[ "Skills", "~#arguments.stats.contextEstimate.skillsKB# KB" ],
-			[ "Total", "~#arguments.stats.contextEstimate.totalKB# KB" ]
+			[
+				"Guidelines",
+				"~#arguments.stats.contextEstimate.guidelinesKB# KB"
+			],
+			[
+				"Skills",
+				"~#arguments.stats.contextEstimate.skillsKB# KB"
+			],
+			[
+				"Total",
+				"~#arguments.stats.contextEstimate.totalKB# KB"
+			]
 		]
 		print.table(
 			headerNames = [ "Component", "Size" ],
-			data = contextData
+			data        = contextData
 		)
 		print.line()
 
@@ -230,7 +275,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Tips
 		printTip( "Run 'coldbox ai tree' to see the structure" )
 
-		if( !arguments.verbose ){
+		if ( !arguments.verbose ) {
 			printTip( "Run 'coldbox ai stats --verbose' for detailed breakdown" )
 		}
 	}
