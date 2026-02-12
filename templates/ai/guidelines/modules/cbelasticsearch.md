@@ -1,6 +1,6 @@
 ---
 title: CBElasticsearch - Elasticsearch Integration
-description: Elasticsearch integration for full-text search, analytics, and document storage
+description: Elasticsearch integration guidance for indexing, search relevance tuning, query design, bulk operations, and resilient document lifecycle management.
 ---
 
 # CBElasticsearch - Elasticsearch Integration

@@ -1,6 +1,6 @@
 ---
 title: CommandBox BoxLang Module Guideline
-description: CommandBox BoxLang runtime integration and module management
+description: Operational guidance for running BoxLang on CommandBox, including runtime configuration, server startup behavior, package/module management, and environment-specific deployment conventions.
 ---
 
 # CommandBox BoxLang Module Guideline

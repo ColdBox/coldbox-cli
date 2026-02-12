@@ -1,6 +1,6 @@
 ---
 title: CBQ Job Queues Module Guidelines
-description: ColdBox task queues and job processing for asynchronous background work
+description: Design guidance for asynchronous job processing with cbq, including queue topology, worker concurrency, retries/backoff, idempotency, and failure monitoring.
 ---
 
 # CBQ Job Queues Module Guidelines

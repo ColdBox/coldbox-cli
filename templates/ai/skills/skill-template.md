@@ -1,6 +1,6 @@
 ---
 name: skill-template
-description: Template description
+description: Reusable starter for authoring high-quality skills with clear trigger phrases, implementation steps, testing expectations, and framework-aligned coding conventions.
 category: core
 triggers:
   - create feature

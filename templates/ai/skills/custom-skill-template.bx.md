@@ -1,5 +1,6 @@
 ---
 name: |skillName|
+description: Project-specific BoxLang implementation playbook with activation triggers, step-by-step patterns, code examples, testing guidance, and maintenance notes.
 category: custom
 triggers:
   - "Add trigger keywords here"

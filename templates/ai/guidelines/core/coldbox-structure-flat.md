@@ -1,3 +1,8 @@
+---
+title: ColdBox Flat Project Structure
+description: Canonical flat ColdBox directory layout for legacy or simplified apps, defining where handlers, models, views, layouts, interceptors, modules, and tests should live.
+---
+
 ```
 /config          - Application configuration
 /handlers        - Event handlers (controllers)

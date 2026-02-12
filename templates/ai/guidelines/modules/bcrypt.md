@@ -1,6 +1,6 @@
 ---
 title: BCrypt Module Guidelines
-description: BCrypt password hashing library for secure password storage and verification
+description: Secure password hashing guidance with BCrypt, including cost-factor tuning, hash verification workflows, migration strategy, and credential-handling best practices.
 ---
 
 # BCrypt Module Guidelines

@@ -1,6 +1,6 @@
 ---
 title: CBMockData - Test Data Generation
-description: Realistic mock data generator for testing with customizable data types and localization
+description: Test-data generation guidance with cbMockData, including deterministic fixtures, locale-aware fake data, domain modeling, and scalable seeding strategies.
 ---
 
 # CBMockData - Test Data Generation

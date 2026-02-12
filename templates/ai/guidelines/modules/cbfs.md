@@ -1,6 +1,6 @@
 ---
 title: CBFS File System Module Guidelines
-description: Abstract file system interface supporting multiple storage providers and cloud services
+description: File-system abstraction guidance with cbfs across local and cloud providers, including path normalization, stream operations, metadata handling, and provider portability.
 ---
 
 # CBFS File System Module Guidelines

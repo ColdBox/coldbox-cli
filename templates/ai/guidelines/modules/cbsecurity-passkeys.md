@@ -1,6 +1,6 @@
 ---
 title: CBSecurity Passkeys Module Guideline
-description: Passwordless authentication using WebAuthn and FIDO2 passkeys
+description: Implementation guidance for passwordless authentication using WebAuthn/FIDO2 passkeys, covering registration ceremonies, authentication flows, credential storage, and security hardening patterns.
 ---
 
 # CBSecurity Passkeys Module Guideline

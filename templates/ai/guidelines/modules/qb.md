@@ -1,6 +1,6 @@
 ---
 title: QB (Query Builder) Module Guidelines
-description: Fluent query builder for database-agnostic SQL generation and query construction
+description: Query-authoring guidance for qb fluent SQL construction, including composable query patterns, joins/subqueries/CTEs, parameter safety, and adapter portability.
 ---
 
 # QB (Query Builder) Module Guidelines

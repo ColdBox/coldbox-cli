@@ -1,6 +1,6 @@
 ---
 title: S3SDK - Amazon S3 Integration
-description: Amazon S3 SDK for cloud storage operations with buckets and objects
+description: Usage patterns for Amazon S3 storage operations, including bucket/object lifecycle management, upload/download flows, metadata handling, and secure access configuration.
 ---
 
 # S3SDK - Amazon S3 Integration

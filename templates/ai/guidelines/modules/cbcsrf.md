@@ -1,6 +1,6 @@
 ---
 title: CBCSRF - Cross-Site Request Forgery Protection
-description: Cross-Site Request Forgery (CSRF) protection with token generation and validation
+description: CSRF protection patterns using cbcsrf, including token issuance/validation, form and API integration, replay mitigation, and framework-level enforcement.
 ---
 
 # CBCSRF - Cross-Site Request Forgery Protection

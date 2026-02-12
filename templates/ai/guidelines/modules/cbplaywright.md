@@ -1,6 +1,6 @@
 ---
 title: CBPlaywright - End-to-End Browser Testing
-description: Playwright integration for browser automation, testing, and web scraping
+description: Patterns for Playwright-based browser automation, including test orchestration, page interaction reliability, headless execution, and scraping/validation workflows.
 ---
 
 # CBPlaywright - End-to-End Browser Testing

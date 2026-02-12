@@ -1,6 +1,6 @@
 ---
 title: CBMailServices Module Guidelines
-description: Email sending abstraction with templates, protocols, and delivery tracking
+description: Email delivery architecture guidance for cbMailServices, covering provider abstraction, template rendering, transport configuration, queuing/retries, and observability.
 ---
 
 # CBMailServices Module Guidelines

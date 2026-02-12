@@ -1,6 +1,6 @@
 ---
 title: CBStorages - Storage Provider Abstraction
-description: Pluggable storage providers for sessions, cache, and application state management
+description: Storage abstraction guidance for sessions, cache, and app state using pluggable providers, including provider selection, consistency, and failover considerations.
 ---
 
 # CBStorages - Storage Provider Abstraction

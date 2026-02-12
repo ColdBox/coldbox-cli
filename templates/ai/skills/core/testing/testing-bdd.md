@@ -1,6 +1,6 @@
 ---
 name: testing-bdd
-description: Behavior-Driven Development testing with TestBox using BDD syntax and specifications
+description: Practical guide to TestBox BDD workflows, including spec structure, readable scenario naming, expectation style, setup/teardown patterns, and maintainable behavior-focused tests.
 category: testing
 priority: high
 triggers:

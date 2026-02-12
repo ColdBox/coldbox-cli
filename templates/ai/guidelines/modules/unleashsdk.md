@@ -1,6 +1,6 @@
 ---
 title: UnleashSDK - Feature Flags & A/B Testing
-description: Unleash feature flag SDK for feature toggles and gradual rollouts
+description: Guidance for integrating Unleash feature flags, including toggle evaluation patterns, rollout strategies, environment targeting, and safe progressive delivery practices.
 ---
 
 # UnleashSDK - Feature Flags & A/B Testing
@@ -324,7 +324,7 @@ if ( !unleash.isEnabled( "payment-processing" ) ) {
 }
 ```
 
-##Additional Resources
+## Additional Resources
 
 - [Unleash Documentation](https://docs.getunleash.io/)
 - [Feature Toggle Best Practices](https://martinfowler.com/articles/feature-toggles.html)

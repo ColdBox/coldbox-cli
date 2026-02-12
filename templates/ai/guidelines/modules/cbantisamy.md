@@ -1,6 +1,6 @@
 ---
 title: CBAntiSamy - XSS Prevention Library
-description: XSS prevention library with HTML sanitization and security policy enforcement
+description: XSS defense guidance using AntiSamy sanitization policies, covering trusted/untrusted input handling, policy tuning, and safe rendering of rich HTML content.
 ---
 
 # CBAntiSamy - XSS Prevention Library

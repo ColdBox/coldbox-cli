@@ -1,3 +1,8 @@
+---
+title: ColdBox Modern Project Structure
+description: Canonical modern ColdBox directory layout showing the separation of app source, public assets, module boundaries, tests, and supporting resources for maintainable BoxLang/CFML applications.
+---
+
 ```
 /app             - Application source code
   /config        - Application configuration

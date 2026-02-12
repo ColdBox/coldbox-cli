@@ -1,6 +1,6 @@
 ---
 title: CORS Module Guidelines
-description: CORS (Cross-Origin Resource Sharing) middleware for API access control
+description: CORS configuration guidance for API security, covering allowed origins/methods/headers, preflight behavior, credentials handling, and environment-specific policy management.
 ---
 
 # CORS Module Guidelines

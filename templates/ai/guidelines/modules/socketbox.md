@@ -1,6 +1,6 @@
 ---
 title: SocketBox - WebSocket Real-Time Communication
-description: WebSocket server implementation for real-time bidirectional client-server communication
+description: Real-time communication patterns with SocketBox, including channel design, connection lifecycle management, event broadcasting, and scalability considerations.
 ---
 
 # SocketBox - WebSocket Real-Time Communication
@@ -283,12 +283,19 @@ socket.on( 'metricsUpdate', ( metrics ) => {
 ## Common Use Cases
 
 ### Chat Application
+
 ### Live Notifications
+
 ### Collaborative Editing
+
 ### Real-Time Dashboard
+
 ### Live Sports Scores
+
 ### Stock Trading Updates
+
 ### Multiplayer Games
+
 ### Live Auction Bidding
 
 ## Additional Resources

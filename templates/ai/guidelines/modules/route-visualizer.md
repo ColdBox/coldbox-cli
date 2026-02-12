@@ -1,6 +1,6 @@
 ---
 title: Route Visualizer Module Guideline
-description: Visual route inspector and documentation for ColdBox routing configurations
+description: Guidance for using route visualization to debug and document ColdBox routing, including route discovery, conflict analysis, and API mapping verification.
 ---
 
 # Route Visualizer Module Guideline

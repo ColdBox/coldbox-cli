@@ -1,6 +1,6 @@
 ---
 title: CBSwagger Module Guidelines
-description: OpenAPI/Swagger documentation generator for RESTful APIs with automatic spec generation
+description: API documentation guidance with cbSwagger/OpenAPI, covering annotation-driven spec generation, endpoint modeling, schema consistency, and interactive docs workflows.
 ---
 
 # CBSwagger Module Guidelines

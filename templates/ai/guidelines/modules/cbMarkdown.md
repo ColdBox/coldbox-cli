@@ -1,6 +1,6 @@
 ---
 title: CBMarkdown Module Guidelines
-description: Markdown parsing and rendering with extensions and syntax highlighting
+description: Guidance for Markdown rendering pipelines, including parser configuration, extension usage, syntax highlighting, sanitization, and safe output practices for user-generated content.
 ---
 
 # CBMarkdown Module Guidelines
@@ -72,8 +72,8 @@ component {
 ## Supported Markdown
 
 - **Headers** - # H1, ## H2, ### H3
-- **Bold** - **bold** or __bold__
-- **Italic** - *italic* or _italic_
+- **Bold** - **bold** or **bold**
+- **Italic** - *italic* or *italic*
 - **Lists** - Ordered and unordered
 - **Links** - [text](url)
 - **Images** - ![alt](url)

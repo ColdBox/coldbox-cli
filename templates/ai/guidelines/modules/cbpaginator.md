@@ -1,6 +1,6 @@
 ---
 title: CBPaginator - Pagination Helpers
-description: Pagination library for large datasets with customizable page sizes and navigation
+description: Pagination strategy guidance for large result sets, including limit/offset design, metadata generation, navigation UX contracts, and performance-aware defaults.
 ---
 
 # CBPaginator - Pagination Helpers

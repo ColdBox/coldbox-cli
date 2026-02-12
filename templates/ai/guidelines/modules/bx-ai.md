@@ -1,6 +1,6 @@
 ---
 title: BoxLang AI Module
-description: BoxLang AI integration for LLM interactions, embeddings, vector search, and AI agents
+description: Architectural guidance for BoxLang AI capabilities, including chat/completions, embeddings, vector retrieval, memory, tools, and production agent orchestration.
 ---
 
 # BoxLang AI Module

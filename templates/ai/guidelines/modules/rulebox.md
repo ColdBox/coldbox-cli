@@ -1,6 +1,6 @@
 ---
 title: RuleBox Business Rules Engine Module Guidelines
-description: Business rules engine for declarative rule evaluation and decision logic
+description: Guidance for modeling declarative decision logic with RuleBox, including rule composition, evaluation strategy, testability, and maintainable policy-driven workflows.
 ---
 
 # RuleBox Business Rules Engine Module Guidelines

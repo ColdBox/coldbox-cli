@@ -1,6 +1,6 @@
 ---
 title: CBProxies - Proxy Pattern Implementation
-description: Java proxy objects and futures for async operations and concurrent programming
+description: Concurrent programming patterns with cbproxies and futures, including async task delegation, result handling, timeout management, and thread-safety concerns.
 ---
 
 # CBProxies - Proxy Pattern Implementation

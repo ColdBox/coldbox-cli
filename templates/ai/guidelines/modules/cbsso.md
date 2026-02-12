@@ -1,6 +1,6 @@
 ---
 title: CBSSO Single Sign-On Module Guidelines
-description: Single Sign-On integration for enterprise authentication and identity federation
+description: Enterprise SSO integration patterns with CBSSO, including provider setup, token/claim handling, user mapping, and federated authentication workflows.
 ---
 
 # CBSSO Single Sign-On Module Guidelines

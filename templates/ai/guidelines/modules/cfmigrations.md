@@ -1,6 +1,6 @@
 ---
 title: CFMigrations Module Guidelines
-description: Database migration framework with SQL and schema builder support
+description: Best practices for schema evolution with CFMigrations, including repeatable migration design, SQL/schema-builder usage, rollback safety, seeding strategy, and environment promotion workflows.
 ---
 
 # CFMigrations Module Guidelines

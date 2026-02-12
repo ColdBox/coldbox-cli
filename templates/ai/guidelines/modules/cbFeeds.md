@@ -1,6 +1,6 @@
 ---
 title: CBFeeds Module Guidelines
-description: RSS and Atom feed reader and generator for content syndication
+description: Patterns for generating and consuming RSS/Atom feeds, including feed structure, metadata requirements, publishing workflows, and robust parsing strategies for content syndication.
 ---
 
 # CBFeeds Module Guidelines

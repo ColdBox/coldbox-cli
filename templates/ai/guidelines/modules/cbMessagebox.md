@@ -1,6 +1,6 @@
 ---
 title: CBMessagebox Module Guidelines
-description: Flash messaging system for displaying notifications and alerts across requests
+description: UI messaging conventions with CBMessageBox and Flash RAM, including lifecycle across redirects, message severity semantics, and reusable rendering patterns.
 ---
 
 # CBMessagebox Module Guidelines
