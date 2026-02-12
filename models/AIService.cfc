@@ -543,7 +543,7 @@ component singleton {
 		stats.mcpServers.total  = stats.mcpServers.core + stats.mcpServers.module + stats.mcpServers.custom;
 
 		// Calculate file sizes
-		var aiDir = arguments.directory & "/.ai";
+		var aiDir         = arguments.directory & "/.ai";
 		// Guidelines size
 		var guidelinesDir = aiDir & "/guidelines";
 		if ( directoryExists( guidelinesDir ) ) {
