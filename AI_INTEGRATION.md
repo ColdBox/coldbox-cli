@@ -201,14 +201,13 @@ graph LR
 
 
 
-Additionally, agent configuration files are created for you:
+Additionally, agent configuration files are created for you (paths defined in `AgentRegistry.cfc`):
 
 * `CLAUDE.md` - Claude Desktop/Code assistant
 * `.github/copilot-instructions.md` - GitHub Copilot
 * `.cursorrules` - Cursor IDE
-* `.codex/instructions.md` - Codex
-* `.gemini/instructions.md` - Gemini CLI
-* `.opencode/instructions.md` - OpenCode
+* `AGENTS.md` - Codex & OpenCode (shared file)
+* `GEMINI.md` - Gemini CLI
 
 ### Keeping Resources Updated
 
@@ -907,14 +906,16 @@ ColdBox AI Integration supports **6 major AI agents** with automatic configurati
 
 ### Supported Agents
 
+> **Note**: Agent configuration paths are centrally managed in `models/AgentRegistry.cfc`
+
 | Agent              | Config File                       | Description                    |
 | ------------------ | --------------------------------- | ------------------------------ |
 | **Claude**         | `CLAUDE.md`                       | Claude Desktop and Claude Code |
 | **GitHub Copilot** | `.github/copilot-instructions.md` | VS Code Copilot integration    |
 | **Cursor**         | `.cursorrules`                    | Cursor IDE rules               |
-| **Codex**          | `.codex/instructions.md`          | Codex AI assistant             |
-| **Gemini**         | `.gemini/instructions.md`         | Gemini CLI integration         |
-| **OpenCode**       | `.opencode/instructions.md`       | OpenCode assistant             |
+| **Codex**          | `AGENTS.md` (shared)              | Codex AI assistant             |
+| **Gemini**         | `GEMINI.md`                       | Gemini CLI integration         |
+| **OpenCode**       | `AGENTS.md` (shared)              | OpenCode assistant             |
 
 ### Agent Configuration
 
@@ -975,9 +976,9 @@ graph TB
         Guidelines --> ClaudeConfig["CLAUDE.md"]
         Guidelines --> CopilotConfig[".github/copilot-instructions.md"]
         Guidelines --> CursorConfig[".cursorrules"]
-        Guidelines --> CodexConfig[".codex/instructions.md"]
-        Guidelines --> GeminiConfig[".gemini/instructions.md"]
-        Guidelines --> OpenCodeConfig[".opencode/instructions.md"]
+        Guidelines --> CodexConfig["AGENTS.md"]
+        Guidelines --> GeminiConfig["GEMINI.md"]
+        Guidelines --> OpenCodeConfig["AGENTS.md"]
 
         Skills --> ClaudeConfig
         Skills --> CopilotConfig
@@ -1772,14 +1773,6 @@ coldbox ai stats
 .ai/skills/custom/
 .ai/manifest.json
 
-# DON'T commit these (regenerated):
-CLAUDE.md
-.github/copilot-instructions.md
-.cursorrules
-.codex/instructions.md
-.gemini/instructions.md
-.opencode/instructions.md
-.mcp.json
 ```
 
 **Team Workflow:**

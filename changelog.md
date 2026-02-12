@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ##### Multi-Agent Support (6 Agents)
 
-- **Supported Agents**: Claude (`CLAUDE.md`), GitHub Copilot (`.github/copilot-instructions.md`), Cursor (`.cursorrules`), Codex (`.codex/instructions.md`), Gemini (`.gemini/instructions.md`), OpenCode (`.opencode/instructions.md`)
+- **Supported Agents**: Claude (`CLAUDE.md`), GitHub Copilot (`.github/copilot-instructions.md`), Cursor (`.cursorrules`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`), OpenCode (`AGENTS.md`)
 - Layout-specific templates (modern, flat)
 - Project context detection (Vite, Docker, ORM, Migrations)
 - Agents commands: `list`, `add`, `remove`, `active`, `open`

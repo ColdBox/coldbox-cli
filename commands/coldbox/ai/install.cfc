@@ -66,7 +66,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 			// Success!
 			printSuccess( "🍭  AI integration installed successfully!" );
-			print.line();
 
 			// Show what was installed
 			printInfo( "Guidelines installed: #result.guidelines.len()#" );

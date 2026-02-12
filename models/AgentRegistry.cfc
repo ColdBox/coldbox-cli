@@ -24,9 +24,9 @@ component singleton {
 			"claude"   : "CLAUDE.md",
 			"copilot"  : ".github/copilot-instructions.md",
 			"cursor"   : ".cursorrules",
-			"codex"    : ".codex/instructions.md",
-			"gemini"   : ".gemini/instructions.md",
-			"opencode" : ".opencode/instructions.md"
+			"codex"    : "AGENTS.md",
+			"gemini"   : "GEMINI.md",
+			"opencode" : "AGENTS.md"
 		}
 		AGENT_OPTIONS = [
 			{
@@ -183,11 +183,11 @@ component singleton {
 			case "cursor":
 				return "#arguments.directory#/.cursorrules"
 			case "codex":
-				return "#arguments.directory#/.codex/instructions.md"
+				return "#arguments.directory#/AGENTS.md"
 			case "gemini":
-				return "#arguments.directory#/.gemini/instructions.md"
+				return "#arguments.directory#/GEMINI.md"
 			case "opencode":
-				return "#arguments.directory#/.opencode/instructions.md"
+				return "#arguments.directory#/AGENTS.md"
 			default:
 				return "#arguments.directory#/AI_INSTRUCTIONS.md"
 		}

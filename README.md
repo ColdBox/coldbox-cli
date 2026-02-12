@@ -546,7 +546,7 @@ coldbox ai agents remove cursor       # Remove an agent
 coldbox ai agents refresh             # Regenerate all configurations
 ```
 
-**Supported Agents**: Claude (CLAUDE.md), GitHub Copilot (.github/copilot-instructions.md), Cursor (.cursorrules), Codex (.codex/instructions.md), Gemini (.gemini/instructions.md), OpenCode (.opencode/instructions.md)
+**Supported Agents**: Claude (CLAUDE.md), GitHub Copilot (.github/copilot-instructions.md), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
 
 #### Guidelines
 

@@ -8,6 +8,8 @@
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
+	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
+
 	/**
 	 * Run the command
 	 *
@@ -276,14 +278,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var result = {};
 
 		if ( agents.len() ) {
-			var agentFiles = {
-				"claude"   : "CLAUDE.md",
-				"copilot"  : ".github/copilot-instructions.md",
-				"cursor"   : ".cursorrules",
-				"codex"    : ".codex/instructions.md",
-				"gemini"   : ".gemini/instructions.md",
-				"opencode" : ".opencode/instructions.md"
-			};
+			var agentFiles = variables.agentRegistry.AGENT_FILES
 
 			agents.each( ( agent ) => {
 				if ( verbose && structKeyExists( agentFiles, agent ) ) {
