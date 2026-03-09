@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.5.0] - 2026-03-09
+
 ### Added
 
 - New ColdBox ASCII art banner when creating apps and using the app-wizard
@@ -275,7 +277,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.4.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.5.0...HEAD
+[8.5.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.4.0...v8.5.0
 [8.4.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.3.0...v8.4.0
 [8.3.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.2.0...v8.3.0
 [8.2.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.1.0...v8.2.0
