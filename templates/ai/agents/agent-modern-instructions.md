@@ -1,0 +1,240 @@
+# |PROJECT_NAME| - AI Agent Instructions
+
+This is a ColdBox HMVC application using the **modern template structure** with application code separated from the public webroot. Compatible with Adobe ColdFusion 2018+, Lucee 5.x+, and BoxLang 1.0+.
+
+## Project Overview
+
+**Language Mode:** |LANGUAGE_MODE|
+**ColdBox Version:** |COLDBOX_VERSION|
+**Template Type:** Modern (app/public separation)
+**Features:** |FEATURES|
+
+## Application Structure
+
+```
+/app/              - Application code (handlers, models, views, config)
+/public/           - Public webroot (index.cfm, static assets)
+  /Application.cfc - Entry point that maps to /app
+/lib/              - Framework and dependency storage
+  /coldbox/        - ColdBox framework files
+  /testbox/        - TestBox testing framework
+  /java/           - Java JAR dependencies (if using Maven)
+  /modules/        - CommandBox-installed modules
+/tests/            - Test suites
+/resources/        - Non-web resources (migrations, apidocs, etc.)
+```
+
+**Key Characteristics:**
+- Application code in `/app` (not web-accessible)
+- Public-facing files in `/public` only
+- Enhanced security through separation
+- Requires CommandBox aliases or web server configuration
+
+### Application Bootstrap
+
+1. Request → `/public/index.cfm`
+2. `/public/Application.cfc` sets mappings:
+   - `COLDBOX_APP_ROOT_PATH = this.mappings["/app"]`
+   - `COLDBOX_APP_MAPPING = "/app"`
+3. Config in `/app/config/ColdBox.cfc`
+4. Routes in `/app/config/Router.cfc`
+5. Handlers in `/app/handlers/`
+
+**Security Note:** `/app/Application.cfc` contains only `abort;` to prevent direct web access.
+
+## CommandBox Aliases
+
+**Critical:** This template requires aliases in `server.json`:
+
+```json
+"web": {
+    "webroot": "public",
+    "aliases": {
+        "/coldbox/system/exceptions": "./lib/coldbox/system/exceptions/",
+        "/tests": "./tests/"
+    }
+}
+```
+
+**When adding UI modules** (cbdebugger, cbswagger), add corresponding aliases.
+
+## Framework Knowledge
+
+**Important:** The following sections contain essential framework documentation that is always available in your context. These guidelines cover core concepts, conventions, and best practices for ColdBox development.
+
+|INLINE_GUIDELINES|
+
+## AI Integration & Resources
+
+This project includes AI-powered development assistance with on-demand guidelines, skills, and MCP documentation servers.
+
+## Project-Specific Conventions
+
+### Code Style
+
+- **Semicolons:** Optional in CFML/BoxLang. Only use when demarcating properties or in inline component syntax
+- **Handler naming:** Plural nouns (Users.cfc, Orders.cfc)
+- **Service naming:** Descriptive with "Service" suffix (UserService.cfc)
+- **Dependency injection:** Use `property name="service" inject` over manual getInstance()
+
+### Testing
+
+- Tests located in `/tests/specs/`
+- Integration tests extend `BaseTestCase` with `appMapping="/app"`
+- **Critical:** Always call `setup()` in `beforeEach()` for test isolation
+- Run tests: `box testbox run`
+
+### Configuration
+
+- Environment variables defined in `.env` (copy from `.env.example`)
+- Access via `getSystemSetting("VAR_NAME", "default")`
+- Framework config in `/app/config/ColdBox.cfc`
+- Routes in `/app/config/Router.cfc`
+
+### Development Workflow
+
+```bash
+# Install dependencies
+box install
+
+# Start server
+box server start
+
+# Format code
+box run-script format
+
+# Run tests
+box testbox run
+
+# Vite (if enabled)
+npm install
+npm run dev          # Development with HMR
+npm run build        # Production build
+
+# Docker (if enabled)
+docker-compose up -d
+docker-compose logs -f
+```
+
+## Optional Features
+
+<!-- Mark which features are enabled in this project -->
+
+- **Vite:** |VITE_ENABLED| - Modern frontend asset building with hot module replacement
+- **Docker:** |DOCKER_ENABLED| - Containerized development and deployment
+- **ORM:** |ORM_ENABLED| - Object-Relational Mapping via CBORM or Quick
+- **Migrations:** |MIGRATIONS_ENABLED| - Database version control with CommandBox Migrations
+
+## Custom Application Details
+
+<!-- Add project-specific information below -->
+
+### Business Domain
+
+<!-- Describe what this application does -->
+
+### Key Services/Models
+
+<!-- List important services and their responsibilities -->
+
+### Authentication/Security
+
+<!-- Describe authentication approach if applicable -->
+
+### API Endpoints
+
+<!-- Document REST API routes if applicable -->
+
+### Database
+
+<!-- Document database setup, migrations, seeders if applicable -->
+
+### Deployment
+
+<!-- Document deployment process -->
+
+### Third-Party Integrations
+
+<!-- List external services, APIs, or integrations -->
+
+## AI Integration
+
+This project includes AI-powered development assistance with guidelines, skills, and MCP documentation servers.
+
+### Directory Structure
+
+```
+/.ai/
+  /manifest.json       - AI configuration (language, agents, guidelines, skills, MCP servers)
+  /guidelines/         - Framework documentation and best practices
+    /core/             - Core ColdBox/BoxLang guidelines
+    /modules/          - Module-specific guidelines
+    /custom/           - Your custom guidelines
+    /overrides/        - Override core guidelines
+  /skills/             - Implementation cookbooks (how-to guides)
+    /core/             - Core development patterns
+    /modules/          - Module-specific patterns
+    /custom/           - Your custom skills
+    /overrides/        - Override core skills
+  /mcp-servers/        - MCP server configurations
+```
+
+### Manifest
+
+The `.ai/manifest.json` file contains the complete AI integration configuration:
+
+- **language**: Project language mode (boxlang, cfml, hybrid)
+- **templateType**: Application template (modern, flat)
+- **guidelines**: Array of installed guideline names
+- **skills**: Array of installed skill names
+- **agents**: Array of configured AI agents
+- **mcpServers**: Configured MCP documentation servers (core, module, custom)
+- **activeAgent**: Currently active AI agent (if set)
+- **lastSync**: Last synchronization timestamp
+
+**Reading the manifest** helps you understand available resources and project configuration.
+
+### Using Guidelines & Skills
+
+**Core framework guidelines (ColdBox and language) are already included above.** Additional guidelines and all skills are available on request:
+
+- **Module Guidelines** provide documentation for installed ColdBox modules
+- **Skills** offer step-by-step implementation patterns for specific features
+- Request specific guidelines or skills by name when you need them
+
+### Available Guidelines
+
+The following additional guidelines are available for this project. Request them by name when needed:
+
+|GUIDELINES_INVENTORY|
+
+**To load a guideline:** Request it by name when you need detailed framework or module documentation.
+
+### Available Skills
+
+The following skills provide step-by-step implementation patterns. Request specific skills when you need detailed how-to instructions:
+
+|SKILLS_INVENTORY|
+
+**To load a skill:** Request it by name when implementing specific features or patterns.
+
+## MCP Documentation Servers
+
+This project has access to the following Model Context Protocol (MCP) documentation servers for live, up-to-date information:
+
+|MCP_SERVERS|
+
+## Important Notes
+
+- **File Paths:** Application code uses `/app` paths, public files in `/public`
+- **Aliases Required:** Module UI assets need CommandBox aliases in server.json
+- **Test AppMapping:** Must be `appMapping="/app"` to match production paths
+- Use PRC for internal data, RC only for user input
+- Always validate user input from RC
+- Framework reinit: Use `?fwreinit=true` or configure `reinitPassword`
+
+## Additional Resources
+
+- ColdBox Docs: https://coldbox.ortusbooks.com
+- TestBox: https://testbox.ortusbooks.com
+- WireBox: https://wirebox.ortusbooks.com

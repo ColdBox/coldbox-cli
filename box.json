@@ -1,6 +1,6 @@
 {
     "name":"ColdBox CLI",
-    "version":"8.4.0",
+    "version":"8.5.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/commandbox-modules/coldbox-cli/@build.version@/coldbox-cli-@build.version@.zip",
     "slug":"coldbox-cli",
     "author":"Ortus Solutions, Corp",
@@ -30,7 +30,7 @@
     "dependencies":{
         "testbox-cli":"*",
         "commandbox-migrations":"*",
-		"commandbox-boxlang":"*"
+        "commandbox-boxlang":"*"
     },
     "installPaths":{},
     "ignore":[

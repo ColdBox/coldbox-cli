@@ -34,12 +34,37 @@ This is a CommandBox module (v7.10.0) providing CLI commands for ColdBox framewo
   - Example: `property name="userService" inject="UserService";` (property with semicolon)
   - Example: `var result = service.getData()` (no semicolon needed)
 
+- **Closure Scoping**: When using closures (arrow functions or anonymous functions), you CANNOT use the `arguments` scope to access outer function parameters
+  - ❌ WRONG: `guidelines.filter( ( g ) => g.name != arguments.name )` (will fail - arguments.name is not accessible)
+  - ✅ CORRECT: `guidelines.filter( ( g ) => g.name != name )` (remove scope prefix, variable will be found in outer scope)
+  - This applies to all scopes inside closures - use unscoped variable names to access outer function variables
+  - The closure will automatically search outer scopes for unscoped variables
+  - If there is ambiguity with a variable declared internally, then before the closure call you can assign the outer variable to a new variable with a different name and use that inside the closure
+
+**Markdown File Standards**:
+- **Always lint markdown files after editing** - Run `npx markdownlint-cli -f {filename}` after any markdown file modifications
+- Markdown linting configuration is in `.markdownlint.json`
+- Fix any linting errors before committing changes
+
 ## Development Workflows
 
 **Command Development**:
 - New commands extend `BaseCommand.cfc` and use dependency injection (`property name="utility" inject="utility@coldbox-cli"`)
 - Use standardized print methods: `printInfo()`, `printError()`, `printWarn()`, `printSuccess()`
 - Commands support `--force` for overwriting and `--open` for opening generated files
+
+**CLI User Interface Guidelines**:
+
+Creating beautiful CLI interfaces enhances user experience. CommandBox provides rich output formatting capabilities:
+
+- **Print Helpers** - Color text, indentation, lines, boxes: <https://commandbox.ortusbooks.com/task-runners/task-output>
+- **Tables** - Display data in formatted tables: <https://commandbox.ortusbooks.com/task-runners/task-output/printing-tables>
+- **Columns** - Multi-column output layouts: <https://commandbox.ortusbooks.com/task-runners/task-output/printing-columns>
+- **Trees** - Hierarchical tree structures: <https://commandbox.ortusbooks.com/task-runners/task-output/printing-tree>
+- **Progress Bars** - Visual progress indicators: <https://commandbox.ortusbooks.com/task-runners/progress-bar>
+- **Interactive Jobs** - User prompts, confirmations, selections: <https://commandbox.ortusbooks.com/task-runners/interactive-jobs>
+
+Use these tools to create polished, professional command interfaces that improve usability and provide clear visual feedback.
 
 **Template Management**:
 - Templates use token replacement with `replaceNoCase(content, "|token|", value, "all")`

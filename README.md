@@ -1,11 +1,5 @@
-# ColdBox CLI
-
 <p align="center">
-	<img src="https://www.ortussolutions.com/__media/coldbox-185-logo.png">
-	<br>
-	<img src="https://www.ortussolutions.com/__media/wirebox-185.png" height="125">
-	<img src="https://www.ortussolutions.com/__media/cachebox-185.png" height="125" >
-	<img src="https://www.ortussolutions.com/__media/logbox-185.png"  height="125">
+	<img src="https://raw.githubusercontent.com/Ortus-Solutions/ortus-artwork/refs/heads/main/coldbox/SVG/coldbox-logo-full-dark-M.svg" alt="ColdBox Platform Logo">
 </p>
 
 <p align="center">
@@ -18,13 +12,61 @@
 <p align="center">
 	Copyright Since 2005 ColdBox Platform by Luis Majano and Ortus Solutions, Corp
 	<br>
-	<a href="https://www.coldbox.org">www.coldbox.org</a> |
-	<a href="https://www.ortussolutions.com">www.ortussolutions.com</a>
+	<a href="https://www.coldbox.org">coldbox.org</a> »
+	<a href="https://www.boxlang.io">boxlang.io</a> »
+	<a href="https://www.ortussolutions.com">ortussolutions.com</a>
 </p>
 
-----
+# ColdBox CLI
+
+<img src="coldbox-cli.png" alt="ColdBox CLI" style="width:100%; max-width:800px; margin:20px auto; display:block; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
 
 This is the official ColdBox CLI for CommandBox.  It is a collection of commands to help you work with ColdBox and its ecosystem for building, testing, and deploying BoxLang and CFML applications.  It provides commands for scaffolding applications, creating tests, modules, models, views, and much more.
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [License](#license)
+- [ColdBox CLI Versions](#coldbox-cli-versions)
+- [Installation](#installation)
+- [Usage](#usage)
+ 	- [📱 Application Creation](#-application-creation)
+  		- [🧙‍♂️ Interactive App Wizard](#️-interactive-app-wizard)
+ 	- [Application Templates](#application-templates)
+  		- [🥊 BoxLang Templates (Recommended)](#-boxlang-templates-recommended)
+  		- [📜 Legacy CFML Templates](#-legacy-cfml-templates)
+  		- [🚀 Template Features](#-template-features)
+  		- [⚡ Vite Integration](#-vite-integration)
+  		- [🐳 Docker Integration](#-docker-integration)
+ 	- [🎯 Handlers (Controllers)](#-handlers-controllers)
+ 	- [📊 Models \& Services](#-models--services)
+ 	- [🎨 Views \& Layouts](#-views--layouts)
+ 	- [🔧 Resources \& CRUD](#-resources--crud)
+ 	- [📦 Modules](#-modules)
+ 	- [🧪 Testing](#-testing)
+ 	- [🗄️ ORM \& Database](#️-orm--database)
+ 	- [🔗 Interceptors](#-interceptors)
+ 	- [🔄 Development Workflow](#-development-workflow)
+ 	- [🎛️ Global Options](#️-global-options)
+  		- [Application-Specific Flags](#application-specific-flags)
+  		- [Language Generation Control](#language-generation-control)
+ 	- [💡 BoxLang Support](#-boxlang-support)
+  		- [🔍 Automatic Detection](#-automatic-detection)
+  		- [⚙️ Configuration Examples](#️-configuration-examples)
+   			- [Method 1: Language Property (Recommended)](#method-1-language-property-recommended)
+   			- [Method 2: TestBox Runner Setting](#method-2-testbox-runner-setting)
+  		- [🚀 Usage Examples](#-usage-examples)
+  		- [📝 Generated Code Differences](#-generated-code-differences)
+ 	- [🤖 AI Integration](#-ai-integration)
+  		- [Setup \& Management](#setup--management)
+  		- [AI Agents](#ai-agents)
+  		- [Guidelines](#guidelines)
+  		- [Skills](#skills)
+  		- [MCP Servers](#mcp-servers)
+  		- [AI Context Management](#ai-context-management)
+ 	- [📖 Getting Help](#-getting-help)
+- [Credits \& Contributions](#credits--contributions)
+ 	- [The Daily Bread](#the-daily-bread)
 
 ## License
 
@@ -36,7 +78,6 @@ The CLI matches the major version of ColdBox. **Current version: 8**
 
 - If you are using **ColdBox 8**, use CLI `@8` (recommended)
 - If you are using **ColdBox 7**, use CLI `@7.8.0` (recommended)
-- If you are using **ColdBox 6**, use CLI `@6` (legacy support)
 
 This versioning ensures you get the correct commands and features for your version of ColdBox.
 
@@ -469,27 +510,116 @@ When BoxLang mode is detected or forced:
 - Uses BoxLang-specific template variants
 - Creates BoxLang test files (`.bxm` extensions)
 
-### 🤖 AI Coding Assistance
+### 🤖 AI Integration
 
-The CLI now includes **Copilot instructions** to enhance AI-powered development workflows. These instructions help AI assistants understand ColdBox project structure and generate appropriate code:
+The ColdBox CLI provides a comprehensive AI integration system that enhances your development workflow with intelligent coding assistance. This includes guidelines, skills, agent configurations, and MCP (Model Context Protocol) servers.
 
-#### Features
+#### Setup & Management
 
-- **Intelligent Code Generation**: AI assistants can better understand ColdBox conventions and patterns
-- **Template-Aware Suggestions**: Context-aware code suggestions based on your project type
-- **BoxLang & CFML Support**: Appropriate suggestions for both language targets
-- **Framework Integration**: Deep understanding of ColdBox architecture and best practices
+```bash
+# Install AI integration
+coldbox ai install                    # Interactive setup
+coldbox ai install --agents=claude    # Setup with specific agent
 
-#### Copilot Instructions
+# View current configuration
+coldbox ai info                       # Show configuration summary
+coldbox ai tree                       # Visual hierarchy of AI components
+coldbox ai stats                      # Context usage and statistics
+coldbox ai stats --verbose            # Detailed breakdown with model utilization
 
-The CLI includes specialized instruction sets:
+# Sync with installed modules
+coldbox ai refresh                    # Update guidelines and skills
 
-- **Modern Apps**: Instructions optimized for contemporary ColdBox applications
-- **Legacy Projects**: Support for traditional flat-structure applications
-- **BoxLang Focus**: Enhanced support for BoxLang-specific patterns
-- **Framework Patterns**: MVC, HMVC, and REST API architectural guidance
+# Diagnose issues
+coldbox ai doctor                     # Check AI integration health
+```
 
-These instructions are automatically included in modern application templates to provide the best AI coding experience out of the box.
+#### AI Agents
+
+Configure AI assistants for your project (Claude, GitHub Copilot, Cursor, etc.):
+
+```bash
+# Manage agents
+coldbox ai agents list                # List available agents
+coldbox ai agents add claude copilot  # Add multiple agents
+coldbox ai agents remove cursor       # Remove an agent
+coldbox ai agents refresh             # Regenerate all configurations
+```
+
+**Supported Agents**: Claude (CLAUDE.md), GitHub Copilot (.github/copilot-instructions.md), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
+
+#### Guidelines
+
+Framework documentation and best practices for AI assistants:
+
+```bash
+# View guidelines
+coldbox ai guidelines list            # List all installed guidelines
+coldbox ai guidelines list --verbose  # Show details and descriptions
+
+# Manage guidelines
+coldbox ai guidelines install coldbox testbox        # Install by name
+coldbox ai guidelines install https://example.com/   # Install from URL
+coldbox ai guidelines uninstall testbox              # Remove guideline
+coldbox ai guidelines refresh                        # Update from modules
+```
+
+**Guideline Types**: Core (framework), Module (from installed modules), Custom (project-specific), Override (custom versions of core)
+
+#### Skills
+
+AI coding cookbooks with practical how-to examples:
+
+```bash
+# View skills
+coldbox ai skills list                # List all installed skills
+coldbox ai skills list --verbose      # Show details
+
+# Manage skills
+coldbox ai skills install creating-handlers async-programming
+coldbox ai skills uninstall async-programming
+coldbox ai skills refresh             # Update from modules
+```
+
+**Skill Categories**: Scaffolding, Testing, Configuration, Database, REST APIs, Security, Performance, and more
+
+#### MCP Servers
+
+Model Context Protocol documentation servers:
+
+```bash
+# View MCP configuration
+coldbox ai mcp list                   # List available servers
+coldbox ai mcp info                   # Show configuration
+
+# Manage servers
+coldbox ai mcp add github filesystem  # Add MCP servers
+coldbox ai mcp remove filesystem      # Remove a server
+coldbox ai mcp config                 # Generate agent-specific configs
+```
+
+**MCP Server Types**: Core (30+ built-in), Module (from packages), Custom (project-specific)
+
+#### AI Context Management
+
+**Subagent Pattern**: ColdBox CLI uses an optimized architecture that reduces context by 58% while maintaining full capability:
+
+- **Core Guidelines Inlined** (~20KB): ColdBox framework + language always embedded in agent files
+- **Resource Inventories** (~13KB): Module guidelines and skills listed with descriptions for on-demand loading
+- **Total Base Context**: ~33KB / ~8,400 tokens (down from ~62KB / ~15,000+ tokens)
+
+The CLI tracks and analyzes your AI context usage:
+
+- **Context Estimation**: Calculates total KB and token usage
+- **Usage Indicators**: Shows Low/Moderate/High/Very High warnings
+- **Model Compatibility**: Displays utilization for Claude, GPT-4, GPT-3.5-Turbo, Gemini
+- **Optimization Tips**: Monitors context efficiency with the subagent pattern
+
+```bash
+coldbox ai stats                      # Quick overview
+coldbox ai stats --verbose            # Full analysis with model breakdowns
+coldbox ai stats --json               # Machine-readable output
+```
 
 ### 📖 Getting Help
 
@@ -499,12 +629,14 @@ Every command provides detailed help:
 # General help
 coldbox help
 
+# AI integration help
+coldbox ai help
+
 # Specific command help
 coldbox create handler --help
-coldbox create model --help
+coldbox ai agents --help
+coldbox ai stats --help
 ```
-
-----
 
 ## Credits & Contributions
 

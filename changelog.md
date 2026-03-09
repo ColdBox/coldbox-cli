@@ -13,6 +13,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- New ColdBox ASCII art banner when creating apps and using the app-wizard
+- Improved readme and help commands
+- Name question in app-wizard if not provided
+- Install `bx-compat-cfml` when doing `--rest` due to needing some CFML compatibility
+
+#### AI Integration - Complete System
+
+**Complete AI-powered development assistant** for ColdBox with 41 guidelines, 62 skills, 30+ MCP documentation servers, and support for 6 AI agents (Claude, Copilot, Cursor, Codex, Gemini, OpenCode).
+
+##### Core Commands
+
+- `coldbox ai install` - Set up AI integration with agent selection and language detection
+- `coldbox ai refresh` - Sync guidelines, skills, and MCP servers with installed modules
+- `coldbox ai info` - Display current AI configuration
+- `coldbox ai doctor` - Diagnose AI integration health with detailed reporting
+
+##### Guidelines System (41 Total)
+
+- **Core Guidelines (10)**: boxlang, cfml, coldbox, coldbox-cli, cachebox, wirebox, logbox, testbox, testbox-cli, docbox
+- **Security & Auth (6)**: cbsecurity, cbauth, cbsecurity-passkeys, cbsso, cbcsrf, cbantisamy
+- **Validation & Data (6)**: cbvalidation, cbi18n, cbmailservices, cbmessagebox, cbpaginator, cbfeeds
+- **ORM & Database (4)**: cborm, qb, quick, cfmigrations
+- **API & Integration (5)**: hyper, cbproxies, cbswagger, cbelasticsearch, s3sdk
+- **Utility & Development (8)**: cbdebugger, cbfs, cbstorages, stachebox, cbjavaloader, cbmarkdown, cbmockdata, docbox
+- **Modern Development (6)**: cbwire, cbq, socketbox, mementifier, unleashsdk, cbplaywright
+- **Additional (7)**: bcrypt, cors, rulebox, commandbox-migrations, commandbox-boxlang, route-visualizer, relax
+- Guidelines commands: `list`, `add`, `remove`, `create`, `override`, `refresh`, `help`
+
+##### Skills System (62 Total)
+
+- **BoxLang Development (21)**: syntax, classes, functions, lambdas, modules, streams, types, interop, scheduled-tasks, futures, http-client, soap-client, executors, jdbc, templating, caching, file-handling, properties, zip, interceptors, sse, components, application
+- **ColdBox Development (12)**: handler-development, rest-api-development, module-development, interceptor-development, layout-development, routing-development, event-model, view-rendering, cache-integration, coldbox-configuration, coldbox-request-context, coldbox-flash-messaging
+- **Testing (8)**: testing-bdd, testing-unit, testing-integration, testing-handler, testing-mocking, testing-fixtures, testing-coverage, testing-ci
+- **Internal Libraries (3)**: cachebox-caching-patterns, logbox-logging-patterns, wirebox-di-patterns
+- **Security (9)**: security-implementation, authentication, authorization, sso-integration, jwt-development, passkeys-integration, csrf-protection, api-authentication, rbac-patterns
+- **ORM & Database (5)**: cborm, qb (query-builder), orm-quick, boxlang-queries, database-migrations
+- **Modern Development (1)**: cbwire-development
+- Skills commands: `list`, `create`, `override`, `refresh`, `remove`, `help`
+
+##### MCP Server Integration (30+ Servers)
+
+- **Core Servers (7)**: boxlang, coldbox, commandbox, testbox, wirebox, cachebox, logbox - always included
+- **Module Servers (23)**: bxorm, cborm, qb, quick, cfmigrations, cbsecurity, cbauth, cbsso, cbvalidation, cbi18n, cbmailservices, cbdebugger, cbelasticsearch, cbfs, cfconfig, cbwire, cbq, megaphone, contentbox, docbox, relax (cbswagger), modern-cfml, boxlang-ide
+- Auto-detection from box.json dependencies with zero configuration
+- Custom MCP server support for company/internal documentation
+- MCP commands: `list`, `add`, `remove`, `help`
+
+##### Multi-Agent Support (6 Agents)
+
+- **Supported Agents**: Claude (`CLAUDE.md`), GitHub Copilot (`.github/copilot-instructions.md`), Cursor (`.cursorrules`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`), OpenCode (`AGENTS.md`)
+- Layout-specific templates (modern, flat)
+- Project context detection (Vite, Docker, ORM, Migrations)
+- Agents commands: `list`, `add`, `remove`, `active`, `open`
+
+##### Override System
+
+- **Guidelines Override**: `coldbox ai guidelines override <name>` - Customize any guideline with project-specific conventions
+- **Skills Override**: `coldbox ai skills override <name>` - Override core/module skills with project-specific patterns
+- Override files stored in `.ai/guidelines/overrides/` and `.ai/skills/overrides/`
+- List commands show overrides separately with 🎯 icon
+- Remove commands support `--override` flag for targeted removal
+- Template-based override creation (copies original + adds override header)
+- Priority system: override > core/module
+
+##### Module Integration
+
+- Zero-config auto-discovery from box.json dependencies
+- Module creation with `--ai` flag creates `.ai/guidelines` and `.ai/skills` directories
+- Three-tier guideline fallback: module-shipped → bundled templates → auto-generated
+- Auto-registers MCP servers for installed modules
+- Path consistency: always uses `.ai/` convention (not `resources/`)
+
+##### Language Support
+
+- BoxLang and CFML project detection
+- Hybrid project support
+- Language-specific skill variants
+- Code generation respects project language choice
+
+## [8.4.0] - 2025-12-15
+
+### Added
+
 - Make sure `commandbox-boxlang` is a dependency to detect BoxLang projects
 
 ### Fixed
