@@ -4,8 +4,8 @@
  *
  * Examples:
  * coldbox ai install
- * coldbox ai install --agent=claude,copilot
- * coldbox ai install --language=boxlang
+ * coldbox ai install agent=claude,copilot
+ * coldbox ai install language=boxlang
  * coldbox ai install --force
  */
 component extends="coldbox-cli.models.BaseAICommand" {
