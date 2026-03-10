@@ -133,8 +133,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [8.0.0] - 2025-10-13
 
-## [7.10.0] - 2025-10-10
-
 ### Added
 
 - Forgot to bump it to match ColdBox version.
