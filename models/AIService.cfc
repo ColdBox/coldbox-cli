@@ -442,7 +442,7 @@ component singleton {
 		required string agents
 	){
 		var packageDir = arguments.directory;
-		var boxJson    = variables.packageService.readPackageDescriptor( packageDir );
+		var boxJson    = variables.packageService.readPackageDescriptorRaw( packageDir );
 
 		// Add language at top level
 		boxJson.language = arguments.language;
