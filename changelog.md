@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.7.0] - 2026-03-12
+
 ## [8.6.0] - 2026-03-10
 
 ## [8.5.0] - 2026-03-09
@@ -277,7 +279,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.6.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.7.0...HEAD
+[8.7.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.6.0...v8.7.0
 [8.6.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.5.0...v8.6.0
 [8.5.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.4.0...v8.5.0
 [8.4.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.3.0...v8.4.0
