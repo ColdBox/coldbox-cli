@@ -9,9 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Fix invalid aliases
+
 ## [8.7.0] - 2026-03-12
 
+- Command Aliases
+
 ## [8.6.0] - 2026-03-10
+
+- readPackageDescriptorRaw() fix
 
 ## [8.5.0] - 2026-03-09
 
