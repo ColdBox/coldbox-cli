@@ -6,7 +6,7 @@
  * coldbox ai refresh
  * coldbox ai update
  */
-component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai update" {
+component extends="coldbox-cli.models.BaseAICommand" {
 
 	/**
 	 * Run the command
