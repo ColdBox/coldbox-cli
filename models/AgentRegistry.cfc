@@ -153,6 +153,14 @@ component singleton {
 			directoryCreate( configDir )
 		}
 
+		// For Claude, write the full content to AGENTS.md and make CLAUDE.md point to it
+		if ( arguments.agent == "claude" ) {
+			var agentsFilePath = getDirectoryFromPath( configPath ) & "AGENTS.md"
+			fileWrite( agentsFilePath, content )
+			fileWrite( configPath, "@AGENTS.md" )
+			return
+		}
+
 		// Write agent config file
 		fileWrite( configPath, content )
 	}

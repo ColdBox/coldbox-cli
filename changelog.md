@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- `CLAUDE.md` now contains `@AGENTS.md` to point Claude to the shared `AGENTS.md` file, avoiding duplicate content
+
 ## [8.8.0] - 2026-03-12
 
 - Fix invalid aliases
