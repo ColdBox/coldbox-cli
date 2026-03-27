@@ -202,10 +202,10 @@ graph LR
 
 Additionally, agent configuration files are created for you (paths defined in `AgentRegistry.cfc`):
 
-* `CLAUDE.md` - Claude Desktop/Code assistant
+* `CLAUDE.md` - Claude Desktop/Code assistant (points to `AGENTS.md` via `@AGENTS.md`)
 * `.github/copilot-instructions.md` - GitHub Copilot
 * `.cursorrules` - Cursor IDE
-* `AGENTS.md` - Codex & OpenCode (shared file)
+* `AGENTS.md` - Codex, OpenCode & Claude (shared file)
 * `GEMINI.md` - Gemini CLI
 
 ### Keeping Resources Updated
@@ -894,7 +894,7 @@ ColdBox AI Integration supports **6 major AI agents** with automatic configurati
 
 | Agent              | Config File                       | Description                    |
 | ------------------ | --------------------------------- | ------------------------------ |
-| **Claude**         | `CLAUDE.md`                       | Claude Desktop and Claude Code |
+| **Claude**         | `CLAUDE.md` → `AGENTS.md`         | Claude Desktop and Claude Code |
 | **GitHub Copilot** | `.github/copilot-instructions.md` | VS Code Copilot integration    |
 | **Cursor**         | `.cursorrules`                    | Cursor IDE rules               |
 | **Codex**          | `AGENTS.md` (shared)              | Codex AI assistant             |
