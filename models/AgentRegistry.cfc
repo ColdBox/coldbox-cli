@@ -169,7 +169,11 @@ component singleton {
 
 		// Extract user content: everything that comes after the end marker
 		var userStartPos = endPos + len( endMarker )
-		var userContent  = mid( existingContent, userStartPos, len( existingContent ) - userStartPos + 1 )
+		var userContent  = mid(
+			existingContent,
+			userStartPos,
+			len( existingContent ) - userStartPos + 1
+		)
 
 		// Find the end marker position in the newly generated content
 		var newEndPos = findNoCase( endMarker, newContent )
@@ -179,7 +183,10 @@ component singleton {
 		}
 
 		// Slice off the managed portion of the new content (up to and including the end marker)
-		var managedContent = left( newContent, newEndPos + len( endMarker ) - 1 )
+		var managedContent = left(
+			newContent,
+			newEndPos + len( endMarker ) - 1
+		)
 
 		return managedContent & userContent
 	}
@@ -221,7 +228,10 @@ component singleton {
 		}
 
 		// Write agent config file, preserving any user-authored content outside the managed section
-		fileWrite( configPath, mergeUserContent( configPath, content ) )
+		fileWrite(
+			configPath,
+			mergeUserContent( configPath, content )
+		)
 	}
 
 	/**
