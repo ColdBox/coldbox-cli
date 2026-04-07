@@ -545,7 +545,7 @@ Override core or module guidelines to customize them for your needs:
 
 ```bash
 # Override a core guideline
-coldbox ai guidelines install coldbox --override
+coldbox ai guidelines override coldbox
 
 # Edit the override
 edit .ai/guidelines/overrides/coldbox.md
@@ -801,7 +801,7 @@ Override built-in skills to adapt them to your conventions:
 
 ```bash
 # Override a core skill
-coldbox ai skills install creating-handlers --override
+coldbox ai skills override creating-handlers
 
 # Edit the override
 edit .ai/skills/overrides/creating-handlers/SKILL.md
@@ -916,7 +916,7 @@ coldbox ai agents add claude copilot cursor
 coldbox ai agents remove cursor
 
 # Regenerate all configurations
-coldbox ai agents refresh
+coldbox ai refresh
 ```
 
 Each agent configuration includes:
@@ -1048,7 +1048,6 @@ View configured MCP servers:
 
 ```bash
 coldbox ai mcp list         # List all servers
-coldbox ai mcp info          # Show configuration details
 ```
 
 ### Custom MCP Servers
@@ -1082,15 +1081,7 @@ Custom server configuration in `.ai/manifest.json`:
 
 ### MCP Configuration
 
-Generate agent-specific MCP configurations:
-
-```bash
-# Generate .mcp.json for all agents
-coldbox ai mcp config
-
-# Agent-specific configuration
-coldbox ai mcp config --agent=claude
-```
+MCP server configurations are generated automatically as part of `coldbox ai install` and `coldbox ai refresh`.
 
 Example generated `.mcp.json`:
 
@@ -1123,7 +1114,7 @@ ColdBox AI Integration provides comprehensive CLI commands for managing your AI 
 ```bash
 # Initial setup
 coldbox ai install                  # Interactive installation wizard
-coldbox ai install --agents=claude  # Install for specific agent
+coldbox ai install --agent=claude   # Install for specific agent
 
 # View configuration
 coldbox ai info                     # Show current configuration
@@ -1141,8 +1132,8 @@ coldbox ai refresh                  # Sync with installed modules
 ```bash
 coldbox ai guidelines list                    # List installed
 coldbox ai guidelines list --verbose          # With descriptions
-coldbox ai guidelines install coldbox qb      # Install specific
-coldbox ai guidelines uninstall qb            # Remove guideline
+coldbox ai guidelines add coldbox             # Add a core guideline
+coldbox ai guidelines remove coldbox --core   # Remove a core guideline
 coldbox ai guidelines refresh                 # Update from modules
 ```
 
@@ -1151,8 +1142,8 @@ coldbox ai guidelines refresh                 # Update from modules
 ```bash
 coldbox ai skills list                        # List installed
 coldbox ai skills list --verbose              # With descriptions
-coldbox ai skills install creating-handlers   # Install specific
-coldbox ai skills uninstall creating-handlers # Remove skill
+coldbox ai skills create my-skill             # Create a custom skill
+coldbox ai skills remove my-skill --custom    # Remove a custom skill
 coldbox ai skills refresh                     # Update from modules
 ```
 
@@ -1162,17 +1153,14 @@ coldbox ai skills refresh                     # Update from modules
 coldbox ai agents list                        # List available
 coldbox ai agents add claude copilot          # Add agents
 coldbox ai agents remove cursor               # Remove agent
-coldbox ai agents refresh                     # Regenerate configs
 ```
 
 **MCP Servers:**
 
 ```bash
 coldbox ai mcp list                           # List servers
-coldbox ai mcp info                           # Show configuration
 coldbox ai mcp add github postgres            # Add servers
 coldbox ai mcp remove postgres                # Remove server
-coldbox ai mcp config                         # Generate .mcp.json
 ```
 
 ### Diagnostics & Analytics

@@ -519,7 +519,7 @@ The ColdBox CLI provides a comprehensive AI integration system that enhances you
 ```bash
 # Install AI integration
 coldbox ai install                    # Interactive setup
-coldbox ai install --agents=claude    # Setup with specific agent
+coldbox ai install --agent=claude     # Setup with specific agent
 
 # View current configuration
 coldbox ai info                       # Show configuration summary
@@ -543,7 +543,6 @@ Configure AI assistants for your project (Claude, GitHub Copilot, Cursor, etc.):
 coldbox ai agents list                # List available agents
 coldbox ai agents add claude copilot  # Add multiple agents
 coldbox ai agents remove cursor       # Remove an agent
-coldbox ai agents refresh             # Regenerate all configurations
 ```
 
 **Supported Agents**: Claude (CLAUDE.md → AGENTS.md), GitHub Copilot (.github/copilot-instructions.md), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
@@ -558,10 +557,9 @@ coldbox ai guidelines list            # List all installed guidelines
 coldbox ai guidelines list --verbose  # Show details and descriptions
 
 # Manage guidelines
-coldbox ai guidelines install coldbox testbox        # Install by name
-coldbox ai guidelines install https://example.com/   # Install from URL
-coldbox ai guidelines uninstall testbox              # Remove guideline
-coldbox ai guidelines refresh                        # Update from modules
+coldbox ai guidelines add coldbox     # Add a core guideline by name
+coldbox ai guidelines remove coldbox --core   # Remove a core guideline
+coldbox ai guidelines refresh                 # Update from modules
 ```
 
 **Guideline Types**: Core (framework), Module (from installed modules), Custom (project-specific), Override (custom versions of core)
@@ -576,8 +574,8 @@ coldbox ai skills list                # List all installed skills
 coldbox ai skills list --verbose      # Show details
 
 # Manage skills
-coldbox ai skills install creating-handlers async-programming
-coldbox ai skills uninstall async-programming
+coldbox ai skills create my-skill     # Create a custom skill
+coldbox ai skills remove my-skill --custom  # Remove a custom skill
 coldbox ai skills refresh             # Update from modules
 ```
 
@@ -590,12 +588,10 @@ Model Context Protocol documentation servers:
 ```bash
 # View MCP configuration
 coldbox ai mcp list                   # List available servers
-coldbox ai mcp info                   # Show configuration
 
 # Manage servers
 coldbox ai mcp add github filesystem  # Add MCP servers
 coldbox ai mcp remove filesystem      # Remove a server
-coldbox ai mcp config                 # Generate agent-specific configs
 ```
 
 **MCP Server Types**: Core (30+ built-in), Module (from packages), Custom (project-specific)

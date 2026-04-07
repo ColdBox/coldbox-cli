@@ -5,7 +5,7 @@
  * Examples:
  * coldbox ai guidelines add coldbox
  * coldbox ai guidelines add testbox
- * coldbox ai guidelines add wirebox
+ * coldbox ai guidelines add boxlang
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -15,7 +15,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	/**
 	 * Run the command
 	 *
-	 * @name The core guideline name (e.g., coldbox, testbox, wirebox, boxlang, cfml)
+	 * @name The core guideline name (e.g., coldbox, testbox, boxlang, cfml)
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run(
