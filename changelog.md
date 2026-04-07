@@ -9,7 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Updates
+
 - `CLAUDE.md` now contains `@AGENTS.md` to point Claude to the shared `AGENTS.md` file, avoiding duplicate content
+
+### Fixed
+
+- Fix fwreinit not recognizing webroot setting in server.json
+- Fixes for invalid commands in readmes and ai guideline.
+- Updated html helper guideline to reflect the new helper syntax and added more examples.
+
 
 ## [8.8.0] - 2026-03-12
 
