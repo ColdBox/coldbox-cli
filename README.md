@@ -519,7 +519,7 @@ The ColdBox CLI provides a comprehensive AI integration system that enhances you
 ```bash
 # Install AI integration
 coldbox ai install                    # Interactive setup
-coldbox ai install --agents=claude    # Setup with specific agent
+coldbox ai install agent=claude    # Setup with specific agent
 
 # View current configuration
 coldbox ai info                       # Show configuration summary
@@ -546,7 +546,7 @@ coldbox ai agents remove cursor       # Remove an agent
 coldbox ai agents refresh             # Regenerate all configurations
 ```
 
-**Supported Agents**: Claude (CLAUDE.md), GitHub Copilot (.github/copilot-instructions.md), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
+**Supported Agents**: Claude (CLAUDE.md → AGENTS.md), GitHub Copilot (.github/copilot-instructions.md), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
 
 #### Guidelines
 
@@ -558,9 +558,9 @@ coldbox ai guidelines list            # List all installed guidelines
 coldbox ai guidelines list --verbose  # Show details and descriptions
 
 # Manage guidelines
-coldbox ai guidelines install coldbox testbox        # Install by name
-coldbox ai guidelines install https://example.com/   # Install from URL
-coldbox ai guidelines uninstall testbox              # Remove guideline
+coldbox ai guidelines add coldbox testbox        # Install by name
+coldbox ai guidelines add https://example.com/   # Install from URL
+coldbox ai guidelines remove testbox              # Remove guideline
 coldbox ai guidelines refresh                        # Update from modules
 ```
 
@@ -576,8 +576,8 @@ coldbox ai skills list                # List all installed skills
 coldbox ai skills list --verbose      # Show details
 
 # Manage skills
-coldbox ai skills install creating-handlers async-programming
-coldbox ai skills uninstall async-programming
+coldbox ai skills add creating-handlers async-programming
+coldbox ai skills remove async-programming
 coldbox ai skills refresh             # Update from modules
 ```
 

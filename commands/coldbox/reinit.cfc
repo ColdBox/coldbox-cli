@@ -18,19 +18,19 @@ component aliases="fwreinit" {
 
 	/**
 	 * @password The FWReinit password
-	 * @name     Name of the CommandBox server to reinit
+	 * @name     Name of the CommandBox server to reinit, will default to the name listed in server.json file
 	 * @showUrl  Show the Url to reinit
 	 **/
 	function run(
 		password = "1",
-		name     = "",
+		name     = getDefaultServerName(),
 		showUrl  = true
 	){
-		var serverInfo = serverService.getServerInfoByDiscovery( getCWD(), arguments.name );
+		var serverInfo = serverService.getServerInfoByDiscovery( name = arguments.name );
 
 		if ( !structCount( serverInfo ) ) {
 			print.boldRedLine(
-				"No server configurations found for '#getCWD()#', so have no clue what to reinit buddy!"
+				"No server configurations found for '#getCWD()#' and '#arguments.name#', so have no clue what to reinit buddy!"
 			);
 		} else {
 			var thisURL = "#serverInfo.host#:#serverInfo.port#/?fwreinit=#arguments.password#";
@@ -48,6 +48,11 @@ component aliases="fwreinit" {
 					.line( trim( formatter.HTML2ANSI( local.results.filecontent ) ) );
 			}
 		}
+	}
+
+	private function getDefaultServerName(){
+		var serverInfo = serverService.getServerInfoByDiscovery( serverConfigFile = "server.json" );
+		return serverInfo.keyExists( "name" ) ? serverInfo.name : "";
 	}
 
 }

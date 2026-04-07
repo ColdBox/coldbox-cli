@@ -28,7 +28,10 @@ component singleton {
 			"gemini"   : "GEMINI.md",
 			"opencode" : "AGENTS.md"
 		}
-		AGENT_OPTIONS = [
+		// Demarcation markers that wrap the ColdBox CLI-managed section
+		MANAGED_SECTION_START = "<!-- COLDBOX-CLI:START -->"
+		MANAGED_SECTION_END   = "<!-- COLDBOX-CLI:END -->"
+		AGENT_OPTIONS         = [
 			{
 				display : "Claude (Anthropic) - Recommended for general development",
 				value   : "claude"
@@ -127,6 +130,68 @@ component singleton {
 	// ========================================
 
 	/**
+	 * Merges newly generated managed content with any user-authored content from an existing file.
+	 *
+	 * The managed section is delimited by COLDBOX-CLI:START and COLDBOX-CLI:END HTML comment
+	 * markers. On refresh, only the content between those markers is replaced; everything after
+	 * the end marker (i.e. the user's custom documentation) is preserved unchanged.
+	 *
+	 * Behavior:
+	 * - File does not exist → return newContent as-is (first-time write).
+	 * - File exists but has no end marker → return newContent as-is (old format, no user section to preserve).
+	 * - File exists with end marker → replace managed section, keep user section intact.
+	 *
+	 * @filePath   Absolute path to the existing agent config file (may not exist yet).
+	 * @newContent Freshly generated content that includes both START and END markers.
+	 *
+	 * @return Combined content with updated managed section and preserved user section.
+	 */
+	private string function mergeUserContent(
+		required string filePath,
+		required string newContent
+	){
+		var endMarker = static.MANAGED_SECTION_END
+
+		// Nothing to preserve — first-time write
+		if ( !fileExists( filePath ) ) {
+			return newContent
+		}
+
+		var existingContent = fileRead( filePath )
+
+		// Find the end marker in the existing file
+		var endPos = findNoCase( endMarker, existingContent )
+
+		// Old-format file (no markers) — write fresh content, no user section to preserve
+		if ( !endPos ) {
+			return newContent
+		}
+
+		// Extract user content: everything that comes after the end marker
+		var userStartPos = endPos + len( endMarker )
+		var userContent  = mid(
+			existingContent,
+			userStartPos,
+			len( existingContent ) - userStartPos + 1
+		)
+
+		// Find the end marker position in the newly generated content
+		var newEndPos = findNoCase( endMarker, newContent )
+		if ( !newEndPos ) {
+			// New template has no end marker — return new content plus preserved user section
+			return newContent & userContent
+		}
+
+		// Slice off the managed portion of the new content (up to and including the end marker)
+		var managedContent = left(
+			newContent,
+			newEndPos + len( endMarker ) - 1
+		)
+
+		return managedContent & userContent
+	}
+
+	/**
 	 * Configure a single agent
 	 *
 	 * @directory The project directory
@@ -153,8 +218,20 @@ component singleton {
 			directoryCreate( configDir )
 		}
 
-		// Write agent config file
-		fileWrite( configPath, content )
+		// For Claude, write the full content to AGENTS.md and make CLAUDE.md point to it
+		if ( arguments.agent == "claude" ) {
+			var agentsFilePath = getDirectoryFromPath( configPath ) & "AGENTS.md"
+			var mergedContent  = mergeUserContent( agentsFilePath, content )
+			fileWrite( agentsFilePath, mergedContent )
+			fileWrite( configPath, "@AGENTS.md" )
+			return
+		}
+
+		// Write agent config file, preserving any user-authored content outside the managed section
+		fileWrite(
+			configPath,
+			mergeUserContent( configPath, content )
+		)
 	}
 
 	/**

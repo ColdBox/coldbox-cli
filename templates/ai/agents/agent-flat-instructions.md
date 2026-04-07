@@ -1,3 +1,7 @@
+<!-- COLDBOX-CLI:START -->
+<!-- ⚡ This section is managed by ColdBox CLI and will be refreshed on `coldbox ai refresh`. -->
+<!-- ⚠️  Do NOT edit content between COLDBOX-CLI:START and COLDBOX-CLI:END markers — changes will be overwritten. -->
+
 # |PROJECT_NAME| - AI Agent Instructions
 
 This is a ColdBox HMVC application using the **flat template structure** where all application code lives in the webroot. Compatible with Adobe ColdFusion 2018+, Lucee 5.x+, and BoxLang 1.0+.
@@ -88,34 +92,6 @@ box testbox run
 /?fwreinit=true
 ```
 
-## Custom Application Details
-
-<!-- Add project-specific information below -->
-
-### Business Domain
-
-<!-- Describe what this application does -->
-
-### Key Services/Models
-
-<!-- List important services and their responsibilities -->
-
-### Authentication/Security
-
-<!-- Describe authentication approach if applicable -->
-
-### API Endpoints
-
-<!-- Document REST API routes if applicable -->
-
-### Deployment
-
-<!-- Document deployment process -->
-
-### Third-Party Integrations
-
-<!-- List external services, APIs, or integrations -->
-
 ## AI Integration
 
 This project includes AI-powered development assistance with guidelines, skills, and MCP documentation servers.
@@ -195,3 +171,35 @@ This project has access to the following Model Context Protocol (MCP) documentat
 - ColdBox Docs: https://coldbox.ortusbooks.com
 - TestBox: https://testbox.ortusbooks.com
 - WireBox: https://wirebox.ortusbooks.com
+
+<!-- COLDBOX-CLI:END -->
+
+<!-- ℹ️ YOUR PROJECT DOCUMENTATION — Add your custom details below. ColdBox CLI will NOT overwrite this section. -->
+
+## Custom Application Details
+
+<!-- Add project-specific information below -->
+
+### Business Domain
+
+<!-- Describe what this application does -->
+
+### Key Services/Models
+
+<!-- List important services and their responsibilities -->
+
+### Authentication/Security
+
+<!-- Describe authentication approach if applicable -->
+
+### API Endpoints
+
+<!-- Document REST API routes if applicable -->
+
+### Deployment
+
+<!-- Document deployment process -->
+
+### Third-Party Integrations
+
+<!-- List external services, APIs, or integrations -->

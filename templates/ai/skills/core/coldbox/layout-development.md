@@ -43,10 +43,10 @@ Default application layout
 
     <!-- CSS -->
     <link rel="stylesheet" href="/css/app.css">
+    <!-- addAsset with sendToHeader=true (default) injects <link>/<script> into <head> via cfhtmlhead -->
     #html.addAsset( "/css/custom.css" )#
-
-    <!-- Head assets -->
-    #html.renderAssets( "css" )#
+    <!-- addAsset with sendToHeader=false outputs the tag inline at the call site instead -->
+    #html.addAsset( asset="/css/inline.css", sendToHeader=false )#
 </head>
 <body>
     <!-- Header -->
@@ -65,7 +65,7 @@ Default application layout
 
     <!-- JavaScript -->
     <script src="/js/app.js"></script>
-    #html.renderAssets( "js" )#
+    #html.addAsset( "/js/custom.js" )#
 </body>
 </html>
 </cfoutput>
@@ -85,7 +85,8 @@ Admin-specific layout
     <meta charset="UTF-8">
     <title>#prc.pageTitle ?: "Admin Dashboard"# - Admin</title>
     <link rel="stylesheet" href="/css/admin.css">
-    #html.renderAssets( "css" )#
+    <!-- addAsset injects <link> into <head> automatically via cfhtmlhead (sendToHeader=true by default) -->
+    #html.addAsset( "/css/admin-extra.css" )#
 </head>
 <body class="admin-layout">
     <!-- Admin Header -->
@@ -125,7 +126,7 @@ Admin-specific layout
     </main>
 
     <script src="/js/admin.js"></script>
-    #html.renderAssets( "js" )#
+    #html.addAsset( "/js/admin-extra.js" )#
 </body>
 </html>
 </cfoutput>

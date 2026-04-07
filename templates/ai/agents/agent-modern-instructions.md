@@ -1,3 +1,7 @@
+<!-- COLDBOX-CLI:START -->
+<!-- ⚡ This section is managed by ColdBox CLI and will be refreshed on `coldbox ai refresh`. -->
+<!-- ⚠️  Do NOT edit content between COLDBOX-CLI:START and COLDBOX-CLI:END markers — changes will be overwritten. -->
+
 # |PROJECT_NAME| - AI Agent Instructions
 
 This is a ColdBox HMVC application using the **modern template structure** with application code separated from the public webroot. Compatible with Adobe ColdFusion 2018+, Lucee 5.x+, and BoxLang 1.0+.
@@ -125,38 +129,6 @@ docker-compose logs -f
 - **ORM:** |ORM_ENABLED| - Object-Relational Mapping via CBORM or Quick
 - **Migrations:** |MIGRATIONS_ENABLED| - Database version control with CommandBox Migrations
 
-## Custom Application Details
-
-<!-- Add project-specific information below -->
-
-### Business Domain
-
-<!-- Describe what this application does -->
-
-### Key Services/Models
-
-<!-- List important services and their responsibilities -->
-
-### Authentication/Security
-
-<!-- Describe authentication approach if applicable -->
-
-### API Endpoints
-
-<!-- Document REST API routes if applicable -->
-
-### Database
-
-<!-- Document database setup, migrations, seeders if applicable -->
-
-### Deployment
-
-<!-- Document deployment process -->
-
-### Third-Party Integrations
-
-<!-- List external services, APIs, or integrations -->
-
 ## AI Integration
 
 This project includes AI-powered development assistance with guidelines, skills, and MCP documentation servers.
@@ -238,3 +210,39 @@ This project has access to the following Model Context Protocol (MCP) documentat
 - ColdBox Docs: https://coldbox.ortusbooks.com
 - TestBox: https://testbox.ortusbooks.com
 - WireBox: https://wirebox.ortusbooks.com
+
+<!-- COLDBOX-CLI:END -->
+
+<!-- ℹ️ YOUR PROJECT DOCUMENTATION — Add your custom details below. ColdBox CLI will NOT overwrite this section. -->
+
+## Custom Application Details
+
+<!-- Add project-specific information below -->
+
+### Business Domain
+
+<!-- Describe what this application does -->
+
+### Key Services/Models
+
+<!-- List important services and their responsibilities -->
+
+### Authentication/Security
+
+<!-- Describe authentication approach if applicable -->
+
+### API Endpoints
+
+<!-- Document REST API routes if applicable -->
+
+### Database
+
+<!-- Document database setup, migrations, seeders if applicable -->
+
+### Deployment
+
+<!-- Document deployment process -->
+
+### Third-Party Integrations
+
+<!-- List external services, APIs, or integrations -->
