@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.9.0] - 2026-04-07
+
 ### Updates
 
 - `CLAUDE.md` now contains `@AGENTS.md` to point Claude to the shared `AGENTS.md` file, avoiding duplicate content
@@ -298,7 +300,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.8.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.9.0...HEAD
+[8.9.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.8.0...v8.9.0
 [8.8.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.7.0...v8.8.0
 [8.7.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.6.0...v8.7.0
 [8.6.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.5.0...v8.6.0
