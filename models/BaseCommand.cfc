@@ -27,7 +27,7 @@ component accessors="true" {
 	 * @return string "app/" for modern layout, "" for flat layout
 	 */
 	function getAppPrefix( required cwd ){
-		return variables.utility.detectTemplateType( arguments.cwd ) == "modern" ? "app/" : "";
+		return variables.utility.detectTemplateType( cwd ) == "modern" ? "app/" : "";
 	}
 
 	/**
