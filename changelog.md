@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.10.0] - 2026-04-10
+
 ### Added
 
 - Automatic app layout detection for code generation commands. The CLI now detects whether the project uses a modern layout (with `app/` and `public/` directories) or a flat layout, and automatically places generated files in the correct location (e.g., `app/models` vs `models`, `app/handlers` vs `handlers`, etc.).
@@ -304,7 +306,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.9.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.10.0...HEAD
+[8.10.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.9.0...v8.10.0
 [8.9.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.8.0...v8.9.0
 [8.8.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.7.0...v8.8.0
 [8.7.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.6.0...v8.7.0
