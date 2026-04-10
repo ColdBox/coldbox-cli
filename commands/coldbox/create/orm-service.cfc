@@ -23,7 +23,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 **/
 	function run(
 		required serviceName,
-		directory             = "models",
+		directory             = getAppPrefix( getCWD() ) & "models",
 		boolean queryCaching  = false,
 		boolean eventHandling = true,
 		cacheRegion           = "",

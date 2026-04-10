@@ -22,7 +22,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	function run(
 		required name,
 		boolean helper  = false,
-		directory       = "views",
+		directory       = getAppPrefix( getCWD() ) & "views",
 		boolean open    = false,
 		content         = "<h1>#arguments.name# view</h1>",
 		boolean force   = false,
