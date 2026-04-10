@@ -21,7 +21,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	function run(
 		required name,
 		boolean helper  = false,
-		directory       = "layouts",
+		directory       = getAppPrefix( getCWD() ) & "layouts",
 		boolean open    = false,
 		boolean force   = false,
 		content         = "<h1>#arguments.name# Layout</h1>#variables.utility.BREAK#",

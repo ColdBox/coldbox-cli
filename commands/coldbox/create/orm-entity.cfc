@@ -56,7 +56,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	function run(
 		required entityName,
 		table                = "",
-		directory            = "models",
+		directory            = getAppPrefix( getCWD() ) & "models",
 		boolean activeEntity = false,
 		primaryKey           = "id",
 		primaryKeyColumn     = "",

@@ -486,6 +486,62 @@ The CLI detects BoxLang projects using three methods (in order of precedence):
 }
 ```
 
+### 🗂️ App Layout Detection
+
+The CLI automatically detects whether your project uses a **modern** or **flat** layout and generates files in the correct location.
+
+| Layout | Detection | App Code Location | Tests Location |
+| ------ | --------- | ----------------- | -------------- |
+| **Modern** | Both `app/` and `public/` directories exist | `/app/models`, `/app/handlers`, etc. | `/tests/` |
+| **Flat** | Default (no `app/` + `public/`) | `/models`, `/handlers`, etc. | `/tests/` |
+
+#### Modern Layout (e.g. `boxlang`, `modern` templates)
+
+```text
+/app             - Application source code
+  /config        - Configuration
+  /handlers      - Event handlers
+  /models        - Models & services
+  /views         - View templates
+  /layouts       - Layout wrappers
+  /interceptors  - Interceptors
+/public          - Web root
+/modules         - ColdBox modules
+/tests           - Test suites
+/resources       - Migrations, seeders, etc.
+```
+
+#### Flat Layout (e.g. `flat`, legacy templates)
+
+```text
+/config          - Configuration
+/handlers        - Event handlers
+/models          - Models & services
+/views           - View templates
+/layouts         - Layout wrappers
+/interceptors    - Interceptors
+/modules         - ColdBox modules
+/tests           - Test suites
+```
+
+When you run a generation command in a modern-layout project, the CLI automatically targets the correct directory:
+
+```bash
+# In a flat layout project → creates /handlers/users.cfc
+# In a modern layout project → creates /app/handlers/users.cfc
+coldbox create handler users
+
+# In a flat layout project → creates /models/User.cfc
+# In a modern layout project → creates /app/models/User.cfc
+coldbox create model User
+```
+
+You can always override the target directory explicitly:
+
+```bash
+coldbox create model User directory=app/models
+```
+
 #### 🚀 Usage Examples
 
 ```bash
