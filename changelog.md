@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Automatic app layout detection for code generation commands. The CLI now detects whether the project uses a modern layout (with `app/` and `public/` directories) or a flat layout, and automatically places generated files in the correct location (e.g., `app/models` vs `models`, `app/handlers` vs `handlers`, etc.).
+
 ## [8.9.0] - 2026-04-07
 
 ### Updates

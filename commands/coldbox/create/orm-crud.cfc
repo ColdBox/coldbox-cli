@@ -22,8 +22,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 	function run(
 		required entity,
 		pluralName        = "",
-		handlersDirectory = "handlers",
-		viewsDirectory    = "views",
+		handlersDirectory = getAppPrefix( getCWD() ) & "handlers",
+		viewsDirectory    = getAppPrefix( getCWD() ) & "views",
 		boolean tests     = true,
 		testsDirectory    = "tests/specs/integration",
 		boolean boxlang   = isBoxLangProject( getCWD() )
