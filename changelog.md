@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.10.1] - 2026-04-15
+
 ### Fixed
 
 - Corruption of box.json on build process overlapping
@@ -310,7 +312,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.10.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.10.1...HEAD
+[8.10.1]: https://github.com/ColdBox/coldbox-cli/compare/v8.10.0...v8.10.1
 [8.10.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.9.0...v8.10.0
 [8.9.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.8.0...v8.9.0
 [8.8.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.7.0...v8.8.0
