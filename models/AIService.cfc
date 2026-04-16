@@ -664,21 +664,21 @@ component singleton {
 		} );
 
 		// Process custom servers (objects with url or command)
-		( arguments.manifest.mcpServers.custom ?: [] ).each( ( server ) => {
-			if ( structKeyExists( server, "url" ) ) {
-				mcpJson.mcpServers[ server.name ] = {
+		( arguments.manifest.mcpServers.custom ?: [] ).each( ( targetServer ) => {
+			if ( structKeyExists( targetServer, "url" ) ) {
+				mcpJson.mcpServers[ targetServer.name ] = {
 					"type" : "http",
-					"url"  : server.url
+					"url"  : targetServer.url
 				};
-			} else if ( structKeyExists( server, "command" ) ) {
+			} else if ( structKeyExists( targetServer, "command" ) ) {
 				var entry = {
 					"type"    : "stdio",
-					"command" : server.command
+					"command" : targetServer.command
 				};
-				if ( structKeyExists( server, "args" ) && server.args.len() ) {
-					entry.args = server.args;
+				if ( structKeyExists( targetServer, "args" ) && targetServer.args.len() ) {
+					entry.args = targetServer.args;
 				}
-				mcpJson.mcpServers[ server.name ] = entry;
+				mcpJson.mcpServers[ targetServer.name ] = entry;
 			}
 		} );
 

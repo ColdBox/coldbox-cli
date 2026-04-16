@@ -641,20 +641,32 @@ coldbox ai skills refresh             # Update from modules
 
 #### MCP Servers
 
-Model Context Protocol documentation servers:
+Model Context Protocol documentation servers provide live, up-to-date documentation access for AI agents. ColdBox CLI manages three types of MCP servers and keeps them in sync in both the manifest and the root `.mcp.json` file (compatible with VS Code, Claude Desktop, and other MCP clients):
 
 ```bash
 # View MCP configuration
-coldbox ai mcp list                   # List available servers
-coldbox ai mcp info                   # Show configuration
+coldbox ai mcp list                  # List all configured servers
+coldbox ai mcp list --verbose        # Show descriptions and URLs
 
-# Manage servers
-coldbox ai mcp add github filesystem  # Add MCP servers
-coldbox ai mcp remove filesystem      # Remove a server
-coldbox ai mcp config                 # Generate agent-specific configs
+# Install cbMCP (live ColdBox app introspection)
+coldbox ai mcp install               # Install cbmcp module + register at http://localhost:8888/cbmcp
+coldbox ai mcp install --port=8080   # Custom port
+coldbox ai mcp install --force       # Overwrite existing cbmcp config
+
+# Add/remove custom servers
+coldbox ai mcp add company-docs --url=https://docs.company.com/mcp
+coldbox ai mcp remove company-docs
+coldbox ai mcp remove cbsecurity --force   # Force remove a module server
 ```
 
-**MCP Server Types**: Core (30+ built-in), Module (from packages), Custom (project-specific)
+**MCP Server Types**:
+
+- **Core** (auto-configured): coldbox, boxlang, testbox, wirebox, cachebox, logbox, commandbox
+- **Module** (auto-detected from `box.json`): cbsecurity, quick, cfmigrations, cbvalidation, cbwire, and 20+ more
+- **Custom**: Any URL-based or stdio MCP server you add manually
+- **cbMCP** (local app): Your running ColdBox application exposed as an MCP server via `coldbox ai mcp install`
+
+**What cbMCP provides**: Once installed and your server is running, AI agents can query your live application for current routes, handler actions, model interfaces, and more — enabling context-aware code generation tailored to your actual project structure.
 
 #### AI Context Management
 

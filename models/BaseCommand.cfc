@@ -31,6 +31,59 @@ component accessors="true" {
 	}
 
 	/**
+	 * Detects the application layout and returns the appropriate modules directory path.
+	 * In a modern layout (or BoxLang project), modules live under lib/modules.
+	 * In a flat layout, modules live under modules.
+	 *
+	 * @cwd The current working directory
+	 *
+	 * @return string "lib/modules" for modern/BoxLang layout, "modules" for flat layout
+	 */
+	function getModulesPrefix( required cwd ){
+		var isModern = variables.utility.detectTemplateType( cwd ) == "modern" || isBoxLangProject( cwd );
+		return isModern ? "lib/modules" : "modules";
+	}
+
+	/**
+	 * Resolves the base URL (host:port) of the local server for the given directory.
+	 * Resolution order:
+	 *   1. CommandBox server.json discovery (getServerInfoByDiscovery)
+	 *   2. miniserver.json in the project directory
+	 *   3. Fallback: localhost:8080
+	 *
+	 * @directory The project directory to resolve the server for
+	 *
+	 * @return string  e.g. "localhost:8888" or "localhost:8080"
+	 */
+	function resolveServerBaseUrl( required string directory ){
+		// 1. Try CommandBox server.json discovery
+		var serverInfo = variables.serverService.getServerInfoByDiscovery(
+			serverConfigFile = arguments.directory & "/server.json"
+		);
+		if ( structCount( serverInfo ) && serverInfo.keyExists( "host" ) ) {
+			return "#serverInfo.host#:#serverInfo.port#";
+		}
+
+		// 2. Try miniserver.json in the project directory
+		var miniServerFile = arguments.directory & "/miniserver.json";
+		if ( fileExists( miniServerFile ) ) {
+			try {
+				var miniConfig = deserializeJSON( fileRead( miniServerFile ) );
+				var miniHost   = miniConfig.keyExists( "host" ) ? miniConfig.host : "localhost";
+				var miniPort   = miniConfig.keyExists( "port" ) ? miniConfig.port : 8080;
+				// Normalize bind-all address to localhost
+				if ( miniHost == "0.0.0.0" ) miniHost = "localhost";
+				return "#miniHost#:#miniPort#";
+			} catch ( any e ) {
+				// Ignore parse errors and fall through to default
+			}
+		}
+
+		// 3. Fallback
+		return "localhost:8080";
+	}
+
+	/**
 	 * Determines if we are running on a BoxLang server
 	 * or using the BoxLang runner.
 	 *
