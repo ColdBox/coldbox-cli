@@ -65,4 +65,21 @@ component extends="coldbox-cli.models.BaseCommand" {
 		)
 	}
 
+	/**
+	 * Generates (or regenerates) the root .mcp.json from the manifest's mcpServers.
+	 * Delegates to AIService.generateMCPJson().
+	 *
+	 * @directory The project root directory
+	 * @manifest  The current manifest struct
+	 */
+	function generateMCPJson(
+		required string directory,
+		required struct manifest
+	){
+		variables.aiService.generateMCPJson(
+			arguments.directory,
+			arguments.manifest
+		)
+	}
+
 }

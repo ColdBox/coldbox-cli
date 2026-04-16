@@ -120,6 +120,9 @@ component singleton {
 			arguments.agents
 		);
 
+		// Generate .mcp.json from manifest MCP servers
+		generateMCPJson( arguments.directory, manifest );
+
 		result.message = "AI integration installed successfully!";
 		return result;
 	}
@@ -227,6 +230,9 @@ component singleton {
 				variables.agentRegistry.configureAgent( directory, agent, language );
 			} );
 		}
+
+		// Regenerate .mcp.json to reflect updated MCP servers
+		generateMCPJson( arguments.directory, manifest );
 
 		result.message = "AI integration refreshed successfully!";
 		return result;
@@ -623,6 +629,65 @@ component singleton {
 		);
 
 		return stats;
+	}
+
+	/**
+	 * Generate or update the root .mcp.json file from the manifest's mcpServers.
+	 * This file follows the VS Code / Claude Desktop MCP configuration format:
+	 * { "mcpServers": { "name": { "type": "http", "url": "..." } } }
+	 *
+	 * - core/module servers: looked up by name from MCPRegistry to get their URL
+	 * - custom servers: URL-based → type "http"; command-based → type "stdio"
+	 *
+	 * @directory The project root directory
+	 * @manifest  The current manifest struct (must contain mcpServers)
+	 */
+	function generateMCPJson(
+		required string directory,
+		required struct manifest
+	){
+		var mcpJson = { "mcpServers" : {} };
+		var allKnown = variables.mcpRegistry.getAllKnownServers();
+
+		// Process core and module servers (string names → look up definition)
+		var namedServers = [];
+		namedServers.append( arguments.manifest.mcpServers.core   ?: [], true );
+		namedServers.append( arguments.manifest.mcpServers.module ?: [], true );
+
+		namedServers.each( ( serverName ) => {
+			if ( structKeyExists( allKnown, serverName ) ) {
+				mcpJson.mcpServers[ serverName ] = {
+					"type" : "http",
+					"url"  : allKnown[ serverName ].url
+				};
+			}
+		} );
+
+		// Process custom servers (objects with url or command)
+		( arguments.manifest.mcpServers.custom ?: [] ).each( ( server ) => {
+			if ( structKeyExists( server, "url" ) ) {
+				mcpJson.mcpServers[ server.name ] = {
+					"type" : "http",
+					"url"  : server.url
+				};
+			} else if ( structKeyExists( server, "command" ) ) {
+				var entry = {
+					"type"    : "stdio",
+					"command" : server.command
+				};
+				if ( structKeyExists( server, "args" ) && server.args.len() ) {
+					entry.args = server.args;
+				}
+				mcpJson.mcpServers[ server.name ] = entry;
+			}
+		} );
+
+		variables.JSONService.writeJSONFile(
+			path: arguments.directory & "/.mcp.json",
+			json: mcpJson
+		);
+
+		return this;
 	}
 
 	/**

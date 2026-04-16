@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `.mcp.json` file creation in user root with the list of MCP servers from the manifest for AI integration
 - Pretty print saving of manifest on installation
 
 ## [8.10.1] - 2026-04-15

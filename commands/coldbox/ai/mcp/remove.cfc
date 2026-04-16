@@ -64,6 +64,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				variables.agentRegistry.configureAgent( directory, agent, language );
 			} );
 
+			// Regenerate .mcp.json with server removed
+			generateMCPJson( arguments.directory, manifest );
+
 			print.line();
 			printSuccess( "Custom MCP server '#arguments.name#' removed successfully!" );
 			print.line();
@@ -91,6 +94,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			manifest.agents.each( ( agent ) => {
 				variables.agentRegistry.configureAgent( directory, agent, language );
 			} );
+
+			// Regenerate .mcp.json with server removed
+			generateMCPJson( arguments.directory, manifest );
 
 			print.line();
 			printSuccess( "Module MCP server '#arguments.name#' removed!" );
