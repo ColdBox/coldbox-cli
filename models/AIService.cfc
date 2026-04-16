@@ -646,13 +646,19 @@ component singleton {
 		required string directory,
 		required struct manifest
 	){
-		var mcpJson = { "mcpServers" : {} };
+		var mcpJson  = { "mcpServers" : {} };
 		var allKnown = variables.mcpRegistry.getAllKnownServers();
 
 		// Process core and module servers (string names → look up definition)
 		var namedServers = [];
-		namedServers.append( arguments.manifest.mcpServers.core   ?: [], true );
-		namedServers.append( arguments.manifest.mcpServers.module ?: [], true );
+		namedServers.append(
+			arguments.manifest.mcpServers.core ?: [],
+			true
+		);
+		namedServers.append(
+			arguments.manifest.mcpServers.module ?: [],
+			true
+		);
 
 		namedServers.each( ( serverName ) => {
 			if ( structKeyExists( allKnown, serverName ) ) {

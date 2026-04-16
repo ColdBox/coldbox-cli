@@ -63,8 +63,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Resolve host and port - checks server.json, then miniserver.json, then defaults to localhost:8080
-		var mcpBase = resolveServerBaseUrl( arguments.directory );
-		var mcpUrl  = "http://#mcpBase#/cbmcp";
+		var mcpBase      = resolveServerBaseUrl( arguments.directory );
+		var mcpUrl       = "http://#mcpBase#/cbmcp";
 		var serverConfig = {
 			"name"        : serverName,
 			"description" : "ColdBox Application MCP Server (live routes, handlers, models)",
@@ -80,7 +80,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Install the CommandBox module as a dev dependency
 		command( "install" )
-			.params( id="cbmcp", saveDev=true, directory=modulesDir )
+			.params(
+				id        = "cbmcp",
+				saveDev   = true,
+				directory = modulesDir
+			)
 			.inWorkingDirectory( arguments.directory )
 			.run();
 
@@ -101,7 +105,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		generateMCPJson( arguments.directory, manifest );
 
 		// Regenerate all agent config files
-		var language  = manifest.language ?: "boxlang";
+		var language = manifest.language ?: "boxlang";
 		manifest.agents.each( ( agent ) => {
 			variables.agentRegistry.configureAgent( directory, agent, language );
 		} );

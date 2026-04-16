@@ -97,7 +97,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		generateMCPJson( arguments.directory, manifest );
 
 		// Regenerate all agent config files
-		var language  = manifest.language ?: "boxlang";
+		var language = manifest.language ?: "boxlang";
 		manifest.agents.each( ( agent ) => {
 			variables.agentRegistry.configureAgent( directory, agent, language );
 		} );
