@@ -5,14 +5,16 @@
 component singleton {
 
 	// DI
-	property name="print"            inject="PrintBuffer";
-	property name="fileSystemUtil"   inject="fileSystem";
-	property name="packageService"   inject="PackageService";
 	property name="guidelineManager" inject="GuidelineManager@coldbox-cli";
 	property name="skillManager"     inject="SkillManager@coldbox-cli";
 	property name="agentRegistry"    inject="AgentRegistry@coldbox-cli";
 	property name="mcpRegistry"      inject="MCPRegistry@coldbox-cli";
 	property name="utility"          inject="Utility@coldbox-cli";
+	// From CommandBox CLI
+	property name="JSONService"      inject="JSONService";
+	property name="print"            inject="PrintBuffer";
+	property name="fileSystemUtil"   inject="fileSystem";
+	property name="packageService"   inject="PackageService";
 
 	/**
 	 * Install AI integration for a project
@@ -382,9 +384,9 @@ component singleton {
 	){
 		var manifestPath            = getManifestPath( arguments.directory )
 		arguments.manifest.lastSync = dateTimeFormat( now(), "iso" )
-		fileWrite(
-			manifestPath,
-			serializeJSON( arguments.manifest, true )
+		variables.JSONService.writeJSONFile(
+			path: manifestPath,
+			json: arguments.manifest
 		)
 		return this
 	}
