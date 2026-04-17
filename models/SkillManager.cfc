@@ -175,8 +175,8 @@ component singleton {
 
 		toRemove.each( ( name ) => {
 			variables.print.yellowLine( "  🗑️  Removing orphaned module skill: #name#" ).toConsole()
-			deleteSkillDir( arguments.directory, name )
-			arguments.manifest.skills = arguments.manifest.skills.filter( ( s ) => s.name != name )
+			deleteSkillDir( directory, name )
+			manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
 
@@ -193,10 +193,14 @@ component singleton {
 		remoteSkills.each( ( s ) => {
 			var owner = s.owner ?: ""
 			var repo  = s.repo  ?: ""
-			if ( !owner.len() || !repo.len() ) return
-			var key = "#owner#/#repo#"
-			if ( !repoMap.keyExists( key ) ) repoMap[ key ] = []
-			repoMap[ key ].append( s )
+			if ( !owner.len() || !repo.len() ){
+				return;
+			}
+			var targetKey = "#owner#/#repo#"
+			if ( !repoMap.keyExists( targetKey ) ) {
+				repoMap[ targetKey ] = []
+			}
+			repoMap[ targetKey ].append( s )
 		} )
 
 		// For each repo, fetch the skill list and compare SHAs
@@ -212,7 +216,9 @@ component singleton {
 				var entrySlug = manifestEntry.slug ?: ""
 				var entryPath = manifestEntry.path ?: ""
 				var remote    = remoteList.filter( ( r ) => r.slug == entrySlug || r.path == entryPath )
-				if ( !remote.len() ) return
+				if ( !remote.len() ){
+					return;
+				}
 
 				var currentSha = remote.first().sha ?: ""
 				var storedSha  = manifestEntry.sha  ?: ""
@@ -287,10 +293,14 @@ component singleton {
 		if ( directoryExists( skillsDir ) ) {
 			directoryList( skillsDir, false, "name" ).each( ( dirName ) => {
 				var skillFilePath = "#skillsDir#/#dirName#/SKILL.md"
-				if ( !fileExists( skillFilePath ) ) return
+				if ( !fileExists( skillFilePath ) ) {
+					return;
+				}
 
-				var alreadyInManifest = arguments.manifest.skills.filter( ( s ) => s.name == dirName ).len() > 0
-				if ( alreadyInManifest ) return
+				var alreadyInManifest = manifest.skills.filter( ( s ) => s.name == dirName ).len() > 0
+				if ( alreadyInManifest ) {
+					return;
+				}
 
 				variables.print.greenLine( "  ✨  Found new custom skill: #dirName#" ).toConsole()
 
@@ -298,7 +308,7 @@ component singleton {
 				var parsed      = variables.utility.parseFrontmatter( content )
 				var description = parsed.frontmatter.description ?: ""
 
-				arguments.manifest.skills.append( {
+				manifest.skills.append( {
 					"name"       : dirName,
 					"owner"      : "",
 					"repo"       : "",

@@ -316,8 +316,20 @@ component singleton {
 			"recommendations" : []
 		};
 
-		// Check for missing core guidelines
+		// Check for missing core guidelines (respecting language mode)
+		var language = manifest.language ?: "boxlang"
 		static.CORE_GUIDELINES.each( ( name ) => {
+
+			// Skip cfml guideline for boxlang-only projects
+			if ( name == "cfml" && language == "boxlang" ) {
+				return;
+			}
+
+			// Skip boxlang guideline for cfml-only projects
+			if ( name == "boxlang" && language == "cfml" ) {
+				return;
+			}
+
 			var found = manifest.guidelines.filter( ( g ) => {
 				return g.name == name
 			} )
