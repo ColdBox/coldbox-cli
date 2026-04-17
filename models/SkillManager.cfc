@@ -1,6 +1,17 @@
 /**
- * Manages AI skills (implementation patterns and code templates)
- * Skills are loaded on-demand when AI needs specific implementation guidance
+ * Manages AI skills — remote-first, SHA-locked, flat storage.
+ *
+ * Skills are downloaded from skills.boxlang.io and stored at:
+ *   {project}/.ai/skills/{name}/SKILL.md
+ *
+ * The manifest records sha (from registry), owner, repo, path, and syncedAt.
+ * On refresh, stale skills (sha mismatch) are re-downloaded; orphaned module
+ * skills (removed from box.json) are pruned automatically.
+ *
+ * Multi-directory lookup order for agent instructions:
+ *   1. .ai/skills/{name}/SKILL.md    (coldbox-cli managed)
+ *   2. .agents/skills/{name}/SKILL.md
+ *   3. .claude/skills/{name}/SKILL.md
  */
 component singleton {
 
@@ -11,13 +22,24 @@ component singleton {
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
 	property name="aiService"      inject="AIService@coldbox-cli";
+	property name="settings"       inject="box:modulesettings:coldbox-cli";
+
+	// =========================================================================
+	// Public API — install / refresh
+	// =========================================================================
 
 	/**
-	 * Install core skills for a project
+	 * Install skills for a project based on detected dependencies.
+	 * - commandbox/* always installed
+	 * - boxlang-developer/* installed when language != cfml
+	 * - coldbox/testbox/* per box.json deps
+	 * - coldbox/skills/modules/{slug} per installed module
 	 *
 	 * @directory The project directory
-	 * @language Project language mode (boxlang, cfml, hybrid)
-	 * @manifest The manifest struct to update
+	 * @language  Project language mode (boxlang, cfml, hybrid)
+	 * @manifest  The manifest struct to update (mutated in place)
+	 *
+	 * @return Array of skill names that were installed
 	 */
 	function installCoreSkills(
 		required string directory,
@@ -25,338 +47,544 @@ component singleton {
 		required struct manifest
 	){
 		var installed = [];
+		var targets   = getSkillsMap( arguments.directory, arguments.language );
 
-		// Core skills - always installed based on language
-		var coreSkills = getCoreSkillsList( arguments.language );
+		// Use batch API when there are multiple skills to install
+		if ( targets.len() > 1 ) {
+			var batchItems = targets.map( ( t ) => { return { owner: t.owner, repo: t.repo, skill: t.slug, source: t.source, type: t.type } } )
 
-		coreSkills.each( ( skillName ) => {
-			installSkill(
-				directory,
-				skillName,
-				"core",
-				manifest
-			)
-			installed.append( skillName )
-		} )
+			variables.print
+				.blueLine( "⬇️  Downloading #batchItems.len()# skill(s) from registry..." )
+				.toConsole()
+
+			downloadSkillBatch( batchItems )
+				.each( ( result ) => {
+					if ( result.keyExists( "error" ) && result.error ) {
+						variables.print
+							.yellowLine( "  ⚠️  Skipped (download error): #result.message ?: 'unknown'#" )
+							.toConsole()
+						return
+					}
+
+					var skillAudit = result.skill.audit_status ?: "skipped"
+					var skillSlug  = result.skill.skill_slug ?: result.skill.skill_dir.listLast( "/" )
+
+					if ( skillAudit == "block" ) {
+						variables.print
+							.redLine( "  🚫  Blocked (failed security audit): #skillSlug#" )
+							.toConsole()
+						return
+					}
+
+					var _filtered  = targets.filter( ( t ) => t.slug == skillSlug )
+					var targetInfo = _filtered.len() ? _filtered.first() : {}
+					var localName  = targetInfo.name ?: result.skill.skill_dir.listLast( "/" )
+
+					variables.print.blueLine( "  ⬇️  Installing: #localName#" ).toConsole()
+
+					installRemoteSkill(
+						directory   = directory,
+						name        = localName,
+						content     = result.content,
+						owner       = result.skill.owner,
+						repo        = result.skill.repo,
+						path        = result.skill.skill_dir,
+						sha         = result.skill.file_sha,
+						description = result.skill.description,
+						auditStatus = skillAudit,
+						skillType   = targetInfo.type ?: "core",
+						source      = targetInfo.source ?: "",
+						manifest    = manifest
+					)
+					installed.append( localName )
+				} )
+
+			if ( installed.len() ) {
+				variables.print.greenLine( "✅  Installed #installed.len()# skill(s)." ).toConsole()
+			}
+
+		} else if ( targets.len() == 1 ) {
+			var t = targets.first()
+			variables.print.blueLine( "⬇️  Downloading skill: #t.slug#..." ).toConsole()
+			var result = downloadSkill( t.owner, t.repo, t.slug )
+			if ( result.keyExists( "error" ) && result.error ) {
+				variables.print
+					.yellowLine( "  ⚠️  Skipped (download error): #result.message ?: 'unknown'#" )
+					.toConsole()
+			} else if ( ( result.skill.audit_status ?: "skipped" ) == "block" ) {
+				variables.print
+					.redLine( "  🚫  Blocked (failed security audit): #t.slug#" )
+					.toConsole()
+			} else {
+				variables.print.blueLine( "  ⬇️  Installing: #t.name#" ).toConsole()
+				installRemoteSkill(
+					directory   = arguments.directory,
+					name        = t.name,
+					content     = result.content,
+					owner       = result.skill.owner,
+					repo        = result.skill.repo,
+					path        = result.skill.skill_dir,
+					sha         = result.skill.file_sha,
+					description = result.skill.description,
+					auditStatus = result.skill.audit_status ?: "skipped",
+					skillType   = t.type,
+					source      = t.source,
+					manifest    = manifest
+				)
+				installed.append( t.name )
+				variables.print.greenLine( "✅  Installed: #t.name#" ).toConsole()
+			}
+		}
 
 		return installed;
 	}
 
 	/**
-	 * Refresh skills based on installed modules
-	 * - Updates module skills based on box.json dependencies
-	 * - Syncs custom skills from .ai/skills/custom/
-	 * - Syncs override skills from .ai/skills/overrides/
-	 * - Removes manifest entries for deleted files
-	 * - Removes skills for uninstalled modules
+	 * Refresh skills: re-download stale skills, prune orphaned module skills,
+	 * sync custom skills from filesystem.
 	 *
 	 * @directory The project directory
-	 * @manifest The manifest struct to update
+	 * @manifest  The manifest struct to update (mutated in place)
+	 *
+	 * @return Struct {added[], updated[], removed[]}
 	 */
 	function refresh(
 		required string directory,
 		required struct manifest
 	){
-		var changes = {
-			"added"   : [],
-			"updated" : [],
-			"removed" : []
-		};
+		var changes = { "added": [], "updated": [], "removed": [] };
 
-		// Get installed modules from box.json
+		// ------------------------------------------------------------------
+		// 1. Prune orphaned module skills (module removed from box.json)
+		// ------------------------------------------------------------------
 		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory );
-		var dependencies    = boxJson.dependencies ?: {};
-		var devDependencies = boxJson.devDependencies ?: {};
 		var allDependencies = {};
-		allDependencies.append( dependencies );
-		allDependencies.append( devDependencies );
+		allDependencies.append( boxJson.dependencies    ?: {} );
+		allDependencies.append( boxJson.devDependencies ?: {} );
 
-		// Map of module slugs to skills
-		var skillMap = getSkillModuleMap();
-
-		// Install/update skills for installed modules
-		for ( var moduleSlug in allDependencies ) {
-			if ( structKeyExists( skillMap, moduleSlug ) ) {
-				var skills = skillMap[ moduleSlug ];
-				skills.each( ( skillName ) => {
-					var existing = manifest.skills.filter( ( s ) => {
-						return s.name == skillName
-					} )
-
-					if ( existing.len() ) {
-						// Already installed - check if needs update
-						// For now, just mark as updated if module version changed
-						changes.updated.append( skillName )
-					} else {
-						// New skill
-						installSkill(
-							directory,
-							skillName,
-							moduleSlug,
-							manifest
-						)
-						changes.added.append( skillName )
-					}
-				} )
-			}
-		}
-
-		// Remove skills for uninstalled modules (but keep core and custom skills)
 		var toRemove = [];
-		for ( var skill in manifest.skills ) {
-			var skillSource = skill.source ?: ""
-			var skillType   = skill.type ?: ""
+		for ( var skill in arguments.manifest.skills ) {
+			var skillType = skill.type ?: ""
+			if ( skillType != "module" ) continue
 
-			// Don't remove core, custom, or override skills
-			if ( skillSource == "core" || skillSource == "user" || skillType == "custom" || skillType == "override" ) {
-				continue;
-			}
-
-			// Remove module skills if module no longer installed
-			if ( !structKeyExists( allDependencies, skillSource ) ) {
-				toRemove.append( skill.name );
+			var source = skill.source ?: ""
+			if ( source.len() && !allDependencies.keyExists( source ) ) {
+				toRemove.append( skill.name )
 			}
 		}
 
 		toRemove.each( ( name ) => {
-			removeSkill( directory, name, manifest )
+			variables.print.yellowLine( "  🗑️  Removing orphaned module skill: #name#" ).toConsole()
+			deleteSkillDir( arguments.directory, name )
+			arguments.manifest.skills = arguments.manifest.skills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
 
-		// Sync custom skills from filesystem
-		var customDir = "#arguments.directory#/.ai/skills/custom"
-		if ( directoryExists( customDir ) ) {
-			var customDirs = directoryList( customDir, false, "name" )
-			customDirs.each( ( dirName ) => {
-				var skillPath = "#customDir#/#dirName#/SKILL.md"
-				if ( fileExists( skillPath ) ) {
-					// Parse frontmatter for description
-					var content     = fileRead( skillPath )
-					var parsed      = variables.utility.parseFrontmatter( content )
-					var description = parsed.frontmatter.description ?: ""
+		// ------------------------------------------------------------------
+		// 2. Collect remote skills that need SHA check
+		// ------------------------------------------------------------------
+		var remoteSkills = arguments.manifest.skills.filter( ( s ) => {
+			var type = s.type ?: ""
+			return type != "custom"
+		} )
 
-					// Check if in manifest
-					var existing = manifest.skills.filter( ( s ) => s.name == dirName )
-					if ( !existing.len() ) {
-						// Add to manifest
-						var skillEntry = {
-							"name"             : dirName,
-							"source"           : "custom",
-							"type"             : "custom",
-							"installedVersion" : variables.utility.getColdboxCliVersion(),
-							"syncedAt"         : dateTimeFormat( now(), "iso" ),
-							"description"      : ""
-						}
-						if ( description.len() ) {
-							skillEntry.description = description
-						}
-						manifest.skills.append( skillEntry )
-						changes.added.append( dirName )
-					}
+		// Group by owner/repo for efficient API calls
+		var repoMap = {}
+		remoteSkills.each( ( s ) => {
+			var owner = s.owner ?: ""
+			var repo  = s.repo  ?: ""
+			if ( !owner.len() || !repo.len() ) return
+			var key = "#owner#/#repo#"
+			if ( !repoMap.keyExists( key ) ) repoMap[ key ] = []
+			repoMap[ key ].append( s )
+		} )
+
+		// For each repo, fetch the skill list and compare SHAs
+		var staleItems = []
+		for ( var repoKey in repoMap ) {
+			var parts      = repoKey.listToArray( "/" )
+			var owner      = parts[ 1 ]
+			var repo       = parts[ 2 ]
+			var repoSkills = repoMap[ repoKey ]
+			var remoteList = fetchRepoSkillList( owner, repo )
+
+			repoSkills.each( ( manifestEntry ) => {
+				var entrySlug = manifestEntry.slug ?: ""
+				var entryPath = manifestEntry.path ?: ""
+				var remote    = remoteList.filter( ( r ) => r.slug == entrySlug || r.path == entryPath )
+				if ( !remote.len() ) return
+
+				var currentSha = remote.first().sha ?: ""
+				var storedSha  = manifestEntry.sha  ?: ""
+				if ( currentSha != storedSha ) {
+					staleItems.append( { entry: manifestEntry, newSha: currentSha } )
 				}
 			} )
 		}
 
-		// Sync override skills from filesystem
-		var overridesDir = "#arguments.directory#/.ai/skills/overrides"
-		if ( directoryExists( overridesDir ) ) {
-			var overrideFiles = directoryList( overridesDir, false, "name", "*.md" )
-			overrideFiles.each( ( fileName ) => {
-				var baseName     = replaceNoCase( fileName, ".md", "" )
-				var manifestName = "#baseName#-override"
+		// ------------------------------------------------------------------
+		// 3. Re-download stale skills via batch
+		// ------------------------------------------------------------------
+		if ( staleItems.len() ) {
+			variables.print.yellowLine( "  📦  Found #staleItems.len()# outdated skill(s), re-downloading..." ).toConsole()
+			var batchItems = staleItems.map( ( item ) => {
+				return {
+					owner : item.entry.owner ?: "",
+					repo  : item.entry.repo  ?: "",
+					skill : item.entry.slug  ?: item.entry.path.listLast( "/" )
+				}
+			} )
+			var batchResult = downloadSkillBatch( batchItems )
 
-				// Parse frontmatter for description
-				var filePath    = "#overridesDir#/#fileName#"
-				var content     = fileRead( filePath )
+			batchResult.each( ( result ) => {
+				if ( result.keyExists( "error" ) && result.error ) return
+
+				var resultSlug    = result.skill.skill_slug ?: ""
+				var _staleFiltered = staleItems.filter( ( i ) => i.entry.slug == resultSlug )
+				var staleItem      = _staleFiltered.len() ? _staleFiltered.first() : {}
+				if ( staleItem.isEmpty() ) return
+
+				variables.print.blueLine( "  🔄  Updating: #staleItem.entry.name#" ).toConsole()
+
+				installRemoteSkill(
+					directory   = arguments.directory,
+					name        = staleItem.entry.name,
+					content     = result.content,
+					owner       = result.skill.owner,
+					repo        = result.skill.repo,
+					path        = result.skill.skill_dir,
+					sha         = result.skill.file_sha,
+					description = result.skill.description,
+					auditStatus = result.skill.audit_status,
+					skillType   = staleItem.entry.type ?: "core",
+					source      = staleItem.entry.source ?: "",
+					manifest    = arguments.manifest
+				)
+				changes.updated.append( staleItem.entry.name )
+			} )
+		}
+
+		// ------------------------------------------------------------------
+		// 4. Remove manifest entries whose files no longer exist on disk
+		// ------------------------------------------------------------------
+		var orphaned = []
+		for ( var skill in arguments.manifest.skills ) {
+			var skillFile = getSkillFilePath( arguments.directory, skill.name )
+			if ( isNull( skillFile ) ) {
+				orphaned.append( skill.name )
+			}
+		}
+		orphaned.each( ( name ) => {
+			variables.print.yellowLine( "  🧹  Removing missing-file entry: #name#" ).toConsole()
+			arguments.manifest.skills = arguments.manifest.skills.filter( ( s ) => s.name != name )
+			changes.removed.append( name )
+		} )
+
+		// ------------------------------------------------------------------
+		// 5. Sync custom skills from .ai/skills/ that aren't in manifest yet
+		// ------------------------------------------------------------------
+		var skillsDir = "#arguments.directory#/.ai/skills"
+		if ( directoryExists( skillsDir ) ) {
+			directoryList( skillsDir, false, "name" ).each( ( dirName ) => {
+				var skillFilePath = "#skillsDir#/#dirName#/SKILL.md"
+				if ( !fileExists( skillFilePath ) ) return
+
+				var alreadyInManifest = arguments.manifest.skills.filter( ( s ) => s.name == dirName ).len() > 0
+				if ( alreadyInManifest ) return
+
+				variables.print.greenLine( "  ✨  Found new custom skill: #dirName#" ).toConsole()
+
+				var content     = fileRead( skillFilePath )
 				var parsed      = variables.utility.parseFrontmatter( content )
 				var description = parsed.frontmatter.description ?: ""
 
-				// Check if in manifest
-				var existing = manifest.skills.filter( ( s ) => s.name == manifestName )
-				if ( !existing.len() ) {
-					// Add to manifest
-					var skillEntry = {
-						"name"             : manifestName,
-						"source"           : "user",
-						"type"             : "override",
-						"installedVersion" : variables.utility.getColdboxCliVersion(),
-						"syncedAt"         : dateTimeFormat( now(), "iso" )
-					}
-					if ( description.len() ) {
-						skillEntry.description = description
-					}
-					manifest.skills.append( skillEntry )
-					changes.added.append( manifestName )
-				}
+				arguments.manifest.skills.append( {
+					"name"       : dirName,
+					"owner"      : "",
+					"repo"       : "",
+					"path"       : "",
+					"sha"        : "",
+					"description": description,
+					"type"       : "custom",
+					"source"     : "custom",
+					"syncedAt"   : dateTimeFormat( now(), "iso" )
+				} )
+				changes.added.append( dirName )
 			} )
 		}
-
-		// Remove manifest entries for files/directories that no longer exist
-		var orphanedSkills = []
-		for ( var skill in manifest.skills ) {
-			var skillType   = skill.type ?: ""
-			var skillSource = skill.source ?: skill.type ?: ""
-			var skillPath   = ""
-
-			// Determine expected file/directory path
-			if ( skillSource == "core" ) {
-				skillPath = "#arguments.directory#/.ai/skills/core/#skill.name#/SKILL.md"
-			} else if ( skillType == "custom" ) {
-				skillPath = "#arguments.directory#/.ai/skills/custom/#skill.name#/SKILL.md"
-			} else if ( skillType == "override" ) {
-				var baseName = replaceNoCase( skill.name, "-override", "" )
-				skillPath    = "#arguments.directory#/.ai/skills/overrides/#baseName#.md"
-			} else {
-				// Module skill
-				skillPath = "#arguments.directory#/.ai/skills/modules/#skill.name#/SKILL.md"
-			}
-
-			// Check if file exists
-			if ( skillPath.len() && !fileExists( skillPath ) ) {
-				orphanedSkills.append( skill.name )
-			}
-		}
-
-		orphanedSkills.each( ( name ) => {
-			manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
-			changes.removed.append( name )
-		} )
 
 		return changes;
 	}
 
+	// =========================================================================
+	// Public API — single install / validation / path resolution
+	// =========================================================================
+
 	/**
-	 * Create a custom skill from template
+	 * Download and install a single remote skill into a project.
+	 *
+	 * @directory   The project directory
+	 * @owner       GitHub owner/org
+	 * @repo        GitHub repo name
+	 * @skillSlug   The skill_slug value (as used by the registry)
+	 * @name        Optional local name override (defaults to last segment of skill_dir)
+	 * @skillType   Manifest type: core|module|commandbox|custom (default: core)
+	 * @source      Module slug when type=module, otherwise ""
+	 * @force       Overwrite existing skill file
+	 * @manifest    Manifest struct to update (if empty, loaded and saved automatically)
+	 *
+	 * @return Struct: {success, name, sha, auditStatus, message}
+	 */
+	struct function installSkillBySlug(
+		required string directory,
+		required string owner,
+		required string repo,
+		required string skillSlug,
+		string name      = "",
+		string skillType = "core",
+		string source    = "",
+		boolean force    = false,
+		struct manifest  = {}
+	){
+		var managingManifest = arguments.manifest.isEmpty()
+		if ( managingManifest ) {
+			arguments.manifest = variables.aiService.loadManifest( arguments.directory )
+		}
+
+		variables.print.blueLine( "⬇️  Downloading #arguments.owner#/#arguments.repo#/#arguments.skillSlug#..." ).toConsole()
+
+		var downloadResult = downloadSkill( arguments.owner, arguments.repo, arguments.skillSlug )
+		if ( downloadResult.keyExists( "error" ) && downloadResult.error ) {
+			variables.print.redLine( "  ❌  Download failed: #downloadResult.message ?: 'unknown'#" ).toConsole()
+			return { success: false, name: arguments.skillSlug, message: downloadResult.message ?: "Download failed" }
+		}
+
+		var skill       = downloadResult.skill
+		var content     = downloadResult.content
+		var auditStatus = skill.audit_status ?: "skipped"
+
+		if ( auditStatus == "block" ) {
+			variables.print.redLine( "  🚫  Blocked (failed security audit): #arguments.skillSlug#" ).toConsole()
+			return {
+				success     : false,
+				name        : arguments.skillSlug,
+				auditStatus : auditStatus,
+				message     : "Skill failed security audit and cannot be installed"
+			}
+		}
+
+		var localName = arguments.name.len() ? arguments.name : skill.skill_dir.listLast( "/" )
+
+		if ( !arguments.force ) {
+			var existing = getSkillFilePath( arguments.directory, localName )
+			if ( !isNull( existing ) ) {
+				variables.print.yellowLine( "  ⚠️  Already installed: #localName# (use --force to overwrite)" ).toConsole()
+				return {
+					success     : false,
+					name        : localName,
+					auditStatus : auditStatus,
+					message     : "Skill already installed. Use --force to overwrite."
+				}
+			}
+		}
+
+		installRemoteSkill(
+			directory   = arguments.directory,
+			name        = localName,
+			content     = content,
+			owner       = skill.owner,
+			repo        = skill.repo,
+			path        = skill.skill_dir,
+			sha         = skill.file_sha,
+			description = skill.description,
+			auditStatus = auditStatus,
+			skillType   = arguments.skillType,
+			source      = arguments.source,
+			manifest    = arguments.manifest
+		)
+
+		variables.print.greenLine( "  ✅  Installed: #localName#" ).toConsole()
+
+		if ( managingManifest ) {
+			variables.aiService.saveManifest( arguments.directory, arguments.manifest )
+		}
+
+		return {
+			success     : true,
+			name        : localName,
+			sha         : skill.file_sha,
+			auditStatus : auditStatus,
+			message     : "Installed #localName#"
+		}
+	}
+
+	/**
+	 * Validate skill integrity — compares manifest SHAs against current registry.
 	 *
 	 * @directory The project directory
-	 * @name The custom skill name
-	 * @language The language variant (boxlang or cfml)
+	 * @manifest  The manifest struct
+	 *
+	 * @return Struct: {valid[], stale[], missing[]}
+	 */
+	struct function validateSkillIntegrity(
+		required string directory,
+		required struct manifest
+	){
+		var result = { valid: [], stale: [], missing: [] }
+
+		for ( var skill in arguments.manifest.skills ) {
+			var skillFile = getSkillFilePath( arguments.directory, skill.name )
+			if ( isNull( skillFile ) ) {
+				result.missing.append( skill.name )
+				continue;
+			}
+
+			var owner = skill.owner ?: ""
+			var repo  = skill.repo  ?: ""
+			var slug  = skill.slug  ?: ""
+			var type  = skill.type  ?: ""
+
+			if ( type == "custom" || !owner.len() || !repo.len() || !slug.len() ) {
+				result.valid.append( skill.name )
+				continue;
+			}
+
+			var remoteList = fetchRepoSkillList( owner, repo )
+			var remote     = remoteList.filter( ( r ) => r.slug == slug )
+			if ( !remote.len() ) {
+				result.valid.append( skill.name )
+				continue;
+			}
+
+			var currentSha = remote.first().sha ?: ""
+			if ( currentSha != ( skill.sha ?: "" ) ) {
+				result.stale.append( skill.name )
+			} else {
+				result.valid.append( skill.name )
+			}
+		}
+
+		return result
+	}
+
+	/**
+	 * Return the absolute path to a skill's SKILL.md file, checking three locations:
+	 *   1. {directory}/.ai/skills/{name}/SKILL.md
+	 *   2. {directory}/.agents/skills/{name}/SKILL.md
+	 *   3. {directory}/.claude/skills/{name}/SKILL.md
+	 *
+	 * @directory The project directory
+	 * @name      The skill name (directory name)
+	 *
+	 * @return Absolute path string, or null if not found
+	 */
+	function getSkillFilePath( required string directory, required string name ){
+		var candidates = [
+			"#arguments.directory#/.ai/skills/#arguments.name#/SKILL.md",
+			"#arguments.directory#/.agents/skills/#arguments.name#/SKILL.md",
+			"#arguments.directory#/.claude/skills/#arguments.name#/SKILL.md"
+		]
+		for ( var candidate in candidates ) {
+			if ( fileExists( candidate ) ) return candidate
+		}
+		return javacast( "null", "" )
+	}
+
+	/**
+	 * Create a custom skill from template in the flat .ai/skills/{name}/ directory.
+	 *
+	 * @directory The project directory
+	 * @name      The custom skill name
+	 * @language  The language variant (boxlang or cfml)
 	 */
 	function createCustomSkill(
 		required string directory,
 		required string name,
 		string language = "boxlang"
 	){
-		var targetDir = "#arguments.directory#/.ai/skills/custom/#arguments.name#"
+		var targetDir = "#arguments.directory#/.ai/skills/#arguments.name#"
 		var skillFile = "#targetDir#/SKILL.md"
 
-		// Ensure custom directory exists
-		if ( !directoryExists( targetDir ) ) {
+		if ( !directoryExists( targetDir ) ){
 			directoryCreate( targetDir, true )
 		}
 
-		// Create skill from template
 		var languageSuffix = arguments.language == "cfml" ? ".cfml" : ".bx"
 		var templatePath   = variables.utility.getTemplatesPath() & "/ai/skills/custom-skill-template#languageSuffix#.md"
 		var template       = fileRead( templatePath )
-
-		// Replace tokens
-		template = replaceNoCase(
-			template,
-			"|skillName|",
-			arguments.name,
-			"all"
-		)
+		template           = replaceNoCase( template, "|skillName|", arguments.name, "all" )
 		fileWrite( skillFile, template )
 
-		// Update manifest
 		var manifest = variables.aiService.loadManifest( arguments.directory );
-
 		manifest.skills.append( {
-			"name"             : arguments.name,
-			"source"           : "custom",
-			"installedVersion" : "1.0.0",
-			"syncedAt"         : dateTimeFormat( now(), "iso" )
+			"name"       : arguments.name,
+			"owner"      : "",
+			"repo"       : "",
+			"path"       : "",
+			"sha"        : "",
+			"description": "",
+			"type"       : "custom",
+			"source"     : "custom",
+			"syncedAt"   : dateTimeFormat( now(), "iso" )
 		} )
-
 		variables.aiService.saveManifest( arguments.directory, manifest )
 	}
 
 	/**
-	 * Remove a skill from the project
+	 * Remove a skill from the project (flat path).
 	 *
 	 * @directory The project directory
-	 * @name The skill name to remove
-	 * @type The skill type (core, module, custom, override)
+	 * @name      The skill name to remove
+	 *
+	 * @return true
+	 * @throws SkillManager.SkillNotFound if not found
 	 */
 	function removeSkillFromProject(
 		required string directory,
-		required string name,
-		required string type
+		required string name
 	){
-		// Determine file/directory location based on type
-		var skillPath    = ""
-		var manifestName = arguments.name
+		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
 
-		if ( arguments.type == "override" ) {
-			// Override files are stored with base name, manifest has -override suffix
-			skillPath    = "#arguments.directory#/.ai/skills/overrides/#arguments.name#.md"
-			manifestName = "#arguments.name#-override"
-		} else if ( arguments.type == "core" ) {
-			skillPath = "#arguments.directory#/.ai/skills/core/#arguments.name#"
-		} else if ( arguments.type == "module" ) {
-			skillPath = "#arguments.directory#/.ai/skills/modules/#arguments.name#"
-		} else if ( arguments.type == "custom" ) {
-			skillPath = "#arguments.directory#/.ai/skills/custom/#arguments.name#"
-		}
-
-		// Check if path exists
-		if ( !fileExists( skillPath ) && !directoryExists( skillPath ) ) {
+		if ( !directoryExists( skillDir ) ) {
 			throw(
 				type    = "SkillManager.SkillNotFound",
-				message = "#arguments.type# skill '#arguments.name#' not found at: #skillPath#"
+				message = "Skill '#arguments.name#' not found at: #skillDir#"
 			)
 		}
 
-		// Delete the file or directory
-		if ( fileExists( skillPath ) ) {
-			fileDelete( skillPath )
-		} else {
-			directoryDelete( skillPath, true )
-		}
+		directoryDelete( skillDir, true )
 
-		// Update manifest
 		var manifest    = variables.aiService.loadManifest( arguments.directory )
-		manifest.skills = manifest.skills.filter( ( s ) => s.name != manifestName )
+		manifest.skills = manifest.skills.filter( ( s ) => s.name != arguments.name )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
 		return true
 	}
 
 	/**
-	 * Create a skill override
+	 * Create a skill override (custom copy) in the flat .ai/skills/{name}/ directory.
+	 * Sets type=custom, empty owner/repo so refresh skips it.
 	 *
 	 * @directory The project directory
-	 * @name The name of the skill to override
-	 * @type The skill type (core or module)
+	 * @name      The name of the skill to override
 	 */
 	function createSkillOverride(
 		required string directory,
-		required string name,
-		required string type
+		required string name
 	){
-		// Load manifest
-		var manifest = variables.aiService.loadManifest( arguments.directory )
+		var manifest   = variables.aiService.loadManifest( arguments.directory )
+		var sourcePath = getSkillFilePath( arguments.directory, arguments.name )
 
-		// Determine source path based on type
-		var sourcePath = arguments.type == "core"
-		 ? "#arguments.directory#/.ai/skills/core/#arguments.name#/SKILL.md"
-		 : "#arguments.directory#/.ai/skills/modules/#arguments.name#/SKILL.md"
-
-		if ( !fileExists( sourcePath ) ) {
+		if ( isNull( sourcePath ) ) {
 			throw(
 				type    = "SkillManager.SkillNotFound",
-				message = "Skill '#arguments.name#' not found at: #sourcePath#"
+				message = "Skill '#arguments.name#' not found in .ai/skills/, .agents/skills/, or .claude/skills/"
 			)
 		}
 
-		// Read the original skill content
 		var originalContent = fileRead( sourcePath )
 
-		// Read override template
-		var templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/"
-		var templatePath  = templatesPath & "skill-override-template.md"
-
+		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/skill-override-template.md"
 		if ( !fileExists( templatePath ) ) {
 			throw(
 				type    = "SkillManager.TemplateNotFound",
@@ -365,344 +593,368 @@ component singleton {
 		}
 
 		var content = fileRead( templatePath )
+		content     = replaceNoCase( content, "|skillName|",   arguments.name,  "all" )
+		content     = replaceNoCase( content, "|coreContent|", originalContent, "all" )
 
-		// Replace placeholders
-		content = replaceNoCase(
-			content,
-			"|skillName|",
-			arguments.name,
-			"all"
-		)
-		content = replaceNoCase(
-			content,
-			"|coreContent|",
-			originalContent,
-			"all"
-		)
-
-		// Ensure overrides directory exists
-		var overridesDir = "#arguments.directory#/.ai/skills/overrides"
-		if ( !directoryExists( overridesDir ) ) {
-			directoryCreate( overridesDir, true )
-		}
-
-		var targetFile = "#overridesDir#/#arguments.name#.md"
-
-		// Write override file
+		var targetDir  = "#arguments.directory#/.ai/skills/#arguments.name#"
+		var targetFile = "#targetDir#/SKILL.md"
+		if ( !directoryExists( targetDir ) ) directoryCreate( targetDir, true )
 		fileWrite( targetFile, content )
 
-		// Update manifest with override entry
-		var skillEntry = {
-			"name"             : "#arguments.name#-override",
-			"source"           : "user",
-			"type"             : "override",
-			"installedVersion" : variables.utility.getColdboxCliVersion(),
-			"syncedAt"         : dateTimeFormat( now(), "iso" )
+		// Find existing manifest entry
+		var existingIndex = 0
+		for ( var i = 1; i <= manifest.skills.len(); i++ ) {
+			if ( manifest.skills[ i ].name == arguments.name ) { existingIndex = i; break }
 		}
 
-		manifest.skills.append( skillEntry )
+		var skillEntry = {
+			"name"       : arguments.name,
+			"owner"      : "",
+			"repo"       : "",
+			"path"       : "",
+			"sha"        : "",
+			"description": existingIndex ? ( manifest.skills[ existingIndex ].description ?: "" ) : "",
+			"type"       : "custom",
+			"source"     : "custom",
+			"syncedAt"   : dateTimeFormat( now(), "iso" )
+		}
 
-		// Save manifest
+		if ( existingIndex ) {
+			manifest.skills[ existingIndex ] = skillEntry
+		} else {
+			manifest.skills.append( skillEntry )
+		}
+
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
 		return targetFile
 	}
 
 	/**
-	 * Diagnose skill health
+	 * Diagnose skill health: missing files.
 	 *
 	 * @directory The project directory
-	 * @manifest The manifest struct
+	 * @manifest  The manifest struct
 	 */
 	function diagnose(
 		required string directory,
 		required struct manifest
 	){
-		var issues = {
-			"warnings"        : [],
-			"recommendations" : []
-		};
+		var issues = { "warnings": [], "recommendations": [] };
 
-		// Check for missing core skills
-		var language   = manifest.language ?: "boxlang";
-		var coreSkills = getCoreSkillsList( language );
-
-		coreSkills.each( ( skillName ) => {
-			var found = manifest.skills.filter( ( s ) => {
-				return s.name == skillName
-			} )
-			if ( !found.len() ) {
-				issues.warnings.append( "Missing core skill: #skillName#" )
-				issues.recommendations.append( "Run 'coldbox ai refresh' to install missing skills" )
-			}
-		} )
-
-		// Check skill directories exist
-		for ( var skill in manifest.skills ) {
-			var skillDir = skill.source == "core" ? "#arguments.directory#/.ai/skills/core/#skill.name#" : "#arguments.directory#/.ai/skills/modules/#skill.name#";
-
-			if ( !directoryExists( skillDir ) ) {
-				issues.warnings.append( "Skill directory missing: #skill.name#" );
-				issues.recommendations.append( "Run 'coldbox ai refresh' to regenerate missing skills" );
+		for ( var skill in arguments.manifest.skills ) {
+			var skillFile = getSkillFilePath( arguments.directory, skill.name )
+			if ( isNull( skillFile ) || skillFile.isEmpty() ) {
+				issues.warnings.append( "Missing skill file: #skill.name#" )
+				issues.recommendations.append( "Run 'coldbox ai skills refresh' to restore missing skills" )
 			}
 		}
 
 		return issues;
 	}
 
-	// ========================================
-	// Private Helpers
-	// ========================================
+	// =========================================================================
+	// Remote API Helpers
+	// =========================================================================
 
 	/**
-	 * Get list of core skills based on language mode
+	 * Download a single skill from the registry.
 	 *
-	 * @language Project language mode (boxlang, cfml, hybrid)
+	 * @owner     GitHub owner/org
+	 * @repo      GitHub repo name
+	 * @skillSlug The skill_slug value
+	 *
+	 * @return Registry response struct: {skill, content, audit, counts} or {error, message}
 	 */
-	private function getCoreSkillsList( required string language ){
-		var skills = [];
+	struct function downloadSkill(
+		required string owner,
+		required string repo,
+		required string skillSlug
+	){
+		var registryUrl = variables.settings.skillsRegistryUrl
+		var targetUrl   = "#registryUrl#/api/install"
 
-		// ColdBox skills - always included
-		skills.append( "handler-development", true );
-		skills.append( "rest-api-development", true );
-		skills.append( "module-development", true );
-		skills.append( "interceptor-development", true );
-		skills.append( "routing-development", true );
-		skills.append( "event-model", true );
-		skills.append( "view-rendering", true );
-		skills.append( "layout-development", true );
-		skills.append( "cache-integration", true );
+		var httpResult = ""
+		cfhttp(
+			method  = "POST",
+			url     = targetUrl,
+			result  = "httpResult",
+			timeout = 30
+		) {
+			cfhttpparam( type="url", name="owner", value=arguments.owner );
+			cfhttpparam( type="url", name="repo",  value=arguments.repo  );
+			cfhttpparam( type="url", name="skill", value=arguments.skillSlug );
+		};
 
-		// BoxLang skills
-		if ( arguments.language != "cfml" ) {
-			skills.append( "boxlang-syntax", true );
-			skills.append( "boxlang-classes", true );
-			skills.append( "boxlang-functions", true );
-			skills.append( "boxlang-lambdas", true );
-			skills.append( "boxlang-modules", true );
-			skills.append( "boxlang-streams", true );
-			skills.append( "boxlang-types", true );
-			skills.append( "boxlang-interop", true );
+		if ( httpResult.statusCode >= 400 ) {
+			return {
+				error   : true,
+				message : "Registry returned #httpResult.statusCode# for #arguments.owner#/#arguments.repo#/#arguments.skillSlug#"
+			}
 		}
 
-		// CFML skills
-		if ( arguments.language != "boxlang" ) {
-			skills.append( "cfml-development", true );
+		try {
+			return deserializeJSON( httpResult.fileContent )
+		} catch ( any e ) {
+			return { error: true, message: "Failed to parse registry response: #e.message#" }
 		}
-
-		// Testing skills - always included
-		skills.append( "testing-bdd", true );
-		skills.append( "testing-unit", true );
-		skills.append( "testing-integration", true );
-		skills.append( "testing-handler", true );
-		skills.append( "testing-mocking", true );
-		skills.append( "testing-fixtures", true );
-		skills.append( "testing-coverage", true );
-		skills.append( "testing-ci", true );
-
-		return skills;
 	}
 
 	/**
-	 * Install a single skill
+	 * Batch-download multiple skills in one HTTP round-trip.
+	 * Falls back to sequential single downloads if the batch endpoint fails.
+	 *
+	 * @skills Array of {owner, repo, skill} structs
+	 *
+	 * @return Array of registry result structs
+	 */
+	array function downloadSkillBatch( required array skills ){
+		if ( arguments.skills.isEmpty() ) {
+			return []
+		}
+
+		var registryUrl = variables.settings.skillsRegistryUrl
+		var targetUrl   = "#registryUrl#/api/install/batch"
+		var payload     = serializeJSON( arguments.skills )
+		var httpResult = ""
+		cfhttp(
+			method  = "POST",
+			url     = targetUrl,
+			result  = "httpResult",
+			timeout = 60
+		) {
+			cfhttpparam( type="header", name="Content-Type", value="application/json; charset=utf-8" );
+			cfhttpparam( type="body",   value=payload );
+		};
+
+		if ( httpResult.statusCode > 400 ) {
+			variables.print
+				.printLine( "⚠️ Batch skill download failed: HTTP #httpResult.statusCode#. Try again." )
+				.println( "ErrorDetail: #httpResult.fileContent#" )
+			return []
+		}
+
+		try {
+			var response = deserializeJSON( httpResult.fileContent )
+			return isStruct( response ) && response.keyExists( "data" ) ? response.data : response
+		} catch ( any e ) {
+			variables.print
+				.printLine( "⚠️ Failed to parse batch download response: #e.message#" )
+				.println( "Content: #httpResult.fileContent#" )
+			return []
+		}
+	}
+
+	/**
+	 * Fetch the skill list for a repo from the registry (for SHA comparison).
+	 *
+	 * @owner GitHub owner/org
+	 * @repo  GitHub repo name
+	 *
+	 * @return Array of {name, path, sha, slug, category, description} or empty array on failure
+	 */
+	array function fetchRepoSkillList( required string owner, required string repo ){
+		var registryUrl = variables.settings.skillsRegistryUrl
+		var targetUrl   = "#registryUrl#/api/skills/#arguments.owner#/#arguments.repo#"
+		var httpResult = ""
+		cfhttp(
+			method  = "GET",
+			url     = targetUrl,
+			result  = "httpResult",
+			timeout = 30
+		);
+
+		if ( httpResult.statusCode >= 400 ) {
+			variables.print
+				.printLine( "🔴Failed to fetch skill list for #arguments.owner#/#arguments.repo#: HTTP #httpResult.statusCode#" )
+				.println( "ErrorDetail: #httpResult.fileContent#" )
+				.toConsole()
+			return []
+		}
+
+		try {
+			var response = deserializeJSON( httpResult.fileContent )
+			return isStruct( response ) && response.keyExists( "data" ) ? response.data : response
+		} catch ( any e ) {
+			variables.print
+				.printLine( "🔴Failed to parse skill list for #arguments.owner#/#arguments.repo#: #e.message#" )
+				.println( "ResponseContent: #httpResult.fileContent#" )
+				.toConsole()
+			return []
+		}
+	}
+
+	// =========================================================================
+	// Private Helpers
+	// =========================================================================
+
+	/**
+	 * Build the ordered list of skills to install for a project.
+	 * Returns array of {owner, repo, slug, name, type, source}.
 	 *
 	 * @directory The project directory
-	 * @skillName The name of the skill to install
-	 * @source The source of the skill (core or module slug)
-	 * @manifest The manifest struct to update
+	 * @language  Project language mode (boxlang, cfml, hybrid)
 	 */
-	private function installSkill(
+	private array function getSkillsMap(
 		required string directory,
-		required string skillName,
+		string language = "boxlang"
+	){
+		var targets = []
+		var bxRepo  = variables.settings.boxlangSkillsRepo
+		var cbRepo  = variables.settings.coldboxSkillsRepo
+
+		// Always: commandbox/* — fetch once, used for both commandbox and boxlang-developer
+		var bxRepoList = fetchRepoSkillList( bxRepo.owner, bxRepo.repo )
+
+		bxRepoList
+			.filter( ( s ) => s?.category == "commandbox" )
+			.each( ( s ) => {
+				targets.append( {
+					owner  : bxRepo.owner,
+					repo   : bxRepo.repo,
+					slug   : s.slug,
+					name   : s.name,
+					type   : "commandbox",
+					source : "commandbox"
+				} )
+			} )
+
+		// BoxLang projects: boxlang-developer/* (no boxlang-core-development — Java only)
+		if ( arguments.language != "cfml" ) {
+			bxRepoList
+				.filter( ( s ) => s?.category == "boxlang-developer" )
+				.each( ( s ) => {
+					targets.append( {
+						owner  : bxRepo.owner,
+						repo   : bxRepo.repo,
+						slug   : s.slug,
+						name   : s.name,
+						type   : "core",
+						source : "boxlang"
+					} )
+				} )
+		}
+
+		// ColdBox / TestBox / modules from coldbox/skills
+		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory )
+		var allDependencies = {}
+		allDependencies.append( boxJson.dependencies    ?: {} )
+		allDependencies.append( boxJson.devDependencies ?: {} )
+
+		var depsLower = allDependencies.keyList().lcase()
+		var hasColdBox = depsLower.listFindNoCase( "coldbox" )
+		var hasTestBox = depsLower.listFindNoCase( "testbox" )
+
+		if ( hasColdBox || hasTestBox ) {
+			var cbRepoList = fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
+			var coldboxFrameworks = [ "coldbox", "cachebox", "logbox", "wirebox" ]
+
+			if ( hasColdBox ) {
+				cbRepoList
+					.filter( ( s ) => s?.category == "coldbox" || coldboxFrameworks.contains( s?.slug ) )
+					.each( ( s ) => {
+						targets.append( { owner: cbRepo.owner, repo: cbRepo.repo, slug: s.slug, name: s.name, type: "core", source: "coldbox" } )
+					} )
+			}
+
+			if ( hasTestBox ) {
+				cbRepoList
+					.filter( ( s ) => s?.category == "testbox" )
+					.each( ( s ) => {
+						targets.append( { owner: cbRepo.owner, repo: cbRepo.repo, slug: s.slug, name: s.name, type: "core", source: "testbox" } )
+					} )
+			}
+
+			// Module-specific skills: one skill per installed module slug in coldbox/skills/modules/*
+			cbRepoList
+				.filter( ( s ) => s?.category == "modules" )
+				.each( ( s ) => {
+					var moduleSlug = s.name
+					if ( allDependencies.keyExists( moduleSlug ) ) {
+						targets.append( { owner: cbRepo.owner, repo: cbRepo.repo, slug: s.slug, name: s.name, type: "module", source: moduleSlug } )
+					}
+				} )
+		}
+
+		return targets
+	}
+
+	/**
+	 * Write a skill file and upsert the manifest entry.
+	 *
+	 * @directory   Project directory
+	 * @name        Local skill name (directory name)
+	 * @content     SKILL.md content
+	 * @owner       GitHub owner
+	 * @repo        GitHub repo
+	 * @path        skill_dir from registry
+	 * @sha         file_sha from registry
+	 * @description Skill description
+	 * @auditStatus Audit status
+	 * @skillType   Manifest type: core|module|commandbox|custom
+	 * @source      Module slug when type=module
+	 * @manifest    Manifest struct (mutated in place)
+	 */
+	private function installRemoteSkill(
+		required string directory,
+		required string name,
+		required string content,
+		required string owner,
+		required string repo,
+		required string path,
+		required string sha,
+		required string description,
+		required string auditStatus,
+		required string skillType,
 		required string source,
 		required struct manifest
 	){
-		// Determine target directory
-		var targetDir = arguments.source == "core" ? "core" : "modules";
-		var skillDir  = "#arguments.directory#/.ai/skills/#targetDir#/#arguments.skillName#";
+		var slug     = arguments.path.listLast( "/" )
+		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
 
-		// Create skill directory
 		if ( !directoryExists( skillDir ) ) {
-			directoryCreate( skillDir );
+			directoryCreate( skillDir, true )
 		}
+		fileWrite( "#skillDir#/SKILL.md", arguments.content )
 
-		// Create SKILL.md file with frontmatter (check if module ships its own)
-		var content = getSkillContent(
-			skillName  = arguments.skillName,
-			directory  = arguments.directory,
-			moduleSlug = arguments.source != "core" ? arguments.source : ""
-		);
-		fileWrite( "#skillDir#/SKILL.md", content );
-
-		// Parse frontmatter to extract description
-		var parsed      = variables.utility.parseFrontmatter( content )
-		var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
-
-		// Update manifest
-		var existingIndex = 0;
+		// Upsert manifest entry
+		var existingIndex = 0
 		for ( var i = 1; i <= arguments.manifest.skills.len(); i++ ) {
-			if ( arguments.manifest.skills[ i ].name == arguments.skillName ) {
-				existingIndex = i;
-				break;
-			}
+			if ( arguments.manifest.skills[ i ].name == arguments.name ) { existingIndex = i; break }
 		}
 
-		var skillEntry = {
-			"name"             : arguments.skillName,
-			"source"           : arguments.source,
-			"installedVersion" : variables.utility.getColdboxCliVersion(),
-			"syncedAt"         : dateTimeFormat( now(), "iso" ),
-			"description"      : ""
-		}
-
-		// Add description if provided
-		if ( description.len() ) {
-			skillEntry.description = description
+		var entry = {
+			"name"       : arguments.name,
+			"owner"      : arguments.owner,
+			"repo"       : arguments.repo,
+			"path"       : arguments.path,
+			"slug"       : slug,
+			"sha"        : arguments.sha,
+			"description": arguments.description,
+			"type"       : arguments.skillType,
+			"source"     : arguments.source,
+			"syncedAt"   : dateTimeFormat( now(), "iso" )
 		}
 
 		if ( existingIndex ) {
-			arguments.manifest.skills[ existingIndex ] = skillEntry;
+			arguments.manifest.skills[ existingIndex ] = entry
 		} else {
-			arguments.manifest.skills.append( skillEntry );
+			arguments.manifest.skills.append( entry )
 		}
 	}
 
 	/**
-	 * Remove a skill
+	 * Delete a skill directory under .ai/skills/ if it exists.
 	 *
 	 * @directory The project directory
-	 * @skillName The name of the skill to remove
-	 * @manifest The manifest struct to update
+	 * @name      The skill name (directory name)
 	 */
-	private function removeSkill(
-		required string directory,
-		required string skillName,
-		required struct manifest
-	){
-		// Remove directory
-		var possiblePaths = [
-			"#arguments.directory#/.ai/skills/core/#arguments.skillName#",
-			"#arguments.directory#/.ai/skills/modules/#arguments.skillName#"
-		];
-
-		possiblePaths.each( ( path ) => {
-			if ( directoryExists( path ) ) {
-				directoryDelete( path, true )
-			}
-		} )
-
-		// Remove from manifest
-		arguments.manifest.skills = arguments.manifest.skills.filter( ( s ) => {
-			return s.name != skillName
-		} )
+	private function deleteSkillDir( required string directory, required string name ){
+		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
+		if ( directoryExists( skillDir ) ) {
+			directoryDelete( skillDir, true )
+		}
 	}
 
-	/**
-	 * Get skill content (reads from template files or module-shipped skills)
-	 *
-	 * @skillName The name of the skill to retrieve content for
-	 * @directory Optional project directory (for checking module-shipped skills)
-	 * @moduleSlug Optional module slug (for module-specific skills)
-	 */
-	private function getSkillContent(
-		required string skillName,
-		string directory  = "",
-		string moduleSlug = ""
-	){
-		// 1. If moduleSlug provided, check if module ships its own skill at .ai/skills/<skillName>/SKILL.md
-		if ( arguments.moduleSlug.len() && arguments.directory.len() ) {
-			var moduleSkill = "#arguments.directory#/modules/#arguments.moduleSlug#/.ai/skills/#arguments.skillName#/SKILL.md"
-			if ( fileExists( moduleSkill ) ) {
-				return fileRead( moduleSkill )
-			}
-		}
-
-		// 2. Check coldbox-cli bundled template in category subdirectories
-		var templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/core/"
-		var categories    = [
-			"coldbox",
-			"boxlang",
-			"testing",
-			"orm",
-			"cachebox",
-			"logbox",
-			"wirebox",
-			"security",
-			"modern",
-			"coldbox-cli"
-		]
-
-		for ( var category in categories ) {
-			var skillPath = templatesPath & category & "/#arguments.skillName#.md"
-			if ( fileExists( skillPath ) ) {
-				return fileRead( skillPath )
-			}
-		}
-
-		// 3. Check module skills directory
-		templatesPath = variables.utility.getTemplatesPath() & "/ai/skills/modules/"
-		if ( directoryExists( templatesPath ) ) {
-			var moduleSkillPath = templatesPath & arguments.skillName & ".md"
-			if ( fileExists( moduleSkillPath ) ) {
-				return fileRead( moduleSkillPath )
-			}
-		}
-
-		// 4. Try generic template
-		var templatePath = variables.utility.getTemplatesPath() & "/ai/skills/skill-template.md";
-		if ( fileExists( templatePath ) ) {
-			var content = fileRead( templatePath );
-			// Replace placeholder with actual skill name
-			content     = replaceNoCase(
-				content,
-				"skill-template",
-				arguments.skillName,
-				"all"
-			);
-			content = replaceNoCase(
-				content,
-				"Skill Name",
-				arguments.skillName,
-				"all"
-			);
-			return content;
-		}
-
-		// 5. Final fallback
-		return "---
-name: #arguments.skillName#
-description: Implementation patterns for #arguments.skillName#
-category: development
----
-
-## #arguments.skillName# Implementation Pattern
-
-This skill will be populated with actual content.";
-	}
-
-	/**
-
-	 * Get map of module slugs to skills
-	 */
-	private function getSkillModuleMap(){
-		return {
-			"cbsecurity" : [
-				"security-implementation",
-				"authentication",
-				"authorization",
-				"jwt-development",
-				"csrf-protection",
-				"api-authentication",
-				"rbac-patterns"
-			],
-			"cbauth"                : [ "authentication" ],
-			"cbsso"                 : [ "sso-integration" ],
-			"quick"                 : [ "orm-quick", "orm-relationships" ],
-			"qb"                    : [ "query-builder" ],
-			"commandbox-migrations" : [ "database-migrations" ],
-			"cbwire"                : [ "cbwire-development" ],
-			"cbq"                   : [ "queue-development" ]
-		};
-	}
 
 }

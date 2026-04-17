@@ -122,6 +122,7 @@ component accessors="true" {
 			.green1onDodgerBlue2( " INFO  " )
 			.line( " #arguments.message#" )
 			.line()
+			.toConsole()
 	}
 
 	function printError( required message ){
@@ -129,6 +130,7 @@ component accessors="true" {
 			.whiteOnRed2( " ERROR " )
 			.line( " #arguments.message#" )
 			.line()
+			.toConsole()
 	}
 
 	function printWarn( required message ){
@@ -136,6 +138,7 @@ component accessors="true" {
 			.blackOnWheat1( " WARN  " )
 			.line( " #arguments.message#" )
 			.line()
+			.toConsole()
 	}
 
 	function printSuccess( required message ){
@@ -143,6 +146,7 @@ component accessors="true" {
 			.blackOnSeaGreen2( " SUCCESS  " )
 			.line( " #arguments.message#" )
 			.line()
+			.toConsole()
 	}
 
 	function printTip( required string message ){
@@ -150,6 +154,7 @@ component accessors="true" {
 			.blackOnAquamarine2( "  TIP  " )
 			.line( " #arguments.message#" )
 			.line()
+			.toConsole()
 	}
 
 	function printHelp( required message ){
@@ -157,6 +162,7 @@ component accessors="true" {
 			.blackOnLightSkyBlue1( " HELP  " )
 			.line( " #arguments.message#" )
 			.line()
+			.toConsole()
 	}
 
 	function toBoxLangClass( required content ){
@@ -297,7 +303,7 @@ component accessors="true" {
 				)
 		}
 
-		variables.print.line()
+		variables.print.line().toConsole()
 	}
 
 }

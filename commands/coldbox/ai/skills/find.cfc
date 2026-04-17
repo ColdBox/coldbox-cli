@@ -68,7 +68,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Filter by query (name or description)
 		if ( arguments.query.len() ) {
 			allSkills = allSkills.filter( ( s ) => {
-				var q = lcase( arguments.query )
+				var q = lcase( query )
 				return lcase( s.name        ?: "" ).findNoCase( q ) ||
 				       lcase( s.description ?: "" ).findNoCase( q ) ||
 				       lcase( s.category    ?: "" ).findNoCase( q )
@@ -89,14 +89,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Group by category for display
 		var grouped = {}
-		allSkills.sortBy( "category" ).each( ( s ) => {
-			var cat = s.category ?: "other"
+		allSkills.each( ( s ) => {
+			var cat = s?.category ?: "other"
 			if ( !grouped.keyExists( cat ) ) grouped[ cat ] = []
 			grouped[ cat ].append( s )
 		} )
 
 		var totalCount = allSkills.len()
-		printInfo( "Found #totalCount# skill(s):" )
+		printInfo( "Found [#totalCount#] skill(s):" )
 		print.line()
 
 		var tableData = []
@@ -104,7 +104,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			grouped[ cat ].each( ( s ) => {
 				tableData.append( [
 					s.name        ?: "",
-					s.category    ?: "",
 					s.ownerRepo   ?: "",
 					left( s.description ?: "", 60 )
 				] )
@@ -112,7 +111,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		print.table(
-			headers = [ "Name", "Category", "Owner/Repo", "Description" ],
+			headerNames = [ "Name", "Repo", "Description" ],
 			data    = tableData
 		)
 

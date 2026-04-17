@@ -87,10 +87,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				print.indentedLine( "  • #agent#" );
 			} );
 
-			// If only 1 agent, show it was set as active
-			if ( result.agents.len() == 1 ) {
-				printSuccess( "  ✓ Automatically set as active agent" );
-			}
 			print.line();
 
 			// Show MCP servers
