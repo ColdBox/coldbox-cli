@@ -424,10 +424,7 @@ component singleton {
 			"#arguments.directory#/.ai/guidelines/core",
 			"#arguments.directory#/.ai/guidelines/modules",
 			"#arguments.directory#/.ai/guidelines/custom",
-			"#arguments.directory#/.ai/skills",
-			"#arguments.directory#/.ai/skills/core",
-			"#arguments.directory#/.ai/skills/modules",
-			"#arguments.directory#/.ai/skills/custom"
+			"#arguments.directory#/.ai/skills"
 		];
 
 		dirs.each( ( dir ) => {

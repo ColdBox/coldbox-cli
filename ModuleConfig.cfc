@@ -13,7 +13,13 @@ component {
 	this.cfmapping = "coldbox-cli";
 
 	function configure(){
-		variables.settings = { templatesPath : modulePath & "/templates" }
+		variables.settings = {
+			templatesPath    : modulePath & "/templates",
+			skillsRegistryUrl : "https://skills.boxlang.io",
+			coldboxSkillsRepo : { owner : "coldbox", repo : "skills" },
+			boxlangSkillsRepo : { owner : "ortus-boxlang", repo : "skills" },
+			ortusSkillsRepo   : { owner : "ortus-solutions", repo : "skills" }
+		}
 	}
 
 	function onLoad(){

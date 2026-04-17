@@ -144,10 +144,8 @@ This project includes AI-powered development assistance with guidelines, skills,
     /custom/           - Your custom guidelines
     /overrides/        - Override core guidelines
   /skills/             - Implementation cookbooks (how-to guides)
-    /core/             - Core development patterns
-    /modules/          - Module-specific patterns
-    /custom/           - Your custom skills
-    /overrides/        - Override core skills
+    /{name}/           - One folder per skill (flat, no subdirectories)
+      SKILL.md         - Skill content (fetched from registry or created locally)
   /mcp-servers/        - MCP server configurations
 ```
 
@@ -173,6 +171,7 @@ The `.ai/manifest.json` file contains the complete AI integration configuration:
 - **Module Guidelines** provide documentation for installed ColdBox modules
 - **Skills** offer step-by-step implementation patterns for specific features
 - Request specific guidelines or skills by name when you need them
+- Skills are searched in order: `.ai/skills/`, `.agents/skills/`, `.claude/skills/`
 
 ### Available Guidelines
 
