@@ -26,7 +26,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Override Skill" )
 
-		var info = ensureInstalled( arguments.directory )
+		var info       = ensureInstalled( arguments.directory )
 		// Replace spaces with dashes for skill name
 		arguments.name = arguments.name.replaceAll( "\s+", "-" )
 
@@ -59,10 +59,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Create override from skill (no type flag — flat path)
-		variables.skillManager.createSkillOverride(
-			arguments.directory,
-			arguments.name
-		)
+		variables.skillManager.createSkillOverride( arguments.directory, arguments.name )
 
 		// Regenerate agent files
 		print.line()

@@ -35,16 +35,22 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.line()
 
-		var bxRepo   = variables.settings.boxlangSkillsRepo
-		var cbRepo   = variables.settings.coldboxSkillsRepo
+		var bxRepo = variables.settings.boxlangSkillsRepo
+		var cbRepo = variables.settings.coldboxSkillsRepo
 
 		// Determine which repos to search
 		var reposToSearch = []
 		if ( arguments.owner.len() && arguments.repo.len() ) {
-			reposToSearch.append( { owner: arguments.owner, repo: arguments.repo } )
+			reposToSearch.append( {
+				owner : arguments.owner,
+				repo  : arguments.repo
+			} )
 		} else if ( arguments.owner.len() ) {
 			var guessedRepo = "skills"
-			reposToSearch.append( { owner: arguments.owner, repo: guessedRepo } )
+			reposToSearch.append( {
+				owner : arguments.owner,
+				repo  : guessedRepo
+			} )
 		} else {
 			reposToSearch.append( bxRepo )
 			reposToSearch.append( cbRepo )
@@ -68,10 +74,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Filter by query (name or description)
 		if ( arguments.query.len() ) {
 			allSkills = allSkills.filter( ( s ) => {
-				var q = lcase( query )
-				return lcase( s.name        ?: "" ).findNoCase( q ) ||
-				       lcase( s.description ?: "" ).findNoCase( q ) ||
-				       lcase( s.category    ?: "" ).findNoCase( q )
+				var q = lCase( query )
+				return lCase( s.name ?: "" ).findNoCase( q ) ||
+				lCase( s.description ?: "" ).findNoCase( q ) ||
+				lCase( s.category ?: "" ).findNoCase( q )
 			} )
 		}
 
@@ -103,8 +109,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		for ( var cat in grouped ) {
 			grouped[ cat ].each( ( s ) => {
 				tableData.append( [
-					s.name        ?: "",
-					s.ownerRepo   ?: "",
+					s.name ?: "",
+					s.ownerRepo ?: "",
 					left( s.description ?: "", 60 )
 				] )
 			} )
@@ -112,7 +118,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.table(
 			headerNames = [ "Name", "Repo", "Description" ],
-			data    = tableData
+			data        = tableData
 		)
 
 		print.line()

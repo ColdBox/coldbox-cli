@@ -70,14 +70,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Installed Skills Summary:" )
 			print.line()
 
-			var updatedInfo  = ensureInstalled( arguments.directory )
+			var updatedInfo    = ensureInstalled( arguments.directory )
 			var registrySkills = updatedInfo.skills.filter( ( s ) => ( s.type ?: "" ) != "custom" )
 			var customSkills   = updatedInfo.skills.filter( ( s ) => ( s.type ?: "" ) == "custom" )
 
 			// Tally by owner/repo
 			var byRepo = {}
 			registrySkills.each( ( s ) => {
-				var key = ( ( s.owner ?: "" ) != "" ) ? "#s.owner#/#s.repo#" : "unknown"
+				var key       = ( ( s.owner ?: "" ) != "" ) ? "#s.owner#/#s.repo#" : "unknown"
 				byRepo[ key ] = ( byRepo[ key ] ?: 0 ) + 1
 			} )
 			byRepo.each( ( repo, count ) => printInfo( "  📦 #repo#: #count# skill(s)" ) )

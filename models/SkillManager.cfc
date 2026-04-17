@@ -47,74 +47,77 @@ component singleton {
 		required struct manifest
 	){
 		var installed = [];
-		var targets   = getSkillsMap( arguments.directory, arguments.language );
+		var targets   = getSkillsMap(
+			arguments.directory,
+			arguments.language
+		);
 
 		// Use batch API when there are multiple skills to install
 		if ( targets.len() > 1 ) {
-			var batchItems = targets.map( ( t ) => { return { owner: t.owner, repo: t.repo, skill: t.slug, source: t.source, type: t.type } } )
+			var batchItems = targets.map( ( t ) => {
+				return {
+					owner  : t.owner,
+					repo   : t.repo,
+					skill  : t.slug,
+					source : t.source,
+					type   : t.type
+				}
+			} )
 
-			variables.print
-				.blueLine( "⬇️  Downloading #batchItems.len()# skill(s) from registry..." )
-				.toConsole()
+			variables.print.blueLine( "⬇️  Downloading #batchItems.len()# skill(s) from registry..." ).toConsole()
 
-			downloadSkillBatch( batchItems )
-				.each( ( result ) => {
-					if ( result.keyExists( "error" ) && result.error ) {
-						variables.print
-							.yellowLine( "  ⚠️  Skipped (download error): #result.message ?: 'unknown'#" )
-							.toConsole()
-						return
-					}
+			downloadSkillBatch( batchItems ).each( ( result ) => {
+				if ( result.keyExists( "error" ) && result.error ) {
+					variables.print
+						.yellowLine( "  ⚠️  Skipped (download error): #result.message ?: "unknown"#" )
+						.toConsole()
+					return
+				}
 
-					var skillAudit = result.skill.audit_status ?: "skipped"
-					var skillSlug  = result.skill.skill_slug ?: result.skill.skill_dir.listLast( "/" )
+				var skillAudit = result.skill.audit_status ?: "skipped"
+				var skillSlug  = result.skill.skill_slug ?: result.skill.skill_dir.listLast( "/" )
 
-					if ( skillAudit == "block" ) {
-						variables.print
-							.redLine( "  🚫  Blocked (failed security audit): #skillSlug#" )
-							.toConsole()
-						return
-					}
+				if ( skillAudit == "block" ) {
+					variables.print.redLine( "  🚫  Blocked (failed security audit): #skillSlug#" ).toConsole()
+					return
+				}
 
-					var _filtered  = targets.filter( ( t ) => t.slug == skillSlug )
-					var targetInfo = _filtered.len() ? _filtered.first() : {}
-					var localName  = targetInfo.name ?: result.skill.skill_dir.listLast( "/" )
+				var _filtered  = targets.filter( ( t ) => t.slug == skillSlug )
+				var targetInfo = _filtered.len() ? _filtered.first() : {}
+				var localName  = targetInfo.name ?: result.skill.skill_dir.listLast( "/" )
 
-					variables.print.blueLine( "  ⬇️  Installing: #localName#" ).toConsole()
+				variables.print.blueLine( "  ⬇️  Installing: #localName#" ).toConsole()
 
-					installRemoteSkill(
-						directory   = directory,
-						name        = localName,
-						content     = result.content,
-						owner       = result.skill.owner,
-						repo        = result.skill.repo,
-						path        = result.skill.skill_dir,
-						sha         = result.skill.file_sha,
-						description = result.skill.description,
-						auditStatus = skillAudit,
-						skillType   = targetInfo.type ?: "core",
-						source      = targetInfo.source ?: "",
-						manifest    = manifest
-					)
-					installed.append( localName )
-				} )
+				installRemoteSkill(
+					directory   = directory,
+					name        = localName,
+					content     = result.content,
+					owner       = result.skill.owner,
+					repo        = result.skill.repo,
+					path        = result.skill.skill_dir,
+					sha         = result.skill.file_sha,
+					description = result.skill.description,
+					auditStatus = skillAudit,
+					skillType   = targetInfo.type ?: "core",
+					source      = targetInfo.source ?: "",
+					manifest    = manifest
+				)
+				installed.append( localName )
+			} )
 
 			if ( installed.len() ) {
 				variables.print.greenLine( "✅  Installed #installed.len()# skill(s)." ).toConsole()
 			}
-
 		} else if ( targets.len() == 1 ) {
 			var t = targets.first()
 			variables.print.blueLine( "⬇️  Downloading skill: #t.slug#..." ).toConsole()
 			var result = downloadSkill( t.owner, t.repo, t.slug )
 			if ( result.keyExists( "error" ) && result.error ) {
 				variables.print
-					.yellowLine( "  ⚠️  Skipped (download error): #result.message ?: 'unknown'#" )
+					.yellowLine( "  ⚠️  Skipped (download error): #result.message ?: "unknown"#" )
 					.toConsole()
 			} else if ( ( result.skill.audit_status ?: "skipped" ) == "block" ) {
-				variables.print
-					.redLine( "  🚫  Blocked (failed security audit): #t.slug#" )
-					.toConsole()
+				variables.print.redLine( "  🚫  Blocked (failed security audit): #t.slug#" ).toConsole()
 			} else {
 				variables.print.blueLine( "  ⬇️  Installing: #t.name#" ).toConsole()
 				installRemoteSkill(
@@ -152,14 +155,18 @@ component singleton {
 		required string directory,
 		required struct manifest
 	){
-		var changes = { "added": [], "updated": [], "removed": [] };
+		var changes = {
+			"added"   : [],
+			"updated" : [],
+			"removed" : []
+		};
 
 		// ------------------------------------------------------------------
 		// 1. Prune orphaned module skills (module removed from box.json)
 		// ------------------------------------------------------------------
 		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory );
 		var allDependencies = {};
-		allDependencies.append( boxJson.dependencies    ?: {} );
+		allDependencies.append( boxJson.dependencies ?: {} );
 		allDependencies.append( boxJson.devDependencies ?: {} );
 
 		var toRemove = [];
@@ -192,8 +199,8 @@ component singleton {
 		var repoMap = {}
 		remoteSkills.each( ( s ) => {
 			var owner = s.owner ?: ""
-			var repo  = s.repo  ?: ""
-			if ( !owner.len() || !repo.len() ){
+			var repo  = s.repo ?: ""
+			if ( !owner.len() || !repo.len() ) {
 				return;
 			}
 			var targetKey = "#owner#/#repo#"
@@ -216,14 +223,17 @@ component singleton {
 				var entrySlug = manifestEntry.slug ?: ""
 				var entryPath = manifestEntry.path ?: ""
 				var remote    = remoteList.filter( ( r ) => r.slug == entrySlug || r.path == entryPath )
-				if ( !remote.len() ){
+				if ( !remote.len() ) {
 					return;
 				}
 
 				var currentSha = remote.first().sha ?: ""
-				var storedSha  = manifestEntry.sha  ?: ""
+				var storedSha  = manifestEntry.sha ?: ""
 				if ( currentSha != storedSha ) {
-					staleItems.append( { entry: manifestEntry, newSha: currentSha } )
+					staleItems.append( {
+						entry  : manifestEntry,
+						newSha : currentSha
+					} )
 				}
 			} )
 		}
@@ -232,24 +242,24 @@ component singleton {
 		// 3. Re-download stale skills via batch
 		// ------------------------------------------------------------------
 		if ( staleItems.len() ) {
-			variables.print.yellowLine( "  📦  Found #staleItems.len()# outdated skill(s), re-downloading..." ).toConsole()
+			variables.print
+				.yellowLine( "  📦  Found #staleItems.len()# outdated skill(s), re-downloading..." )
+				.toConsole()
 			var batchItems = staleItems.map( ( item ) => {
 				return {
 					owner : item.entry.owner ?: "",
-					repo  : item.entry.repo  ?: "",
-					skill : item.entry.slug  ?: item.entry.path.listLast( "/" )
+					repo  : item.entry.repo ?: "",
+					skill : item.entry.slug ?: item.entry.path.listLast( "/" )
 				}
 			} )
 			var batchResult = downloadSkillBatch( batchItems )
 
 			batchResult.each( ( result ) => {
 				if ( result.keyExists( "error" ) && result.error ) return
-
-				var resultSlug    = result.skill.skill_slug ?: ""
+				var resultSlug     = result.skill.skill_slug ?: ""
 				var _staleFiltered = staleItems.filter( ( i ) => i.entry.slug == resultSlug )
 				var staleItem      = _staleFiltered.len() ? _staleFiltered.first() : {}
 				if ( staleItem.isEmpty() ) return
-
 				variables.print.blueLine( "  🔄  Updating: #staleItem.entry.name#" ).toConsole()
 
 				installRemoteSkill(
@@ -309,15 +319,15 @@ component singleton {
 				var description = parsed.frontmatter.description ?: ""
 
 				manifest.skills.append( {
-					"name"       : dirName,
-					"owner"      : "",
-					"repo"       : "",
-					"path"       : "",
-					"sha"        : "",
-					"description": description,
-					"type"       : "custom",
-					"source"     : "custom",
-					"syncedAt"   : dateTimeFormat( now(), "iso" )
+					"name"        : dirName,
+					"owner"       : "",
+					"repo"        : "",
+					"path"        : "",
+					"sha"         : "",
+					"description" : description,
+					"type"        : "custom",
+					"source"      : "custom",
+					"syncedAt"    : dateTimeFormat( now(), "iso" )
 				} )
 				changes.added.append( dirName )
 			} )
@@ -361,12 +371,22 @@ component singleton {
 			arguments.manifest = variables.aiService.loadManifest( arguments.directory )
 		}
 
-		variables.print.blueLine( "⬇️  Downloading #arguments.owner#/#arguments.repo#/#arguments.skillSlug#..." ).toConsole()
+		variables.print
+			.blueLine( "⬇️  Downloading #arguments.owner#/#arguments.repo#/#arguments.skillSlug#..." )
+			.toConsole()
 
-		var downloadResult = downloadSkill( arguments.owner, arguments.repo, arguments.skillSlug )
+		var downloadResult = downloadSkill(
+			arguments.owner,
+			arguments.repo,
+			arguments.skillSlug
+		)
 		if ( downloadResult.keyExists( "error" ) && downloadResult.error ) {
-			variables.print.redLine( "  ❌  Download failed: #downloadResult.message ?: 'unknown'#" ).toConsole()
-			return { success: false, name: arguments.skillSlug, message: downloadResult.message ?: "Download failed" }
+			variables.print.redLine( "  ❌  Download failed: #downloadResult.message ?: "unknown"#" ).toConsole()
+			return {
+				success : false,
+				name    : arguments.skillSlug,
+				message : downloadResult.message ?: "Download failed"
+			}
 		}
 
 		var skill       = downloadResult.skill
@@ -388,7 +408,9 @@ component singleton {
 		if ( !arguments.force ) {
 			var existing = getSkillFilePath( arguments.directory, localName )
 			if ( !isNull( existing ) ) {
-				variables.print.yellowLine( "  ⚠️  Already installed: #localName# (use --force to overwrite)" ).toConsole()
+				variables.print
+					.yellowLine( "  ⚠️  Already installed: #localName# (use --force to overwrite)" )
+					.toConsole()
 				return {
 					success     : false,
 					name        : localName,
@@ -416,7 +438,10 @@ component singleton {
 		variables.print.greenLine( "  ✅  Installed: #localName#" ).toConsole()
 
 		if ( managingManifest ) {
-			variables.aiService.saveManifest( arguments.directory, arguments.manifest )
+			variables.aiService.saveManifest(
+				arguments.directory,
+				arguments.manifest
+			)
 		}
 
 		return {
@@ -440,7 +465,7 @@ component singleton {
 		required string directory,
 		required struct manifest
 	){
-		var result = { valid: [], stale: [], missing: [] }
+		var result = { valid : [], stale : [], missing : [] }
 
 		for ( var skill in arguments.manifest.skills ) {
 			var skillFile = getSkillFilePath( arguments.directory, skill.name )
@@ -450,9 +475,9 @@ component singleton {
 			}
 
 			var owner = skill.owner ?: ""
-			var repo  = skill.repo  ?: ""
-			var slug  = skill.slug  ?: ""
-			var type  = skill.type  ?: ""
+			var repo  = skill.repo ?: ""
+			var slug  = skill.slug ?: ""
+			var type  = skill.type ?: ""
 
 			if ( type == "custom" || !owner.len() || !repo.len() || !slug.len() ) {
 				result.valid.append( skill.name )
@@ -488,7 +513,10 @@ component singleton {
 	 *
 	 * @return Absolute path string, or null if not found
 	 */
-	function getSkillFilePath( required string directory, required string name ){
+	function getSkillFilePath(
+		required string directory,
+		required string name
+	){
 		var candidates = [
 			"#arguments.directory#/.ai/skills/#arguments.name#/SKILL.md",
 			"#arguments.directory#/.agents/skills/#arguments.name#/SKILL.md",
@@ -515,27 +543,32 @@ component singleton {
 		var targetDir = "#arguments.directory#/.ai/skills/#arguments.name#"
 		var skillFile = "#targetDir#/SKILL.md"
 
-		if ( !directoryExists( targetDir ) ){
+		if ( !directoryExists( targetDir ) ) {
 			directoryCreate( targetDir, true )
 		}
 
 		var languageSuffix = arguments.language == "cfml" ? ".cfml" : ".bx"
 		var templatePath   = variables.utility.getTemplatesPath() & "/ai/skills/custom-skill-template#languageSuffix#.md"
 		var template       = fileRead( templatePath )
-		template           = replaceNoCase( template, "|skillName|", arguments.name, "all" )
+		template           = replaceNoCase(
+			template,
+			"|skillName|",
+			arguments.name,
+			"all"
+		)
 		fileWrite( skillFile, template )
 
 		var manifest = variables.aiService.loadManifest( arguments.directory );
 		manifest.skills.append( {
-			"name"       : arguments.name,
-			"owner"      : "",
-			"repo"       : "",
-			"path"       : "",
-			"sha"        : "",
-			"description": "",
-			"type"       : "custom",
-			"source"     : "custom",
-			"syncedAt"   : dateTimeFormat( now(), "iso" )
+			"name"        : arguments.name,
+			"owner"       : "",
+			"repo"        : "",
+			"path"        : "",
+			"sha"         : "",
+			"description" : "",
+			"type"        : "custom",
+			"source"      : "custom",
+			"syncedAt"    : dateTimeFormat( now(), "iso" )
 		} )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 	}
@@ -603,8 +636,18 @@ component singleton {
 		}
 
 		var content = fileRead( templatePath )
-		content     = replaceNoCase( content, "|skillName|",   arguments.name,  "all" )
-		content     = replaceNoCase( content, "|coreContent|", originalContent, "all" )
+		content     = replaceNoCase(
+			content,
+			"|skillName|",
+			arguments.name,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|coreContent|",
+			originalContent,
+			"all"
+		)
 
 		var targetDir  = "#arguments.directory#/.ai/skills/#arguments.name#"
 		var targetFile = "#targetDir#/SKILL.md"
@@ -614,19 +657,22 @@ component singleton {
 		// Find existing manifest entry
 		var existingIndex = 0
 		for ( var i = 1; i <= manifest.skills.len(); i++ ) {
-			if ( manifest.skills[ i ].name == arguments.name ) { existingIndex = i; break }
+			if ( manifest.skills[ i ].name == arguments.name ) {
+				existingIndex = i;
+				break
+			}
 		}
 
 		var skillEntry = {
-			"name"       : arguments.name,
-			"owner"      : "",
-			"repo"       : "",
-			"path"       : "",
-			"sha"        : "",
-			"description": existingIndex ? ( manifest.skills[ existingIndex ].description ?: "" ) : "",
-			"type"       : "custom",
-			"source"     : "custom",
-			"syncedAt"   : dateTimeFormat( now(), "iso" )
+			"name"        : arguments.name,
+			"owner"       : "",
+			"repo"        : "",
+			"path"        : "",
+			"sha"         : "",
+			"description" : existingIndex ? ( manifest.skills[ existingIndex ].description ?: "" ) : "",
+			"type"        : "custom",
+			"source"      : "custom",
+			"syncedAt"    : dateTimeFormat( now(), "iso" )
 		}
 
 		if ( existingIndex ) {
@@ -650,7 +696,10 @@ component singleton {
 		required string directory,
 		required struct manifest
 	){
-		var issues = { "warnings": [], "recommendations": [] };
+		var issues = {
+			"warnings"        : [],
+			"recommendations" : []
+		};
 
 		for ( var skill in arguments.manifest.skills ) {
 			var skillFile = getSkillFilePath( arguments.directory, skill.name )
@@ -691,9 +740,21 @@ component singleton {
 			result  = "httpResult",
 			timeout = 30
 		) {
-			cfhttpparam( type="url", name="owner", value=arguments.owner );
-			cfhttpparam( type="url", name="repo",  value=arguments.repo  );
-			cfhttpparam( type="url", name="skill", value=arguments.skillSlug );
+			cfhttpparam(
+				type  = "url",
+				name  = "owner",
+				value = arguments.owner
+			);
+			cfhttpparam(
+				type  = "url",
+				name  = "repo",
+				value = arguments.repo
+			);
+			cfhttpparam(
+				type  = "url",
+				name  = "skill",
+				value = arguments.skillSlug
+			);
 		};
 
 		if ( httpResult.statusCode >= 400 ) {
@@ -706,7 +767,10 @@ component singleton {
 		try {
 			return deserializeJSON( httpResult.fileContent )
 		} catch ( any e ) {
-			return { error: true, message: "Failed to parse registry response: #e.message#" }
+			return {
+				error   : true,
+				message : "Failed to parse registry response: #e.message#"
+			}
 		}
 	}
 
@@ -726,15 +790,19 @@ component singleton {
 		var registryUrl = variables.settings.skillsRegistryUrl
 		var targetUrl   = "#registryUrl#/api/install/batch"
 		var payload     = serializeJSON( arguments.skills )
-		var httpResult = ""
+		var httpResult  = ""
 		cfhttp(
 			method  = "POST",
 			url     = targetUrl,
 			result  = "httpResult",
 			timeout = 60
 		) {
-			cfhttpparam( type="header", name="Content-Type", value="application/json; charset=utf-8" );
-			cfhttpparam( type="body",   value=payload );
+			cfhttpparam(
+				type  = "header",
+				name  = "Content-Type",
+				value = "application/json; charset=utf-8"
+			);
+			cfhttpparam( type = "body", value = payload );
 		};
 
 		if ( httpResult.statusCode > 400 ) {
@@ -763,10 +831,13 @@ component singleton {
 	 *
 	 * @return Array of {name, path, sha, slug, category, description} or empty array on failure
 	 */
-	array function fetchRepoSkillList( required string owner, required string repo ){
+	array function fetchRepoSkillList(
+		required string owner,
+		required string repo
+	){
 		var registryUrl = variables.settings.skillsRegistryUrl
 		var targetUrl   = "#registryUrl#/api/skills/#arguments.owner#/#arguments.repo#"
-		var httpResult = ""
+		var httpResult  = ""
 		cfhttp(
 			method  = "GET",
 			url     = targetUrl,
@@ -848,22 +919,34 @@ component singleton {
 		// ColdBox / TestBox / modules from coldbox/skills
 		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory )
 		var allDependencies = {}
-		allDependencies.append( boxJson.dependencies    ?: {} )
+		allDependencies.append( boxJson.dependencies ?: {} )
 		allDependencies.append( boxJson.devDependencies ?: {} )
 
-		var depsLower = allDependencies.keyList().lcase()
+		var depsLower  = allDependencies.keyList().lcase()
 		var hasColdBox = depsLower.listFindNoCase( "coldbox" )
 		var hasTestBox = depsLower.listFindNoCase( "testbox" )
 
 		if ( hasColdBox || hasTestBox ) {
-			var cbRepoList = fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
-			var coldboxFrameworks = [ "coldbox", "cachebox", "logbox", "wirebox" ]
+			var cbRepoList        = fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
+			var coldboxFrameworks = [
+				"coldbox",
+				"cachebox",
+				"logbox",
+				"wirebox"
+			]
 
 			if ( hasColdBox ) {
 				cbRepoList
 					.filter( ( s ) => s?.category == "coldbox" || coldboxFrameworks.contains( s?.slug ) )
 					.each( ( s ) => {
-						targets.append( { owner: cbRepo.owner, repo: cbRepo.repo, slug: s.slug, name: s.name, type: "core", source: "coldbox" } )
+						targets.append( {
+							owner  : cbRepo.owner,
+							repo   : cbRepo.repo,
+							slug   : s.slug,
+							name   : s.name,
+							type   : "core",
+							source : "coldbox"
+						} )
 					} )
 			}
 
@@ -871,7 +954,14 @@ component singleton {
 				cbRepoList
 					.filter( ( s ) => s?.category == "testbox" )
 					.each( ( s ) => {
-						targets.append( { owner: cbRepo.owner, repo: cbRepo.repo, slug: s.slug, name: s.name, type: "core", source: "testbox" } )
+						targets.append( {
+							owner  : cbRepo.owner,
+							repo   : cbRepo.repo,
+							slug   : s.slug,
+							name   : s.name,
+							type   : "core",
+							source : "testbox"
+						} )
 					} )
 			}
 
@@ -881,7 +971,14 @@ component singleton {
 				.each( ( s ) => {
 					var moduleSlug = s.name
 					if ( allDependencies.keyExists( moduleSlug ) ) {
-						targets.append( { owner: cbRepo.owner, repo: cbRepo.repo, slug: s.slug, name: s.name, type: "module", source: moduleSlug } )
+						targets.append( {
+							owner  : cbRepo.owner,
+							repo   : cbRepo.repo,
+							slug   : s.slug,
+							name   : s.name,
+							type   : "module",
+							source : moduleSlug
+						} )
 					}
 				} )
 		}
@@ -925,25 +1022,31 @@ component singleton {
 		if ( !directoryExists( skillDir ) ) {
 			directoryCreate( skillDir, true )
 		}
-		fileWrite( "#skillDir#/SKILL.md", arguments.content )
+		fileWrite(
+			"#skillDir#/SKILL.md",
+			arguments.content
+		)
 
 		// Upsert manifest entry
 		var existingIndex = 0
 		for ( var i = 1; i <= arguments.manifest.skills.len(); i++ ) {
-			if ( arguments.manifest.skills[ i ].name == arguments.name ) { existingIndex = i; break }
+			if ( arguments.manifest.skills[ i ].name == arguments.name ) {
+				existingIndex = i;
+				break
+			}
 		}
 
 		var entry = {
-			"name"       : arguments.name,
-			"owner"      : arguments.owner,
-			"repo"       : arguments.repo,
-			"path"       : arguments.path,
-			"slug"       : slug,
-			"sha"        : arguments.sha,
-			"description": arguments.description,
-			"type"       : arguments.skillType,
-			"source"     : arguments.source,
-			"syncedAt"   : dateTimeFormat( now(), "iso" )
+			"name"        : arguments.name,
+			"owner"       : arguments.owner,
+			"repo"        : arguments.repo,
+			"path"        : arguments.path,
+			"slug"        : slug,
+			"sha"         : arguments.sha,
+			"description" : arguments.description,
+			"type"        : arguments.skillType,
+			"source"      : arguments.source,
+			"syncedAt"    : dateTimeFormat( now(), "iso" )
 		}
 
 		if ( existingIndex ) {
@@ -959,12 +1062,14 @@ component singleton {
 	 * @directory The project directory
 	 * @name      The skill name (directory name)
 	 */
-	private function deleteSkillDir( required string directory, required string name ){
+	private function deleteSkillDir(
+		required string directory,
+		required string name
+	){
 		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
 		if ( directoryExists( skillDir ) ) {
 			directoryDelete( skillDir, true )
 		}
 	}
-
 
 }

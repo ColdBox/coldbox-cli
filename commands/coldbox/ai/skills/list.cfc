@@ -18,9 +18,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run(
-		boolean outdated  = false,
-		boolean verbose   = false,
-		string directory  = getCwd()
+		boolean outdated = false,
+		boolean verbose  = false,
+		string directory = getCwd()
 	){
 		showColdBoxBanner( "Installed AI Skills" )
 
@@ -28,7 +28,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// --outdated: validate integrity and keep only stale skills
 		if ( outdated ) {
-			var integrity = skillManager.validateSkillIntegrity( arguments.directory, info )
+			var integrity  = skillManager.validateSkillIntegrity( arguments.directory, info )
 			var staleNames = integrity.stale
 			if ( staleNames.isEmpty() ) {
 				printSuccess( "All skills are up to date." )
@@ -48,8 +48,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var groups = {}
 		info.skills.each( ( skill ) => {
 			var bucket = ( skill.type ?: "" ) == "custom"
-				? "custom"
-				: ( ( skill.owner ?: "" ) != "" ? "#skill.owner#/#skill.repo#" : "unknown" )
+			 ? "custom"
+			 : ( ( skill.owner ?: "" ) != "" ? "#skill.owner#/#skill.repo#" : "unknown" )
 			if ( !groups.keyExists( bucket ) ) {
 				groups[ bucket ] = []
 			}
@@ -57,17 +57,22 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		} )
 
 		// Sort groups: custom last, then alphabetical
-		var groupKeys = groups.keyArray().sort( ( a, b ) => {
-			if ( a == "custom" ) return 1
-			if ( b == "custom" ) return -1
-			return compareNoCase( a, b )
-		} )
+		var groupKeys = groups
+			.keyArray()
+			.sort( ( a, b ) => {
+				if ( a == "custom" ) return 1
+				if ( b == "custom" ) return -1
+				return compareNoCase( a, b )
+			} )
 
 		groupKeys.each( ( bucket ) => {
 			var bucketSkills = groups[ bucket ].sort( ( a, b ) => compareNoCase( a.name, b.name ) )
 			var label        = bucket == "custom" ? "🔧 Custom" : "📦 #bucket#"
 
-			print.lineBlackOnSeaGreen1( "#label# (#bucketSkills.len()#)" ).line().line()
+			print
+				.lineBlackOnSeaGreen1( "#label# (#bucketSkills.len()#)" )
+				.line()
+				.line()
 
 			if ( verbose ) {
 				// Full table with SHA + syncedAt

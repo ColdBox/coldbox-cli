@@ -42,10 +42,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Remove the skill
 		try {
-			variables.skillManager.removeSkillFromProject(
-				arguments.directory,
-				arguments.name
-			)
+			variables.skillManager.removeSkillFromProject( arguments.directory, arguments.name )
 		} catch ( any e ) {
 			printError( "Failed to remove skill: #e.message#" )
 			print.line()

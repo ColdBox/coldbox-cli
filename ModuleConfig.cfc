@@ -14,11 +14,17 @@ component {
 
 	function configure(){
 		variables.settings = {
-			templatesPath    : modulePath & "/templates",
+			templatesPath     : modulePath & "/templates",
 			skillsRegistryUrl : "https://skills.boxlang.io",
 			coldboxSkillsRepo : { owner : "coldbox", repo : "skills" },
-			boxlangSkillsRepo : { owner : "ortus-boxlang", repo : "skills" },
-			ortusSkillsRepo   : { owner : "ortus-solutions", repo : "skills" }
+			boxlangSkillsRepo : {
+				owner : "ortus-boxlang",
+				repo  : "skills"
+			},
+			ortusSkillsRepo : {
+				owner : "ortus-solutions",
+				repo  : "skills"
+			}
 		}
 	}
 

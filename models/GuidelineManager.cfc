@@ -319,7 +319,6 @@ component singleton {
 		// Check for missing core guidelines (respecting language mode)
 		var language = manifest.language ?: "boxlang"
 		static.CORE_GUIDELINES.each( ( name ) => {
-
 			// Skip cfml guideline for boxlang-only projects
 			if ( name == "cfml" && language == "boxlang" ) {
 				return;

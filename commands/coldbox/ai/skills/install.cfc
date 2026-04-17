@@ -114,7 +114,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				owner     = item.owner,
 				repo      = item.repo,
 				skillSlug = item.slug,
-				skillType = item.type  ?: "core",
+				skillType = item.type ?: "core",
 				source    = item.source ?: "",
 				force     = arguments.force,
 				manifest  = manifest
@@ -124,7 +124,13 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			printInfo( "Installing #resolvedItems.len()# skills..." )
 			print.line()
 
-			var batchItems  = resolvedItems.map( ( r ) => { return { owner: r.owner, repo: r.repo, skill: r.slug } } )
+			var batchItems = resolvedItems.map( ( r ) => {
+				return {
+					owner : r.owner,
+					repo  : r.repo,
+					skill : r.slug
+				}
+			} )
 			var batchResult = variables.skillManager.downloadSkillBatch( batchItems )
 
 			var successCount = 0
@@ -132,7 +138,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 
 			batchResult.each( ( result ) => {
 				if ( result.keyExists( "error" ) && result.error ) {
-					printError( "  ✗ #result.skill ?: 'unknown'#: #result.message ?: 'download failed'#" )
+					printError( "  ✗ #result.skill ?: "unknown"#: #result.message ?: "download failed"#" )
 					failCount++
 					return
 				}
@@ -141,7 +147,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				var auditStatus = skill.audit_status ?: "skipped"
 
 				if ( auditStatus == "block" ) {
-					printWarn( "  ⚠ #skill.skill_dir.listLast( '/' )# blocked by security audit — skipped" )
+					printWarn( "  ⚠ #skill.skill_dir.listLast( "/" )# blocked by security audit — skipped" )
 					failCount++
 					return
 				}
@@ -169,7 +175,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 					sha         = skill.file_sha,
 					description = skill.description ?: "",
 					auditStatus = auditStatus,
-					skillType   = matchItem.type   ?: "core",
+					skillType   = matchItem.type ?: "core",
 					source      = matchItem.source ?: "",
 					manifest    = manifest
 				)
@@ -180,7 +186,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 
 			print.line()
 			if ( successCount ) printSuccess( "Installed #successCount# skill(s)." )
-			if ( failCount )    printWarn( "#failCount# skill(s) had errors." )
+			if ( failCount ) printWarn( "#failCount# skill(s) had errors." )
 		}
 
 		saveManifest( arguments.directory, manifest )
@@ -203,16 +209,37 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		required string language,
 		required boolean force
 	){
-		var settings     = variables.settings ?: {}
-		var bxRepo       = settings.boxlangSkillsRepo  ?: { owner: "ortus-boxlang", repo: "skills" }
-		var cbRepo       = settings.coldboxSkillsRepo   ?: { owner: "coldbox",       repo: "skills" }
+		var settings = variables.settings ?: {}
+		var bxRepo   = settings.boxlangSkillsRepo ?: {
+			owner : "ortus-boxlang",
+			repo  : "skills"
+		}
+		var cbRepo = settings.coldboxSkillsRepo ?: { owner : "coldbox", repo : "skills" }
 
 		// Fetch both repos in parallel
-		var bxList = variables.skillManager.fetchRepoSkillList( bxRepo.owner, bxRepo.repo )
-		var cbList = variables.skillManager.fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
+		var bxList    = variables.skillManager.fetchRepoSkillList( bxRepo.owner, bxRepo.repo )
+		var cbList    = variables.skillManager.fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
 		var allSkills = []
-		bxList.each( ( s ) => allSkills.append( { label: "#bxRepo.owner#/#bxRepo.repo#/#s.slug#", value: { owner: bxRepo.owner, repo: bxRepo.repo, slug: s.slug, name: s.name }, description: s.description ?: "" } ) )
-		cbList.each( ( s ) => allSkills.append( { label: "#cbRepo.owner#/#cbRepo.repo#/#s.slug#", value: { owner: cbRepo.owner, repo: cbRepo.repo, slug: s.slug, name: s.name }, description: s.description ?: "" } ) )
+		bxList.each( ( s ) => allSkills.append( {
+			label : "#bxRepo.owner#/#bxRepo.repo#/#s.slug#",
+			value : {
+				owner : bxRepo.owner,
+				repo  : bxRepo.repo,
+				slug  : s.slug,
+				name  : s.name
+			},
+			description : s.description ?: ""
+		} ) )
+		cbList.each( ( s ) => allSkills.append( {
+			label : "#cbRepo.owner#/#cbRepo.repo#/#s.slug#",
+			value : {
+				owner : cbRepo.owner,
+				repo  : cbRepo.repo,
+				slug  : s.slug,
+				name  : s.name
+			},
+			description : s.description ?: ""
+		} ) )
 
 		if ( allSkills.isEmpty() ) {
 			printError( "Could not retrieve skills from registry." )
@@ -222,9 +249,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		printInfo( "Select skills to install (space = toggle, enter = confirm):" )
 		print.line()
 
-		var choices = multiselect( "Skills" )
-			.options( allSkills )
-			.ask()
+		var choices = multiselect( "Skills" ).options( allSkills ).ask()
 
 		if ( choices.isEmpty() ) {
 			printInfo( "No skills selected." )
@@ -236,12 +261,18 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		print.line()
 
 		var resolvedItems = choices.map( ( c ) => c.value )
-		var batchItems    = resolvedItems.map( ( r ) => { return { owner: r.owner, repo: r.repo, skill: r.slug } } )
-		var batchResult   = variables.skillManager.downloadSkillBatch( batchItems )
+		var batchItems    = resolvedItems.map( ( r ) => {
+			return {
+				owner : r.owner,
+				repo  : r.repo,
+				skill : r.slug
+			}
+		} )
+		var batchResult = variables.skillManager.downloadSkillBatch( batchItems )
 
 		batchResult.each( ( result ) => {
 			if ( result.keyExists( "error" ) && result.error ) {
-				printError( "  ✗ #result.message ?: 'download failed'#" )
+				printError( "  ✗ #result.message ?: "download failed"#" )
 				return
 			}
 			var skill     = result.skill
@@ -263,8 +294,14 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			print.greenLine( "  + #localName#" )
 		} )
 
-		saveManifest( arguments.directory, arguments.manifest )
-		_regenerateAgents( arguments.directory, arguments.manifest )
+		saveManifest(
+			arguments.directory,
+			arguments.manifest
+		)
+		_regenerateAgents(
+			arguments.directory,
+			arguments.manifest
+		)
 		print.line()
 		printTip( "Run 'coldbox ai skills list' to see all installed skills." )
 	}
@@ -275,34 +312,60 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 	 * - "owner/repo/category" → filter to category
 	 * - "owner/repo/cat/skill"→ single skill
 	 */
-	private array function _resolveSlugs( required array slugs, string language = "boxlang" ){
+	private array function _resolveSlugs(
+		required array slugs,
+		string language = "boxlang"
+	){
 		var resolved = []
 
 		arguments.slugs.each( ( slug ) => {
 			var parts = slug.listToArray( "/" )
 
 			if ( parts.len() < 2 ) return
-
 			var owner = parts[ 1 ]
 			var repo  = parts[ 2 ]
 
 			if ( parts.len() == 2 ) {
 				// Whole repo
-				variables.skillManager.fetchRepoSkillList( owner, repo ).each( ( s ) => {
-					resolved.append( { owner: owner, repo: repo, slug: s.slug, name: s.name, type: "core", source: "" } )
-				} )
+				variables.skillManager
+					.fetchRepoSkillList( owner, repo )
+					.each( ( s ) => {
+						resolved.append( {
+							owner  : owner,
+							repo   : repo,
+							slug   : s.slug,
+							name   : s.name,
+							type   : "core",
+							source : ""
+						} )
+					} )
 			} else if ( parts.len() == 3 ) {
 				// Category filter
 				var category = parts[ 3 ]
-				variables.skillManager.fetchRepoSkillList( owner, repo )
+				variables.skillManager
+					.fetchRepoSkillList( owner, repo )
 					.filter( ( s ) => s.category == category )
 					.each( ( s ) => {
-						resolved.append( { owner: owner, repo: repo, slug: s.slug, name: s.name, type: "core", source: "" } )
+						resolved.append( {
+							owner  : owner,
+							repo   : repo,
+							slug   : s.slug,
+							name   : s.name,
+							type   : "core",
+							source : ""
+						} )
 					} )
 			} else {
 				// Explicit slug: owner/repo/category/skill-name — the slug in registry is category-skill-name or just the last segment
 				var skillSlug = parts.slice( 3 ).toList( "/" )
-				resolved.append( { owner: owner, repo: repo, slug: skillSlug, name: parts.last(), type: "core", source: "" } )
+				resolved.append( {
+					owner  : owner,
+					repo   : repo,
+					slug   : skillSlug,
+					name   : parts.last(),
+					type   : "core",
+					source : ""
+				} )
 			}
 		} )
 
@@ -319,7 +382,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				printWarn( "    ⚠ Audit warning — review skill before use" )
 			}
 		} else {
-			printError( "  ✗ #result.message ?: 'Install failed'#" )
+			printError( "  ✗ #result.message ?: "Install failed"#" )
 		}
 	}
 
