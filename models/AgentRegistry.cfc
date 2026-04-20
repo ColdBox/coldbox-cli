@@ -57,12 +57,18 @@ component singleton {
 				value   : "opencode"
 			}
 		]
+
+		// Compiled once (singleton) — matches any public function declaration
+		FUNCTION_PATTERN = createObject( "java", "java.util.regex.Pattern" ).compile(
+			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
+		)
 	}
 
 	// Expose them as instance properties for easier access in commands
 	this.SUPPORTED_AGENTS = static.SUPPORTED_AGENTS
 	this.AGENT_OPTIONS    = static.AGENT_OPTIONS
 	this.AGENT_FILES      = static.AGENT_FILES
+	this.FUNCTION_PATTERN = static.FUNCTION_PATTERN
 
 	/**
 	 * Configure agents for a project
@@ -418,16 +424,20 @@ component singleton {
 		)
 
 		// Generate handlers snapshot
-		var handlersSnapshotContent = generateHandlersSnapshot(
-			arguments.directory,
-			arguments.templateType
-		)
-		content = replaceNoCase(
-			content,
-			"|HANDLERS_SNAPSHOT|",
-			handlersSnapshotContent,
-			"all"
-		)
+		var handlersSnapshotContent = generateHandlersSnapshot( arguments.directory, arguments.templateType )
+		content                     = replaceNoCase( content, "|HANDLERS_SNAPSHOT|", handlersSnapshotContent, "all" )
+
+		// Generate interceptors snapshot
+		var interceptorsSnapshotContent = generateInterceptorsSnapshot( arguments.directory, arguments.templateType )
+		content                         = replaceNoCase( content, "|INTERCEPTORS_SNAPSHOT|", interceptorsSnapshotContent, "all" )
+
+		// Generate layouts snapshot
+		var layoutsSnapshotContent = generateLayoutsSnapshot( arguments.directory, arguments.templateType )
+		content                    = replaceNoCase( content, "|LAYOUTS_SNAPSHOT|", layoutsSnapshotContent, "all" )
+
+		// Generate custom modules snapshot
+		var customModulesContent = generateCustomModulesSnapshot( arguments.directory, arguments.templateType )
+		content                  = replaceNoCase( content, "|CUSTOM_MODULES_SNAPSHOT|", customModulesContent, "all" )
 
 		// Add guidelines inventory (module and additional guidelines only)
 		var guidelinesContent = generateGuidelinesContent(
@@ -876,43 +886,187 @@ component singleton {
 			"onapplicationend"
 		]
 
-		// Use a Java regex to extract public function names
-		var pattern = createObject( "java", "java.util.regex.Pattern" ).compile(
-			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
-		)
-
-		var handlerFiles = directoryList(
-			handlersRoot,
-			false,
-			"path",
-			"*.cfc|*.bx"
-		)
-		var lines = []
+		var handlerFiles = directoryList( handlersRoot, false, "path", "*.cfc|*.bx" )
+		var lines        = []
 
 		for ( var handlerFile in handlerFiles ) {
 			var handlerName = listFirst( getFileFromPath( handlerFile ), "." )
-			var source      = fileRead( handlerFile )
-			var matcher     = pattern.matcher( source )
-			var actions     = []
+			var actions     = extractFunctionNames( fileRead( handlerFile ), lifecycleMethods )
 
-			while ( matcher.find() ) {
-				var fnName = matcher.group( 1 )
-				if ( !lifecycleMethods.findNoCase( fnName ) ) {
-					if ( !actions.findNoCase( fnName ) ) {
-						actions.append( fnName )
-					}
-				}
-			}
-
-			if ( actions.len() ) {
-				lines.append( "- **#handlerName#**: #actions.toList( ", " )#" )
-			} else {
-				lines.append( "- **#handlerName#**: _(no public actions)_" )
-			}
+			lines.append(
+				actions.len()
+				 ? "- **#handlerName#**: #actions.toList( ', ' )#"
+				 : "- **#handlerName#**: _(no public actions)_"
+			)
 		}
 
 		if ( !lines.len() ) {
 			return "No handlers found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a snapshot of existing interceptors and their interception point methods
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of interceptors and their announced points
+	 */
+	private function generateInterceptorsSnapshot(
+		required string directory,
+		required string templateType
+	){
+		var interceptorsRoot = arguments.templateType == "modern"
+		 ? "#arguments.directory#/app/interceptors"
+		 : "#arguments.directory#/interceptors"
+
+		if ( !directoryExists( interceptorsRoot ) ) {
+			return "No interceptors found."
+		}
+
+		// Methods to exclude — framework inherited methods, not interception points
+		var excludedMethods = [
+			"init",
+			"configure",
+			"getproperty",
+			"setproperty",
+			"getproperties"
+		]
+
+		var interceptorFiles = directoryList( interceptorsRoot, false, "path", "*.cfc|*.bx" )
+		var lines            = []
+
+		for ( var interceptorFile in interceptorFiles ) {
+			var interceptorName = listFirst( getFileFromPath( interceptorFile ), "." )
+			var points          = extractFunctionNames( fileRead( interceptorFile ), excludedMethods )
+
+			lines.append(
+				points.len()
+				 ? "- **#interceptorName#**: #points.toList( ', ' )#"
+				 : "- **#interceptorName#**: _(no interception points declared)_"
+			)
+		}
+
+		if ( !lines.len() ) {
+			return "No interceptors found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Extract unique public function names from CFML/BoxLang source using the shared compiled pattern.
+	 * The matched names are filtered against the provided exclusion list.
+	 *
+	 * @source          Raw source code string to scan
+	 * @excludedMethods Array of method names (case-insensitive) to omit from results
+	 *
+	 * @return Ordered array of unique, non-excluded function names found in the source
+	 */
+	private array function extractFunctionNames(
+		required string source,
+		required array excludedMethods
+	){
+		var matcher = variables.FUNCTION_PATTERN.matcher( arguments.source )
+		var names   = []
+
+		while ( matcher.find() ) {
+			var fnName = matcher.group( 1 )
+			if ( !arguments.excludedMethods.findNoCase( fnName ) && !names.findNoCase( fnName ) ) {
+				names.append( fnName )
+			}
+		}
+
+		return names
+	}
+
+	/**
+	 * Generate a snapshot of available layouts
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of layout files
+	 */
+	private function generateLayoutsSnapshot(
+		required string directory,
+		required string templateType
+	){
+		var layoutsRoot = arguments.templateType == "modern"
+		 ? "#arguments.directory#/app/layouts"
+		 : "#arguments.directory#/layouts"
+
+		if ( !directoryExists( layoutsRoot ) ) {
+			return "No layouts found."
+		}
+
+		var layoutFiles = directoryList( layoutsRoot, false, "path", "*.cfm|*.bxm" )
+		var lines       = []
+
+		for ( var layoutFile in layoutFiles ) {
+			var layoutName = getFileFromPath( layoutFile )
+			lines.append( "- **#layoutName#**" )
+		}
+
+		if ( !lines.len() ) {
+			return "No layouts found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a snapshot of application-level custom modules
+	 *
+	 * Modern template checks: /app/modules
+	 * Flat template checks:   /modules_app
+	 * Both check the alternate as a fallback if the primary is missing or empty.
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of custom module names
+	 */
+	private function generateCustomModulesSnapshot(
+		required string directory,
+		required string templateType
+	){
+		// Build candidate paths (primary first, then fallback)
+		var candidates = arguments.templateType == "modern"
+		 ? [ "#arguments.directory#/app/modules", "#arguments.directory#/modules_app" ]
+		 : [ "#arguments.directory#/modules_app", "#arguments.directory#/app/modules" ]
+
+		var lines = []
+
+		for ( var modulesRoot in candidates ) {
+			if ( !directoryExists( modulesRoot ) ) {
+				continue;
+			}
+
+			// Each subdirectory is a module
+			var moduleDirs = directoryList( modulesRoot, false, "path" )
+			if ( !moduleDirs.len() ) {
+				continue;
+			}
+
+			var label = modulesRoot.replace( arguments.directory, "" ).replaceAll( "^[/\\]", "" )
+
+			for ( var moduleDir in moduleDirs ) {
+				if ( directoryExists( moduleDir ) ) {
+					var moduleName = getFileFromPath( moduleDir )
+					lines.append( "- **#moduleName#** (`#label#`)" )
+				}
+			}
+		}
+
+		if ( !lines.len() ) {
+			return "No custom modules found."
 		}
 
 		lines.sort( "textnocase" )

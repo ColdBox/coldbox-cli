@@ -56,6 +56,24 @@ Current event handlers and their public actions (auto-updated on `coldbox ai ref
 
 |HANDLERS_SNAPSHOT|
 
+## Interceptors Snapshot
+
+Registered interceptors and their interception points (auto-updated on `coldbox ai refresh`):
+
+|INTERCEPTORS_SNAPSHOT|
+
+## Layouts
+
+Available layouts (auto-updated on `coldbox ai refresh`):
+
+|LAYOUTS_SNAPSHOT|
+
+## Custom Modules
+
+Application-level modules located in `/modules_app` (auto-updated on `coldbox ai refresh`):
+
+|CUSTOM_MODULES_SNAPSHOT|
+
 ## AI Integration & Resources
 
 This project includes AI-powered development assistance with on-demand guidelines, skills, and MCP documentation servers.
