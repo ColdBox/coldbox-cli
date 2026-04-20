@@ -395,16 +395,39 @@ component singleton {
 			languageGuidelineFile = "`.ai/guidelines/core/boxlang.md`"
 			languageGuidelineDesc = "BoxLang/CFML syntax and patterns (or `cfml.md` for CFML-only)"
 		}
-		content = replaceNoCase( content, "|LANGUAGE_GUIDELINE_FILE|", languageGuidelineFile, "all" )
-		content = replaceNoCase( content, "|LANGUAGE_GUIDELINE_DESC|", languageGuidelineDesc, "all" )
+		content = replaceNoCase(
+			content,
+			"|LANGUAGE_GUIDELINE_FILE|",
+			languageGuidelineFile,
+			"all"
+		)
+		content = replaceNoCase(
+			content,
+			"|LANGUAGE_GUIDELINE_DESC|",
+			languageGuidelineDesc,
+			"all"
+		)
 
 		// Generate installed modules content
 		var installedModulesContent = generateInstalledModulesContent( arguments.directory, boxJson )
-		content                     = replaceNoCase( content, "|INSTALLED_MODULES|", installedModulesContent, "all" )
+		content                     = replaceNoCase(
+			content,
+			"|INSTALLED_MODULES|",
+			installedModulesContent,
+			"all"
+		)
 
 		// Generate handlers snapshot
-		var handlersSnapshotContent = generateHandlersSnapshot( arguments.directory, arguments.templateType )
-		content                     = replaceNoCase( content, "|HANDLERS_SNAPSHOT|", handlersSnapshotContent, "all" )
+		var handlersSnapshotContent = generateHandlersSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|HANDLERS_SNAPSHOT|",
+			handlersSnapshotContent,
+			"all"
+		)
 
 		// Add guidelines inventory (module and additional guidelines only)
 		var guidelinesContent = generateGuidelinesContent(
@@ -858,8 +881,13 @@ component singleton {
 			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
 		)
 
-		var handlerFiles = directoryList( handlersRoot, false, "path", "*.cfc|*.bx" )
-		var lines        = []
+		var handlerFiles = directoryList(
+			handlersRoot,
+			false,
+			"path",
+			"*.cfc|*.bx"
+		)
+		var lines = []
 
 		for ( var handlerFile in handlerFiles ) {
 			var handlerName = listFirst( getFileFromPath( handlerFile ), "." )
@@ -877,7 +905,7 @@ component singleton {
 			}
 
 			if ( actions.len() ) {
-				lines.append( "- **#handlerName#**: #actions.toList( ', ' )#" )
+				lines.append( "- **#handlerName#**: #actions.toList( ", " )#" )
 			} else {
 				lines.append( "- **#handlerName#**: _(no public actions)_" )
 			}
