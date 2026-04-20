@@ -269,13 +269,16 @@ component singleton {
 			} )
 		}
 
-		// Remove manifest entries for files that no longer exist
-		var orphanedGuidelines = []
+		// Restore or remove manifest entries for files missing on disk.
+		// Core and module guidelines are re-installed; custom/override are user-managed so they are removed.
+		var missingCoreGuidelines   = []
+		var missingModuleGuidelines = []
+		var orphanedGuidelines      = []
+
 		for ( var guideline in manifest.guidelines ) {
 			var gType    = guideline.type ?: ""
 			var filePath = ""
 
-			// Determine expected file path
 			if ( gType == "core" ) {
 				filePath = "#arguments.directory#/.ai/guidelines/core/#guideline.name#.md"
 			} else if ( gType == "module" ) {
@@ -287,11 +290,29 @@ component singleton {
 				filePath     = "#arguments.directory#/.ai/guidelines/overrides/#baseName#.md"
 			}
 
-			// Check if file exists
 			if ( filePath.len() && !fileExists( filePath ) ) {
-				orphanedGuidelines.append( guideline.name )
+				if ( gType == "core" ) {
+					missingCoreGuidelines.append( guideline.name )
+				} else if ( gType == "module" ) {
+					missingModuleGuidelines.append( { name: guideline.name, source: guideline.source ?: guideline.name } )
+				} else {
+					// custom / override — user deleted the file, remove manifest entry
+					orphanedGuidelines.append( guideline.name )
+				}
 			}
 		}
+
+		missingCoreGuidelines.each( ( name ) => {
+			variables.print.yellowLine( "  🔄  Reinstalling missing core guideline: #name#" ).toConsole()
+			installCoreGuidelineInternal( arguments.directory, name, manifest )
+			changes.updated.append( name )
+		} )
+
+		missingModuleGuidelines.each( ( item ) => {
+			variables.print.yellowLine( "  🔄  Reinstalling missing module guideline: #item.name#" ).toConsole()
+			installModuleGuidelineInternal( arguments.directory, item.name, item.source, manifest )
+			changes.updated.append( item.name )
+		} )
 
 		orphanedGuidelines.each( ( name ) => {
 			manifest.guidelines = manifest.guidelines.filter( ( g ) => g.name != name )

@@ -42,7 +42,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		print.line()
 		printInfo( "Creating custom skill: #arguments.name# (#uCase( language )#)" )
-		print.line()
 
 		// Check if already exists
 		var skillPath = "#arguments.directory#/.ai/skills/#arguments.name#/SKILL.md"
@@ -65,7 +64,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		)
 
 		// Regenerate agent files
-		print.line()
 		printInfo( "Regenerating agent configuration files..." )
 		variables.aiService.refresh( arguments.directory )
 

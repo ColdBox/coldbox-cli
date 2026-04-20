@@ -169,12 +169,17 @@ component singleton {
 		allDependencies.append( boxJson.dependencies ?: {} );
 		allDependencies.append( boxJson.devDependencies ?: {} );
 
+		// Built-in sources are never treated as module orphans, even if type is stale in the manifest
+		var builtInSources = [ "commandbox", "boxlang", "coldbox", "testbox" ]
 		var toRemove = [];
 		for ( var skill in arguments.manifest.skills ) {
 			var skillType = skill.type ?: ""
-			if ( skillType != "module" ) continue
+			var source    = skill.source ?: ""
 
-			var source = skill.source ?: ""
+			if ( skillType == "custom" ) { continue; }
+			if ( builtInSources.findNoCase( source ) ) { continue; }
+			if ( skillType != "module" ) { continue; }
+
 			if ( source.len() && !allDependencies.keyExists( source ) ) {
 				toRemove.append( skill.name )
 			}
@@ -263,7 +268,7 @@ component singleton {
 				variables.print.blueLine( "  🔄  Updating: #staleItem.entry.name#" ).toConsole()
 
 				installRemoteSkill(
-					directory   = arguments.directory,
+					directory   = directory,
 					name        = staleItem.entry.name,
 					content     = result.content,
 					owner       = result.skill.owner,
@@ -274,25 +279,82 @@ component singleton {
 					auditStatus = result.skill.audit_status,
 					skillType   = staleItem.entry.type ?: "core",
 					source      = staleItem.entry.source ?: "",
-					manifest    = arguments.manifest
+					manifest    = manifest
 				)
 				changes.updated.append( staleItem.entry.name )
 			} )
 		}
 
 		// ------------------------------------------------------------------
-		// 4. Remove manifest entries whose files no longer exist on disk
+		// 4. Reinstall remote skills whose files no longer exist on disk;
+		//    remove custom skills that the user deleted
 		// ------------------------------------------------------------------
-		var orphaned = []
+		var missingRemoteSkills = []
+		var missingCustomSkills = []
+
 		for ( var skill in arguments.manifest.skills ) {
 			var skillFile = getSkillFilePath( arguments.directory, skill.name )
 			if ( isNull( skillFile ) ) {
-				orphaned.append( skill.name )
+				var owner = skill.owner ?: ""
+				var repo  = skill.repo  ?: ""
+				var slug  = skill.slug  ?: ""
+				if ( ( skill.type ?: "" ) != "custom" && owner.len() && repo.len() && slug.len() ) {
+					missingRemoteSkills.append( skill )
+				} else {
+					missingCustomSkills.append( skill.name )
+				}
 			}
 		}
-		orphaned.each( ( name ) => {
-			variables.print.yellowLine( "  🧹  Removing missing-file entry: #name#" ).toConsole()
-			arguments.manifest.skills = arguments.manifest.skills.filter( ( s ) => s.name != name )
+
+		if ( missingRemoteSkills.len() ) {
+			variables.print.yellowLine( "  🔄  Reinstalling #missingRemoteSkills.len()# missing skill(s)..." ).toConsole()
+			var missingBatchItems = missingRemoteSkills.map( ( skill ) => {
+				return { owner: skill.owner, repo: skill.repo, skill: skill.slug }
+			} )
+			var missingBatchResult = downloadSkillBatch( missingBatchItems )
+			var reinstalled        = []
+
+			missingBatchResult.each( ( result ) => {
+				if ( result.keyExists( "error" ) && result.error ) return
+
+				var resultSlug    = result.skill.skill_slug ?: ""
+				var _mf           = missingRemoteSkills.filter( ( s ) => s.slug == resultSlug )
+				var manifestEntry = _mf.len() ? _mf.first() : {}
+				if ( manifestEntry.isEmpty() ) return
+
+				variables.print.blueLine( "  ⬇️  Reinstalling: #manifestEntry.name#" ).toConsole()
+				installRemoteSkill(
+					directory   = directory,
+					name        = manifestEntry.name,
+					content     = result.content,
+					owner       = result.skill.owner,
+					repo        = result.skill.repo,
+					path        = result.skill.skill_dir,
+					sha         = result.skill.file_sha,
+					description = result.skill.description,
+					auditStatus = result.skill.audit_status ?: "skipped",
+					skillType   = manifestEntry.type ?: "core",
+					source      = manifestEntry.source ?: "",
+					manifest    = manifest
+				)
+				reinstalled.append( manifestEntry.name )
+				changes.updated.append( manifestEntry.name )
+			} )
+
+			// Remove those the registry could not supply
+			missingRemoteSkills
+				.filter( ( s ) => !reinstalled.findNoCase( s.name ) )
+				.each( ( s ) => {
+					variables.print.yellowLine( "  🧹  Could not reinstall, removing entry: #s.name#" ).toConsole()
+					manifest.skills = manifest.skills.filter( ( sk ) => sk.name != s.name )
+					changes.removed.append( s.name )
+				} )
+		}
+
+		// Remove custom skills whose files were deleted by the user
+		missingCustomSkills.each( ( name ) => {
+			variables.print.yellowLine( "  🧹  Removing deleted custom skill entry: #name#" ).toConsole()
+			manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
 
@@ -574,6 +636,19 @@ component singleton {
 	}
 
 	/**
+	 * Check if a skill exists in any of the three skill directories.
+	 *
+	 * @directory The project directory
+	 * @name      The skill name (directory name)
+	 *
+	 * @return true if found, false if not
+	 */
+	function hasSkill( required string directory, required string name ){
+		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
+		return directoryExists( skillDir )
+	}
+
+	/**
 	 * Remove a skill from the project (flat path).
 	 *
 	 * @directory The project directory
@@ -595,10 +670,11 @@ component singleton {
 			)
 		}
 
+		// Delete the skill directory and all its contents
 		directoryDelete( skillDir, true )
-
+		// Remove from manifest
 		var manifest    = variables.aiService.loadManifest( arguments.directory )
-		manifest.skills = manifest.skills.filter( ( s ) => s.name != arguments.name )
+		manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
 		return true

@@ -86,7 +86,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					return [ skill.name, sha, synced, skillType ]
 				} )
 				print.table(
-					headers = [ "Name", "SHA", "Last Synced", "Type" ],
+					headerNames = [ "Name", "SHA", "Last Synced", "Type" ],
 					data    = rows
 				)
 			} else {
@@ -96,7 +96,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					return [ skill.name, sha ]
 				} )
 				print.table(
-					headers = [ "Name", "SHA" ],
+					headerNames = [ "Name", "SHA" ],
 					data    = rows
 				)
 			}

@@ -30,7 +30,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		arguments.name = arguments.name.replaceAll( "\s+", "-" )
 		print.line()
 		printInfo( "Removing skill: #arguments.name#" )
-		print.line()
+
+		// Check if skill exists, else exit with message
+		var exists = variables.skillManager.hasSkill( arguments.directory, arguments.name )
+		if ( !exists ) {
+			printError( "Skill '#arguments.name#' not found." )
+			print.line()
+			printTip( "Use 'coldbox ai skills list' to see available skills" )
+			return
+		}
 
 		// Confirm deletion
 		if ( !arguments.force ) {
@@ -41,16 +49,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		// Remove the skill
-		try {
-			variables.skillManager.removeSkillFromProject( arguments.directory, arguments.name )
-		} catch ( any e ) {
-			printError( "Failed to remove skill: #e.message#" )
-			print.line()
-			if ( e.type == "SkillManager.SkillNotFound" ) {
-				printTip( "Use 'coldbox ai skills list' to see available skills" )
-			}
-			return
-		}
+		// Throws an error if skill not found
+		variables.skillManager.removeSkillFromProject(
+			arguments.directory,
+			arguments.name
+		)
 
 		// Regenerate agent files
 		print.line()
