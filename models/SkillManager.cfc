@@ -339,12 +339,12 @@ component singleton {
 			var reinstalled        = []
 
 			missingBatchResult.each( ( result ) => {
-				if ( result.keyExists( "error" ) && result.error ) return				var resultSlug = result.skill.skill_slug ?: ""
+				if ( result.keyExists( "error" ) && result.error )
+					return var resultSlug = result.skill.skill_slug ?: ""
 				var _mf           = missingRemoteSkills.filter( ( s ) => s.slug == resultSlug )
 				var manifestEntry = _mf.len() ? _mf.first() : {}
-				if ( manifestEntry.isEmpty() ) return				variables.print
-					.blueLine( "  ⬇️  Reinstalling: #manifestEntry.name#" )
-					.toConsole()
+				if ( manifestEntry.isEmpty() )
+					return variables.print.blueLine( "  ⬇️  Reinstalling: #manifestEntry.name#" ).toConsole()
 				installRemoteSkill(
 					directory   = directory,
 					name        = manifestEntry.name,
