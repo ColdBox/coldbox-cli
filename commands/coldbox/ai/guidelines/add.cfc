@@ -38,8 +38,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printError( "'#arguments.name#' is not a valid core guideline." )
 			print.line()
 			printInfo( "Valid core guidelines: #variables.guidelineManager.CORE_GUIDELINES.toList()#" )
-			print.line()
-			printTip( "Module guidelines are automatically installed via 'coldbox ai refresh'" )
 			return
 		}
 

@@ -460,31 +460,25 @@ graph TD
     subgraph "Priority (High to Low)"
         Override["🎯 Overrides<br/>.ai/guidelines/overrides/<br/>Highest Priority"]
         Custom["📝 Custom<br/>.ai/guidelines/custom/<br/>Project-specific"]
-        Module["📦 Modules<br/>.ai/guidelines/modules/<br/>From installed packages"]
         Core["⚙️ Core<br/>.ai/guidelines/core/<br/>Built-in (Lowest Priority)"]
     end
 
     Override -."Replaces".-> Core
-    Override -."Replaces".-> Module
-    Custom -."Adds to".-> Module
-    Module -."Extends".-> Core
+    Custom -."Adds to".-> Core
 
     subgraph "Example: coldbox.md"
         Check{"Which version<br/>to use?"}
         UseOverride["✅ Use override version<br/>Custom conventions"]
-        UseModule["Use module version<br/>If no override"]
         UseCustom["Use custom version<br/>If exists"]
         UseCore["Use core version<br/>Default fallback"]
     end
 
     Check -->|"Override exists"| UseOverride
     Check -->|"Custom exists"| UseCustom
-    Check -->|"Module exists"| UseModule
     Check -->|"None exist"| UseCore
 
     style Override fill:#f44336,color:#fff
     style Custom fill:#ff9800,color:#fff
-    style Module fill:#2196f3,color:#fff
     style Core fill:#9e9e9e,color:#fff
     style UseOverride fill:#4caf50,color:#fff
 ```

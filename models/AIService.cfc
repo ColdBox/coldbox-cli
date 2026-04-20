@@ -422,7 +422,6 @@ component singleton {
 			"#arguments.directory#/.ai",
 			"#arguments.directory#/.ai/guidelines",
 			"#arguments.directory#/.ai/guidelines/core",
-			"#arguments.directory#/.ai/guidelines/modules",
 			"#arguments.directory#/.ai/guidelines/custom",
 			"#arguments.directory#/.ai/skills"
 		];

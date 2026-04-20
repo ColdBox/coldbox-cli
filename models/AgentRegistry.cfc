@@ -592,7 +592,6 @@ component singleton {
 		var coreGuidelines = manifest.guidelines.filter( ( g ) => {
 			return g.type == "core" && !inlinedGuidelines.find( g.name )
 		} );
-		var moduleGuidelines = manifest.guidelines.filter( ( g ) => g.type == "module" );
 		var customGuidelines = manifest.guidelines.filter( ( g ) => g.type == "custom" );
 
 		// Core guidelines (only non-inlined ones)
@@ -604,17 +603,6 @@ component singleton {
 				content.append( "- **#guideline.name#** - #desc#" );
 			} );
 			content.append( "" );
-		}
-
-		// Module guidelines
-		if ( moduleGuidelines.len() ) {
-			content.append( "**Module Guidelines (Available on request):**" )
-			content.append( "" )
-			moduleGuidelines.each( ( guideline ) => {
-				var desc = structKeyExists( guideline, "description" ) ? guideline.description : "Module guideline"
-				content.append( "- **#guideline.name#** - #desc#" )
-			} )
-			content.append( "" )
 		}
 
 		// Custom guidelines
