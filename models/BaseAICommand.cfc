@@ -21,7 +21,6 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		if ( !info.installed ) {
 			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			abort
 		}
 
 		return info

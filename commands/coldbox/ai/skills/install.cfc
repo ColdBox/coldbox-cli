@@ -41,6 +41,9 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		showColdBoxBanner( "Install AI Skills" )
 
 		var info     = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 		var manifest = loadManifest( arguments.directory )
 		var language = manifest.language ?: "boxlang"
 

@@ -29,8 +29,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		string directory = getCwd()
 	){
 		showColdBoxBanner( "Create Custom Skill" )
-
-		ensureInstalled( arguments.directory )
+		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		// Determine language (cfml flag overrides boxlang)
 		var language = arguments.cfml ? "cfml" : "boxlang"

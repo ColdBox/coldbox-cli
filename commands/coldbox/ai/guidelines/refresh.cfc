@@ -24,6 +24,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Refresh Guidelines" )
 
 		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		print.line()
 		printInfo( "Refreshing guidelines from installed modules..." )

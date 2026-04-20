@@ -25,6 +25,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Installed AI Skills" )
 
 		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		// --outdated: validate integrity and keep only stale skills
 		if ( outdated ) {

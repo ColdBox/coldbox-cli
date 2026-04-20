@@ -21,6 +21,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Installed Guidelines" )
 
 		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		// Group guidelines by source
 		var coreGuidelines     = []

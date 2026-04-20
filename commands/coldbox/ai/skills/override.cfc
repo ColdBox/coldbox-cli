@@ -26,7 +26,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Override Skill" )
 
-		var info       = ensureInstalled( arguments.directory )
+		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 		// Replace spaces with dashes for skill name
 		arguments.name = arguments.name.replaceAll( "\s+", "-" )
 

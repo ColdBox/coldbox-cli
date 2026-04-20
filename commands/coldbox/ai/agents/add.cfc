@@ -25,6 +25,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Add AI Agent" )
 
 		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		print.line()
 

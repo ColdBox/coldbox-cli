@@ -37,7 +37,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Remove Guideline" )
 
-		ensureInstalled( arguments.directory )
+		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		// Validate exactly one type flag is specified
 		var typeFlags = [

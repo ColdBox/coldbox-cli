@@ -27,6 +27,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Override Guideline" )
 
 		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		print.line()
 		printInfo( "Creating override for: #arguments.name#" )

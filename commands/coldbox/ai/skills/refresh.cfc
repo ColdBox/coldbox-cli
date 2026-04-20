@@ -24,6 +24,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Refresh Skills" )
 
 		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
 		print.line()
 		printInfo( "Refreshing skills from installed modules..." )

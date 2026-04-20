@@ -24,6 +24,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		try {
 			var info     = ensureInstalled( arguments.directory );
+			if( !info.installed ){
+				return;
+			}
 			var manifest = loadManifest( arguments.directory );
 
 			// Read package descriptor for name and version
