@@ -30,7 +30,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Create Custom Skill" )
 		var info = ensureInstalled( arguments.directory )
-		if( !info.installed ){
+		if ( !info.installed ) {
 			return
 		}
 

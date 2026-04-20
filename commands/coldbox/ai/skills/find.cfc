@@ -33,11 +33,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Find AI Skills" )
 		var info = ensureInstalled( arguments.directory )
-		if( !info.installed ){
+		if ( !info.installed ) {
 			return
 		}
 
-		print.blueLine( "🔍 Searching for AI skills..." ).line().toConsole()
+		print
+			.blueLine( "🔍 Searching for AI skills..." )
+			.line()
+			.toConsole()
 
 		var bxRepo = variables.settings.boxlangSkillsRepo
 		var cbRepo = variables.settings.coldboxSkillsRepo
@@ -79,7 +82,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Filter by query (name, description, or category)
 		if ( arguments.query.len() ) {
-			var q = lcase( arguments.query )
+			var q     = lCase( arguments.query )
 			allSkills = allSkills.filter( ( s ) => {
 				var q = lCase( query )
 				return lCase( s.name ?: "" ).findNoCase( q ) ||
@@ -115,8 +118,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		for ( var cat in grouped ) {
 			// Category header
-			print
-				.boldCyanLine( "━━━  #uCase( cat )#  (#grouped[ cat ].len()#)" )
+			print.boldCyanLine( "━━━  #uCase( cat )#  (#grouped[ cat ].len()#)" )
 
 			for ( var skill in grouped[ cat ] ) {
 				var installSlug = "#skill.repoOwner#/#skill.repoName#/#skill.slug#"
@@ -125,8 +127,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				// print.line( skill )
 
 				// Skill name + audit badge
-				print
-					.boldBlueLine( "  #skill.name ?: ''#  #auditBadge#" )
+				print.boldBlueLine( "  #skill.name ?: ""#  #auditBadge#" )
 
 				// Install slug — the key copy-paste item
 				print
@@ -150,15 +151,23 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	// -------------------------------------------------------------------------
 
 	private string function getAuditBadge( required string status ){
-		switch ( lcase( arguments.status ) ) {
-			case "trusted": return "[ ✅ trusted ]"
-			case "clean":   return "[ ✅ clean ]"
-			case "review":  return "[ 👀 review ]"
-			case "warn":    return "[ ⚠️ warn ]"
-			case "block":   return "[ 🛑 blocked ]"
-			case "pending": return "[ ⏳ pending ]"
-			case "skipped": return "[ — skipped ]"
-			default:        return ""
+		switch ( lCase( arguments.status ) ) {
+			case "trusted":
+				return "[ ✅ trusted ]"
+			case "clean":
+				return "[ ✅ clean ]"
+			case "review":
+				return "[ 👀 review ]"
+			case "warn":
+				return "[ ⚠️ warn ]"
+			case "block":
+				return "[ 🛑 blocked ]"
+			case "pending":
+				return "[ ⏳ pending ]"
+			case "skipped":
+				return "[ — skipped ]"
+			default:
+				return ""
 		}
 	}
 

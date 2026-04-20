@@ -40,14 +40,17 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 	){
 		showColdBoxBanner( "Install AI Skills" )
 
-		var info     = ensureInstalled( arguments.directory )
-		if( !info.installed ){
+		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
 			return
 		}
 		var manifest = loadManifest( arguments.directory )
 		var language = manifest.language ?: "boxlang"
 
-		print.blueLine( "📥 Installing AI skills..." ).line().toConsole()
+		print
+			.blueLine( "📥 Installing AI skills..." )
+			.line()
+			.toConsole()
 
 		// ------------------------------------------------------------------
 		// --list mode: interactive multi-select
@@ -333,7 +336,9 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		for ( var slug in arguments.slugs ) {
 			var parts = slug.listToArray( "/" )
 
-			if ( parts.len() < 2 ) { continue; }
+			if ( parts.len() < 2 ) {
+				continue;
+			}
 
 			var slugOwner = parts[ 1 ]
 			var slugRepo  = parts[ 2 ]
@@ -342,23 +347,44 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				// Whole repo: owner/repo — install everything in it
 				var repoList = variables.skillManager.fetchRepoSkillList( slugOwner, slugRepo )
 				for ( var s in repoList ) {
-					resolved.append( { owner: slugOwner, repo: slugRepo, slug: s.slug, name: s.name, type: "core", source: "" } )
+					resolved.append( {
+						owner  : slugOwner,
+						repo   : slugRepo,
+						slug   : s.slug,
+						name   : s.name,
+						type   : "core",
+						source : ""
+					} )
 				}
 			} else if ( parts.len() == 3 ) {
 				// owner/repo/name — try it first as a direct skill slug; if not found, treat as a category filter
-				var thirdPart    = parts[ 3 ]
-				var repoSkills   = variables.skillManager.fetchRepoSkillList( slugOwner, slugRepo )
-				var directMatch  = repoSkills.filter( ( s ) => s.slug == thirdPart )
+				var thirdPart   = parts[ 3 ]
+				var repoSkills  = variables.skillManager.fetchRepoSkillList( slugOwner, slugRepo )
+				var directMatch = repoSkills.filter( ( s ) => s.slug == thirdPart )
 
 				if ( directMatch.len() ) {
 					var dm = directMatch.first()
-					resolved.append( { owner: slugOwner, repo: slugRepo, slug: dm.slug, name: dm.name, type: "core", source: "" } )
+					resolved.append( {
+						owner  : slugOwner,
+						repo   : slugRepo,
+						slug   : dm.slug,
+						name   : dm.name,
+						type   : "core",
+						source : ""
+					} )
 				} else {
 					// Fall back to category filter
 					var categoryMatches = repoSkills.filter( ( s ) => s?.category == thirdPart )
 					if ( categoryMatches.len() ) {
 						for ( var cs in categoryMatches ) {
-							resolved.append( { owner: slugOwner, repo: slugRepo, slug: cs.slug, name: cs.name, type: "core", source: "" } )
+							resolved.append( {
+								owner  : slugOwner,
+								repo   : slugRepo,
+								slug   : cs.slug,
+								name   : cs.name,
+								type   : "core",
+								source : ""
+							} )
 						}
 					}
 					// If neither a direct skill nor a category matched, resolved stays empty for this slug
@@ -367,7 +393,14 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				// Explicit 4+ part slug: owner/repo/category/skill-name
 				// Registry stores skill_slug with ~ as separator (not /), so join accordingly
 				var skillSlug = parts.slice( 3 ).toList( "~" )
-				resolved.append( { owner: slugOwner, repo: slugRepo, slug: skillSlug, name: parts.last(), type: "core", source: "" } )
+				resolved.append( {
+					owner  : slugOwner,
+					repo   : slugRepo,
+					slug   : skillSlug,
+					name   : parts.last(),
+					type   : "core",
+					source : ""
+				} )
 			}
 		}
 

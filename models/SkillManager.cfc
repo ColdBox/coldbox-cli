@@ -173,15 +173,26 @@ component singleton {
 		allDependencies.append( boxJson.devDependencies ?: {} );
 
 		// Built-in sources are never treated as module orphans, even if type is stale in the manifest
-		var builtInSources = [ "commandbox", "boxlang", "coldbox", "testbox" ]
+		var builtInSources = [
+			"commandbox",
+			"boxlang",
+			"coldbox",
+			"testbox"
+		]
 		var toRemove = [];
 		for ( var skill in arguments.manifest.skills ) {
 			var skillType = skill.type ?: ""
 			var source    = skill.source ?: ""
 
-			if ( skillType == "custom" ) { continue; }
-			if ( builtInSources.findNoCase( source ) ) { continue; }
-			if ( skillType != "module" ) { continue; }
+			if ( skillType == "custom" ) {
+				continue;
+			}
+			if ( builtInSources.findNoCase( source ) ) {
+				continue;
+			}
+			if ( skillType != "module" ) {
+				continue;
+			}
 
 			if ( source.len() && !allDependencies.keyExists( source ) ) {
 				toRemove.append( skill.name )
@@ -263,12 +274,12 @@ component singleton {
 			var batchResult = downloadSkillBatch( batchItems )
 
 			batchResult.each( ( result ) => {
-				if ( result.keyExists( "error" ) && result.error ) return
-				var resultSlug     = result.skill.skill_slug ?: ""
+				if ( result.keyExists( "error" ) && result.error ) return				var resultSlug = result.skill.skill_slug ?: ""
 				var _staleFiltered = staleItems.filter( ( i ) => i.entry.slug == resultSlug )
 				var staleItem      = _staleFiltered.len() ? _staleFiltered.first() : {}
-				if ( staleItem.isEmpty() ) return
-				variables.print.blueLine( "  🔄  Updating: #staleItem.entry.name#" ).toConsole()
+				if ( staleItem.isEmpty() ) return				variables.print
+					.blueLine( "  🔄  Updating: #staleItem.entry.name#" )
+					.toConsole()
 
 				installRemoteSkill(
 					directory   = directory,
@@ -299,8 +310,8 @@ component singleton {
 			var skillFile = getSkillFilePath( arguments.directory, skill.name )
 			if ( isNull( skillFile ) ) {
 				var owner = skill.owner ?: ""
-				var repo  = skill.repo  ?: ""
-				var slug  = skill.slug  ?: ""
+				var repo  = skill.repo ?: ""
+				var slug  = skill.slug ?: ""
 				if ( ( skill.type ?: "" ) != "custom" && owner.len() && repo.len() && slug.len() ) {
 					missingRemoteSkills.append( skill )
 				} else {
@@ -310,21 +321,25 @@ component singleton {
 		}
 
 		if ( missingRemoteSkills.len() ) {
-			variables.print.yellowLine( "  🔄  Reinstalling #missingRemoteSkills.len()# missing skill(s)..." ).toConsole()
+			variables.print
+				.yellowLine( "  🔄  Reinstalling #missingRemoteSkills.len()# missing skill(s)..." )
+				.toConsole()
 			var missingBatchItems = missingRemoteSkills.map( ( skill ) => {
-				return { owner: skill.owner, repo: skill.repo, skill: skill.slug }
+				return {
+					owner : skill.owner,
+					repo  : skill.repo,
+					skill : skill.slug
+				}
 			} )
 			var missingBatchResult = downloadSkillBatch( missingBatchItems )
 			var reinstalled        = []
 
 			missingBatchResult.each( ( result ) => {
 				if ( result.keyExists( "error" ) && result.error ) return
-
 				var resultSlug    = result.skill.skill_slug ?: ""
 				var _mf           = missingRemoteSkills.filter( ( s ) => s.slug == resultSlug )
 				var manifestEntry = _mf.len() ? _mf.first() : {}
 				if ( manifestEntry.isEmpty() ) return
-
 				variables.print.blueLine( "  ⬇️  Reinstalling: #manifestEntry.name#" ).toConsole()
 				installRemoteSkill(
 					directory   = directory,
@@ -437,10 +452,16 @@ component singleton {
 		}
 
 		// Download skill info and content from registry
-		variables.print.blueLine( "⬇️  Downloading [#arguments.owner#/#arguments.repo#/#arguments.skillSlug#]..." ).toConsole()
-		var downloadResult = downloadSkill( arguments.owner, arguments.repo, arguments.skillSlug )
+		variables.print
+			.blueLine( "⬇️  Downloading [#arguments.owner#/#arguments.repo#/#arguments.skillSlug#]..." )
+			.toConsole()
+		var downloadResult = downloadSkill(
+			arguments.owner,
+			arguments.repo,
+			arguments.skillSlug
+		)
 
-		//print.line( downloadResult ).toConsole()
+		// print.line( downloadResult ).toConsole()
 
 		// Error handling
 		if ( downloadResult.keyExists( "error" ) && downloadResult.error ) {
@@ -641,7 +662,10 @@ component singleton {
 	 *
 	 * @return true if found, false if not
 	 */
-	function hasSkill( required string directory, required string name ){
+	function hasSkill(
+		required string directory,
+		required string name
+	){
 		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
 		return directoryExists( skillDir )
 	}
@@ -806,7 +830,7 @@ component singleton {
 	){
 		var registryUrl = variables.settings.skillsRegistryUrl
 		var targetUrl   = "#registryUrl#/api/install"
-		var httpResult = ""
+		var httpResult  = ""
 
 		// Make the HTTP call to the registry API with owner, repo, and skill as URL parameters
 		cfhttp(
@@ -858,7 +882,7 @@ component singleton {
 			}
 
 			// Throw an exception if parsed.data doesn't exist
-			 if ( !parsed.keyExists( "data" ) || !isStruct( parsed.data ) ) {
+			if ( !parsed.keyExists( "data" ) || !isStruct( parsed.data ) ) {
 				throw(
 					type    = "SkillManager.InvalidResponse",
 					message = "Registry response is missing expected 'data' struct for #arguments.owner#/#arguments.repo#/#arguments.skillSlug#",
@@ -868,18 +892,18 @@ component singleton {
 
 			// Unwrap ColdBox envelope: {data:{skill,content,audit,...}, error, messages}
 			return {
-				error   : parsed.error   ?: false,
-				messages: parsed.messages ?: [],
-				skill   : parsed.data.skill   ?: {},
-				content : parsed.data.content ?: "",
-				audit   : parsed.data.audit   ?: {},
-				counts  : parsed.data.counts  ?: {}
+				error    : parsed.error ?: false,
+				messages : parsed.messages ?: [],
+				skill    : parsed.data.skill ?: {},
+				content  : parsed.data.content ?: "",
+				audit    : parsed.data.audit ?: {},
+				counts   : parsed.data.counts ?: {}
 			}
 		} catch ( any e ) {
 			return {
-				error: true,
-				message: "Failed to parse registry response: #e.message#",
-				stackTrace: e.stackTrace
+				error      : true,
+				message    : "Failed to parse registry response: #e.message#",
+				stackTrace : e.stackTrace
 			}
 		}
 	}
@@ -900,7 +924,7 @@ component singleton {
 		var registryUrl = variables.settings.skillsRegistryUrl
 		var targetUrl   = "#registryUrl#/api/install/batch"
 		var payload     = serializeJSON( arguments.skills )
-		var httpResult = ""
+		var httpResult  = ""
 
 		// Make the HTTP call to the batch registry API, sending the skills array as JSON in the body
 		cfhttp(
@@ -929,9 +953,7 @@ component singleton {
 
 			// If there is an error, show the error message and return empty array to trigger fallback to single downloads
 			if ( response.keyExists( "error" ) && response.error ) {
-				variables.print
-					.printLine( "⚠️ Batch skill download error" )
-					.printLine( response.messages )
+				variables.print.printLine( "⚠️ Batch skill download error" ).printLine( response.messages )
 				return []
 			}
 

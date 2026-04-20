@@ -50,10 +50,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Remove the skill
 		// Throws an error if skill not found
-		variables.skillManager.removeSkillFromProject(
-			arguments.directory,
-			arguments.name
-		)
+		variables.skillManager.removeSkillFromProject( arguments.directory, arguments.name )
 
 		// Regenerate agent files
 		print.line()

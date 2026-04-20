@@ -47,7 +47,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Errors
 		if ( diagnosis.errors.len() ) {
 			print.redLine( "❌ Errors (#diagnosis.errors.len()#)" );
-			diagnosis.errors.each( ( error ) =>{
+			diagnosis.errors.each( ( error ) => {
 				print.indentedRedLine( "  • #error#" )
 			} )
 			print.line()
@@ -59,7 +59,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Warnings
 		if ( diagnosis.warnings.len() ) {
 			print.yellowLine( "⚠ Warnings (#diagnosis.warnings.len()#)" );
-			diagnosis.warnings.each( ( warning ) =>{
+			diagnosis.warnings.each( ( warning ) => {
 				print.indentedYellowLine( "  • #warning#" )
 			} )
 			print.line()

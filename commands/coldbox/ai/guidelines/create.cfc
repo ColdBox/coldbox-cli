@@ -26,7 +26,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Create Custom Guideline" )
 
 		var info = ensureInstalled( arguments.directory )
-		if( !info.installed ){
+		if ( !info.installed ) {
 			return
 		}
 

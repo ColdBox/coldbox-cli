@@ -26,8 +26,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "MCP Servers" );
 
-		var info     = ensureInstalled( arguments.directory );
-		if( !info.installed ){
+		var info = ensureInstalled( arguments.directory );
+		if ( !info.installed ) {
 			return;
 		}
 		var manifest = loadManifest( arguments.directory );

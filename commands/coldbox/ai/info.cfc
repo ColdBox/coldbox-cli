@@ -14,7 +14,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @directory The target directory (defaults to current directory)
 	 * @verbose   Show detailed lists of guidelines, skills, agents, and MCP servers
 	 */
-	function run( string directory = getCwd(), boolean verbose = false ){
+	function run(
+		string directory = getCwd(),
+		boolean verbose  = false
+	){
 		showColdBoxBanner( "AI Integration Info" );
 
 		var info = variables.aiService.getInfo( arguments.directory )

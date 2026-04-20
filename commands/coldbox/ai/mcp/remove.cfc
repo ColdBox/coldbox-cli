@@ -31,8 +31,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Remove MCP Server" );
 
-		var info     = ensureInstalled( arguments.directory );
-		if( !info.installed ){
+		var info = ensureInstalled( arguments.directory );
+		if ( !info.installed ) {
 			return;
 		}
 		var manifest = loadManifest( arguments.directory );

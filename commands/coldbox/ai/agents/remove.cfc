@@ -26,7 +26,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Remove AI Agent" )
 
 		var info = ensureInstalled( arguments.directory )
-		if( !info.installed ){
+		if ( !info.installed ) {
 			return
 		}
 

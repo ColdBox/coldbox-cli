@@ -25,7 +25,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Installed AI Skills" )
 
 		var info = ensureInstalled( arguments.directory )
-		if( !info.installed ){
+		if ( !info.installed ) {
 			return
 		}
 
@@ -87,7 +87,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				} )
 				print.table(
 					headerNames = [ "Name", "SHA", "Last Synced", "Type" ],
-					data    = rows
+					data        = rows
 				)
 			} else {
 				// Compact table
@@ -97,7 +97,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				} )
 				print.table(
 					headerNames = [ "Name", "SHA" ],
-					data    = rows
+					data        = rows
 				)
 			}
 			print.line()

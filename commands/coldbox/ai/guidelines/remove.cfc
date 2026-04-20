@@ -38,7 +38,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Remove Guideline" )
 
 		var info = ensureInstalled( arguments.directory )
-		if( !info.installed ){
+		if ( !info.installed ) {
 			return
 		}
 
