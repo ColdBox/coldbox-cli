@@ -174,12 +174,6 @@ This project has access to the following Model Context Protocol (MCP) documentat
 
 |MCP_SERVERS|
 
-## Additional Resources
-
-- ColdBox Docs: https://coldbox.ortusbooks.com
-- TestBox: https://testbox.ortusbooks.com
-- WireBox: https://wirebox.ortusbooks.com
-
 <!-- COLDBOX-CLI:END -->
 
 <!-- ℹ️ YOUR PROJECT DOCUMENTATION — Add your custom details below. ColdBox CLI will NOT overwrite this section. -->
