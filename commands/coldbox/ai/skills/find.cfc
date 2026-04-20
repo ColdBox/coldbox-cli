@@ -116,17 +116,86 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					s.ownerRepo ?: "",
 					left( s.description ?: "", 60 )
 				] )
-			} )
+			}
+			print.table(
+				headerNames = [ "Name", "Category", "Repo", "Audit", "Description" ],
+				data        = tableData
+			)
+			print.line()
+			printTip( "Install: coldbox ai skills install <owner/repo/slug>" )
+			return
 		}
 
-		print.table(
-			headerNames = [ "Name", "Repo", "Description" ],
-			data        = tableData
-		)
+		// ----------------------------------------------------------------
+		// CARD view  (default — grouped by category)
+		// ----------------------------------------------------------------
+		var grouped = {}
+		for ( var s in allSkills ) {
+			var cat = s.category ?: "other"
+			if ( !grouped.keyExists( cat ) ) grouped[ cat ] = []
+			grouped[ cat ].append( s )
+		}
 
-		print.line()
-		printTip( "Install a skill: coldbox ai skills install <owner/repo/category/skill-name>" )
-		printTip( "Install all skills in a category: coldbox ai skills install <owner/repo/category>" )
+		for ( var cat in grouped ) {
+			// Category header
+			print
+				.boldCyanLine( "━━━  #uCase( cat )#  (#grouped[ cat ].len()#)" )
+
+			for ( var skill in grouped[ cat ] ) {
+				var installSlug = "#skill.repoOwner#/#skill.repoName#/#skill.slug#"
+				var auditBadge  = getAuditBadge( skill.audit_status ?: "" )
+
+				// print.line( skill )
+
+				// Skill name + audit badge
+				print
+					.boldBlueLine( "  #skill.name ?: ''#  #auditBadge#" )
+
+				// Install slug — the key copy-paste item
+				print
+					.boldText( "    Install : " )
+					.yellowLine( "coldbox ai skills install #skill.ownerRepo#/#skill.path#" )
+
+				// Description
+				if ( ( skill.description ?: "" ).len() ) {
+					print.indentedLine( "  #skill.description#" )
+				}
+
+				print.line().line()
+			}
+		}
+
+		printTip( "Copy the 'Install' line above and run it to add a skill to your project." )
+	}
+
+	// -------------------------------------------------------------------------
+	// Private helpers
+	// -------------------------------------------------------------------------
+
+	private string function getAuditBadge( required string status ){
+		switch ( lcase( arguments.status ) ) {
+			case "trusted": return "[ ✅ trusted ]"
+			case "clean":   return "[ ✅ clean ]"
+			case "review":  return "[ 👀 review ]"
+			case "warn":    return "[ ⚠️ warn ]"
+			case "block":   return "[ 🛑 blocked ]"
+			case "pending": return "[ ⏳ pending ]"
+			case "skipped": return "[ — skipped ]"
+			default:        return ""
+		}
+	}
+
+	private string function getAuditLabel( required string status ){
+		switch ( lcase( arguments.status ) ) {
+			case "trusted": return "✅ trusted"
+			case "clean":   return "✅ clean"
+			case "review":  return "👀 review"
+			case "warn":    return "⚠️ warn"
+			case "block":   return "🛑 blocked"
+			case "pending": return "⏳ pending"
+			case "skipped": return "— skipped"
+			default:        return "—"
+		}
 	}
 
 }
