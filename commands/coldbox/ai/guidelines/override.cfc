@@ -4,8 +4,8 @@
  *
  * Examples:
  * coldbox ai guidelines override coldbox
- * coldbox ai guidelines override testbox --open
- * coldbox ai guidelines override cbsecurity --open
+ * coldbox ai guidelines override boxlang --open
+ * coldbox ai guidelines override cfml --open
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
