@@ -385,6 +385,28 @@ component singleton {
 		)
 
 		// Add guidelines inventory (module and additional guidelines only)
+		// Language-specific guideline file and description
+		var languageGuidelineFile = "`.ai/guidelines/core/boxlang.md`"
+		var languageGuidelineDesc = "BoxLang syntax and patterns"
+		if ( arguments.language == "cfml" ) {
+			languageGuidelineFile = "`.ai/guidelines/core/cfml.md`"
+			languageGuidelineDesc = "CFML syntax and patterns"
+		} else if ( arguments.language == "hybrid" ) {
+			languageGuidelineFile = "`.ai/guidelines/core/boxlang.md`"
+			languageGuidelineDesc = "BoxLang/CFML syntax and patterns (or `cfml.md` for CFML-only)"
+		}
+		content = replaceNoCase( content, "|LANGUAGE_GUIDELINE_FILE|", languageGuidelineFile, "all" )
+		content = replaceNoCase( content, "|LANGUAGE_GUIDELINE_DESC|", languageGuidelineDesc, "all" )
+
+		// Generate installed modules content
+		var installedModulesContent = generateInstalledModulesContent( arguments.directory, boxJson )
+		content                     = replaceNoCase( content, "|INSTALLED_MODULES|", installedModulesContent, "all" )
+
+		// Generate handlers snapshot
+		var handlersSnapshotContent = generateHandlersSnapshot( arguments.directory, arguments.templateType )
+		content                     = replaceNoCase( content, "|HANDLERS_SNAPSHOT|", handlersSnapshotContent, "all" )
+
+		// Add guidelines inventory (module and additional guidelines only)
 		var guidelinesContent = generateGuidelinesContent(
 			arguments.directory,
 			arguments.language
@@ -755,6 +777,118 @@ component singleton {
 		content.append( "**Using MCP Servers:** Query these servers when you need current documentation, API references, or code examples. They provide live, up-to-date information directly from official documentation sources." )
 
 		return content.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a list of installed project modules (excluding framework packages)
+	 *
+	 * @directory The project directory
+	 * @boxJson   The parsed box.json struct
+	 *
+	 * @return Formatted markdown bullet list of installed modules
+	 */
+	private function generateInstalledModulesContent(
+		required string directory,
+		required struct boxJson
+	){
+		// Packages to skip — framework internals that aren't actionable for the AI
+		var frameworkPackages = [
+			"coldbox",
+			"testbox",
+			"wirebox",
+			"cachebox",
+			"logbox"
+		]
+
+		var dependencies = arguments.boxJson.dependencies ?: {}
+		var lines        = []
+
+		for ( var pkg in dependencies ) {
+			// Skip framework packages and commandbox-* infrastructure packages
+			if ( frameworkPackages.findNoCase( pkg ) || pkg.startsWith( "commandbox-" ) ) {
+				continue;
+			}
+			var version = dependencies[ pkg ]
+			lines.append( "- **#pkg#** (#version#)" )
+		}
+
+		if ( !lines.len() ) {
+			return "No additional modules installed yet."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a snapshot of existing handlers and their public actions
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of handlers and their actions
+	 */
+	private function generateHandlersSnapshot(
+		required string directory,
+		required string templateType
+	){
+		var handlersRoot = arguments.templateType == "modern"
+		 ? "#arguments.directory#/app/handlers"
+		 : "#arguments.directory#/handlers"
+
+		if ( !directoryExists( handlersRoot ) ) {
+			return "No handlers found."
+		}
+
+		// Lifecycle / framework methods to exclude from the action list
+		var lifecycleMethods = [
+			"init",
+			"onmissingaction",
+			"onerror",
+			"onrequeststart",
+			"onrequestend",
+			"onapplicationstart",
+			"onsessionstart",
+			"onsessionend",
+			"onapplicationend"
+		]
+
+		// Use a Java regex to extract public function names
+		var pattern = createObject( "java", "java.util.regex.Pattern" ).compile(
+			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
+		)
+
+		var handlerFiles = directoryList( handlersRoot, false, "path", "*.cfc|*.bx" )
+		var lines        = []
+
+		for ( var handlerFile in handlerFiles ) {
+			var handlerName = listFirst( getFileFromPath( handlerFile ), "." )
+			var source      = fileRead( handlerFile )
+			var matcher     = pattern.matcher( source )
+			var actions     = []
+
+			while ( matcher.find() ) {
+				var fnName = matcher.group( 1 )
+				if ( !lifecycleMethods.findNoCase( fnName ) ) {
+					if ( !actions.findNoCase( fnName ) ) {
+						actions.append( fnName )
+					}
+				}
+			}
+
+			if ( actions.len() ) {
+				lines.append( "- **#handlerName#**: #actions.toList( ', ' )#" )
+			} else {
+				lines.append( "- **#handlerName#**: _(no public actions)_" )
+			}
+		}
+
+		if ( !lines.len() ) {
+			return "No handlers found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
 	}
 
 }

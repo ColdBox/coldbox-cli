@@ -82,6 +82,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( !totalAdded && !totalUpdated && !totalRemoved ) {
 			printInfo( "No changes detected. Everything is up to date!" )
 		}
+
+		// Show regenerated agent files
+		if ( structKeyExists( result, "agents" ) && result.agents.len() ) {
+			print.cyanLine( "Agent files regenerated (#result.agents.len()#):" )
+			result.agents.each( ( agent ) => {
+				print.indentedCyanLine( "  ↻ #agent#" )
+			} )
+			print.line()
+		}
 	}
 
 }

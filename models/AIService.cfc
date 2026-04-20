@@ -155,7 +155,8 @@ component singleton {
 				"updated" : [],
 				"removed" : []
 			},
-			"mcpServers" : { "added" : [], "removed" : [] }
+			"mcpServers" : { "added" : [], "removed" : [] },
+			"agents"     : []
 		};
 
 		// Load existing manifest
@@ -228,6 +229,7 @@ component singleton {
 			var language = manifest.language ?: "boxlang";
 			manifest.agents.each( ( agent ) => {
 				variables.agentRegistry.configureAgent( directory, agent, language );
+				result.agents.append( agent );
 			} );
 		}
 

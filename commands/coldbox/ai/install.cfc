@@ -88,14 +88,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				print.line()
 			}
 
-			printInfo( "Agents configured:" );
-
-			if ( arguments.verbose ) {
-				result.agents.each( ( agent ) => {
-					print.indentedLine( "  • #agent#" )
-				} )
-				print.line()
-			}
+			printInfo( "Agents configured: #result.agents.toList()#" )
 
 			// Show MCP servers
 			var totalMcpServers = result.mcpServers.core.len() + result.mcpServers.module.len()

@@ -64,12 +64,24 @@ This is a ColdBox HMVC application using the **modern template structure** with 
 
 ## Framework Knowledge
 
-Core ColdBox and |LANGUAGE_MODE| guidelines are installed in `.ai/guidelines/core/`. Supported tools
+Core ColdBox and language guidelines are installed in `.ai/guidelines/core/`. Supported tools
 (e.g., VS Code Copilot) load them automatically via file attachments. For other agents, load them
 explicitly when you need framework fundamentals:
 
 - `read_file` on `.ai/guidelines/core/coldbox.md` — ColdBox conventions, handlers, routing, DI reference
-- `read_file` on `.ai/guidelines/core/boxlang.md` — BoxLang syntax and patterns (or `cfml.md` for CFML projects)
+- `read_file` on |LANGUAGE_GUIDELINE_FILE| — |LANGUAGE_GUIDELINE_DESC|
+
+## Installed Modules
+
+The following ColdBox modules are installed in this project. Use these when generating code, checking available services, and suggesting relevant skills or guidelines:
+
+|INSTALLED_MODULES|
+
+## Handlers Snapshot
+
+Current event handlers and their public actions (auto-updated on `coldbox ai refresh`):
+
+|HANDLERS_SNAPSHOT|
 
 ## AI Integration & Resources
 
@@ -216,5 +228,37 @@ This project has access to the following Model Context Protocol (MCP) documentat
 <!-- COLDBOX-CLI:END -->
 
 <!-- ℹ️ YOUR PROJECT DOCUMENTATION — Add your custom details below. ColdBox CLI will NOT overwrite this section. -->
-<!-- 📝 TODO: Describe your business domain, key services, auth approach, and project-specific conventions. -->
-<!-- Suggested sections: Business Domain, Key Services/Models, Authentication/Security, API Endpoints, Database, Deployment -->
+
+## About This Application
+
+> ⚠️ Fill in this section to give your AI assistant context about your specific application.
+
+### Business Domain
+
+<!-- Describe what this application does and its primary purpose -->
+
+### Key Services & Models
+
+<!-- List important services and their responsibilities, e.g.:
+- UserService — authentication, registration, profile management
+- OrderService — cart, checkout, order lifecycle
+-->
+
+### Authentication & Security
+
+<!-- Describe authentication approach, e.g., cbSecurity + JWT, session-based, etc. -->
+
+### API Endpoints
+
+<!-- Document REST API routes if applicable, e.g.:
+- GET /api/v1/users — list users
+- POST /api/v1/users — create user
+-->
+
+### Database
+
+<!-- Document database setup, ORM entities, migrations if applicable -->
+
+### Deployment
+
+<!-- Document deployment process, environments, CI/CD pipeline -->
