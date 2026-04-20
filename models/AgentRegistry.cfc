@@ -645,7 +645,9 @@ component singleton {
 
 		// Helper: group skills by prefix and append formatted output to content
 		var appendGroupedSkills = ( skills, sectionLabel ) => {
-			if ( !skills.len() ) { return; }
+			if ( !skills.len() ) {
+				return;
+			}
 
 			// Build grouped struct keyed by category name
 			var groups = {}

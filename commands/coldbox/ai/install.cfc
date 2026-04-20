@@ -27,7 +27,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		string directory   = getCwd(),
 		boolean boxlang    = isBoxLangProject( getCWD() ),
 		boolean showBanner = true,
-		boolean verbose = false
+		boolean verbose    = false
 	){
 		if ( arguments.showBanner ) {
 			showColdBoxBanner( "AI Integration Installer" )
@@ -71,7 +71,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			// Show what was installed
 			printInfo( "Guidelines installed: #result.guidelines.len()#" )
 
-			if( arguments.verbose ){
+			if ( arguments.verbose ) {
 				result.guidelines.each( function( guideline ){
 					print.indentedLine( "  • #guideline#" );
 				} )
@@ -79,7 +79,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 
 			printInfo( "Skills installed: #result.skills.len()#" );
-			if( arguments.verbose ){
+			if ( arguments.verbose ) {
 				result.skills
 					.sort( "textnocase" )
 					.each( ( skill ) => {
@@ -90,7 +90,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 			printInfo( "Agents configured:" );
 
-			if( arguments.verbose ){
+			if ( arguments.verbose ) {
 				result.agents.each( ( agent ) => {
 					print.indentedLine( "  • #agent#" )
 				} )
@@ -100,7 +100,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			// Show MCP servers
 			var totalMcpServers = result.mcpServers.core.len() + result.mcpServers.module.len()
 			printInfo( "MCP Servers configured: #totalMcpServers#" )
-			if( arguments.verbose ){
+			if ( arguments.verbose ) {
 				if ( result.mcpServers.core.len() ) {
 					print.indentedCyanLine( "  Core (#result.mcpServers.core.len()#): #result.mcpServers.core.toList( ", " )#" )
 				}
