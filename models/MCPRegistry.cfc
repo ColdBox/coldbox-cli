@@ -47,6 +47,11 @@ component singleton {
 				"description" : "BoxLang IDE Documentation",
 				"url"         : "https://boxlang-ide.ortusbooks.com/~gitbook/mcp"
 			},
+			"bx-ai" : {
+				"name"        : "bx-ai",
+				"description" : "BoxLang AI Module Documentation",
+				"url"         : "https://ai.ortusbooks.com/~gitbook/mcp"
+			},
 			"modern-cfml" : {
 				"name"        : "modern-cfml",
 				"description" : "Modern CFML Guide",
