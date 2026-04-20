@@ -394,7 +394,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			var language = manifest.language ?: "boxlang"
 			printInfo( "Regenerating agent configuration files..." )
 			manifest.agents.each( ( agent ) => {
-				variables.agentRegistry.configureAgent( arguments.directory, agent, language )
+				variables.agentRegistry.configureAgent( directory, agent, language )
 			} )
 		}
 	}

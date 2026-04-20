@@ -5,9 +5,10 @@
  * Examples:
  *   coldbox ai skills find
  *   coldbox ai skills find testing
- *   coldbox ai skills find --owner=ortus-boxlang
- *   coldbox ai skills find --owner=coldbox --repo=skills
- *   coldbox ai skills find boxlang --owner=ortus-boxlang
+ *   coldbox ai skills find owner=ortus-boxlang
+ *   coldbox ai skills find owner=coldbox repo=skills
+ *   coldbox ai skills find query=boxlang owner=ortus-boxlang
+ *   coldbox ai skills find category=coldbox
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -21,6 +22,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @owner     Filter by GitHub owner/org (defaults to both ortus-boxlang and coldbox).
 	 * @repo      Filter by GitHub repo (requires --owner when specified).
 	 * @category  Filter by skill category.
+	 * @table     Show results as a compact table instead of cards.
 	 * @directory The target directory (defaults to current directory).
 	 */
 	function run(
@@ -28,12 +30,16 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		string owner     = "",
 		string repo      = "",
 		string category  = "",
+		boolean table    = false,
 		string directory = getCwd()
 	){
 		showColdBoxBanner( "Find AI Skills" )
-		ensureInstalled( arguments.directory )
+		var info = ensureInstalled( arguments.directory )
+		if( !info.installed ){
+			return
+		}
 
-		print.line()
+		print.blueLine( "🔍 Searching for AI skills..." ).line().toConsole()
 
 		var bxRepo = variables.settings.boxlangSkillsRepo
 		var cbRepo = variables.settings.coldboxSkillsRepo
@@ -58,21 +64,24 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Gather all skills
 		var allSkills = []
-		reposToSearch.each( ( r ) => {
+		for ( var r in reposToSearch ) {
 			var repoSkills = variables.skillManager.fetchRepoSkillList( r.owner, r.repo )
-			repoSkills.each( ( s ) => {
+			for ( var s in repoSkills ) {
 				s.ownerRepo = "#r.owner#/#r.repo#"
+				s.repoOwner = r.owner
+				s.repoName  = r.repo
 				allSkills.append( s )
-			} )
-		} )
+			}
+		}
 
 		if ( allSkills.isEmpty() ) {
 			printError( "Could not retrieve skills from the registry. Check your network connection." )
 			return
 		}
 
-		// Filter by query (name or description)
+		// Filter by query (name, description, or category)
 		if ( arguments.query.len() ) {
+			var q = lcase( arguments.query )
 			allSkills = allSkills.filter( ( s ) => {
 				var q = lCase( query )
 				return lCase( s.name ?: "" ).findNoCase( q ) ||
@@ -93,21 +102,15 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			return
 		}
 
-		// Group by category for display
-		var grouped = {}
-		allSkills.each( ( s ) => {
-			var cat = s?.category ?: "other"
-			if ( !grouped.keyExists( cat ) ) grouped[ cat ] = []
-			grouped[ cat ].append( s )
-		} )
-
-		var totalCount = allSkills.len()
-		printInfo( "Found [#totalCount#] skill(s):" )
+		printInfo( "Found [#allSkills.len()#] skill(s):" )
 		print.line()
 
-		var tableData = []
-		for ( var cat in grouped ) {
-			grouped[ cat ].each( ( s ) => {
+		// ----------------------------------------------------------------
+		// TABLE view  (--table flag)
+		// ----------------------------------------------------------------
+		if ( arguments.table ) {
+			var tableData = []
+			for ( var s in allSkills ) {
 				tableData.append( [
 					s.name ?: "",
 					s.ownerRepo ?: "",
