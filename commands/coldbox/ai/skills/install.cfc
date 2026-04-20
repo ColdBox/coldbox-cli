@@ -47,7 +47,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		var manifest = loadManifest( arguments.directory )
 		var language = manifest.language ?: "boxlang"
 
-		print.line()
+		print.blueLine( "📥 Installing AI skills..." ).line().toConsole()
 
 		// ------------------------------------------------------------------
 		// --list mode: interactive multi-select
@@ -105,7 +105,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		var resolvedItems = _resolveSlugs( slugs, language )
 
 		if ( resolvedItems.isEmpty() ) {
-			printError( "No matching skills found for the given slug(s)." )
+			printError( "No matching skills found for the given slug(s) '#arguments.slug#'." )
 			return
 		}
 
@@ -314,6 +314,11 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 	 * - "owner/repo"          → fetch all from registry
 	 * - "owner/repo/category" → filter to category
 	 * - "owner/repo/cat/skill"→ single skill
+	 *
+	 * @slugs Array of slug strings to resolve
+	 * @language Optional language filter for registry fetch (defaults to "boxlang")
+	 *
+	 * @return Array of resolved skill items with {owner, repo, slug, name, type, source}
 	 */
 	private array function _resolveSlugs(
 		required array slugs,
@@ -321,56 +326,45 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 	){
 		var resolved = []
 
-		arguments.slugs.each( ( slug ) => {
+		for ( var slug in arguments.slugs ) {
 			var parts = slug.listToArray( "/" )
 
-			if ( parts.len() < 2 ) return
-			var owner = parts[ 1 ]
-			var repo  = parts[ 2 ]
+			if ( parts.len() < 2 ) { continue; }
+
+			var slugOwner = parts[ 1 ]
+			var slugRepo  = parts[ 2 ]
 
 			if ( parts.len() == 2 ) {
-				// Whole repo
-				variables.skillManager
-					.fetchRepoSkillList( owner, repo )
-					.each( ( s ) => {
-						resolved.append( {
-							owner  : owner,
-							repo   : repo,
-							slug   : s.slug,
-							name   : s.name,
-							type   : "core",
-							source : ""
-						} )
-					} )
+				// Whole repo: owner/repo — install everything in it
+				var repoList = variables.skillManager.fetchRepoSkillList( slugOwner, slugRepo )
+				for ( var s in repoList ) {
+					resolved.append( { owner: slugOwner, repo: slugRepo, slug: s.slug, name: s.name, type: "core", source: "" } )
+				}
 			} else if ( parts.len() == 3 ) {
-				// Category filter
-				var category = parts[ 3 ]
-				variables.skillManager
-					.fetchRepoSkillList( owner, repo )
-					.filter( ( s ) => s.category == category )
-					.each( ( s ) => {
-						resolved.append( {
-							owner  : owner,
-							repo   : repo,
-							slug   : s.slug,
-							name   : s.name,
-							type   : "core",
-							source : ""
-						} )
-					} )
+				// owner/repo/name — try it first as a direct skill slug; if not found, treat as a category filter
+				var thirdPart    = parts[ 3 ]
+				var repoSkills   = variables.skillManager.fetchRepoSkillList( slugOwner, slugRepo )
+				var directMatch  = repoSkills.filter( ( s ) => s.slug == thirdPart )
+
+				if ( directMatch.len() ) {
+					var dm = directMatch.first()
+					resolved.append( { owner: slugOwner, repo: slugRepo, slug: dm.slug, name: dm.name, type: "core", source: "" } )
+				} else {
+					// Fall back to category filter
+					var categoryMatches = repoSkills.filter( ( s ) => s?.category == thirdPart )
+					if ( categoryMatches.len() ) {
+						for ( var cs in categoryMatches ) {
+							resolved.append( { owner: slugOwner, repo: slugRepo, slug: cs.slug, name: cs.name, type: "core", source: "" } )
+						}
+					}
+					// If neither a direct skill nor a category matched, resolved stays empty for this slug
+				}
 			} else {
-				// Explicit slug: owner/repo/category/skill-name — the slug in registry is category-skill-name or just the last segment
+				// Explicit 4+ part slug: owner/repo/category/skill-name
 				var skillSlug = parts.slice( 3 ).toList( "/" )
-				resolved.append( {
-					owner  : owner,
-					repo   : repo,
-					slug   : skillSlug,
-					name   : parts.last(),
-					type   : "core",
-					source : ""
-				} )
+				resolved.append( { owner: slugOwner, repo: slugRepo, slug: skillSlug, name: parts.last(), type: "core", source: "" } )
 			}
-		} )
+		}
 
 		return resolved
 	}
