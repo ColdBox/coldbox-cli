@@ -198,8 +198,6 @@ The following skills provide step-by-step implementation patterns. Request speci
 
 |SKILLS_INVENTORY|
 
-**To load a skill:** Request it by name when implementing specific features or patterns.
-
 ## MCP Documentation Servers
 
 This project has access to the following Model Context Protocol (MCP) documentation servers for live, up-to-date information:

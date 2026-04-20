@@ -161,8 +161,6 @@ The following skills provide step-by-step implementation patterns. Request speci
 
 |SKILLS_INVENTORY|
 
-**To load a skill:** Request it by name when implementing specific features or patterns.
-
 ## Important Notes
 
 - Framework reinit: Use `?fwreinit=true` or configure `reinitPassword` for production

@@ -604,6 +604,10 @@ component singleton {
 			content.append( "" )
 		}
 
+		if ( !content.len() ) {
+			return "No additional module guidelines installed."
+		}
+
 		return content.toList( chr( 10 ) )
 	}
 
