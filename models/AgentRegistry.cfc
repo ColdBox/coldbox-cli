@@ -424,20 +424,52 @@ component singleton {
 		)
 
 		// Generate handlers snapshot
-		var handlersSnapshotContent = generateHandlersSnapshot( arguments.directory, arguments.templateType )
-		content                     = replaceNoCase( content, "|HANDLERS_SNAPSHOT|", handlersSnapshotContent, "all" )
+		var handlersSnapshotContent = generateHandlersSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|HANDLERS_SNAPSHOT|",
+			handlersSnapshotContent,
+			"all"
+		)
 
 		// Generate interceptors snapshot
-		var interceptorsSnapshotContent = generateInterceptorsSnapshot( arguments.directory, arguments.templateType )
-		content                         = replaceNoCase( content, "|INTERCEPTORS_SNAPSHOT|", interceptorsSnapshotContent, "all" )
+		var interceptorsSnapshotContent = generateInterceptorsSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|INTERCEPTORS_SNAPSHOT|",
+			interceptorsSnapshotContent,
+			"all"
+		)
 
 		// Generate layouts snapshot
-		var layoutsSnapshotContent = generateLayoutsSnapshot( arguments.directory, arguments.templateType )
-		content                    = replaceNoCase( content, "|LAYOUTS_SNAPSHOT|", layoutsSnapshotContent, "all" )
+		var layoutsSnapshotContent = generateLayoutsSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|LAYOUTS_SNAPSHOT|",
+			layoutsSnapshotContent,
+			"all"
+		)
 
 		// Generate custom modules snapshot
-		var customModulesContent = generateCustomModulesSnapshot( arguments.directory, arguments.templateType )
-		content                  = replaceNoCase( content, "|CUSTOM_MODULES_SNAPSHOT|", customModulesContent, "all" )
+		var customModulesContent = generateCustomModulesSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|CUSTOM_MODULES_SNAPSHOT|",
+			customModulesContent,
+			"all"
+		)
 
 		// Add guidelines inventory (module and additional guidelines only)
 		var guidelinesContent = generateGuidelinesContent(
@@ -886,16 +918,24 @@ component singleton {
 			"onapplicationend"
 		]
 
-		var handlerFiles = directoryList( handlersRoot, false, "path", "*.cfc|*.bx" )
-		var lines        = []
+		var handlerFiles = directoryList(
+			handlersRoot,
+			false,
+			"path",
+			"*.cfc|*.bx"
+		)
+		var lines = []
 
 		for ( var handlerFile in handlerFiles ) {
 			var handlerName = listFirst( getFileFromPath( handlerFile ), "." )
-			var actions     = extractFunctionNames( fileRead( handlerFile ), lifecycleMethods )
+			var actions     = extractFunctionNames(
+				fileRead( handlerFile ),
+				lifecycleMethods
+			)
 
 			lines.append(
 				actions.len()
-				 ? "- **#handlerName#**: #actions.toList( ', ' )#"
+				 ? "- **#handlerName#**: #actions.toList( ", " )#"
 				 : "- **#handlerName#**: _(no public actions)_"
 			)
 		}
@@ -937,16 +977,27 @@ component singleton {
 			"getproperties"
 		]
 
-		var interceptorFiles = directoryList( interceptorsRoot, false, "path", "*.cfc|*.bx" )
-		var lines            = []
+		var interceptorFiles = directoryList(
+			interceptorsRoot,
+			false,
+			"path",
+			"*.cfc|*.bx"
+		)
+		var lines = []
 
 		for ( var interceptorFile in interceptorFiles ) {
-			var interceptorName = listFirst( getFileFromPath( interceptorFile ), "." )
-			var points          = extractFunctionNames( fileRead( interceptorFile ), excludedMethods )
+			var interceptorName = listFirst(
+				getFileFromPath( interceptorFile ),
+				"."
+			)
+			var points = extractFunctionNames(
+				fileRead( interceptorFile ),
+				excludedMethods
+			)
 
 			lines.append(
 				points.len()
-				 ? "- **#interceptorName#**: #points.toList( ', ' )#"
+				 ? "- **#interceptorName#**: #points.toList( ", " )#"
 				 : "- **#interceptorName#**: _(no interception points declared)_"
 			)
 		}
@@ -1005,8 +1056,13 @@ component singleton {
 			return "No layouts found."
 		}
 
-		var layoutFiles = directoryList( layoutsRoot, false, "path", "*.cfm|*.bxm" )
-		var lines       = []
+		var layoutFiles = directoryList(
+			layoutsRoot,
+			false,
+			"path",
+			"*.cfm|*.bxm"
+		)
+		var lines = []
 
 		for ( var layoutFile in layoutFiles ) {
 			var layoutName = getFileFromPath( layoutFile )
@@ -1039,8 +1095,14 @@ component singleton {
 	){
 		// Build candidate paths (primary first, then fallback)
 		var candidates = arguments.templateType == "modern"
-		 ? [ "#arguments.directory#/app/modules", "#arguments.directory#/modules_app" ]
-		 : [ "#arguments.directory#/modules_app", "#arguments.directory#/app/modules" ]
+		 ? [
+			"#arguments.directory#/app/modules",
+			"#arguments.directory#/modules_app"
+		]
+		 : [
+			"#arguments.directory#/modules_app",
+			"#arguments.directory#/app/modules"
+		]
 
 		var lines = []
 
