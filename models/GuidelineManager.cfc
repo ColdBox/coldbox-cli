@@ -655,6 +655,7 @@ component singleton {
 		var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
 
 		var targetFile = "#arguments.directory#/.ai/guidelines/core/#arguments.guidelineName#.md"
+		directoryCreate( getDirectoryFromPath( targetFile ), true, true )
 
 		// Write guideline file
 		fileWrite( targetFile, content )
@@ -726,6 +727,7 @@ component singleton {
 		var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
 
 		var targetFile = "#arguments.directory#/.ai/guidelines/modules/#arguments.guidelineName#.md"
+		directoryCreate( getDirectoryFromPath( targetFile ), true, true )
 
 		// Write guideline file
 		fileWrite( targetFile, content )
