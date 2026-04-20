@@ -107,6 +107,10 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		if ( resolvedItems.isEmpty() ) {
 			printError( "No matching skills found for the given slug(s) '#arguments.slug#'." )
 			return
+		} else {
+			printInfo( "Resolved #resolvedItems.len()# skill(s) to install from the registry:" )
+			resolvedItems.each( ( item ) => print.blueLine( "  - #item.owner#/#item.repo#/#item.slug#" ) )
+			print.line().toConsole()
 		}
 
 		// Install (batch if >1)
@@ -124,7 +128,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			)
 			_printInstallResult( result )
 		} else {
-			printInfo( "Installing #resolvedItems.len()# skills..." )
+			printInfo( "Installing [#resolvedItems.len()#] skills..." )
 			print.line()
 
 			var batchItems = resolvedItems.map( ( r ) => {
@@ -361,7 +365,8 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				}
 			} else {
 				// Explicit 4+ part slug: owner/repo/category/skill-name
-				var skillSlug = parts.slice( 3 ).toList( "/" )
+				// Registry stores skill_slug with ~ as separator (not /), so join accordingly
+				var skillSlug = parts.slice( 3 ).toList( "~" )
 				resolved.append( { owner: slugOwner, repo: slugRepo, slug: skillSlug, name: parts.last(), type: "core", source: "" } )
 			}
 		}

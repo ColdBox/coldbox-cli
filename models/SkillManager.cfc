@@ -64,7 +64,10 @@ component singleton {
 				}
 			} )
 
-			variables.print.blueLine( "⬇️  Downloading #batchItems.len()# skill(s) from registry..." ).toConsole()
+			variables.print
+				.blueLine( "⬇️  Downloading #batchItems.len()# skill(s) from registry..." )
+				.line()
+				.toConsole()
 
 			downloadSkillBatch( batchItems ).each( ( result ) => {
 				if ( result.keyExists( "error" ) && result.error ) {
@@ -433,15 +436,13 @@ component singleton {
 			arguments.manifest = variables.aiService.loadManifest( arguments.directory )
 		}
 
-		variables.print
-			.blueLine( "⬇️  Downloading #arguments.owner#/#arguments.repo#/#arguments.skillSlug#..." )
-			.toConsole()
+		// Download skill info and content from registry
+		variables.print.blueLine( "⬇️  Downloading [#arguments.owner#/#arguments.repo#/#arguments.skillSlug#]..." ).toConsole()
+		var downloadResult = downloadSkill( arguments.owner, arguments.repo, arguments.skillSlug )
 
-		var downloadResult = downloadSkill(
-			arguments.owner,
-			arguments.repo,
-			arguments.skillSlug
-		)
+		//print.line( downloadResult ).toConsole()
+
+		// Error handling
 		if ( downloadResult.keyExists( "error" ) && downloadResult.error ) {
 			variables.print.redLine( "  ❌  Download failed: #downloadResult.message ?: "unknown"#" ).toConsole()
 			return {
@@ -470,9 +471,6 @@ component singleton {
 		if ( !arguments.force ) {
 			var existing = getSkillFilePath( arguments.directory, localName )
 			if ( !isNull( existing ) ) {
-				variables.print
-					.yellowLine( "  ⚠️  Already installed: #localName# (use --force to overwrite)" )
-					.toConsole()
 				return {
 					success     : false,
 					name        : localName,
@@ -497,7 +495,7 @@ component singleton {
 			manifest    = arguments.manifest
 		)
 
-		variables.print.greenLine( "  ✅  Installed: #localName#" ).toConsole()
+		// variables.print.greenLine( "  ✅  Installed: #localName#" ).toConsole()
 
 		if ( managingManifest ) {
 			variables.aiService.saveManifest(
@@ -808,13 +806,14 @@ component singleton {
 	){
 		var registryUrl = variables.settings.skillsRegistryUrl
 		var targetUrl   = "#registryUrl#/api/install"
-
 		var httpResult = ""
+
+		// Make the HTTP call to the registry API with owner, repo, and skill as URL parameters
 		cfhttp(
 			method  = "POST",
 			url     = targetUrl,
 			result  = "httpResult",
-			timeout = 30
+			timeout = 15
 		) {
 			cfhttpparam(
 				type  = "url",
@@ -833,7 +832,10 @@ component singleton {
 			);
 		};
 
-		if ( httpResult.statusCode >= 400 ) {
+		// variables.print.printline( httpResult ).toconsole()
+
+		// Check for HTTP errors
+		if ( val( httpResult.statusCode ) >= 400 ) {
 			return {
 				error   : true,
 				message : "Registry returned #httpResult.statusCode# for #arguments.owner#/#arguments.repo#/#arguments.skillSlug#"
@@ -841,11 +843,43 @@ component singleton {
 		}
 
 		try {
-			return deserializeJSON( httpResult.fileContent )
+			var parsed = deserializeJSON( httpResult.fileContent )
+
+			// Normalize ColdBox API error responses (messages[] / errorMessage) → message
+			if ( parsed.keyExists( "error" ) && parsed.error ) {
+				if ( parsed.keyExists( "messages" ) && isArray( parsed.messages ) && parsed.messages.len() ) {
+					parsed[ "message" ] = parsed.messages[ 1 ]
+				} else if ( parsed.keyExists( "errorMessage" ) && len( parsed.errorMessage ?: "" ) ) {
+					parsed[ "message" ] = parsed.errorMessage
+				} else {
+					parsed[ "message" ] = "Registry returned an error for #arguments.owner#/#arguments.repo#/#arguments.skillSlug#"
+				}
+				return parsed
+			}
+
+			// Throw an exception if parsed.data doesn't exist
+			 if ( !parsed.keyExists( "data" ) || !isStruct( parsed.data ) ) {
+				throw(
+					type    = "SkillManager.InvalidResponse",
+					message = "Registry response is missing expected 'data' struct for #arguments.owner#/#arguments.repo#/#arguments.skillSlug#",
+					detail  = parsed.toString()
+				)
+			}
+
+			// Unwrap ColdBox envelope: {data:{skill,content,audit,...}, error, messages}
+			return {
+				error   : parsed.error   ?: false,
+				messages: parsed.messages ?: [],
+				skill   : parsed.data.skill   ?: {},
+				content : parsed.data.content ?: "",
+				audit   : parsed.data.audit   ?: {},
+				counts  : parsed.data.counts  ?: {}
+			}
 		} catch ( any e ) {
 			return {
-				error   : true,
-				message : "Failed to parse registry response: #e.message#"
+				error: true,
+				message: "Failed to parse registry response: #e.message#",
+				stackTrace: e.stackTrace
 			}
 		}
 	}
@@ -866,7 +900,9 @@ component singleton {
 		var registryUrl = variables.settings.skillsRegistryUrl
 		var targetUrl   = "#registryUrl#/api/install/batch"
 		var payload     = serializeJSON( arguments.skills )
-		var httpResult  = ""
+		var httpResult = ""
+
+		// Make the HTTP call to the batch registry API, sending the skills array as JSON in the body
 		cfhttp(
 			method  = "POST",
 			url     = targetUrl,
@@ -890,6 +926,15 @@ component singleton {
 
 		try {
 			var response = deserializeJSON( httpResult.fileContent )
+
+			// If there is an error, show the error message and return empty array to trigger fallback to single downloads
+			if ( response.keyExists( "error" ) && response.error ) {
+				variables.print
+					.printLine( "⚠️ Batch skill download error" )
+					.printLine( response.messages )
+				return []
+			}
+
 			return isStruct( response ) && response.keyExists( "data" ) ? response.data : response
 		} catch ( any e ) {
 			variables.print
