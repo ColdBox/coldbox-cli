@@ -65,7 +65,7 @@ component singleton {
 			} )
 
 			variables.print
-				.blueLine( "⬇️  Downloading #batchItems.len()# skill(s) from registry..." )
+				.blueLine( "⬇️  Downloading [#batchItems.len()#] skill(s) from registry..." )
 				.line()
 				.toConsole()
 
@@ -109,7 +109,11 @@ component singleton {
 			} )
 
 			if ( installed.len() ) {
-				variables.print.greenLine( "✅  Installed #installed.len()# skill(s)." ).toConsole()
+				variables.print
+					.line()
+					.greenLine( "✅  Installed #installed.len()# skill(s)." )
+					.line()
+					.toConsole()
 			}
 		} else if ( targets.len() == 1 ) {
 			var t = targets.first()
