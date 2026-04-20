@@ -11,9 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `.mcp.json` file creation in user root with the list of MCP servers from the manifest for AI integration
+- **`.mcp.json` Support**
+  - New file in project root to track registered MCP documentation servers for AI integration
+  - Updated `coldbox ai mcp` commands to read/write from this file for consistent MCP server management
+  - MCP server entries include `name`, `url`, `description`, and `source` (core, module, custom)
+  - MCP servers registered via `coldbox ai mcp add` are now saved to `.mcp.json` in addition to the manifest for AI agent access
+
+- **MCP Server Auto-Detection**
+  - During `coldbox ai refresh`, the CLI now auto-detects MCP documentation servers from installed modules and updates both the manifest and `.mcp.json` with any new servers found
+
+- **ColdBox MCP Server Support**
+  - New `coldbox ai mcp install` command to install the `cbMCP` module and register it as a custom MCP server in the manifest and `.mcp.json`. The cbMCP module exposes your running ColdBox application as a live MCP server at `http://<host>:<port>/cbmcp`, allowing AI agents to introspect your routes, handlers, and models in real time. Supports `--host`, `--port`, and `--force` flags.
+
 - Pretty print saving of manifest on installation
-- New `coldbox ai mcp install` command to install the `cbMCP` module and register it as a custom MCP server in the manifest and `.mcp.json`. The cbMCP module exposes your running ColdBox application as a live MCP server at `http://<host>:<port>/cbmcp`, allowing AI agents to introspect your routes, handlers, and models in real time. Supports `--host`, `--port`, and `--force` flags.
 
 ## [8.10.1] - 2026-04-15
 
