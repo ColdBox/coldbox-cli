@@ -9,10 +9,6 @@ description: ColdBox HMVC framework conventions, structure, handlers, models, vi
 
 ColdBox is a conventions-based HMVC (Hierarchical Model-View-Controller) framework for CFML and BoxLang applications. It provides a complete ecosystem for building modern, scalable web applications and REST APIs.
 
-## Application Structure
-
-|STRUCTURE|
-
 ## Event Handlers (Controllers)
 
 ### Handler Conventions

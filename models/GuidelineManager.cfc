@@ -492,22 +492,6 @@ component singleton {
 
 		var content = fileRead( corePath )
 
-		// For ColdBox guideline, detect template type and replace structure placeholder
-		if ( arguments.guidelineName == "coldbox" ) {
-			var templateType  = variables.utility.detectTemplateType( arguments.directory )
-			var structurePath = templatesPath & "core/coldbox-structure-#templateType#.md"
-
-			if ( fileExists( structurePath ) ) {
-				var structureContent = fileRead( structurePath )
-				content              = replaceNoCase(
-					content,
-					"|STRUCTURE|",
-					structureContent,
-					"all"
-				)
-			}
-		}
-
 		// Parse frontmatter to extract description
 		var parsed      = variables.utility.parseFrontmatter( content )
 		var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
