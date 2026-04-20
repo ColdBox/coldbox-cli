@@ -22,7 +22,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @owner     Filter by GitHub owner/org (defaults to both ortus-boxlang and coldbox).
 	 * @repo      Filter by GitHub repo (requires --owner when specified).
 	 * @category  Filter by skill category.
-	 * @table     Show results as a compact table instead of cards.
 	 * @directory The target directory (defaults to current directory).
 	 */
 	function run(
@@ -30,7 +29,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		string owner     = "",
 		string repo      = "",
 		string category  = "",
-		boolean table    = false,
 		string directory = getCwd()
 	){
 		showColdBoxBanner( "Find AI Skills" )
@@ -106,28 +104,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		// ----------------------------------------------------------------
-		// TABLE view  (--table flag)
-		// ----------------------------------------------------------------
-		if ( arguments.table ) {
-			var tableData = []
-			for ( var s in allSkills ) {
-				tableData.append( [
-					s.name ?: "",
-					s.ownerRepo ?: "",
-					left( s.description ?: "", 60 )
-				] )
-			}
-			print.table(
-				headerNames = [ "Name", "Category", "Repo", "Audit", "Description" ],
-				data        = tableData
-			)
-			print.line()
-			printTip( "Install: coldbox ai skills install <owner/repo/slug>" )
-			return
-		}
-
-		// ----------------------------------------------------------------
-		// CARD view  (default — grouped by category)
+		// CARD view  (grouped by category)
 		// ----------------------------------------------------------------
 		var grouped = {}
 		for ( var s in allSkills ) {
@@ -182,19 +159,6 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			case "pending": return "[ ⏳ pending ]"
 			case "skipped": return "[ — skipped ]"
 			default:        return ""
-		}
-	}
-
-	private string function getAuditLabel( required string status ){
-		switch ( lcase( arguments.status ) ) {
-			case "trusted": return "✅ trusted"
-			case "clean":   return "✅ clean"
-			case "review":  return "👀 review"
-			case "warn":    return "⚠️ warn"
-			case "block":   return "🛑 blocked"
-			case "pending": return "⏳ pending"
-			case "skipped": return "— skipped"
-			default:        return "—"
 		}
 	}
 
