@@ -37,12 +37,12 @@ ColdBox AI Integration supercharges your development workflow by providing compr
 
 The system combines four key components:
 
-1. **Guidelines** - Framework documentation and best practices (core inlined, others on-demand)
+1. **Guidelines** - Framework documentation and best practices (core referenced on-demand, others also on-demand)
 2. **Skills** - On-demand coding cookbooks for specific tasks
 3. **Agents** - AI assistant configurations (Claude, Copilot, etc.)
 4. **MCP Servers** - Context protocol servers for enhanced AI capabilities
 
-**Subagent Pattern Architecture**: Core framework guidelines (ColdBox + language) are embedded directly in agent files for immediate access, while module guidelines and all skills are available on-demand. This reduces context from ~62KB to ~8KB while maintaining full capability.
+**Subagent Pattern Architecture**: Core framework guidelines (ColdBox + language) are stored locally in `.ai/guidelines/core/` and referenced via `read_file` instructions in agent files. Module guidelines and all skills are also available on-demand via inventory. This keeps agent files to ~250 lines while maintaining full capability.
 
 Together, these components ensure AI assistants generate high-quality, idiomatic code that follows ColdBox conventions and leverages the full power of the BoxLang/CFML ecosystem.
 
@@ -55,7 +55,7 @@ To start, make sure you are on the latest `coldbox-cli` in your CommandBox insta
 ```mermaid
 graph TB
     subgraph "ColdBox AI Integration"
-        Guidelines["📚 Guidelines<br/>(46+ Total)<br/>Core inlined<br/>Others on-demand"]
+        Guidelines["📚 Guidelines<br/>(46+ Total)<br/>Core + others on-demand<br/>via read_file"]
         Skills["🎯 Skills<br/>(71+ Total)<br/>On-demand cookbooks<br/>with inventory"]
         Agents["🤖 Agents<br/>(6 Supported)<br/>Claude, Copilot, Cursor<br/>Codex, Gemini, OpenCode"]
         MCP["🌐 MCP Servers<br/>(30+ Built-in)<br/>Extended AI capabilities<br/>via protocol"]
@@ -267,16 +267,17 @@ After installation, configure your AI agents:
 
 ColdBox AI Integration uses a **subagent pattern** with three tiers of context:
 
-| Aspect          | Core Guidelines (Inlined)                  | Module Guidelines (On-Demand)         | Skills (On-Demand)                    |
+| Aspect          | Core Guidelines (Referenced)               | Module Guidelines (On-Demand)         | Skills (On-Demand)                    |
 | --------------- | ------------------------------------------ | ------------------------------------- | ------------------------------------- |
-| **When Loaded** | Always embedded in agent files             | Requested by name when needed         | Requested by name when needed         |
+| **When Loaded** | Requested via `read_file` when needed      | Requested by name when needed         | Requested by name when needed         |
 | **Scope**       | Essential framework knowledge              | Module-specific documentation         | Focused, task-specific                |
 | **Purpose**     | Core ColdBox + language conventions        | Extended module patterns              | Step-by-step implementation guides    |
 | **Content**     | "What" and "Why" (fundamentals)           | "What" and "Why" (specialized)       | "How" and "When" (actionable)        |
 | **Size**        | ~20KB (ColdBox + language)                 | 1-5KB per guideline                   | 2-10KB per skill                      |
+| **Storage**     | `.ai/guidelines/core/` path in agent file  | Inventory with descriptions           | Inventory with descriptions           |
 | **Examples**    | ColdBox MVC structure, BoxLang syntax      | CBSecurity patterns, QB query builder | Creating REST APIs, Writing tests     |
 
-**Core Guidelines** (ColdBox framework + language) are always present in agent files, providing immediate access to essential knowledge.
+**Core Guidelines** (ColdBox framework + language) are stored in `.ai/guidelines/core/` and referenced in agent files. Agents load them on-demand using `read_file` when they need framework or language knowledge.
 
 **Module Guidelines** are inventoried with descriptions, allowing agents to discover and request specific module documentation when needed.
 
@@ -285,8 +286,8 @@ ColdBox AI Integration uses a **subagent pattern** with three tiers of context:
 
 ```mermaid
 flowchart TB
-    subgraph "Inlined (Always Present)"
-        CoreG["⚡ Core Guidelines<br/><b>ColdBox Framework</b><br/><b>BoxLang/CFML Language</b><br/>Embedded in agent files"]
+    subgraph "Referenced (On-Demand via read_file)"
+        CoreG["⚡ Core Guidelines<br/><b>ColdBox Framework</b><br/><b>BoxLang/CFML Language</b><br/>Stored in .ai/guidelines/core/"]
     end
 
     subgraph "Inventoried (On-Request)"
@@ -294,9 +295,9 @@ flowchart TB
         Skills["🎯 Skills<br/><b>REST APIs, Testing, etc.</b><br/>Listed with descriptions"]
     end
 
-    AgentFile["🤖 AI Agent File<br/>(CLAUDE.md, .cursorrules, etc.)<br/>Base: ~33KB"]
+    AgentFile["🤖 AI Agent File<br/>(CLAUDE.md, .cursorrules, etc.)<br/>Base: ~250 lines"]
 
-    CoreG --> AgentFile
+    CoreG -.-|"read_file path in agent<br/>Load when needed"| AgentFile
     ModuleG -.-|"Inventory Only<br/>Request: 'Load cbsecurity guideline'"| AgentFile
     Skills -.-|"Inventory Only<br/>Request: 'Load rest-api-development skill'"| AgentFile
 
@@ -331,8 +332,8 @@ coldbox ai stats --json          # Machine-readable output
 
 ```mermaid
 flowchart LR
-    subgraph "Inlined (Always Present)"
-        Core["⚡ Core Guidelines<br/>~20 KB<br/>ColdBox + Language"]
+    subgraph "Referenced (On-Demand via read_file)"
+        Core["⚡ Core Guidelines<br/>~20 KB<br/>ColdBox + Language<br/>.ai/guidelines/core/"]
     end
 
     subgraph "On-Demand (Inventory Only)"
@@ -340,9 +341,9 @@ flowchart LR
         Skills["🎯 Skills<br/>~124 KB<br/>Load when needed"]
     end
 
-    AgentFile["📄 Agent File<br/>~33 KB<br/>~8,400 tokens"]
+    AgentFile["📄 Agent File<br/>~250 lines<br/>~lean context"]
 
-    Core --> AgentFile
+    Core -.-|"read_file on-demand"| AgentFile
     ModuleG -.-|"Inventory + Description"| AgentFile
     Skills -.-|"Inventory + Description"| AgentFile
 
@@ -361,7 +362,7 @@ flowchart LR
     style Gemini fill:#4caf50,color:#fff
 ```
 
-**Context Optimization**: The subagent pattern achieves a **58% reduction in base context** (from ~62KB to ~33KB) while maintaining full framework knowledge through the inventory system.
+**Context Optimization**: The subagent pattern keeps agent files to **~250 lines** (down from ~1,000 lines when guidelines were inlined) while maintaining full framework knowledge through on-demand `read_file` loading and the inventory system.
 
 ### Multi-Language Support
 
@@ -389,13 +390,13 @@ ColdBox AI Integration is **the only AI system with native BoxLang and CFML supp
 
 ## AI Guidelines
 
-Guidelines are instructional documents that teach AI agents about framework conventions, architectural patterns, and best practices. **Core framework guidelines (ColdBox + language) are embedded directly in agent files**, while module and custom guidelines are available on-demand through an inventory system with descriptions.
+Guidelines are instructional documents that teach AI agents about framework conventions, architectural patterns, and best practices. **Core framework guidelines (ColdBox + language) are stored in `.ai/guidelines/core/` and referenced in agent files via `read_file` paths**. Module and custom guidelines are available on-demand through an inventory system with descriptions.
 
 ### Available Guidelines
 
 ColdBox AI Integration includes **46+ built-in guidelines** covering the entire ecosystem:
 
-**Core Framework (5 - Inlined in Agent Files)**
+**Core Framework (5 - Referenced via `read_file`)**
 
 * **boxlang** - BoxLang language features and syntax
 * **cfml** - CFML language fundamentals

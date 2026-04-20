@@ -384,18 +384,6 @@ component singleton {
 			"all"
 		)
 
-		// Add inline guidelines (core framework knowledge)
-		var inlineGuidelinesContent = generateInlineGuidelinesContent(
-			arguments.directory,
-			arguments.language
-		)
-		content = replaceNoCase(
-			content,
-			"|INLINE_GUIDELINES|",
-			inlineGuidelinesContent,
-			"all"
-		)
-
 		// Add guidelines inventory (module and additional guidelines only)
 		var guidelinesContent = generateGuidelinesContent(
 			arguments.directory,
@@ -635,45 +623,63 @@ component singleton {
 			return "No skills installed yet. Run 'coldbox ai install' to get started."
 		}
 
-		var content = []
+		// Prefix-to-category mapping for grouping skill names
+		var prefixMap = {
+			"coldbox"    : "ColdBox",
+			"boxlang"    : "BoxLang",
+			"testbox"    : "TestBox",
+			"commandbox" : "CommandBox",
+			"wirebox"    : "WireBox",
+			"cachebox"   : "CacheBox",
+			"logbox"     : "LogBox"
+		}
 
-		// Group skills by source
+		var content      = []
 		var coreSkills   = manifest.skills.filter( ( s ) => s.source == "core" )
 		var moduleSkills = manifest.skills.filter( ( s ) => s.source != "core" && s.source != "custom" )
 		var customSkills = manifest.skills.filter( ( s ) => s.source == "custom" )
 
-		// Core skills
-		if ( coreSkills.len() ) {
-			content.append( "**Core Skills (Available on request):**" )
-			content.append( "" )
-			coreSkills.each( ( skill ) => {
-				var desc = structKeyExists( skill, "description" ) ? skill.description : "Development skill"
-				content.append( "- **#skill.name#** - #desc#" )
+		// Helper: group skills by prefix and append formatted output to content
+		var appendGroupedSkills = ( skills, sectionLabel ) => {
+			if ( !skills.len() ) { return; }
+
+			// Build grouped struct keyed by category name
+			var groups = {}
+			skills.each( ( skill ) => {
+				var groupName = "Other"
+				for ( var prefix in prefixMap ) {
+					if ( skill.name.startsWith( prefix & "-" ) || skill.name == prefix ) {
+						groupName = prefixMap[ prefix ]
+						break
+					}
+				}
+				if ( !structKeyExists( groups, groupName ) ) {
+					groups[ groupName ] = []
+				}
+				groups[ groupName ].append( skill )
 			} )
+
+			content.append( "**#sectionLabel#:**" )
 			content.append( "" )
+
+			// Use for loops instead of .each() closures to avoid Lucee nested-closure scoping issues
+			var sortedGroupNames = groups.keyArray().sort( "textnocase" )
+			for ( var groupName in sortedGroupNames ) {
+				content.append( "_#groupName# (#groups[ groupName ].len()#):_" )
+				for ( var skill in groups[ groupName ] ) {
+					var desc = structKeyExists( skill, "description" ) && len( skill.description ) ? skill.description : "Development skill"
+					if ( len( desc ) > 80 ) desc = left( desc, 80 ) & "..."
+					content.append( "- **#skill.name#** - #desc#" )
+				}
+				content.append( "" )
+			}
 		}
 
-		// Module skills
-		if ( moduleSkills.len() ) {
-			content.append( "**Module Skills (Available on request):**" )
-			content.append( "" )
-			moduleSkills.each( ( skill ) => {
-				var desc = structKeyExists( skill, "description" ) ? skill.description : "Module skill"
-				content.append( "- **#skill.name#** - #desc#" )
-			} )
-			content.append( "" )
-		}
+		appendGroupedSkills( coreSkills, "Core Skills" )
+		appendGroupedSkills( moduleSkills, "Module Skills" )
+		appendGroupedSkills( customSkills, "Custom Skills" )
 
-		// Custom skills
-		if ( customSkills.len() ) {
-			content.append( "**Custom Skills:**" )
-			content.append( "" )
-			customSkills.each( ( skill ) => {
-				var desc = structKeyExists( skill, "description" ) ? skill.description : "Custom skill"
-				content.append( "- **#skill.name#** - #desc#" )
-			} )
-			content.append( "" )
-		}
+		content.append( "**To load a skill:** Use `read_file` on `.ai/skills/{skill-name}/SKILL.md` (e.g., `.ai/skills/coldbox-handler-development/SKILL.md`)." )
 
 		return content.toList( chr( 10 ) )
 	}

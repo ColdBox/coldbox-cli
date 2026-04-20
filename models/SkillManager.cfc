@@ -65,7 +65,7 @@ component singleton {
 			} )
 
 			variables.print
-				.blueLine( "⬇️  Downloading [#batchItems.len()#] skill(s) from registry..." )
+				.blueLine( "⬇️  Downloading [#batchItems.len()#] skill(s) in bulk from registry..." )
 				.line()
 				.toConsole()
 

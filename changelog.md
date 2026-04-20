@@ -25,6 +25,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Pretty print saving of manifest on installation
 
+### Changed
+
+- **Reduced agent file size**
+  - Core ColdBox/BoxLang guidelines are no longer inlined in generated agent files. Guidelines are stored locally in `.ai/guidelines/core/` and referenced via `read_file` instructions — reducing generated agent files from ~1,000 lines to ~250 lines
+
+- **Skills inventory grouped by category**
+  - Skills in agent files are now organized by prefix (ColdBox, BoxLang, TestBox, CommandBox, etc.) with 80-character truncated descriptions for faster agent scanning
+
+- **Cleaner project documentation section**
+  - The user-editable section in generated agent files now shows 3 focused TODO comment lines instead of 8 empty placeholder headings
+
+- **Core guideline files slimmed**
+  - Full implementation examples removed from `coldbox.md`, `boxlang.md`, and `cfml.md` — each now ends with a skills-reference note directing agents to implementation-detail skills
+
+- **Post-install project context reminder**
+  - `coldbox ai install` now prominently reminds users to add their project context (business domain, key services, auth, API endpoints, etc.) to the generated agent file
+
 ## [8.10.1] - 2026-04-15
 
 ### Fixed

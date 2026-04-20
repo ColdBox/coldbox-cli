@@ -64,9 +64,12 @@ This is a ColdBox HMVC application using the **modern template structure** with 
 
 ## Framework Knowledge
 
-**Important:** The following sections contain essential framework documentation that is always available in your context. These guidelines cover core concepts, conventions, and best practices for ColdBox development.
+Core ColdBox and |LANGUAGE_MODE| guidelines are installed in `.ai/guidelines/core/`. Supported tools
+(e.g., VS Code Copilot) load them automatically via file attachments. For other agents, load them
+explicitly when you need framework fundamentals:
 
-|INLINE_GUIDELINES|
+- `read_file` on `.ai/guidelines/core/coldbox.md` — ColdBox conventions, handlers, routing, DI reference
+- `read_file` on `.ai/guidelines/core/boxlang.md` — BoxLang syntax and patterns (or `cfml.md` for CFML projects)
 
 ## AI Integration & Resources
 
@@ -166,12 +169,20 @@ The `.ai/manifest.json` file contains the complete AI integration configuration:
 
 ### Using Guidelines & Skills
 
-**Core framework guidelines (ColdBox and language) are already included above.** Additional guidelines and all skills are available on request:
+Guidelines and skills are stored locally in `.ai/` and loaded via `read_file` when needed:
 
-- **Module Guidelines** provide documentation for installed ColdBox modules
-- **Skills** offer step-by-step implementation patterns for specific features
-- Request specific guidelines or skills by name when you need them
-- Skills are searched in order: `.ai/skills/`, `.agents/skills/`, `.claude/skills/`
+**Core Guidelines** (`.ai/guidelines/core/`) — framework fundamentals:
+- `read_file` on `.ai/guidelines/core/coldbox.md` — ColdBox conventions, handler/routing/DI reference
+- `read_file` on `.ai/guidelines/core/boxlang.md` — BoxLang syntax, classes, lambdas (or `cfml.md` for CFML)
+
+**Module/Custom Guidelines** — load by name on request from `.ai/guidelines/modules/` or `.ai/guidelines/custom/`.
+
+**Skills** (`.ai/skills/{name}/SKILL.md`) — step-by-step implementation patterns. Examples:
+- Implement a CRUD handler: `read_file` on `.ai/skills/coldbox-handler-development/SKILL.md`
+- Build a REST API: `read_file` on `.ai/skills/coldbox-rest-api-development/SKILL.md`
+- Write tests: `read_file` on `.ai/skills/coldbox-testing-handler/SKILL.md`
+
+**To load any skill or guideline:** use `read_file` on the path shown above or in the inventories below.
 
 ### Available Guidelines
 
@@ -213,35 +224,5 @@ This project has access to the following Model Context Protocol (MCP) documentat
 <!-- COLDBOX-CLI:END -->
 
 <!-- ℹ️ YOUR PROJECT DOCUMENTATION — Add your custom details below. ColdBox CLI will NOT overwrite this section. -->
-
-## Custom Application Details
-
-<!-- Add project-specific information below -->
-
-### Business Domain
-
-<!-- Describe what this application does -->
-
-### Key Services/Models
-
-<!-- List important services and their responsibilities -->
-
-### Authentication/Security
-
-<!-- Describe authentication approach if applicable -->
-
-### API Endpoints
-
-<!-- Document REST API routes if applicable -->
-
-### Database
-
-<!-- Document database setup, migrations, seeders if applicable -->
-
-### Deployment
-
-<!-- Document deployment process -->
-
-### Third-Party Integrations
-
-<!-- List external services, APIs, or integrations -->
+<!-- 📝 TODO: Describe your business domain, key services, auth approach, and project-specific conventions. -->
+<!-- Suggested sections: Business Domain, Key Services/Models, Authentication/Security, API Endpoints, Database, Deployment -->

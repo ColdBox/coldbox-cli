@@ -45,45 +45,9 @@ class Users extends coldbox.system.EventHandler {
 
 ### RESTful Handler
 
-```boxlang
-class API extends coldbox.system.EventHandler {
-    property name="userService" inject;
-
-    function index( event, rc, prc ) {
-        prc.data = userService.getAll()
-        event.renderData(
-            data = prc.data,
-            formats = "json,xml"
-        )
-    }
-
-    function show( event, rc, prc ) {
-        prc.data = userService.getById( rc.id ?: 0 )
-        event.renderData( data = prc.data )
-    }
-
-    function create( event, rc, prc ) {
-        prc.data = userService.create( rc )
-        event.renderData(
-            data = prc.data,
-            statusCode = 201
-        )
-    }
-
-    function update( event, rc, prc ) {
-        prc.data = userService.update( rc.id, rc )
-        event.renderData( data = prc.data )
-    }
-
-    function delete( event, rc, prc ) {
-        userService.delete( rc.id )
-        event.renderData(
-            data = { message: "Deleted successfully" },
-            statusCode = 204
-        )
-    }
-}
-```
+RESTful handlers use `event.renderData()` to return structured responses. Actions map to HTTP verbs
+(index=GET, create=POST, update=PUT, delete=DELETE). See `.ai/skills/coldbox-rest-api-development/SKILL.md`
+for full implementation patterns.
 
 ## Request Context (Event Object)
 
@@ -314,26 +278,9 @@ postModuleUnload
 
 ### Creating Interceptors
 
-```boxlang
-class SecurityInterceptor extends coldbox.system.Interceptor {
-    property name="securityService" inject;
-
-    function preProcess( event, interceptData ) {
-        if ( !securityService.isLoggedIn() && !event.valueExists( "public" ) ) {
-            flash.put( "error", "Please log in" )
-            relocate( "auth.login" )
-        }
-    }
-
-    function onException( event, interceptData ) {
-        // interceptData contains: exception, type, timestamp
-        log.error(
-            "Exception occurred: #interceptData.exception.message#",
-            interceptData.exception
-        )
-    }
-}
-```
+Interceptors extend `coldbox.system.Interceptor` and implement listener methods matching the interception
+point names above. Access the event via the `event` argument and shared data via `interceptData`.
+See `.ai/skills/coldbox-interceptor-development/SKILL.md` for full implementation patterns.
 
 ### Registering Interceptors
 
@@ -382,25 +329,9 @@ Modules are self-contained sub-applications that can be plugged into any ColdBox
 
 ### Module Configuration
 
-```boxlang
-component {
-    this.title = "Shop Module"
-    this.author = "Your Name"
-    this.version = "1.0.0"
-    this.entryPoint = "/shop"
-
-    function configure() {
-        settings = {
-            currency: "USD",
-            taxRate: 0.08
-        }
-
-        interceptors = [
-            { class="interceptors.ShopSecurity" }
-        ]
-    }
-}
-```
+`ModuleConfig.cfc` declares `this.title`, `this.author`, `this.version`, `this.entryPoint`, and a
+`configure()` function that sets `settings`, `interceptors`, `wirebox` mappings, etc.
+See `.ai/skills/coldbox-module-development/SKILL.md` for full implementation patterns.
 
 ## Configuration (config/ColdBox.cfc)
 
@@ -477,3 +408,13 @@ flash.discard( "tempData" )
 
 For complete ColdBox documentation, modules, and advanced features, consult the ColdBox MCP server or visit:
 https://coldbox.ortusbooks.com
+
+---
+
+> **Implementation patterns are in skills.** Load the relevant skill with `read_file` when implementing:
+> - Handler CRUD: `.ai/skills/coldbox-handler-development/SKILL.md`
+> - REST APIs: `.ai/skills/coldbox-rest-api-development/SKILL.md`
+> - Routing config: `.ai/skills/coldbox-routing-development/SKILL.md`
+> - Interceptors: `.ai/skills/coldbox-interceptor-development/SKILL.md`
+> - Modules: `.ai/skills/coldbox-module-development/SKILL.md`
+> - Testing: `.ai/skills/coldbox-testing-handler/SKILL.md`

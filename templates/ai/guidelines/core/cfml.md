@@ -354,87 +354,6 @@ var diff = dateDiff( "d", startDate, endDate );
 var parsed = parseDateTime( "2024-01-01" );
 ```
 
-## ColdBox Handler Example
-
-```cfml
-component extends="coldbox.system.EventHandler" {
-    property name="userService" inject;
-    property name="log" inject="logbox:logger:{this}";
-
-    function index( event, rc, prc ) {
-        prc.users = userService.getAll();
-        event.setView( "users/index" );
-    }
-
-    function show( event, rc, prc ) {
-        prc.user = userService.getById( rc.id ?: 0 );
-        event.setView( "users/show" );
-    }
-
-    function save( event, rc, prc ) {
-        try {
-            if ( rc.id ?: 0 ) {
-                var user = userService.update( rc.id, rc );
-            } else {
-                var user = userService.create( rc );
-            }
-
-            flash.put( "notice", "User saved successfully" );
-            relocate( "users.show", { id: user.id } );
-        } catch ( ValidationException e ) {
-            flash.put( "error", e.message );
-            flash.put( "data", rc );
-            relocate( "users.edit" );
-        }
-    }
-}
-```
-
-## Service Layer Example
-
-```cfml
-component singleton {
-    property name="userDAO" inject;
-    property name="cache" inject="cachebox:default";
-    property name="log" inject="logbox:logger:{this}";
-
-    function getAll() {
-        return cache.getOrSet( "userList", function() {
-            return userDAO.findAll();
-        }, 60 );
-    }
-
-    function getById( required numeric id ) {
-        var cacheKey = "user-#arguments.id#";
-        return cache.getOrSet( cacheKey, function() {
-            return userDAO.find( arguments.id );
-        }, 30 );
-    }
-
-    function create( required struct data ) {
-        transaction {
-            try {
-                var user = userDAO.create( data );
-                cache.clear( "userList" );
-                log.info( "User created: #user.id#" );
-                return user;
-            } catch ( any e ) {
-                transaction action="rollback";
-                log.error( "Failed to create user", e );
-                rethrow;
-            }
-        }
-    }
-
-    function update( required numeric id, required struct data ) {
-        var user = userDAO.update( arguments.id, arguments.data );
-        cache.clear( "user-#arguments.id#" );
-        cache.clear( "userList" );
-        return user;
-    }
-}
-```
-
 ## Best Practices
 
 - **Use CFScript** over tag-based syntax for consistency
@@ -453,3 +372,10 @@ component singleton {
 For complete CFML documentation and built-in functions, visit:
 - https://cfdocs.org
 - https://modern-cfml.ortusbooks.com
+
+---
+
+> **Implementation patterns are in skills.** Load the relevant skill with `read_file` when implementing:
+> - ColdBox handler patterns: `.ai/skills/coldbox-handler-development/SKILL.md`
+> - REST APIs: `.ai/skills/coldbox-rest-api-development/SKILL.md`
+> - Testing: `.ai/skills/coldbox-testing-handler/SKILL.md`

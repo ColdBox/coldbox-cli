@@ -316,45 +316,6 @@ try {
 }
 ```
 
-## ColdBox Handler Example
-
-```boxlang
-class Users extends coldbox.system.EventHandler {
-    property name="userService" inject;
-    property name="log" inject="logbox:logger:{this}";
-
-    function index( event, rc, prc ) {
-        prc.users = userService.getAll()
-            .filter( ( user ) => user.active )
-            .map( ( user ) => {
-                return {
-                    id: user.id,
-                    name: user.name,
-                    email: user.email
-                }
-            } )
-
-        event.setView( "users/index" )
-    }
-
-    function create( event, rc, prc ) {
-        try {
-            var user = userService.create( rc )
-            log.info( "User created: #user.id#" )
-            event.renderData(
-                data = user,
-                statusCode = 201
-            )
-        } catch ( ValidationException e ) {
-            event.renderData(
-                data = { errors: e.getErrors() },
-                statusCode = 422
-            )
-        }
-    }
-}
-```
-
 ## Best Practices
 
 - Use **arrow functions** for concise operations
@@ -369,3 +330,11 @@ class Users extends coldbox.system.EventHandler {
 
 For complete BoxLang documentation, advanced features, and Java integration, consult the BoxLang MCP server or visit:
 https://boxlang.ortusbooks.com
+
+---
+
+> **Implementation patterns are in skills.** Load the relevant skill with `read_file` when implementing:
+> - Classes & OOP: `.ai/skills/boxlang-classes-and-oop/SKILL.md`
+> - Functional programming & lambdas: `.ai/skills/boxlang-functional-programming/SKILL.md`
+> - ColdBox handler patterns: `.ai/skills/coldbox-handler-development/SKILL.md`
+> - Testing: `.ai/skills/boxlang-testing/SKILL.md`

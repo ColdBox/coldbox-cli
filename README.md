@@ -670,11 +670,11 @@ coldbox ai mcp remove cbsecurity --force   # Force remove a module server
 
 #### AI Context Management
 
-**Subagent Pattern**: ColdBox CLI uses an optimized architecture that reduces context by 58% while maintaining full capability:
+**Subagent Pattern**: ColdBox CLI uses an optimized architecture that keeps agent files lean while providing full capability on-demand:
 
-- **Core Guidelines Inlined** (~20KB): ColdBox framework + language always embedded in agent files
+- **Core Guidelines Referenced** (~0 tokens in agent file): ColdBox framework + language guidelines stored in `.ai/guidelines/core/` and loaded on-demand via `read_file` when needed
 - **Resource Inventories** (~13KB): Module guidelines and skills listed with descriptions for on-demand loading
-- **Total Base Context**: ~33KB / ~8,400 tokens (down from ~62KB / ~15,000+ tokens)
+- **Total Base Context**: ~250 lines per agent file (down from ~1,000 lines when guidelines were inlined)
 
 The CLI tracks and analyzes your AI context usage:
 
