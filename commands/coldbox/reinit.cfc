@@ -26,14 +26,14 @@ component aliases="fwreinit" {
 		name     = getDefaultServerName(),
 		showUrl  = true
 	){
-		var serverInfo = serverService.getServerInfoByDiscovery( name = arguments.name );
+		var serverInfo = serverService.resolveServerDetails( { name: arguments.name, directory: getCWD() } ).serverInfo;
 
 		if ( !structCount( serverInfo ) ) {
 			print.boldRedLine(
 				"No server configurations found for '#getCWD()#' and '#arguments.name#', so have no clue what to reinit buddy!"
 			);
 		} else {
-			var thisURL = "#serverInfo.host#:#serverInfo.port#/?fwreinit=#arguments.password#";
+			var thisURL = "#serverInfo.defaultBaseURL#/?fwreinit=#arguments.password#";
 			if ( arguments.showUrl ) {
 				print.greenLine( "Hitting... #thisURL#" );
 			}
