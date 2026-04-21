@@ -26,7 +26,13 @@ component aliases="fwreinit" {
 		name     = getDefaultServerName(),
 		showUrl  = true
 	){
-		var serverInfo = serverService.getServerInfoByDiscovery( name = arguments.name );
+		var serverInfo = serverService.resolveServerDetails( { name: arguments.name, directory: getCWD() } ).serverInfo;
+
+		if ( serverInfo.port EQ 0 ) {
+			//resolveServerDetails() returns port 0 by default 
+			//still works to initialize the coldbox but commandbox shows Hitting... 127.0.0.1:0/?fwreinit=1
+			serverInfo.port = 80;
+		}
 
 		if ( !structCount( serverInfo ) ) {
 			print.boldRedLine(
