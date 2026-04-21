@@ -87,7 +87,10 @@ component singleton {
 
 				var _filtered  = targets.filter( ( t ) => t.slug == skillSlug )
 				var targetInfo = _filtered.len() ? _filtered.first() : {}
-				var localName  = resolveSkillName( result.content, targetInfo.name ?: result.skill.skill_dir.listLast( "/" ) )
+				var localName  = resolveSkillName(
+					result.content,
+					targetInfo.name ?: result.skill.skill_dir.listLast( "/" )
+				)
 
 				variables.print.blueLine( "  ⬇️  Installing: #localName#" ).toConsole()
 
@@ -281,7 +284,7 @@ component singleton {
 				if ( result.keyExists( "error" ) && result.error ) {
 					return
 				}
-				var resultSlug = result.skill.skill_slug ?: ""
+				var resultSlug     = result.skill.skill_slug ?: ""
 				var _staleFiltered = staleItems.filter( ( i ) => i.entry.slug == resultSlug )
 				var staleItem      = _staleFiltered.len() ? _staleFiltered.first() : {}
 				if ( staleItem.isEmpty() ) {
@@ -345,7 +348,7 @@ component singleton {
 				if ( result.keyExists( "error" ) && result.error ) {
 					return
 				}
-				var resultSlug = result.skill.skill_slug ?: ""
+				var resultSlug    = result.skill.skill_slug ?: ""
 				var _mf           = missingRemoteSkills.filter( ( s ) => s.slug == resultSlug )
 				var manifestEntry = _mf.len() ? _mf.first() : {}
 				if ( manifestEntry.isEmpty() ) {
@@ -1173,8 +1176,8 @@ component singleton {
 		required struct manifest
 	){
 		var resolvedName = resolveSkillName( arguments.content, arguments.name )
-		var slug     = arguments.path.listLast( "/" )
-		var skillDir = "#arguments.directory#/.ai/skills/#resolvedName#"
+		var slug         = arguments.path.listLast( "/" )
+		var skillDir     = "#arguments.directory#/.ai/skills/#resolvedName#"
 
 		if ( !directoryExists( skillDir ) ) {
 			directoryCreate( skillDir, true )
