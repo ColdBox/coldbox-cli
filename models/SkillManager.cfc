@@ -87,11 +87,11 @@ component singleton {
 
 				var _filtered  = targets.filter( ( t ) => t.slug == skillSlug )
 				var targetInfo = _filtered.len() ? _filtered.first() : {}
-				var localName  = targetInfo.name ?: result.skill.skill_dir.listLast( "/" )
+				var localName  = resolveSkillName( result.content, targetInfo.name ?: result.skill.skill_dir.listLast( "/" ) )
 
 				variables.print.blueLine( "  ⬇️  Installing: #localName#" ).toConsole()
 
-				installRemoteSkill(
+				var installedName = installRemoteSkill(
 					directory   = directory,
 					name        = localName,
 					content     = result.content,
@@ -105,7 +105,7 @@ component singleton {
 					source      = targetInfo.source ?: "",
 					manifest    = manifest
 				)
-				installed.append( localName )
+				installed.append( installedName )
 			} )
 
 			if ( installed.len() ) {
@@ -127,7 +127,7 @@ component singleton {
 				variables.print.redLine( "  🚫  Blocked (failed security audit): #t.slug#" ).toConsole()
 			} else {
 				variables.print.blueLine( "  ⬇️  Installing: #t.name#" ).toConsole()
-				installRemoteSkill(
+				var installedName = installRemoteSkill(
 					directory   = arguments.directory,
 					name        = t.name,
 					content     = result.content,
@@ -141,8 +141,8 @@ component singleton {
 					source      = t.source,
 					manifest    = manifest
 				)
-				installed.append( t.name )
-				variables.print.greenLine( "✅  Installed: #t.name#" ).toConsole()
+				installed.append( installedName )
+				variables.print.greenLine( "✅  Installed: #installedName#" ).toConsole()
 			}
 		}
 
@@ -278,12 +278,15 @@ component singleton {
 			var batchResult = downloadSkillBatch( batchItems )
 
 			batchResult.each( ( result ) => {
-				if ( result.keyExists( "error" ) && result.error )
-					return var resultSlug = result.skill.skill_slug ?: ""
+				if ( result.keyExists( "error" ) && result.error ) {
+					return
+				}
+				var resultSlug = result.skill.skill_slug ?: ""
 				var _staleFiltered = staleItems.filter( ( i ) => i.entry.slug == resultSlug )
 				var staleItem      = _staleFiltered.len() ? _staleFiltered.first() : {}
-				if ( staleItem.isEmpty() )
-					return variables.print.blueLine( "  🔄  Updating: #staleItem.entry.name#" ).toConsole()
+				if ( staleItem.isEmpty() ) {
+					return variables.print.blueLine( "  🔄  Updating: #resultSlug#" ).toConsole()
+				}
 
 				installRemoteSkill(
 					directory   = directory,
@@ -339,12 +342,15 @@ component singleton {
 			var reinstalled        = []
 
 			missingBatchResult.each( ( result ) => {
-				if ( result.keyExists( "error" ) && result.error )
-					return var resultSlug = result.skill.skill_slug ?: ""
+				if ( result.keyExists( "error" ) && result.error ) {
+					return
+				}
+				var resultSlug = result.skill.skill_slug ?: ""
 				var _mf           = missingRemoteSkills.filter( ( s ) => s.slug == resultSlug )
 				var manifestEntry = _mf.len() ? _mf.first() : {}
-				if ( manifestEntry.isEmpty() )
-					return variables.print.blueLine( "  ⬇️  Reinstalling: #manifestEntry.name#" ).toConsole()
+				if ( manifestEntry.isEmpty() ) {
+					return variables.print.blueLine( "  ⬇️  Reinstalling: #resultSlug#" ).toConsole()
+				}
 				installRemoteSkill(
 					directory   = directory,
 					name        = manifestEntry.name,
@@ -491,7 +497,10 @@ component singleton {
 			}
 		}
 
-		var localName = arguments.name.len() ? arguments.name : skill.skill_dir.listLast( "/" )
+		var localName = resolveSkillName(
+			content,
+			arguments.name.len() ? arguments.name : skill.skill_dir.listLast( "/" )
+		)
 
 		if ( !arguments.force ) {
 			var existing = getSkillFilePath( arguments.directory, localName )
@@ -505,7 +514,7 @@ component singleton {
 			}
 		}
 
-		installRemoteSkill(
+		localName = installRemoteSkill(
 			directory   = arguments.directory,
 			name        = localName,
 			content     = content,
@@ -1163,8 +1172,9 @@ component singleton {
 		required string source,
 		required struct manifest
 	){
+		var resolvedName = resolveSkillName( arguments.content, arguments.name )
 		var slug     = arguments.path.listLast( "/" )
-		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
+		var skillDir = "#arguments.directory#/.ai/skills/#resolvedName#"
 
 		if ( !directoryExists( skillDir ) ) {
 			directoryCreate( skillDir, true )
@@ -1177,14 +1187,14 @@ component singleton {
 		// Upsert manifest entry
 		var existingIndex = 0
 		for ( var i = 1; i <= arguments.manifest.skills.len(); i++ ) {
-			if ( arguments.manifest.skills[ i ].name == arguments.name ) {
+			if ( arguments.manifest.skills[ i ].name == resolvedName ) {
 				existingIndex = i;
 				break
 			}
 		}
 
 		var entry = {
-			"name"        : arguments.name,
+			"name"        : resolvedName,
 			"owner"       : arguments.owner,
 			"repo"        : arguments.repo,
 			"path"        : arguments.path,
@@ -1201,6 +1211,21 @@ component singleton {
 		} else {
 			arguments.manifest.skills.append( entry )
 		}
+
+		return resolvedName
+	}
+
+	/**
+	 * Resolve the canonical local skill directory name from SKILL.md frontmatter.
+	 * Falls back to the provided name when frontmatter is missing or invalid.
+	 */
+	private string function resolveSkillName(
+		required string content,
+		required string fallbackName
+	){
+		var parsed = variables.utility.parseFrontmatter( arguments.content )
+		var name   = trim( parsed.frontmatter.name ?: "" )
+		return name.len() ? name : arguments.fallbackName
 	}
 
 	/**
