@@ -26,7 +26,10 @@ component aliases="fwreinit" {
 		name     = getDefaultServerName(),
 		showUrl  = true
 	){
-		var serverInfo = serverService.resolveServerDetails( { name: arguments.name, directory: getCWD() } ).serverInfo;
+		var serverInfo = serverService.resolveServerDetails( {
+			name      : arguments.name,
+			directory : getCWD()
+		} ).serverInfo;
 
 		if ( !structCount( serverInfo ) ) {
 			print.boldRedLine(
