@@ -117,13 +117,6 @@ component singleton {
 
 		result.manifest = manifest;
 
-		// Update box.json with AI configuration
-		updateBoxJsonAIConfig(
-			arguments.directory,
-			arguments.language,
-			arguments.agents
-		);
-
 		// Generate .mcp.json from manifest MCP servers
 		generateMCPJson( arguments.directory, manifest );
 
@@ -449,33 +442,6 @@ component singleton {
 				directoryCreate( dir )
 			}
 		} )
-	}
-
-	/**
-	 * Update box.json with AI configuration
-	 *
-	 * @directory The project directory
-	 * @language Project language mode (boxlang, cfml, hybrid)
-	 * @agents Comma-separated list of agents
-	 */
-	private function updateBoxJsonAIConfig(
-		required string directory,
-		required string language,
-		required string agents
-	){
-		var packageDir = arguments.directory;
-		var boxJson    = variables.packageService.readPackageDescriptorRaw( packageDir );
-
-		// Add language at top level
-		boxJson.language = arguments.language;
-
-		// Add ai configuration section
-		boxJson.ai = {
-			"enabled" : true,
-			"agents"  : listToArray( arguments.agents )
-		};
-
-		variables.packageService.writePackageDescriptor( boxJson, packageDir );
 	}
 
 	/**
