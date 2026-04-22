@@ -299,7 +299,7 @@ component singleton {
 		// Load manifest
 		var manifest = loadManifest( arguments.directory )
 		if ( !structKeyExists( manifest, "coldboxCliVersion" ) ) {
-			issues.errors.append( "Invalid or missing .ai/.manifest.json file" )
+			issues.errors.append( "Invalid or missing /.agents/manifest.json file" )
 			// Build summary for early return
 			issues.summary = {
 				"status"              : "error",
@@ -377,7 +377,7 @@ component singleton {
 	 * @directory The project directory
 	 */
 	struct function loadManifest( required string directory ){
-		var manifestPath = getAIInstallDirectory( arguments.directory ) & "/.manifest.json";
+		var manifestPath = getAIInstallDirectory( arguments.directory ) & "/manifest.json";
 		if ( !fileExists( manifestPath ) ) {
 			return {};
 		}
@@ -392,7 +392,7 @@ component singleton {
 	 * @return The full path to the manifest file
 	 */
 	string function getManifestPath( required string directory ){
-		return getAIInstallDirectory( arguments.directory ) & "/.manifest.json";
+		return getAIInstallDirectory( arguments.directory ) & "/manifest.json";
 	}
 
 	/**

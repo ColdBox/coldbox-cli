@@ -604,7 +604,7 @@ After `coldbox ai install`, your project will have a `.agents/` directory contai
 │   ├── {skill-name}/
 │   │   └── SKILL.md   # Step-by-step implementation guide
 │   └── overrides/     # Override core/module skills
-└── .manifest.json     # AI integration metadata (generated)
+└── manifest.json     # AI integration metadata (generated)
 ```
 
 - **Guidelines**: Framework documentation and best practices (ColdBox, BoxLang, CFML, etc.)
