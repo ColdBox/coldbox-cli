@@ -16,7 +16,7 @@ component singleton {
 	property name="fileSystemUtil"   inject="fileSystem";
 	property name="packageService"   inject="PackageService";
 
-	static{
+	static {
 		AI_DIR = ".agents"
 	}
 
@@ -436,7 +436,7 @@ component singleton {
 	 */
 	private function createAIDirectoryStructure( required string directory ){
 		var aiDir = getAIInstallDirectory( arguments.directory )
-		var dirs = [
+		var dirs  = [
 			"#aiDir#",
 			"#aiDir#/guidelines",
 			"#aiDir#/guidelines/core",

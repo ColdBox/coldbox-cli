@@ -143,9 +143,9 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// AI Integration Setup
 		if ( arguments.ai ) {
-			var modulePath = arguments.directory & "/#arguments.name#"
+			var modulePath    = arguments.directory & "/#arguments.name#"
 			var guidelinesDir = variables.aiService.getAIInstallDirectory( modulePath ) & "/guidelines"
-			var skillsDir = variables.aiService.getAIInstallDirectory( modulePath ) & "/skills"
+			var skillsDir     = variables.aiService.getAIInstallDirectory( modulePath ) & "/skills"
 
 			printInfo( "🤖 Setting up AI integration for module..." )
 

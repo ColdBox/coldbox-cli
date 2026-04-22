@@ -615,7 +615,7 @@ component singleton {
 		required string name
 	){
 		var skillsDirectory = getSkillsDirectory( arguments.directory )
-		var candidates = [
+		var candidates      = [
 			skillsDirectory & "/#arguments.name#/SKILL.md",
 			"#arguments.directory#/.claude/skills/#arguments.name#/SKILL.md"
 		]

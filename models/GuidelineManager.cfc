@@ -84,7 +84,7 @@ component singleton {
 		}
 
 		// Sync custom guidelines from filesystem
-		var aiDir = variables.aiService.getAIInstallDirectory( arguments.directory )
+		var aiDir     = variables.aiService.getAIInstallDirectory( arguments.directory )
 		var customDir = aiDir & "/guidelines/custom"
 		if ( directoryExists( customDir ) ) {
 			var customFiles = directoryList( customDir, false, "name", "*.md" )
@@ -92,7 +92,7 @@ component singleton {
 				var guidelineName = replaceNoCase( fileName, ".md", "" )
 
 				// Parse frontmatter for description
-			var filePath    = customDir & "/" & fileName
+				var filePath    = customDir & "/" & fileName
 				var content     = fileRead( filePath )
 				var parsed      = variables.utility.parseFrontmatter( content )
 				var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
