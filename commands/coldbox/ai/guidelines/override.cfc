@@ -47,7 +47,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var guideline = existing[ 1 ]
 
 		// Check if override already exists
-		var overridePath = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
+		var overridePath = guidelineManager.getGuidelinesDirectory( arguments.directory ) & "/overrides/#arguments.name#.md"
 		if ( fileExists( overridePath ) ) {
 			printWarn( "Override for '#arguments.name#' already exists at:" )
 			printWarn( "  #overridePath#" )

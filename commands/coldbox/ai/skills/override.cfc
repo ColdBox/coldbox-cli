@@ -49,7 +49,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var skill = existing[ 1 ]
 
 		// Check if override already exists (flat path)
-		var overridePath = "#arguments.directory#/.ai/skills/#arguments.name#/SKILL.md"
+		var overridePath = skillManager.getSkillsDirectory( arguments.directory ) & "/#arguments.name#/SKILL.md"
 		if ( fileExists( overridePath ) ) {
 			printWarn( "Skill '#arguments.name#' already exists at:" )
 			printWarn( "  #overridePath#" )

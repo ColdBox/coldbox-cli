@@ -590,7 +590,30 @@ coldbox ai refresh                    # Update guidelines and skills
 coldbox ai doctor                     # Check AI integration health
 ```
 
-#### AI Agents
+#### AI Directory Structure
+
+After `coldbox ai install`, your project will have a `.agents/` directory containing:
+
+```
+/.agents/
+├── guidelines/         # AI framework and domain documentation
+│   ├── core/          # ColdBox & BoxLang/CFML language guidelines (framework built-ins)
+│   ├── custom/        # Your project-specific guidelines
+│   └── overrides/     # Custom versions of core/module guidelines
+├── skills/            # Implementation cookbooks for specific features
+│   ├── {skill-name}/
+│   │   └── SKILL.md   # Step-by-step implementation guide
+│   └── overrides/     # Override core/module skills
+└── .manifest.json     # AI integration metadata (generated)
+```
+
+- **Guidelines**: Framework documentation and best practices (ColdBox, BoxLang, CFML, etc.)
+- **Skills**: Specialized coding cookbooks for implementing specific features
+- **Manifest**: Tracks installed guidelines, skills, agents, and MCP servers
+
+#### Setup & Management
+
+```bash
 
 Configure AI assistants for your project (Claude, GitHub Copilot, Cursor, etc.):
 
@@ -672,7 +695,7 @@ coldbox ai mcp remove cbsecurity --force   # Force remove a module server
 
 **Subagent Pattern**: ColdBox CLI uses an optimized architecture that keeps agent files lean while providing full capability on-demand:
 
-- **Core Guidelines Referenced** (~0 tokens in agent file): ColdBox framework + language guidelines stored in `.ai/guidelines/core/` and loaded on-demand via `read_file` when needed
+- **Core Guidelines Referenced** (~0 tokens in agent file): ColdBox framework + language guidelines stored in `.agents/guidelines/core/` and loaded on-demand via `read_file` when needed
 - **Resource Inventories** (~13KB): Module guidelines and skills listed with descriptions for on-demand loading
 - **Total Base Context**: ~250 lines per agent file (down from ~1,000 lines when guidelines were inlined)
 

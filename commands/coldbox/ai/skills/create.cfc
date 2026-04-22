@@ -44,7 +44,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Creating custom skill: #arguments.name# (#uCase( language )#)" )
 
 		// Check if already exists
-		var skillPath = "#arguments.directory#/.ai/skills/#arguments.name#/SKILL.md"
+		var skillPath = skillManager.getSkillsDirectory( arguments.directory ) & "/#arguments.name#/SKILL.md"
 		if ( fileExists( skillPath ) ) {
 			printError( "Skill '#arguments.name#' already exists at:" )
 			printError( "  #skillPath#" )

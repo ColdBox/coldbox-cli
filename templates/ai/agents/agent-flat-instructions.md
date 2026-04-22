@@ -132,7 +132,7 @@ This project includes AI-powered development assistance with guidelines, skills,
 ### Directory Structure
 
 ```
-/.ai/
+/.agents/
   /manifest.json       - AI configuration (language, agents, guidelines, skills, MCP servers)
   /guidelines/         - Framework documentation and best practices
     /core/             - Core ColdBox/BoxLang guidelines

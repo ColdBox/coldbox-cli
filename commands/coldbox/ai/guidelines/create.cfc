@@ -35,7 +35,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		// Check if already exists
-		var guidelinePath = "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md"
+		var guidelinePath = guidelineManager.getGuidelinesDirectory( arguments.directory ) & "/custom/#arguments.name#.md"
 		if ( fileExists( guidelinePath ) ) {
 			printError( "Guideline '#arguments.name#' already exists at:" )
 			printError( "  #guidelinePath#" )

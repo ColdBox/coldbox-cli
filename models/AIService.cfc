@@ -16,6 +16,10 @@ component singleton {
 	property name="fileSystemUtil"   inject="fileSystem";
 	property name="packageService"   inject="PackageService";
 
+	static{
+		AI_DIR = ".agents"
+	}
+
 	/**
 	 * Install AI integration for a project
 	 *
@@ -47,7 +51,7 @@ component singleton {
 		}
 
 		// Check if already installed
-		var aiDir = arguments.directory & "/.ai";
+		var aiDir = arguments.directory & "/" & static.AI_DIR;
 		if ( directoryExists( aiDir ) && !arguments.force ) {
 			result.success = false;
 			result.message = "AI integration already installed. Use --force to overwrite.";
@@ -357,12 +361,23 @@ component singleton {
 	}
 
 	/**
+	 * Get the AI installation directory path (.agents)
+	 *
+	 * @directory The project directory
+	 *
+	 * @return The full path to the .agents directory
+	 */
+	string function getAIInstallDirectory( required string directory ){
+		return arguments.directory & "/" & static.AI_DIR;
+	}
+
+	/**
 	 * Load the manifest file
 	 *
 	 * @directory The project directory
 	 */
 	struct function loadManifest( required string directory ){
-		var manifestPath = arguments.directory & "/.ai/.manifest.json";
+		var manifestPath = getAIInstallDirectory( arguments.directory ) & "/.manifest.json";
 		if ( !fileExists( manifestPath ) ) {
 			return {};
 		}
@@ -377,7 +392,7 @@ component singleton {
 	 * @return The full path to the manifest file
 	 */
 	string function getManifestPath( required string directory ){
-		return arguments.directory & "/.ai/.manifest.json";
+		return getAIInstallDirectory( arguments.directory ) & "/.manifest.json";
 	}
 
 	/**
@@ -420,12 +435,13 @@ component singleton {
 	 * @directory The project directory where .ai structure will be created
 	 */
 	private function createAIDirectoryStructure( required string directory ){
+		var aiDir = getAIInstallDirectory( arguments.directory )
 		var dirs = [
-			"#arguments.directory#/.ai",
-			"#arguments.directory#/.ai/guidelines",
-			"#arguments.directory#/.ai/guidelines/core",
-			"#arguments.directory#/.ai/guidelines/custom",
-			"#arguments.directory#/.ai/skills"
+			"#aiDir#",
+			"#aiDir#/guidelines",
+			"#aiDir#/guidelines/core",
+			"#aiDir#/guidelines/custom",
+			"#aiDir#/skills"
 		];
 
 		dirs.each( ( dir ) => {
@@ -527,7 +543,7 @@ component singleton {
 		}
 
 		// Count guidelines by type and calculate sizes
-		var aiDir         = arguments.directory & "/.ai";
+		var aiDir         = getAIInstallDirectory( arguments.directory )
 		var guidelinesDir = aiDir & "/guidelines";
 		info.guidelines.each( ( guideline ) => {
 			var type = guideline.type ?: "module";

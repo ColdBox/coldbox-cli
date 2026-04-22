@@ -84,14 +84,15 @@ component singleton {
 		}
 
 		// Sync custom guidelines from filesystem
-		var customDir = "#arguments.directory#/.ai/guidelines/custom"
+		var aiDir = variables.aiService.getAIInstallDirectory( arguments.directory )
+		var customDir = aiDir & "/guidelines/custom"
 		if ( directoryExists( customDir ) ) {
 			var customFiles = directoryList( customDir, false, "name", "*.md" )
 			customFiles.each( ( fileName ) => {
 				var guidelineName = replaceNoCase( fileName, ".md", "" )
 
 				// Parse frontmatter for description
-				var filePath    = "#customDir#/#fileName#"
+			var filePath    = customDir & "/" & fileName
 				var content     = fileRead( filePath )
 				var parsed      = variables.utility.parseFrontmatter( content )
 				var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
@@ -115,7 +116,7 @@ component singleton {
 		}
 
 		// Sync override guidelines from filesystem
-		var overridesDir = "#arguments.directory#/.ai/guidelines/overrides"
+		var overridesDir = aiDir & "/guidelines/overrides"
 		if ( directoryExists( overridesDir ) ) {
 			var overrideFiles = directoryList( overridesDir, false, "name", "*.md" )
 			overrideFiles.each( ( fileName ) => {
@@ -156,12 +157,12 @@ component singleton {
 			var filePath = ""
 
 			if ( gType == "core" ) {
-				filePath = "#arguments.directory#/.ai/guidelines/core/#guideline.name#.md"
+				filePath = getGuidelinesDirectory( arguments.directory ) & "/core/#guideline.name#.md"
 			} else if ( gType == "custom" ) {
-				filePath = "#arguments.directory#/.ai/guidelines/custom/#guideline.name#.md"
+				filePath = getGuidelinesDirectory( arguments.directory ) & "/custom/#guideline.name#.md"
 			} else if ( gType == "override" ) {
 				var baseName = replaceNoCase( guideline.name, "-override", "" )
-				filePath     = "#arguments.directory#/.ai/guidelines/overrides/#baseName#.md"
+				filePath     = getGuidelinesDirectory( arguments.directory ) & "/overrides/#baseName#.md"
 			}
 
 			if ( filePath.len() && !fileExists( filePath ) ) {
@@ -231,12 +232,12 @@ component singleton {
 			var guidelineFile = ""
 
 			if ( gType == "core" ) {
-				guidelineFile = "#arguments.directory#/.ai/guidelines/core/#guideline.name#.md"
+				guidelineFile = getGuidelinesDirectory( arguments.directory ) & "/core/#guideline.name#.md"
 			} else if ( gType == "custom" ) {
-				guidelineFile = "#arguments.directory#/.ai/guidelines/custom/#guideline.name#.md"
+				guidelineFile = getGuidelinesDirectory( arguments.directory ) & "/custom/#guideline.name#.md"
 			} else if ( gType == "override" ) {
 				var baseName  = replaceNoCase( guideline.name, "-override", "" )
-				guidelineFile = "#arguments.directory#/.ai/guidelines/overrides/#baseName#.md"
+				guidelineFile = getGuidelinesDirectory( arguments.directory ) & "/overrides/#baseName#.md"
 			}
 
 			if ( guidelineFile.len() && !fileExists( guidelineFile ) ) {
@@ -267,12 +268,12 @@ component singleton {
 
 		if ( arguments.type == "override" ) {
 			// Override files are stored with base name, manifest has -override suffix
-			filePath     = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
+			filePath     = getGuidelinesDirectory( arguments.directory ) & "/overrides/#arguments.name#.md"
 			manifestName = "#arguments.name#-override"
 		} else if ( arguments.type == "core" ) {
-			filePath = "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
+			filePath = getGuidelinesDirectory( arguments.directory ) & "/core/#arguments.name#.md"
 		} else if ( arguments.type == "custom" ) {
-			filePath = "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md"
+			filePath = getGuidelinesDirectory( arguments.directory ) & "/custom/#arguments.name#.md"
 		}
 
 		// Check if file exists
@@ -355,7 +356,7 @@ component singleton {
 		)
 
 		// Ensure custom guidelines directory exists
-		var customDir = "#arguments.directory#/.ai/guidelines/custom"
+		var customDir = getGuidelinesDirectory( arguments.directory ) & "/custom"
 		if ( !directoryExists( customDir ) ) {
 			directoryCreate( customDir )
 		}
@@ -397,7 +398,7 @@ component singleton {
 		var manifest = variables.aiService.loadManifest( arguments.directory )
 
 		// Source path is always core
-		var sourcePath = "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md"
+		var sourcePath = getGuidelinesDirectory( arguments.directory ) & "/core/#arguments.name#.md"
 
 		if ( !fileExists( sourcePath ) ) {
 			throw(
@@ -437,7 +438,7 @@ component singleton {
 		)
 
 		// Ensure overrides directory exists
-		var overridesDir = "#arguments.directory#/.ai/guidelines/overrides"
+		var overridesDir = getGuidelinesDirectory( arguments.directory ) & "/overrides"
 		if ( !directoryExists( overridesDir ) ) {
 			directoryCreate( overridesDir )
 		}
@@ -496,7 +497,7 @@ component singleton {
 		var parsed      = variables.utility.parseFrontmatter( content )
 		var description = structKeyExists( parsed.frontmatter, "description" ) ? parsed.frontmatter.description : ""
 
-		var targetFile = "#arguments.directory#/.ai/guidelines/core/#arguments.guidelineName#.md"
+		var targetFile = getGuidelinesDirectory( arguments.directory ) & "/core/#arguments.guidelineName#.md"
 		directoryCreate(
 			getDirectoryFromPath( targetFile ),
 			true,
@@ -583,16 +584,16 @@ component singleton {
 
 		// Build path list based on type
 		if ( arguments.type == "core" ) {
-			possiblePaths.append( "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md" );
+			possiblePaths.append( getGuidelinesDirectory( arguments.directory ) & "/core/#arguments.name#.md" );
 		} else if ( arguments.type == "custom" ) {
-			possiblePaths.append( "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md" );
+			possiblePaths.append( getGuidelinesDirectory( arguments.directory ) & "/custom/#arguments.name#.md" );
 		} else if ( arguments.type == "override" ) {
-			possiblePaths.append( "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md" );
+			possiblePaths.append( getGuidelinesDirectory( arguments.directory ) & "/overrides/#arguments.name#.md" );
 		} else {
 			// Try all locations
-			possiblePaths.append( "#arguments.directory#/.ai/guidelines/core/#arguments.name#.md" );
-			possiblePaths.append( "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md" );
-			possiblePaths.append( "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md" );
+			possiblePaths.append( getGuidelinesDirectory( arguments.directory ) & "/core/#arguments.name#.md" );
+			possiblePaths.append( getGuidelinesDirectory( arguments.directory ) & "/custom/#arguments.name#.md" );
+			possiblePaths.append( getGuidelinesDirectory( arguments.directory ) & "/overrides/#arguments.name#.md" );
 		}
 
 		// Try each path
@@ -606,6 +607,17 @@ component singleton {
 		}
 
 		return "";
+	}
+
+	/**
+	 * Gets the guidelines directory path (.agents/guidelines)
+	 *
+	 * @directory The target directory
+	 *
+	 * @return The full path to the guidelines directory
+	 */
+	string function getGuidelinesDirectory( required string directory ){
+		return variables.aiService.getAIInstallDirectory( arguments.directory ) & "/guidelines"
 	}
 
 }

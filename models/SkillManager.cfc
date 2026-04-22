@@ -2,7 +2,7 @@
  * Manages AI skills — remote-first, SHA-locked, flat storage.
  *
  * Skills are downloaded from skills.boxlang.io and stored at:
- *   {project}/.ai/skills/{name}/SKILL.md
+ *   {project}/.agents/skills/{name}/SKILL.md
  *
  * The manifest records sha (from registry), owner, repo, path, and syncedAt.
  * On refresh, stale skills (sha mismatch) are re-downloaded; orphaned module
@@ -392,10 +392,10 @@ component singleton {
 		// ------------------------------------------------------------------
 		// 5. Sync custom skills from .ai/skills/ that aren't in manifest yet
 		// ------------------------------------------------------------------
-		var skillsDir = "#arguments.directory#/.ai/skills"
+		var skillsDir = getSkillsDirectory( arguments.directory )
 		if ( directoryExists( skillsDir ) ) {
 			directoryList( skillsDir, false, "name" ).each( ( dirName ) => {
-				var skillFilePath = "#skillsDir#/#dirName#/SKILL.md"
+				var skillFilePath = skillsDir & "/" & dirName & "/SKILL.md"
 				if ( !fileExists( skillFilePath ) ) {
 					return;
 				}
@@ -601,7 +601,7 @@ component singleton {
 
 	/**
 	 * Return the absolute path to a skill's SKILL.md file, checking three locations:
-	 *   1. {directory}/.ai/skills/{name}/SKILL.md
+	 *   1. {directory}/.agents/skills/{name}/SKILL.md
 	 *   2. {directory}/.agents/skills/{name}/SKILL.md
 	 *   3. {directory}/.claude/skills/{name}/SKILL.md
 	 *
@@ -614,9 +614,9 @@ component singleton {
 		required string directory,
 		required string name
 	){
+		var skillsDirectory = getSkillsDirectory( arguments.directory )
 		var candidates = [
-			"#arguments.directory#/.ai/skills/#arguments.name#/SKILL.md",
-			"#arguments.directory#/.agents/skills/#arguments.name#/SKILL.md",
+			skillsDirectory & "/#arguments.name#/SKILL.md",
 			"#arguments.directory#/.claude/skills/#arguments.name#/SKILL.md"
 		]
 		for ( var candidate in candidates ) {
@@ -637,7 +637,7 @@ component singleton {
 		required string name,
 		string language = "boxlang"
 	){
-		var targetDir = "#arguments.directory#/.ai/skills/#arguments.name#"
+		var targetDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 		var skillFile = "#targetDir#/SKILL.md"
 
 		if ( !directoryExists( targetDir ) ) {
@@ -682,7 +682,7 @@ component singleton {
 		required string directory,
 		required string name
 	){
-		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
+		var skillDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 		return directoryExists( skillDir )
 	}
 
@@ -699,7 +699,7 @@ component singleton {
 		required string directory,
 		required string name
 	){
-		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
+		var skillDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 
 		if ( !directoryExists( skillDir ) ) {
 			throw(
@@ -763,7 +763,7 @@ component singleton {
 			"all"
 		)
 
-		var targetDir  = "#arguments.directory#/.ai/skills/#arguments.name#"
+		var targetDir  = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 		var targetFile = "#targetDir#/SKILL.md"
 		if ( !directoryExists( targetDir ) ) directoryCreate( targetDir, true )
 		fileWrite( targetFile, content )
@@ -1177,7 +1177,7 @@ component singleton {
 	){
 		var resolvedName = resolveSkillName( arguments.content, arguments.name )
 		var slug         = arguments.path.listLast( "/" )
-		var skillDir     = "#arguments.directory#/.ai/skills/#resolvedName#"
+		var skillDir     = getSkillsDirectory( arguments.directory ) & "/#resolvedName#"
 
 		if ( !directoryExists( skillDir ) ) {
 			directoryCreate( skillDir, true )
@@ -1231,6 +1231,18 @@ component singleton {
 		return name.len() ? name : arguments.fallbackName
 	}
 
+
+	/**
+	 * Gets the skills directory path (.agents/skills)
+	 *
+	 * @directory The target directory
+	 *
+	 * @return The full path to the skills directory
+	 */
+	string function getSkillsDirectory( required string directory ){
+		return variables.aiService.getAIInstallDirectory( arguments.directory ) & "/skills"
+	}
+
 	/**
 	 * Delete a skill directory under .ai/skills/ if it exists.
 	 *
@@ -1241,7 +1253,7 @@ component singleton {
 		required string directory,
 		required string name
 	){
-		var skillDir = "#arguments.directory#/.ai/skills/#arguments.name#"
+		var skillDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 		if ( directoryExists( skillDir ) ) {
 			directoryDelete( skillDir, true )
 		}

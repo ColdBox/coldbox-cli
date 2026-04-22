@@ -85,7 +85,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			return yellow & lastKey & reset;
 		} else if ( path contains "/overrides/" ) {
 			return magenta & lastKey & reset;
-		} else if ( path contains "/.ai/agents/" ) {
+		} else if ( path contains "agents" ) {
 			return green & lastKey & reset;
 		} else if ( arguments.verbose && ( lastKey contains ".md" || lastKey contains ".cfc" || lastKey contains "rules" ) ) {
 			return dim & lastKey & reset;

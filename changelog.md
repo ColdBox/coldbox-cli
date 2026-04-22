@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **AI Directory Structure Standardized**
+  - Renamed `/.ai/` directory to `/.agents/` to follow BoxLang skill repository conventions
+  - All generated agent configurations, guidelines, and skills now use `/.agents/` instead of `/.ai/`
+  - Updated all internal code paths, CLI commands, and documentation to reference `/.agents/`
+  - Ensures consistency with the `.agents/skills/` directory naming used in BoxLang ecosystem
+
 ### Added
 
 - **`.mcp.json` Support**

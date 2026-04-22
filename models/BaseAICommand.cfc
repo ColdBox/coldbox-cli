@@ -27,6 +27,17 @@ component extends="coldbox-cli.models.BaseCommand" {
 	}
 
 	/**
+	 * Gets the AI installation directory path (.agents)
+	 *
+	 * @directory The target directory
+	 *
+	 * @return The full path to the .agents directory
+	 */
+	function getAIInstallDirectory( required string directory ){
+		return variables.aiService.getAIInstallDirectory( arguments.directory )
+	}
+
+	/**
 	 * Gets the manifest file path for a directory
 	 *
 	 * @directory The target directory
