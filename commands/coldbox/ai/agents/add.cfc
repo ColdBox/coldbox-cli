@@ -116,7 +116,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// If only 1 agent is configured after adding, automatically set it as active
 		if ( manifest.agents.len() == 1 ) {
-			manifest.activeAgent = manifest.agents.first()
+			manifest[ "activeAgent" ] = manifest.agents.first()
 		}
 
 		saveManifest( arguments.directory, manifest )

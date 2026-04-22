@@ -31,7 +31,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Load manifest to get active agent
 		var manifest        = loadManifest( arguments.directory )
-		var activeAgent     = manifest.activeAgent ?: "none"
+		var activeAgent     = manifest[ "activeAgent" ] ?: "none"
 		var totalMcpServers = info.mcpServers.core.len() + info.mcpServers.module.len() + info.mcpServers.custom.len()
 
 		// Print configuration in a table

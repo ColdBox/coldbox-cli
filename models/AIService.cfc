@@ -102,7 +102,7 @@ component singleton {
 		// If only 1 agent is configured, automatically set it as active
 		var agentsList = listToArray( arguments.agents )
 		if ( agentsList.len() == 1 ) {
-			manifest.activeAgent = agentsList.first()
+			manifest[ "activeAgent" ] = agentsList.first()
 		}
 
 		// Save manifest BEFORE configuring agents so they can read MCP servers

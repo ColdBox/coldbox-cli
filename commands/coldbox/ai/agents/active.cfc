@@ -53,7 +53,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 					if ( selectedAgent.len() ) {
 						// Set the selected agent as active
-						manifest.activeAgent = selectedAgent
+						manifest[ "activeAgent" ] = selectedAgent
 						saveManifest( arguments.directory, manifest )
 
 						print.line()
