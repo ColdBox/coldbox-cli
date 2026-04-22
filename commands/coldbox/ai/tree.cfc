@@ -103,7 +103,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		boolean verbose = false
 	){
 		var tree = [
-			".ai/": {
+			".agents/": {
 				"guidelines/ (#arguments.info.guidelines.len()#)" : buildGuidelinesStruct(
 					arguments.info,
 					arguments.verbose

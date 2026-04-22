@@ -55,7 +55,7 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.line()
 			.line()
 			.yellowLine( "Skills are stored in (searched in this order):" )
-			.line( "  .ai/skills/{name}/SKILL.md     - Primary location" )
+			.line( "  .agents/skills/{name}/SKILL.md     - Primary location" )
 			.line( "  .agents/skills/{name}/SKILL.md - Alternate (Windsurf/Cursor)" )
 			.line( "  .claude/skills/{name}/SKILL.md  - Alternate (Claude desktop)" )
 			.line()

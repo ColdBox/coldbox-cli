@@ -1,6 +1,6 @@
 /**
  * Create a custom guideline template
- * Scaffolds a new guideline in .ai/guidelines/custom/
+ * Scaffolds a new guideline in .agents/guidelines/custom/
  *
  * Examples:
  * coldbox ai guidelines create my-conventions

@@ -1,6 +1,6 @@
 /**
  * Remove a skill from the project by name.
- * Skills are stored in the flat .ai/skills/{name}/ directory.
+ * Skills are stored in the flat .agents/skills/{name}/ directory.
  *
  * Examples:
  * coldbox ai skills remove boxlang-syntax

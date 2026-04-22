@@ -1,6 +1,6 @@
 /**
  * Create a custom skill template
- * Scaffolds a new skill in .ai/skills/{name}/
+ * Scaffolds a new skill in .agents/skills/{name}/
  *
  * Examples:
  * coldbox ai skills create api-development

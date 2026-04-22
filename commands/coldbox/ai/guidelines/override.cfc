@@ -80,7 +80,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "  • This override will be loaded AFTER the #guideline.type# guideline" )
 		printInfo( "  • You can add project-specific rules and modifications" )
 		printInfo( "  • The original guideline remains unchanged for reference" )
-		printInfo( "  • Agents automatically read overrides from .ai/guidelines/overrides/" )
+		printInfo( "  • Agents automatically read overrides from .agents/guidelines/overrides/" )
 		print.line()
 
 		printTip( "Edit the override to customize conventions for your project" )

@@ -49,9 +49,9 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.line()
 			.line()
 			.yellowLine( "Guidelines are stored in:" )
-			.line( "  .ai/guidelines/core/       - Core framework guidelines" )
-			.line( "  .ai/guidelines/custom/     - Your custom guidelines" )
-			.line( "  .ai/guidelines/overrides/  - Overridden guidelines" )
+			.line( "  .agents/guidelines/core/       - Core framework guidelines" )
+			.line( "  .agents/guidelines/custom/     - Your custom guidelines" )
+			.line( "  .agents/guidelines/overrides/  - Overridden guidelines" )
 			.line()
 	}
 
