@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **GitHub Copilot migrated to `AGENTS.md`**
+  - GitHub Copilot agent configuration now uses `AGENTS.md` (shared with Codex and OpenCode) instead of `.github/copilot-instructions.md`
+  - Follows the [Agents.md standard](https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/) now supported by GitHub Copilot
+  - Provides a single source of truth for Copilot, Codex, and OpenCode agents
+  - Existing `.github/copilot-instructions.md` files are not removed automatically; run `coldbox ai refresh` to write the updated location
+
 - **AI Directory Structure Standardized**
   - Renamed `/.ai/` directory to `/.agents/` to follow BoxLang skill repository conventions
   - All generated agent configurations, guidelines, and skills now use `/.agents/` instead of `/.ai/`
@@ -140,7 +146,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ##### Multi-Agent Support (6 Agents)
 
-- **Supported Agents**: Claude (`CLAUDE.md`), GitHub Copilot (`.github/copilot-instructions.md`), Cursor (`.cursorrules`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`), OpenCode (`AGENTS.md`)
+- **Supported Agents**: Claude (`CLAUDE.md`), GitHub Copilot (`AGENTS.md`, shared), Cursor (`.cursorrules`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`), OpenCode (`AGENTS.md`)
 - Layout-specific templates (modern, flat)
 - Project context detection (Vite, Docker, ORM, Migrations)
 - Agents commands: `list`, `add`, `remove`, `active`, `open`
