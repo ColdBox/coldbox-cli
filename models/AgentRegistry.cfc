@@ -1,6 +1,6 @@
 /**
  * Registry for AI agent configurations
- * Manages agent-specific files (CLAUDE.md, .github/copilot-instructions.md, etc.)
+ * Manages agent-specific files (CLAUDE.md, AGENTS.md, .cursorrules, etc.)
  */
 component singleton {
 
@@ -22,7 +22,7 @@ component singleton {
 		]
 		AGENT_FILES = {
 			"claude"   : "CLAUDE.md",
-			"copilot"  : ".github/copilot-instructions.md",
+			"copilot"  : "AGENTS.md",
 			"cursor"   : ".cursorrules",
 			"codex"    : "AGENTS.md",
 			"gemini"   : "GEMINI.md",
@@ -262,7 +262,7 @@ component singleton {
 			case "claude":
 				return "#arguments.directory#/CLAUDE.md"
 			case "copilot":
-				return "#arguments.directory#/.github/copilot-instructions.md"
+				return "#arguments.directory#/AGENTS.md"
 			case "cursor":
 				return "#arguments.directory#/.cursorrules"
 			case "codex":

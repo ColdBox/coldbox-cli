@@ -46,7 +46,7 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.line()
 			.yellowLine( "Note: Each agent creates its own configuration file:" )
 			.line( "  Claude: CLAUDE.md" )
-			.line( "  Copilot: .github/copilot-instructions.md" )
+			.line( "  Copilot: AGENTS.md (shared)" )
 			.line( "  Cursor: .cursorrules" )
 			.line()
 	}

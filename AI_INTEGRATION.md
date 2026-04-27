@@ -188,7 +188,7 @@ graph LR
 
     Root --> Agents["Agent Configs"]
     Agents --> Claude["CLAUDE.md"]
-    Agents --> Copilot[".github/copilot-instructions.md"]
+    Agents --> Copilot["AGENTS.md (shared)"]
     Agents --> Cursor[".cursorrules"]
     Agents --> Other["+ 3 more agents"]
 
@@ -203,9 +203,8 @@ graph LR
 Additionally, agent configuration files are created for you (paths defined in `AgentRegistry.cfc`):
 
 * `CLAUDE.md` - Claude Desktop/Code assistant (points to `AGENTS.md` via `@AGENTS.md`)
-* `.github/copilot-instructions.md` - GitHub Copilot
+* `AGENTS.md` - Codex, OpenCode & GitHub Copilot (shared file)
 * `.cursorrules` - Cursor IDE
-* `AGENTS.md` - Codex, OpenCode & Claude (shared file)
 * `GEMINI.md` - Gemini CLI
 
 ### Keeping Resources Updated
@@ -244,7 +243,7 @@ After installation, configure your AI agents:
 
 **GitHub Copilot (VS Code):**
 
-1. Agent configuration is automatically in `.github/copilot-instructions.md`
+1. Agent configuration is automatically in `AGENTS.md`
 2. Reload VS Code window
 3. Copilot will use the instructions automatically
 
@@ -890,7 +889,7 @@ ColdBox AI Integration supports **6 major AI agents** with automatic configurati
 | Agent              | Config File                       | Description                    |
 | ------------------ | --------------------------------- | ------------------------------ |
 | **Claude**         | `CLAUDE.md` → `AGENTS.md`         | Claude Desktop and Claude Code |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | VS Code Copilot integration    |
+| **GitHub Copilot** | `AGENTS.md` (shared)              | VS Code Copilot integration    |
 | **Cursor**         | `.cursorrules`                    | Cursor IDE rules               |
 | **Codex**          | `AGENTS.md` (shared)              | Codex AI assistant             |
 | **Gemini**         | `GEMINI.md`                       | Gemini CLI integration         |
@@ -952,7 +951,7 @@ graph TB
 
     subgraph "Agent Configurations"
         Guidelines --> ClaudeConfig["CLAUDE.md"]
-        Guidelines --> CopilotConfig[".github/copilot-instructions.md"]
+        Guidelines --> CopilotConfig["AGENTS.md (shared)"]
         Guidelines --> CursorConfig[".cursorrules"]
         Guidelines --> CodexConfig["AGENTS.md"]
         Guidelines --> GeminiConfig["GEMINI.md"]
