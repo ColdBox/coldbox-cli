@@ -47,11 +47,6 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		var manifest = loadManifest( arguments.directory )
 		var language = manifest.language ?: "boxlang"
 
-		print
-			.blueLine( "📥 Installing AI skills..." )
-			.line()
-			.toConsole()
-
 		// ------------------------------------------------------------------
 		// --list mode: interactive multi-select
 		// ------------------------------------------------------------------
@@ -60,10 +55,16 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				directory = arguments.directory,
 				manifest  = manifest,
 				language  = language,
-				force     = arguments.force
+				force     = arguments.force,
+				slug      = arguments.slug
 			)
 			return
 		}
+
+		print
+			.blueLine( "📥 Installing AI skills..." )
+			.line()
+			.toConsole()
 
 		// ------------------------------------------------------------------
 		// --all mode: install all default skills
@@ -217,7 +218,8 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		required string directory,
 		required struct manifest,
 		required string language,
-		required boolean force
+		required boolean force,
+		string slug = ""
 	){
 		var settings = variables.settings ?: {}
 		var bxRepo   = settings.boxlangSkillsRepo ?: {
@@ -226,30 +228,47 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		}
 		var cbRepo = settings.coldboxSkillsRepo ?: { owner : "coldbox", repo : "skills" }
 
+		// If slug provided, resolve it to filter the list
+		var resolvedItems = [];
+		if ( arguments.slug.len() ) {
+			var slugs = listToArray( arguments.slug, " ," )
+			resolvedItems = _resolveSlugs( slugs, arguments.language )
+		}
+
 		// Fetch both repos in parallel
 		var bxList    = variables.skillManager.fetchRepoSkillList( bxRepo.owner, bxRepo.repo )
 		var cbList    = variables.skillManager.fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
 		var allSkills = []
-		bxList.each( ( s ) => allSkills.append( {
-			display : "#bxRepo.owner#/#bxRepo.repo#/#s.slug#",
-			value : {
-				owner : bxRepo.owner,
-				repo  : bxRepo.repo,
-				slug  : s.slug,
-				name  : s.name
-			},
-			description : s.description ?: ""
-		} ) )
-		cbList.each( ( s ) => allSkills.append( {
-			display : "#cbRepo.owner#/#cbRepo.repo#/#s.slug#",
-			value : {
-				owner : cbRepo.owner,
-				repo  : cbRepo.repo,
-				slug  : s.slug,
-				name  : s.name
-			},
-			description : s.description ?: ""
-		} ) )
+
+		// Build skills list, filtering by resolved items if slug was provided
+		bxList.each( ( s ) => {
+			if ( !resolvedItems.len() || resolvedItems.filter( ( r ) => r.owner == bxRepo.owner && r.repo == bxRepo.repo && r.slug == s.slug ).len() ) {
+				allSkills.append( {
+					display : "#bxRepo.owner#/#bxRepo.repo#/#s.slug#",
+					value : {
+						owner : bxRepo.owner,
+						repo  : bxRepo.repo,
+						slug  : s.slug,
+						name  : s.name
+					},
+					description : s.description ?: ""
+				} )
+			}
+		} )
+		cbList.each( ( s ) => {
+			if ( !resolvedItems.len() || resolvedItems.filter( ( r ) => r.owner == cbRepo.owner && r.repo == cbRepo.repo && r.slug == s.slug ).len() ) {
+				allSkills.append( {
+					display : "#cbRepo.owner#/#cbRepo.repo#/#s.slug#",
+					value : {
+						owner : cbRepo.owner,
+						repo  : cbRepo.repo,
+						slug  : s.slug,
+						name  : s.name
+					},
+					description : s.description ?: ""
+				} )
+			}
+		} )
 
 		if ( allSkills.isEmpty() ) {
 			printError( "Could not retrieve skills from registry." )
