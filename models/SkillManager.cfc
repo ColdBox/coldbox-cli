@@ -176,17 +176,22 @@ component singleton {
 		// ------------------------------------------------------------------
 		// 0. Install missing desired skills (core + module) not yet in manifest
 		// ------------------------------------------------------------------
-		var desiredTargets = getSkillsMap( arguments.directory, arguments.language );
+		var desiredTargets = getSkillsMap(
+			arguments.directory,
+			arguments.language
+		);
 
-		var missingDesiredSkills = desiredTargets.filter( (t) => {
-			return !manifest.skills.filter( (s) => {
-				return (s.owner == t.owner && s.repo == t.repo && s.slug == t.slug);
-			} ).len();
+		var missingDesiredSkills = desiredTargets.filter( ( t ) => {
+			return !manifest.skills
+				.filter( ( s ) => {
+					return ( s.owner == t.owner && s.repo == t.repo && s.slug == t.slug );
+				} )
+				.len();
 		} );
 
 		if ( missingDesiredSkills.len() ) {
 			variables.print.blueLine( "  📦  Installing #missingDesiredSkills.len()# missing skill(s)..." ).toConsole();
-			var batchItems = missingDesiredSkills.map( (t) => {
+			var batchItems = missingDesiredSkills.map( ( t ) => {
 				return {
 					owner  : t.owner,
 					repo   : t.repo,
@@ -196,7 +201,7 @@ component singleton {
 				};
 			} );
 
-			downloadSkillBatch( batchItems ).each( (result) => {
+			downloadSkillBatch( batchItems ).each( ( result ) => {
 				if ( result.keyExists( "error" ) && result.error ) {
 					return;
 				}
@@ -204,9 +209,9 @@ component singleton {
 					return;
 				}
 
-				var slug     = result.skill.skill_slug ?: result.skill.skill_dir.listLast( "/" );
-				var _t       = missingDesiredSkills.filter( (t) => t.slug == slug );
-				var tInfo    = _t.len() ? _t.first() : {};
+				var slug      = result.skill.skill_slug ?: result.skill.skill_dir.listLast( "/" );
+				var _t        = missingDesiredSkills.filter( ( t ) => t.slug == slug );
+				var tInfo     = _t.len() ? _t.first() : {};
 				var localName = resolveSkillName( result.content, tInfo.name ?: slug );
 
 				variables.print.blueLine( "  ⬇️  Installing: #localName#" ).toConsole();
