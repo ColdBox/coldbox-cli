@@ -413,6 +413,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 	 * Print the result of a single installSkillBySlug call.
 	 */
 	private function _printInstallResult( required struct result ){
+		print.line().toConsole()
 		if ( result.success ) {
 			printSuccess( "  ✓ Installed #result.name#" )
 			if ( ( result.auditStatus ?: "" ) == "warn" ) {

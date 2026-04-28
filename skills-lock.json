@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "skills": {
+    "commandbox-config-settings": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-config-settings/SKILL.md",
+      "computedHash": "19dfd2dbd842e0c4fa428e5c7921fd36c996b56d94345daa308be32293c12ab2"
+    },
+    "commandbox-deploying": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-deploying/SKILL.md",
+      "computedHash": "81ed1fdd292fb9ad29ed7daa1dba9f7daa722bd684d9b2cf7fc96faa7387cefd"
+    },
+    "commandbox-developing": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-developing/SKILL.md",
+      "computedHash": "c18b0d4ceaf9c03edb5ed9a61b59d1a696014744126929017fc2856c90b7c709"
+    },
+    "commandbox-embedded-server": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-embedded-server/SKILL.md",
+      "computedHash": "ffb7bc1079ab5fc3361bf2a64427030ecef5ae4c74ef0e9bfecb6c210b14200b"
+    },
+    "commandbox-package-management": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-package-management/SKILL.md",
+      "computedHash": "63b73016c804250f9e05104d4c87015071b0bbbe84af268369d1d3243f9c4548"
+    },
+    "commandbox-setup": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-setup/SKILL.md",
+      "computedHash": "8ae2ee6f93d668e4a11d9bd57d72d3b9f68f1cb3f9e2d780b6f2675463371bf3"
+    },
+    "commandbox-task-runners": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-task-runners/SKILL.md",
+      "computedHash": "a32c3fe1969f261e789e732ca68e4c5e2e9383b35d0be20ed1fba473ea95feef"
+    },
+    "commandbox-testing": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-testing/SKILL.md",
+      "computedHash": "15dfb0ca0d64edfd0ec0344df2f9b3494a8a15a666a464927148f43deaa5b585"
+    },
+    "commandbox-usage": {
+      "source": "ortus-boxlang/skills",
+      "sourceType": "github",
+      "skillPath": "commandbox/commandbox-usage/SKILL.md",
+      "computedHash": "db689cb9f7f895a202ecae3986f24557ff0e57d4c614da6919678204e995dd87"
+    }
+  }
+}
