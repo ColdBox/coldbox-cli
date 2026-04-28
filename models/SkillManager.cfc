@@ -1219,7 +1219,7 @@ component singleton {
 	 * @source      Module slug when type=module
 	 * @manifest    Manifest struct (mutated in place)
 	 */
-	private function installRemoteSkill(
+	public function installRemoteSkill(
 		required string directory,
 		required string name,
 		required string content,

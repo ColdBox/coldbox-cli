@@ -164,11 +164,11 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 
 				// Find matching resolved item for the skill type/source
 				var matchSlug = skill.skill_slug ?: ""
-				var matchItem = resolvedItems.filter( ( r ) => r.slug == matchSlug ).first( {} )
+				var matchItem = resolvedItems.filter( ( r ) => r.slug == matchSlug ).first() ?: {}
 				var localName = matchItem.name ?: skill.skill_dir.listLast( "/" )
 
-				if ( !arguments.force ) {
-					var existing = variables.skillManager.getSkillFilePath( arguments.directory, localName )
+				if ( !force ) {
+					var existing = variables.skillManager.getSkillFilePath( directory, localName )
 					if ( !isNull( existing ) ) {
 						printInfo( "  → #localName# already installed (use --force to overwrite)" )
 						return
@@ -176,7 +176,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				}
 
 				localName = variables.skillManager.installRemoteSkill(
-					directory   = arguments.directory,
+					directory   = directory,
 					name        = localName,
 					content     = result.content,
 					owner       = skill.owner,
