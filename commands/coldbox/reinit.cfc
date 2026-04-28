@@ -23,36 +23,46 @@ component aliases="fwreinit" {
 	 **/
 	function run(
 		password = "1",
-		name     = getDefaultServerName(),
+		name     = getDefaultServerName( getCWD() ),
 		showUrl  = true
 	){
-		var serverInfo = serverService.getServerInfoByDiscovery( name = arguments.name );
+		var serverInfo = serverService.resolveServerDetails( {
+			name      : arguments.name,
+			directory : getCWD()
+		} ).serverInfo
 
 		if ( !structCount( serverInfo ) ) {
 			print.boldRedLine(
 				"No server configurations found for '#getCWD()#' and '#arguments.name#', so have no clue what to reinit buddy!"
-			);
+			)
 		} else {
-			var thisURL = "#serverInfo.host#:#serverInfo.port#/?fwreinit=#arguments.password#";
+			var thisURL = "#serverInfo.defaultBaseURL#/?fwreinit=#arguments.password#";
 			if ( arguments.showUrl ) {
-				print.greenLine( "Hitting... #thisURL#" );
+				print.greenLine( "Hitting... #thisURL#" )
 			}
 			http result="local.results" url="#thisURL#";
 
 			if ( findNoCase( "200", local.results.statusCode ) ) {
-				print.boldGreenLine( "App Reinited!" );
+				print.boldGreenLine( "App Reinited!" )
 			} else {
 				print
 					.redLine( "status code: #local.results.statusCode#" )
 					.redline( "error detail: " & local.results.errorDetail )
-					.line( trim( formatter.HTML2ANSI( local.results.filecontent ) ) );
+					.line( trim( formatter.HTML2ANSI( local.results.filecontent ) ) )
 			}
 		}
 	}
 
-	private function getDefaultServerName(){
-		var serverInfo = serverService.getServerInfoByDiscovery( serverConfigFile = "server.json" );
-		return serverInfo.keyExists( "name" ) ? serverInfo.name : "";
+	/**
+	 * Tries to find the default server name from the server.json file in the current directory
+	 *
+	 * @directory The directory to look for the server.json file, defaults to the current working directory
+	 *
+	 * @return The server name if found, otherwise an empty string
+	 */
+	private function getDefaultServerName( directory = getCwd() ){
+		var serverInfo = serverService.getServerInfoByDiscovery( serverConfigFile = "server.json" )
+		return serverInfo.keyExists( "name" ) ? serverInfo.name : ""
 	}
 
 }

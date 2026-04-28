@@ -64,9 +64,42 @@ This is a ColdBox HMVC application using the **modern template structure** with 
 
 ## Framework Knowledge
 
-**Important:** The following sections contain essential framework documentation that is always available in your context. These guidelines cover core concepts, conventions, and best practices for ColdBox development.
+Core ColdBox and language guidelines are installed in `.ai/guidelines/core/`. Supported tools
+(e.g., VS Code Copilot) load them automatically via file attachments. For other agents, load them
+explicitly when you need framework fundamentals:
 
-|INLINE_GUIDELINES|
+- `read_file` on `.ai/guidelines/core/coldbox.md` — ColdBox conventions, handlers, routing, DI reference
+- `read_file` on |LANGUAGE_GUIDELINE_FILE| — |LANGUAGE_GUIDELINE_DESC|
+
+## Installed Modules
+
+The following ColdBox modules are installed in this project. Use these when generating code, checking available services, and suggesting relevant skills or guidelines:
+
+|INSTALLED_MODULES|
+
+## Handlers Snapshot
+
+Current event handlers and their public actions (auto-updated on `coldbox ai refresh`):
+
+|HANDLERS_SNAPSHOT|
+
+## Interceptors Snapshot
+
+Registered interceptors and their interception points (auto-updated on `coldbox ai refresh`):
+
+|INTERCEPTORS_SNAPSHOT|
+
+## Layouts
+
+Available layouts (auto-updated on `coldbox ai refresh`):
+
+|LAYOUTS_SNAPSHOT|
+
+## Custom Modules
+
+Application-level modules located in `/app/modules` (auto-updated on `coldbox ai refresh`):
+
+|CUSTOM_MODULES_SNAPSHOT|
 
 ## AI Integration & Resources
 
@@ -136,7 +169,7 @@ This project includes AI-powered development assistance with guidelines, skills,
 ### Directory Structure
 
 ```
-/.ai/
+/.agents/
   /manifest.json       - AI configuration (language, agents, guidelines, skills, MCP servers)
   /guidelines/         - Framework documentation and best practices
     /core/             - Core ColdBox/BoxLang guidelines
@@ -144,10 +177,8 @@ This project includes AI-powered development assistance with guidelines, skills,
     /custom/           - Your custom guidelines
     /overrides/        - Override core guidelines
   /skills/             - Implementation cookbooks (how-to guides)
-    /core/             - Core development patterns
-    /modules/          - Module-specific patterns
-    /custom/           - Your custom skills
-    /overrides/        - Override core skills
+    /{name}/           - One folder per skill (flat, no subdirectories)
+      SKILL.md         - Skill content (fetched from registry or created locally)
   /mcp-servers/        - MCP server configurations
 ```
 
@@ -168,11 +199,20 @@ The `.ai/manifest.json` file contains the complete AI integration configuration:
 
 ### Using Guidelines & Skills
 
-**Core framework guidelines (ColdBox and language) are already included above.** Additional guidelines and all skills are available on request:
+Guidelines and skills are stored locally in `.ai/` and loaded via `read_file` when needed:
 
-- **Module Guidelines** provide documentation for installed ColdBox modules
-- **Skills** offer step-by-step implementation patterns for specific features
-- Request specific guidelines or skills by name when you need them
+**Core Guidelines** (`.ai/guidelines/core/`) — framework fundamentals:
+- `read_file` on `.ai/guidelines/core/coldbox.md` — ColdBox conventions, handler/routing/DI reference
+- `read_file` on `.ai/guidelines/core/boxlang.md` — BoxLang syntax, classes, lambdas (or `cfml.md` for CFML)
+
+**Module/Custom Guidelines** — load by name on request from `.ai/guidelines/modules/` or `.ai/guidelines/custom/`.
+
+**Skills** (`.ai/skills/{name}/SKILL.md`) — step-by-step implementation patterns. Examples:
+- Implement a CRUD handler: `read_file` on `.ai/skills/coldbox-handler-development/SKILL.md`
+- Build a REST API: `read_file` on `.ai/skills/coldbox-rest-api-development/SKILL.md`
+- Write tests: `read_file` on `.ai/skills/coldbox-testing-handler/SKILL.md`
+
+**To load any skill or guideline:** use `read_file` on the path shown above or in the inventories below.
 
 ### Available Guidelines
 
@@ -187,8 +227,6 @@ The following additional guidelines are available for this project. Request them
 The following skills provide step-by-step implementation patterns. Request specific skills when you need detailed how-to instructions:
 
 |SKILLS_INVENTORY|
-
-**To load a skill:** Request it by name when implementing specific features or patterns.
 
 ## MCP Documentation Servers
 
@@ -205,44 +243,40 @@ This project has access to the following Model Context Protocol (MCP) documentat
 - Always validate user input from RC
 - Framework reinit: Use `?fwreinit=true` or configure `reinitPassword`
 
-## Additional Resources
-
-- ColdBox Docs: https://coldbox.ortusbooks.com
-- TestBox: https://testbox.ortusbooks.com
-- WireBox: https://wirebox.ortusbooks.com
-
 <!-- COLDBOX-CLI:END -->
 
 <!-- ℹ️ YOUR PROJECT DOCUMENTATION — Add your custom details below. ColdBox CLI will NOT overwrite this section. -->
 
-## Custom Application Details
+## About This Application
 
-<!-- Add project-specific information below -->
+> ⚠️ Fill in this section to give your AI assistant context about your specific application.
 
 ### Business Domain
 
-<!-- Describe what this application does -->
+<!-- Describe what this application does and its primary purpose -->
 
-### Key Services/Models
+### Key Services & Models
 
-<!-- List important services and their responsibilities -->
+<!-- List important services and their responsibilities, e.g.:
+- UserService — authentication, registration, profile management
+- OrderService — cart, checkout, order lifecycle
+-->
 
-### Authentication/Security
+### Authentication & Security
 
-<!-- Describe authentication approach if applicable -->
+<!-- Describe authentication approach, e.g., cbSecurity + JWT, session-based, etc. -->
 
 ### API Endpoints
 
-<!-- Document REST API routes if applicable -->
+<!-- Document REST API routes if applicable, e.g.:
+- GET /api/v1/users — list users
+- POST /api/v1/users — create user
+-->
 
 ### Database
 
-<!-- Document database setup, migrations, seeders if applicable -->
+<!-- Document database setup, ORM entities, migrations if applicable -->
 
 ### Deployment
 
-<!-- Document deployment process -->
-
-### Third-Party Integrations
-
-<!-- List external services, APIs, or integrations -->
+<!-- Document deployment process, environments, CI/CD pipeline -->

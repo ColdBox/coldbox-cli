@@ -27,6 +27,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Override Skill" )
 
 		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
+		// Replace spaces with dashes for skill name
+		arguments.name = arguments.name.replaceAll( "\s+", "-" )
 
 		print.line()
 		printInfo( "Creating override for: #arguments.name#" )
@@ -43,10 +48,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		var skill = existing[ 1 ]
 
-		// Check if override already exists
-		var overridePath = "#arguments.directory#/.ai/skills/overrides/#arguments.name#.md"
+		// Check if override already exists (flat path)
+		var overridePath = skillManager.getSkillsDirectory( arguments.directory ) & "/#arguments.name#/SKILL.md"
 		if ( fileExists( overridePath ) ) {
-			printWarn( "Override for '#arguments.name#' already exists at:" )
+			printWarn( "Skill '#arguments.name#' already exists at:" )
 			printWarn( "  #overridePath#" )
 			print.line()
 
@@ -56,15 +61,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			}
 		}
 
-		// Determine skill source type
-		var skillType = skill.source == "core" ? "core" : "module"
-
-		// Create override from skill
-		variables.skillManager.createSkillOverride(
-			arguments.directory,
-			arguments.name,
-			skillType
-		)
+		// Create override from skill (no type flag — flat path)
+		variables.skillManager.createSkillOverride( arguments.directory, arguments.name )
 
 		// Regenerate agent files
 		print.line()
@@ -77,13 +75,13 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		print.line()
 
 		printInfo( "Override Guidelines:" )
-		printInfo( "  • This override will be loaded AFTER the #skillType# skill" )
+		printInfo( "  • This custom version replaces the original skill for this project" )
 		printInfo( "  • You can add project-specific implementation patterns" )
-		printInfo( "  • The original skill remains unchanged for reference" )
-		printInfo( "  • Agents automatically read overrides from .ai/skills/overrides/" )
+		printInfo( "  • The original remote skill is preserved as reference" )
+		printInfo( "  • This override is locally managed and will NOT be changed by 'coldbox ai skills refresh'" )
 		print.line()
 
-		printTip( "Edit the override to customize implementation patterns for your project" )
+		printTip( "Edit the SKILL.md to customize implementation patterns for your project" )
 
 		if ( arguments.open ) {
 			openPath( overridePath )

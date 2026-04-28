@@ -1,6 +1,6 @@
 /**
  * Create a custom guideline template
- * Scaffolds a new guideline in .ai/guidelines/custom/
+ * Scaffolds a new guideline in .agents/guidelines/custom/
  *
  * Examples:
  * coldbox ai guidelines create my-conventions
@@ -25,14 +25,17 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Create Custom Guideline" )
 
-		ensureInstalled( arguments.directory )
+		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
 
 		print.line()
 		printInfo( "Creating custom guideline: #arguments.name#" )
 		print.line()
 
 		// Check if already exists
-		var guidelinePath = "#arguments.directory#/.ai/guidelines/custom/#arguments.name#.md"
+		var guidelinePath = guidelineManager.getGuidelinesDirectory( arguments.directory ) & "/custom/#arguments.name#.md"
 		if ( fileExists( guidelinePath ) ) {
 			printError( "Guideline '#arguments.name#' already exists at:" )
 			printError( "  #guidelinePath#" )

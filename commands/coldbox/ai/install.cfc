@@ -26,7 +26,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		boolean force      = false,
 		string directory   = getCwd(),
 		boolean boxlang    = isBoxLangProject( getCWD() ),
-		boolean showBanner = true
+		boolean showBanner = true,
+		boolean verbose    = false
 	){
 		if ( arguments.showBanner ) {
 			showColdBoxBanner( "AI Integration Installer" )
@@ -57,60 +58,70 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				agents    = arguments.agent,
 				language  = arguments.language,
 				force     = arguments.force
-			);
+			)
 
 			if ( !result.success ) {
-				printError( result.message );
-				return;
+				printError( result.message )
+				return
 			}
 
 			// Success!
-			printSuccess( "🍭  AI integration installed successfully!" );
+			printSuccess( "🍭  AI integration installed successfully!" )
 
 			// Show what was installed
-			printInfo( "Guidelines installed: #result.guidelines.len()#" );
-			result.guidelines.each( function( guideline ){
-				print.indentedLine( "  • #guideline#" );
-			} );
-			print.line();
+			printInfo( "Guidelines installed: #result.guidelines.len()#" )
+
+			if ( arguments.verbose ) {
+				result.guidelines.each( function( guideline ){
+					print.indentedLine( "  • #guideline#" );
+				} )
+				print.line()
+			}
 
 			printInfo( "Skills installed: #result.skills.len()#" );
-			result.skills
-				.sort( "textnocase" )
-				.each( function( skill ){
-					print.indentedLine( "  • #skill#" );
-				} );
-			print.line();
-
-			printInfo( "Agents configured:" );
-			result.agents.each( function( agent ){
-				print.indentedLine( "  • #agent#" );
-			} );
-
-			// If only 1 agent, show it was set as active
-			if ( result.agents.len() == 1 ) {
-				printSuccess( "  ✓ Automatically set as active agent" );
+			if ( arguments.verbose ) {
+				result.skills
+					.sort( "textnocase" )
+					.each( ( skill ) => {
+						print.indentedLine( "  • #skill#" )
+					} )
+				print.line()
 			}
-			print.line();
+
+			printInfo( "Agents configured: #result.agents.toList()#" )
 
 			// Show MCP servers
-			var totalMcpServers = result.mcpServers.core.len() + result.mcpServers.module.len();
-			printInfo( "MCP Servers configured: #totalMcpServers#" );
-			if ( result.mcpServers.core.len() ) {
-				print.indentedCyanLine( "  Core (#result.mcpServers.core.len()#): #result.mcpServers.core.toList( ", " )#" );
+			var totalMcpServers = result.mcpServers.core.len() + result.mcpServers.module.len()
+			printInfo( "MCP Servers configured: #totalMcpServers#" )
+			if ( arguments.verbose ) {
+				if ( result.mcpServers.core.len() ) {
+					print.indentedCyanLine( "  Core (#result.mcpServers.core.len()#): #result.mcpServers.core.toList( ", " )#" )
+				}
+				if ( result.mcpServers.module.len() ) {
+					print.indentedCyanLine( "  Module (#result.mcpServers.module.len()#): #result.mcpServers.module.toList( ", " )#" )
+				}
+				print.line()
 			}
-			if ( result.mcpServers.module.len() ) {
-				print.indentedCyanLine( "  Module (#result.mcpServers.module.len()#): #result.mcpServers.module.toList( ", " )#" );
-			}
+
+			// Remind user to add project-specific context
+			print.line();
+			printWarn( "📝  Add Your Project Context!" );
+			print.indentedLine( "Open the generated agent file (AGENTS.md, CLAUDE.md, etc.) and document:" );
+			print.indentedLine( "  - Business domain: what does your application do?" );
+			print.indentedLine( "  - Key services/models and their responsibilities" );
+			print.indentedLine( "  - Authentication/security approach" );
+			print.indentedLine( "  - API endpoints, database setup, and deployment details" );
+			print.indentedLine( "  Without project context, the AI can help with ColdBox but won't know your app." );
 			print.line();
 
 			// Show next steps
 			printTip( "Next Steps:" );
-			print.indentedLine( "1. Review generated agent files (CLAUDE.md, etc.)" );
-			print.indentedLine( "2. Install modules as needed (box install cbsecurity, quick, etc.)" );
-			print.indentedLine( "3. Run 'coldbox ai info' to verify integrations" );
-			print.indentedLine( "4. Run 'coldbox ai refresh' after installing modules" );
-			print.indentedLine( "5. Run 'coldbox ai doctor' to verify configuration" );
+			print.indentedLine( "1. Add your project context to the generated agent file (see above)" );
+			print.indentedLine( "2. Review other generated agent files (CLAUDE.md, .cursor/rules, etc.)" );
+			print.indentedLine( "3. Install modules as needed (box install cbsecurity, quick, etc.)" );
+			print.indentedLine( "4. Run 'coldbox ai info' to verify integrations" );
+			print.indentedLine( "5. Run 'coldbox ai refresh' after installing modules" );
+			print.indentedLine( "6. Run 'coldbox ai doctor' to verify configuration" );
 			print.line();
 
 			printInfo( "Your AI assistant is now configured with ColdBox + #arguments.language# knowledge!" );

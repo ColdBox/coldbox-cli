@@ -12,6 +12,7 @@
  *  Here are the basic skeletons that are available for you that come from FORGEBOX
  *
  *  - BoxLang (Default)
+ *  - BoxLang Desktop
  *  - Modern (CFML + BoxLang Default)
  *  - flat (CFML + BoxLang Flat)
  *  - rest (CFML + BoxLang RESTful API)
@@ -46,6 +47,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		variables.templateMap = {
 			"flat"        : "cbtemplate-flat",
 			"boxlang"     : "cbtemplate-boxlang",
+			"desktop"     : "cbtemplate-boxlang-desktop",
 			"modern"      : "cbtemplate-modern",
 			"rest"        : "cbtemplate-rest",
 			"rest-hmvc"   : "cbtemplate-rest-hmvc",

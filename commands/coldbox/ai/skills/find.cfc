@@ -1,0 +1,174 @@
+/**
+ * Search the skills registry and display matching skills.
+ * Use this to discover skills before installing them.
+ *
+ * Examples:
+ *   coldbox ai skills find
+ *   coldbox ai skills find testing
+ *   coldbox ai skills find owner=ortus-boxlang
+ *   coldbox ai skills find owner=coldbox repo=skills
+ *   coldbox ai skills find query=boxlang owner=ortus-boxlang
+ *   coldbox ai skills find category=coldbox
+ */
+component extends="coldbox-cli.models.BaseAICommand" {
+
+	// DI
+	property name="skillManager" inject="SkillManager@coldbox-cli";
+
+	/**
+	 * Run the command
+	 *
+	 * @query     Optional search term to filter skill names or descriptions.
+	 * @owner     Filter by GitHub owner/org (defaults to both ortus-boxlang and coldbox).
+	 * @repo      Filter by GitHub repo (requires --owner when specified).
+	 * @category  Filter by skill category.
+	 * @directory The target directory (defaults to current directory).
+	 */
+	function run(
+		string query     = "",
+		string owner     = "",
+		string repo      = "",
+		string category  = "",
+		string directory = getCwd()
+	){
+		showColdBoxBanner( "Find AI Skills" )
+		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
+
+		print
+			.blueLine( "🔍 Searching for AI skills..." )
+			.line()
+			.toConsole()
+
+		var bxRepo = variables.settings.boxlangSkillsRepo
+		var cbRepo = variables.settings.coldboxSkillsRepo
+
+		// Determine which repos to search
+		var reposToSearch = []
+		if ( arguments.owner.len() && arguments.repo.len() ) {
+			reposToSearch.append( {
+				owner : arguments.owner,
+				repo  : arguments.repo
+			} )
+		} else if ( arguments.owner.len() ) {
+			var guessedRepo = "skills"
+			reposToSearch.append( {
+				owner : arguments.owner,
+				repo  : guessedRepo
+			} )
+		} else {
+			reposToSearch.append( bxRepo )
+			reposToSearch.append( cbRepo )
+		}
+
+		// Gather all skills
+		var allSkills = []
+		for ( var r in reposToSearch ) {
+			var repoSkills = variables.skillManager.fetchRepoSkillList( r.owner, r.repo )
+			for ( var s in repoSkills ) {
+				s.ownerRepo = "#r.owner#/#r.repo#"
+				s.repoOwner = r.owner
+				s.repoName  = r.repo
+				allSkills.append( s )
+			}
+		}
+
+		if ( allSkills.isEmpty() ) {
+			printError( "Could not retrieve skills from the registry. Check your network connection." )
+			return
+		}
+
+		// Filter by query (name, description, or category)
+		if ( arguments.query.len() ) {
+			var q     = lCase( arguments.query )
+			allSkills = allSkills.filter( ( s ) => {
+				var q = lCase( query )
+				return lCase( s.name ?: "" ).findNoCase( q ) ||
+				lCase( s.description ?: "" ).findNoCase( q ) ||
+				lCase( s.category ?: "" ).findNoCase( q )
+			} )
+		}
+
+		// Filter by category
+		if ( arguments.category.len() ) {
+			allSkills = allSkills.filter( ( s ) => compareNoCase( s.category ?: "", arguments.category ) == 0 )
+		}
+
+		if ( allSkills.isEmpty() ) {
+			printInfo( "No skills matched your search." )
+			print.line()
+			printTip( "Try browsing all skills with: coldbox ai skills find" )
+			return
+		}
+
+		printInfo( "Found [#allSkills.len()#] skill(s):" )
+		print.line()
+
+		// ----------------------------------------------------------------
+		// CARD view  (grouped by category)
+		// ----------------------------------------------------------------
+		var grouped = {}
+		for ( var s in allSkills ) {
+			var cat = s.category ?: "other"
+			if ( !grouped.keyExists( cat ) ) grouped[ cat ] = []
+			grouped[ cat ].append( s )
+		}
+
+		for ( var cat in grouped ) {
+			// Category header
+			print.boldCyanLine( "━━━  #uCase( cat )#  (#grouped[ cat ].len()#)" )
+
+			for ( var skill in grouped[ cat ] ) {
+				var installSlug = "#skill.repoOwner#/#skill.repoName#/#skill.slug#"
+				var auditBadge  = getAuditBadge( skill.audit_status ?: "" )
+
+				// print.line( skill )
+
+				// Skill name + audit badge
+				print.boldBlueLine( "  #skill.name ?: ""#  #auditBadge#" )
+
+				// Install slug — the key copy-paste item
+				print
+					.boldText( "    Install : " )
+					.yellowLine( "coldbox ai skills install #skill.ownerRepo#/#skill.path#" )
+
+				// Description
+				if ( ( skill.description ?: "" ).len() ) {
+					print.indentedLine( "  #skill.description#" )
+				}
+
+				print.line().line()
+			}
+		}
+
+		printTip( "Copy the 'Install' line above and run it to add a skill to your project." )
+	}
+
+	// -------------------------------------------------------------------------
+	// Private helpers
+	// -------------------------------------------------------------------------
+
+	private string function getAuditBadge( required string status ){
+		switch ( lCase( arguments.status ) ) {
+			case "trusted":
+				return "[ ✅ trusted ]"
+			case "clean":
+				return "[ ✅ clean ]"
+			case "review":
+				return "[ 👀 review ]"
+			case "warn":
+				return "[ ⚠️ warn ]"
+			case "block":
+				return "[ 🛑 blocked ]"
+			case "pending":
+				return "[ ⏳ pending ]"
+			case "skipped":
+				return "[ — skipped ]"
+			default:
+				return ""
+		}
+	}
+
+}

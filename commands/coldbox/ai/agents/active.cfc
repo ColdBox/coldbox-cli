@@ -24,7 +24,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Active AI Agent" )
 
-		var info     = ensureInstalled( arguments.directory )
+		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
 		var manifest = loadManifest( arguments.directory )
 
 		print.line()
@@ -50,7 +53,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 					if ( selectedAgent.len() ) {
 						// Set the selected agent as active
-						manifest.activeAgent = selectedAgent
+						manifest[ "activeAgent" ] = selectedAgent
 						saveManifest( arguments.directory, manifest )
 
 						print.line()

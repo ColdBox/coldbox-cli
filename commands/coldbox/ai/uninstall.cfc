@@ -48,12 +48,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		try {
 			printInfo( "🗑️  Removing AI integration..." )
-
-			// Remove the .ai directory
 			directoryDelete( aiDirectory, true )
-
 			printSuccess( "✓ AI integration uninstalled successfully!" )
-			print.line()
 			printTip( "To reinstall AI integration, run: coldbox ai install" )
 		} catch ( any e ) {
 			printError( "Failed to uninstall AI integration: #e.message#" )

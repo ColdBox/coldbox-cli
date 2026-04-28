@@ -21,22 +21,17 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		boolean json     = false,
 		string directory = getCwd()
 	){
-		showColdBoxBanner( "🏥 AI Doctor 🏥" );
-		try {
-			var diagnosis = variables.aiService.diagnose( arguments.directory )
+		var diagnosis = variables.aiService.diagnose( arguments.directory )
 
-			// JSON output
-			if ( arguments.json ) {
-				print.line( serializeJSON( diagnosis ) )
-				return
-			}
-
-			// Pretty console output
-			printDiagnosisReport( diagnosis, arguments.verbose )
-		} catch ( any e ) {
-			printError( "Failed to diagnose AI integration: #e.message#" )
-			printError( e.stackTrace )
+		// JSON output
+		if ( arguments.json ) {
+			print.line( diagnosis )
+			return
 		}
+
+		// Pretty console output
+		showColdBoxBanner( "🏥 AI Doctor 🏥" );
+		printDiagnosisReport( diagnosis, arguments.verbose )
 	}
 
 	/**
@@ -52,34 +47,34 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Errors
 		if ( diagnosis.errors.len() ) {
 			print.redLine( "❌ Errors (#diagnosis.errors.len()#)" );
-			diagnosis.errors.each( function( error ){
-				print.indentedRedLine( "  • #error#" );
-			} );
-			print.line();
+			diagnosis.errors.each( ( error ) => {
+				print.indentedRedLine( "  • #error#" )
+			} )
+			print.line()
 		} else {
-			print.greenLine( "✓ No Errors" );
-			print.line();
+			print.greenLine( "✓ No Errors" )
+			print.line()
 		}
 
 		// Warnings
 		if ( diagnosis.warnings.len() ) {
 			print.yellowLine( "⚠ Warnings (#diagnosis.warnings.len()#)" );
-			diagnosis.warnings.each( function( warning ){
-				print.indentedYellowLine( "  • #warning#" );
-			} );
-			print.line();
+			diagnosis.warnings.each( ( warning ) => {
+				print.indentedYellowLine( "  • #warning#" )
+			} )
+			print.line()
 		} else {
-			print.greenLine( "✓ No Warnings" );
-			print.line();
+			print.greenLine( "✓ No Warnings" )
+			print.line()
 		}
 
 		// Recommendations
 		if ( diagnosis.recommendations.len() ) {
-			print.cyanLine( "💡 Recommendations:" );
-			diagnosis.recommendations.each( function( recommendation ){
-				print.indentedLine( "  • #recommendation#" );
-			} );
-			print.line();
+			print.cyanLine( "💡 Recommendations:" )
+			diagnosis.recommendations.each( ( recommendation ) => {
+				print.indentedLine( "  • #recommendation#" )
+			} )
+			print.line()
 		}
 
 		// Ensure summary exists with default values
@@ -91,24 +86,24 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				"recommendationCount" : diagnosis.recommendations.len()
 			}
 		}
-		var status      = diagnosis.summary.status;
+		var status      = diagnosis.summary.status
 		var statusEmoji = {
 			"good"    : "🟢",
 			"warning" : "🟡",
 			"error"   : "🔴"
-		};
+		}
 
 		var statusText = {
 			"good"    : "Good",
 			"warning" : "Needs Attention",
 			"error"   : "Critical"
-		};
+		}
 
 		var statusColor = {
 			"good"    : "green",
 			"warning" : "yellow",
 			"error"   : "red"
-		};
+		}
 
 		print.table(
 			headerNames = [ "Metric", "Value" ],
@@ -133,19 +128,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 					diagnosis.summary.recommendationCount
 				]
 			]
-		);
-		print.line();
+		)
+		print.line()
 
 		// Status-based message
 		if ( status == "good" ) {
-			printSuccess( "✓ Your AI integration is healthy!" );
+			printSuccess( "✓ Your AI integration is healthy!" )
 		} else if ( status == "warning" ) {
-			printWarn( "⚠ Your AI integration has some issues that should be addressed." );
+			printWarn( "Your AI integration has some issues that should be addressed." )
 		} else {
-			printError( "❌ Your AI integration has critical errors that must be fixed." );
+			printError( "Your AI integration has critical errors that must be fixed." )
 		}
 
-		print.line();
+		print.line()
 	}
 
 }

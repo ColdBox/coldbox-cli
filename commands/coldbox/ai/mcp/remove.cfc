@@ -31,7 +31,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Remove MCP Server" );
 
-		var info     = ensureInstalled( arguments.directory );
+		var info = ensureInstalled( arguments.directory );
+		if ( !info.installed ) {
+			return;
+		}
 		var manifest = loadManifest( arguments.directory );
 
 		// Ensure mcpServers structure exists
@@ -56,6 +59,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		if ( customIndex.len() ) {
 			mcpServers.custom.deleteAt( customIndex[ 1 ] );
 			saveManifest( arguments.directory, manifest );
+
+			// Regenerate .mcp.json immediately after saving manifest
+			generateMCPJson( arguments.directory, manifest );
 
 			// Regenerate all agent config files
 			var directory = arguments.directory;
@@ -85,9 +91,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			mcpServers.module.deleteAt( moduleIndex );
 			saveManifest( arguments.directory, manifest );
 
+			// Regenerate .mcp.json immediately after saving manifest
+			generateMCPJson( arguments.directory, manifest );
+
 			// Regenerate all agent config files
-			var directory = arguments.directory;
-			var language  = manifest.language ?: "boxlang";
+			var language = manifest.language ?: "boxlang";
 			manifest.agents.each( ( agent ) => {
 				variables.agentRegistry.configureAgent( directory, agent, language );
 			} );

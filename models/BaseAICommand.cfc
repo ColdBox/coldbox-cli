@@ -21,10 +21,20 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		if ( !info.installed ) {
 			printError( "AI integration not installed. Run 'coldbox ai install' first." )
-			abort
 		}
 
 		return info
+	}
+
+	/**
+	 * Gets the AI installation directory path (.agents)
+	 *
+	 * @directory The target directory
+	 *
+	 * @return The full path to the .agents directory
+	 */
+	function getAIInstallDirectory( required string directory ){
+		return variables.aiService.getAIInstallDirectory( arguments.directory )
 	}
 
 	/**
@@ -60,6 +70,23 @@ component extends="coldbox-cli.models.BaseCommand" {
 		required struct manifest
 	){
 		variables.aiService.saveManifest(
+			arguments.directory,
+			arguments.manifest
+		)
+	}
+
+	/**
+	 * Generates (or regenerates) the root .mcp.json from the manifest's mcpServers.
+	 * Delegates to AIService.generateMCPJson().
+	 *
+	 * @directory The project root directory
+	 * @manifest  The current manifest struct
+	 */
+	function generateMCPJson(
+		required string directory,
+		required struct manifest
+	){
+		variables.aiService.generateMCPJson(
 			arguments.directory,
 			arguments.manifest
 		)

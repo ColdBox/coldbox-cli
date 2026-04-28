@@ -6,9 +6,9 @@
  * This command adds custom servers to complement the auto-detected Ortus MCP servers.
  *
  * Examples:
- * coldbox ai mcp add company-docs --url=https://docs.company.com/mcp
- * coldbox ai mcp add local-docs --command=node --args=./mcp-server.js
- * coldbox ai mcp add internal --url=http://localhost:3000/mcp --description="Internal project docs"
+ * coldbox ai mcp add name=company-docs url=https://docs.company.com/mcp
+ * coldbox ai mcp add name=local-docs command=node args=./mcp-server.js
+ * coldbox ai mcp add name=internal url=http://localhost:3000/mcp description="Internal project docs"
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -19,11 +19,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	/**
 	 * Run the command
 	 *
-	 * @name.hint The name/identifier for the custom MCP server
-	 * @url.hint The URL endpoint for the MCP server (required if command not specified)
-	 * @command.hint The command to run the MCP server (alternative to URL)
-	 * @args.hint Comma-separated list of arguments for the command
-	 * @description.hint Optional description of the MCP server
+	 * @name The name/identifier for the custom MCP server
+	 * @url The URL endpoint for the MCP server (required if command not specified)
+	 * @command The command to run the MCP server (alternative to URL)
+	 * @args Comma-separated list of arguments for the command
+	 * @description Optional description of the MCP server
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run(
@@ -36,7 +36,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Add MCP Server" );
 
-		var info     = ensureInstalled( arguments.directory );
+		var info = ensureInstalled( arguments.directory );
+		if ( !info.installed ) {
+			return;
+		}
 		var manifest = loadManifest( arguments.directory );
 
 		// Ensure mcpServers structure exists
@@ -93,9 +96,11 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Save manifest
 		saveManifest( arguments.directory, manifest );
 
+		// Regenerate .mcp.json immediately after saving manifest
+		generateMCPJson( arguments.directory, manifest );
+
 		// Regenerate all agent config files
-		var directory = arguments.directory;
-		var language  = manifest.language ?: "boxlang";
+		var language = manifest.language ?: "boxlang";
 		manifest.agents.each( ( agent ) => {
 			variables.agentRegistry.configureAgent( directory, agent, language );
 		} );

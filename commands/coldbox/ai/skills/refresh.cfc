@@ -24,6 +24,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Refresh Skills" )
 
 		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
 
 		print.line()
 		printInfo( "Refreshing skills from installed modules..." )
@@ -70,19 +73,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			printInfo( "Installed Skills Summary:" )
 			print.line()
 
-			var updatedInfo  = variables.aiService.getInfo( arguments.directory )
-			var coreSkills   = updatedInfo.skills.filter( ( s ) => s.source == "coldbox-cli" )
-			var moduleSkills = updatedInfo.skills.filter( ( s ) => s.source != "coldbox-cli" && s.source != "custom" )
-			var customSkills = updatedInfo.skills.filter( ( s ) => s.source == "custom" )
+			var updatedInfo    = ensureInstalled( arguments.directory )
+			var registrySkills = updatedInfo.skills.filter( ( s ) => ( s.type ?: "" ) != "custom" )
+			var customSkills   = updatedInfo.skills.filter( ( s ) => ( s.type ?: "" ) == "custom" )
 
-			if ( coreSkills.len() ) {
-				printInfo( "Core Skills ⭐: #coreSkills.len()#" )
-			}
-			if ( moduleSkills.len() ) {
-				printInfo( "Module Skills 📦: #moduleSkills.len()#" )
-			}
+			// Tally by owner/repo
+			var byRepo = {}
+			registrySkills.each( ( s ) => {
+				var key       = ( ( s.owner ?: "" ) != "" ) ? "#s.owner#/#s.repo#" : "unknown"
+				byRepo[ key ] = ( byRepo[ key ] ?: 0 ) + 1
+			} )
+			byRepo.each( ( repo, count ) => printInfo( "  📦 #repo#: #count# skill(s)" ) )
 			if ( customSkills.len() ) {
-				printInfo( "Custom Skills 🔧: #customSkills.len()#" )
+				printInfo( "  🔧 Custom: #customSkills.len()# skill(s)" )
 			}
 			print.line()
 		}

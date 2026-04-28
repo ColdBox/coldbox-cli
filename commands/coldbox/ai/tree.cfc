@@ -23,7 +23,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "AI Integration Structure" );
 
 		try {
-			var info     = ensureInstalled( arguments.directory );
+			var info = ensureInstalled( arguments.directory );
+			if ( !info.installed ) {
+				return;
+			}
 			var manifest = loadManifest( arguments.directory );
 
 			// Read package descriptor for name and version
@@ -82,7 +85,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			return yellow & lastKey & reset;
 		} else if ( path contains "/overrides/" ) {
 			return magenta & lastKey & reset;
-		} else if ( path contains "/.ai/agents/" ) {
+		} else if ( path contains "agents" ) {
 			return green & lastKey & reset;
 		} else if ( arguments.verbose && ( lastKey contains ".md" || lastKey contains ".cfc" || lastKey contains "rules" ) ) {
 			return dim & lastKey & reset;
@@ -100,7 +103,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		boolean verbose = false
 	){
 		var tree = [
-			".ai/": {
+			".agents/": {
 				"guidelines/ (#arguments.info.guidelines.len()#)" : buildGuidelinesStruct(
 					arguments.info,
 					arguments.verbose

@@ -590,7 +590,30 @@ coldbox ai refresh                    # Update guidelines and skills
 coldbox ai doctor                     # Check AI integration health
 ```
 
-#### AI Agents
+#### AI Directory Structure
+
+After `coldbox ai install`, your project will have a `.agents/` directory containing:
+
+```
+/.agents/
+├── guidelines/         # AI framework and domain documentation
+│   ├── core/          # ColdBox & BoxLang/CFML language guidelines (framework built-ins)
+│   ├── custom/        # Your project-specific guidelines
+│   └── overrides/     # Custom versions of core/module guidelines
+├── skills/            # Implementation cookbooks for specific features
+│   ├── {skill-name}/
+│   │   └── SKILL.md   # Step-by-step implementation guide
+│   └── overrides/     # Override core/module skills
+└── manifest.json     # AI integration metadata (generated)
+```
+
+- **Guidelines**: Framework documentation and best practices (ColdBox, BoxLang, CFML, etc.)
+- **Skills**: Specialized coding cookbooks for implementing specific features
+- **Manifest**: Tracks installed guidelines, skills, agents, and MCP servers
+
+#### Setup & Management
+
+```bash
 
 Configure AI assistants for your project (Claude, GitHub Copilot, Cursor, etc.):
 
@@ -602,7 +625,7 @@ coldbox ai agents remove cursor       # Remove an agent
 coldbox ai agents refresh             # Regenerate all configurations
 ```
 
-**Supported Agents**: Claude (CLAUDE.md → AGENTS.md), GitHub Copilot (.github/copilot-instructions.md), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
+**Supported Agents**: Claude (CLAUDE.md → AGENTS.md), GitHub Copilot (AGENTS.md, shared), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
 
 #### Guidelines
 
@@ -641,28 +664,40 @@ coldbox ai skills refresh             # Update from modules
 
 #### MCP Servers
 
-Model Context Protocol documentation servers:
+Model Context Protocol documentation servers provide live, up-to-date documentation access for AI agents. ColdBox CLI manages three types of MCP servers and keeps them in sync in both the manifest and the root `.mcp.json` file (compatible with VS Code, Claude Desktop, and other MCP clients):
 
 ```bash
 # View MCP configuration
-coldbox ai mcp list                   # List available servers
-coldbox ai mcp info                   # Show configuration
+coldbox ai mcp list                  # List all configured servers
+coldbox ai mcp list --verbose        # Show descriptions and URLs
 
-# Manage servers
-coldbox ai mcp add github filesystem  # Add MCP servers
-coldbox ai mcp remove filesystem      # Remove a server
-coldbox ai mcp config                 # Generate agent-specific configs
+# Install cbMCP (live ColdBox app introspection)
+coldbox ai mcp install               # Install cbmcp module + register at http://localhost:8888/cbmcp
+coldbox ai mcp install --port=8080   # Custom port
+coldbox ai mcp install --force       # Overwrite existing cbmcp config
+
+# Add/remove custom servers
+coldbox ai mcp add company-docs --url=https://docs.company.com/mcp
+coldbox ai mcp remove company-docs
+coldbox ai mcp remove cbsecurity --force   # Force remove a module server
 ```
 
-**MCP Server Types**: Core (30+ built-in), Module (from packages), Custom (project-specific)
+**MCP Server Types**:
+
+- **Core** (auto-configured): coldbox, boxlang, testbox, wirebox, cachebox, logbox, commandbox
+- **Module** (auto-detected from `box.json`): cbsecurity, quick, cfmigrations, cbvalidation, cbwire, and 20+ more
+- **Custom**: Any URL-based or stdio MCP server you add manually
+- **cbMCP** (local app): Your running ColdBox application exposed as an MCP server via `coldbox ai mcp install`
+
+**What cbMCP provides**: Once installed and your server is running, AI agents can query your live application for current routes, handler actions, model interfaces, and more — enabling context-aware code generation tailored to your actual project structure.
 
 #### AI Context Management
 
-**Subagent Pattern**: ColdBox CLI uses an optimized architecture that reduces context by 58% while maintaining full capability:
+**Subagent Pattern**: ColdBox CLI uses an optimized architecture that keeps agent files lean while providing full capability on-demand:
 
-- **Core Guidelines Inlined** (~20KB): ColdBox framework + language always embedded in agent files
+- **Core Guidelines Referenced** (~0 tokens in agent file): ColdBox framework + language guidelines stored in `.agents/guidelines/core/` and loaded on-demand via `read_file` when needed
 - **Resource Inventories** (~13KB): Module guidelines and skills listed with descriptions for on-demand loading
-- **Total Base Context**: ~33KB / ~8,400 tokens (down from ~62KB / ~15,000+ tokens)
+- **Total Base Context**: ~250 lines per agent file (down from ~1,000 lines when guidelines were inlined)
 
 The CLI tracks and analyzes your AI context usage:
 

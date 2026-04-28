@@ -4,8 +4,8 @@
  *
  * Examples:
  * coldbox ai guidelines override coldbox
- * coldbox ai guidelines override testbox --open
- * coldbox ai guidelines override cbsecurity --open
+ * coldbox ai guidelines override boxlang --open
+ * coldbox ai guidelines override cfml --open
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -27,6 +27,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Override Guideline" )
 
 		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
 
 		print.line()
 		printInfo( "Creating override for: #arguments.name#" )
@@ -44,7 +47,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var guideline = existing[ 1 ]
 
 		// Check if override already exists
-		var overridePath = "#arguments.directory#/.ai/guidelines/overrides/#arguments.name#.md"
+		var overridePath = guidelineManager.getGuidelinesDirectory( arguments.directory ) & "/overrides/#arguments.name#.md"
 		if ( fileExists( overridePath ) ) {
 			printWarn( "Override for '#arguments.name#' already exists at:" )
 			printWarn( "  #overridePath#" )
@@ -77,7 +80,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "  • This override will be loaded AFTER the #guideline.type# guideline" )
 		printInfo( "  • You can add project-specific rules and modifications" )
 		printInfo( "  • The original guideline remains unchanged for reference" )
-		printInfo( "  • Agents automatically read overrides from .ai/guidelines/overrides/" )
+		printInfo( "  • Agents automatically read overrides from .agents/guidelines/overrides/" )
 		print.line()
 
 		printTip( "Edit the override to customize conventions for your project" )

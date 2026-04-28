@@ -7,8 +7,7 @@
  * coldbox ai guidelines remove coldbox --core
  * coldbox ai guidelines remove my-rules --custom
  * coldbox ai guidelines remove coldbox --override
- * coldbox ai guidelines remove cbsecurity --module
- * coldbox ai guidelines remove testbox --core --force
+ * coldbox ai guidelines remove boxlang --core --force
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -37,7 +36,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		showColdBoxBanner( "Remove Guideline" )
 
-		ensureInstalled( arguments.directory )
+		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
 
 		// Validate exactly one type flag is specified
 		var typeFlags = [

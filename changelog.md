@@ -9,6 +9,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **GitHub Copilot migrated to `AGENTS.md`**
+  - GitHub Copilot agent configuration now uses `AGENTS.md` (shared with Codex and OpenCode) instead of `.github/copilot-instructions.md`
+  - Follows the [Agents.md standard](https://github.blog/changelog/2025-08-28-copilot-coding-agent-now-supports-agents-md-custom-instructions/) now supported by GitHub Copilot
+  - Provides a single source of truth for Copilot, Codex, and OpenCode agents
+  - Existing `.github/copilot-instructions.md` files are not removed automatically; run `coldbox ai refresh` to write the updated location
+
+- **AI Directory Structure Standardized**
+  - Renamed `/.ai/` directory to `/.agents/` to follow BoxLang skill repository conventions
+  - All generated agent configurations, guidelines, and skills now use `/.agents/` instead of `/.ai/`
+  - Updated all internal code paths, CLI commands, and documentation to reference `/.agents/`
+  - Ensures consistency with the `.agents/skills/` directory naming used in BoxLang ecosystem
+
+### Added
+
+- **Auto-Install Module Skills on Refresh**
+  - When a module is added to `box.json`, `coldbox ai refresh` now automatically detects and installs its corresponding skill from the registry
+  - Mirrors the existing MCP server auto-detection behavior — ensures skills and servers are always in sync with project dependencies
+
+- **Auto-Recovery of Missing Skills**
+  - `coldbox ai refresh` now detects and reinstalls any missing core skills (boxlang, coldbox, testbox, commandbox) that may have been lost
+  - Previously, if a skill failed to reinstall, it would be removed from the manifest permanently; now it will be recovered on the next refresh
+
+- **Improved `coldbox ai skills install --list` Command**
+  - The `--list` flag now accepts an optional slug parameter to pre-filter the interactive skill list
+  - Examples:
+    - `coldbox ai skills install --list` → show all available skills
+    - `coldbox ai skills install --list coldbox/skills` → show only ColdBox skills
+    - `coldbox ai skills install --list coldbox/skills/coldbox-testing` → show only testing category skills
+
+- **`.mcp.json` Support**
+  - New file in project root to track registered MCP documentation servers for AI integration
+  - Updated `coldbox ai mcp` commands to read/write from this file for consistent MCP server management
+  - MCP server entries include `name`, `url`, `description`, and `source` (core, module, custom)
+  - MCP servers registered via `coldbox ai mcp add` are now saved to `.mcp.json` in addition to the manifest for AI agent access
+
+- **MCP Server Auto-Detection**
+  - During `coldbox ai refresh`, the CLI now auto-detects MCP documentation servers from installed modules and updates both the manifest and `.mcp.json` with any new servers found
+
+- **ColdBox MCP Server Support**
+  - New `coldbox ai mcp install` command to install the `cbMCP` module and register it as a custom MCP server in the manifest and `.mcp.json`. The cbMCP module exposes your running ColdBox application as a live MCP server at `http://<host>:<port>/cbmcp`, allowing AI agents to introspect your routes, handlers, and models in real time. Supports `--host`, `--port`, and `--force` flags.
+
+- Pretty print saving of manifest on installation
+
+### Changed
+
+- **Reduced agent file size**
+  - Core ColdBox/BoxLang guidelines are no longer inlined in generated agent files. Guidelines are stored locally in `.ai/guidelines/core/` and referenced via `read_file` instructions — reducing generated agent files from ~1,000 lines to ~250 lines
+
+- **Skills inventory grouped by category**
+  - Skills in agent files are now organized by prefix (ColdBox, BoxLang, TestBox, CommandBox, etc.) with 80-character truncated descriptions for faster agent scanning
+
+- **Cleaner project documentation section**
+  - The user-editable section in generated agent files now shows 3 focused TODO comment lines instead of 8 empty placeholder headings
+
+- **Core guideline files slimmed**
+  - Full implementation examples removed from `coldbox.md`, `boxlang.md`, and `cfml.md` — each now ends with a skills-reference note directing agents to implementation-detail skills
+
+- **Post-install project context reminder**
+  - `coldbox ai install` now prominently reminds users to add their project context (business domain, key services, auth, API endpoints, etc.) to the generated agent file
+
 ## [8.10.1] - 2026-04-15
 
 ### Fixed
@@ -99,7 +161,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ##### Multi-Agent Support (6 Agents)
 
-- **Supported Agents**: Claude (`CLAUDE.md`), GitHub Copilot (`.github/copilot-instructions.md`), Cursor (`.cursorrules`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`), OpenCode (`AGENTS.md`)
+- **Supported Agents**: Claude (`CLAUDE.md`), GitHub Copilot (`AGENTS.md`, shared), Cursor (`.cursorrules`), Codex (`AGENTS.md`), Gemini (`GEMINI.md`), OpenCode (`AGENTS.md`)
 - Layout-specific templates (modern, flat)
 - Project context detection (Vite, Docker, ORM, Migrations)
 - Agents commands: `list`, `add`, `remove`, `active`, `open`

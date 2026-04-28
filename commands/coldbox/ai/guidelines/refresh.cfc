@@ -24,6 +24,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		showColdBoxBanner( "Refresh Guidelines" )
 
 		var info = ensureInstalled( arguments.directory )
+		if ( !info.installed ) {
+			return
+		}
 
 		print.line()
 		printInfo( "Refreshing guidelines from installed modules..." )
@@ -72,14 +75,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 			var updatedInfo      = variables.aiService.getInfo( arguments.directory )
 			var coreGuidelines   = updatedInfo.guidelines.filter( ( g ) => g.source == "coldbox-cli" )
-			var moduleGuidelines = updatedInfo.guidelines.filter( ( g ) => g.source != "coldbox-cli" && g.source != "custom" )
 			var customGuidelines = updatedInfo.guidelines.filter( ( g ) => g.source == "custom" )
 
 			if ( coreGuidelines.len() ) {
 				printInfo( "Core Guidelines ⭐: #coreGuidelines.len()#" )
-			}
-			if ( moduleGuidelines.len() ) {
-				printInfo( "Module Guidelines 📦: #moduleGuidelines.len()#" )
 			}
 			if ( customGuidelines.len() ) {
 				printInfo( "Custom Guidelines 🔧: #customGuidelines.len()#" )

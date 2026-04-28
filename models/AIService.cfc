@@ -5,14 +5,20 @@
 component singleton {
 
 	// DI
-	property name="print"            inject="PrintBuffer";
-	property name="fileSystemUtil"   inject="fileSystem";
-	property name="packageService"   inject="PackageService";
 	property name="guidelineManager" inject="GuidelineManager@coldbox-cli";
 	property name="skillManager"     inject="SkillManager@coldbox-cli";
 	property name="agentRegistry"    inject="AgentRegistry@coldbox-cli";
 	property name="mcpRegistry"      inject="MCPRegistry@coldbox-cli";
 	property name="utility"          inject="Utility@coldbox-cli";
+	// From CommandBox CLI
+	property name="JSONService"      inject="JSONService";
+	property name="print"            inject="PrintBuffer";
+	property name="fileSystemUtil"   inject="fileSystem";
+	property name="packageService"   inject="PackageService";
+
+	static {
+		AI_DIR = ".agents"
+	}
 
 	/**
 	 * Install AI integration for a project
@@ -45,7 +51,7 @@ component singleton {
 		}
 
 		// Check if already installed
-		var aiDir = arguments.directory & "/.ai";
+		var aiDir = arguments.directory & "/" & static.AI_DIR;
 		if ( directoryExists( aiDir ) && !arguments.force ) {
 			result.success = false;
 			result.message = "AI integration already installed. Use --force to overwrite.";
@@ -96,7 +102,7 @@ component singleton {
 		// If only 1 agent is configured, automatically set it as active
 		var agentsList = listToArray( arguments.agents )
 		if ( agentsList.len() == 1 ) {
-			manifest.activeAgent = agentsList.first()
+			manifest[ "activeAgent" ] = agentsList.first()
 		}
 
 		// Save manifest BEFORE configuring agents so they can read MCP servers
@@ -111,12 +117,8 @@ component singleton {
 
 		result.manifest = manifest;
 
-		// Update box.json with AI configuration
-		updateBoxJsonAIConfig(
-			arguments.directory,
-			arguments.language,
-			arguments.agents
-		);
+		// Generate .mcp.json from manifest MCP servers
+		generateMCPJson( arguments.directory, manifest );
 
 		result.message = "AI integration installed successfully!";
 		return result;
@@ -150,7 +152,8 @@ component singleton {
 				"updated" : [],
 				"removed" : []
 			},
-			"mcpServers" : { "added" : [], "removed" : [] }
+			"mcpServers" : { "added" : [], "removed" : [] },
+			"agents"     : []
 		};
 
 		// Load existing manifest
@@ -175,7 +178,12 @@ component singleton {
 		result.guidelines.removed.append( guidelineChanges.removed, true );
 
 		// Refresh skills based on installed modules
-		var skillChanges = variables.skillManager.refresh( arguments.directory, manifest );
+		var language     = manifest.language ?: "boxlang";
+		var skillChanges = variables.skillManager.refresh(
+			arguments.directory,
+			manifest,
+			language
+		);
 		result.skills.added.append( skillChanges.added, true );
 		result.skills.updated.append( skillChanges.updated, true );
 		result.skills.removed.append( skillChanges.removed, true );
@@ -223,8 +231,12 @@ component singleton {
 			var language = manifest.language ?: "boxlang";
 			manifest.agents.each( ( agent ) => {
 				variables.agentRegistry.configureAgent( directory, agent, language );
+				result.agents.append( agent );
 			} );
 		}
+
+		// Regenerate .mcp.json to reflect updated MCP servers
+		generateMCPJson( arguments.directory, manifest );
 
 		result.message = "AI integration refreshed successfully!";
 		return result;
@@ -285,7 +297,7 @@ component singleton {
 		// Load manifest
 		var manifest = loadManifest( arguments.directory )
 		if ( !structKeyExists( manifest, "coldboxCliVersion" ) ) {
-			issues.errors.append( "Invalid or missing .ai/.manifest.json file" )
+			issues.errors.append( "Invalid or missing /.agents/manifest.json file" )
 			// Build summary for early return
 			issues.summary = {
 				"status"              : "error",
@@ -347,12 +359,23 @@ component singleton {
 	}
 
 	/**
+	 * Get the AI installation directory path (.agents)
+	 *
+	 * @directory The project directory
+	 *
+	 * @return The full path to the .agents directory
+	 */
+	string function getAIInstallDirectory( required string directory ){
+		return arguments.directory & "/" & static.AI_DIR;
+	}
+
+	/**
 	 * Load the manifest file
 	 *
 	 * @directory The project directory
 	 */
 	struct function loadManifest( required string directory ){
-		var manifestPath = arguments.directory & "/.ai/.manifest.json";
+		var manifestPath = getAIInstallDirectory( arguments.directory ) & "/manifest.json";
 		if ( !fileExists( manifestPath ) ) {
 			return {};
 		}
@@ -367,7 +390,7 @@ component singleton {
 	 * @return The full path to the manifest file
 	 */
 	string function getManifestPath( required string directory ){
-		return arguments.directory & "/.ai/.manifest.json";
+		return getAIInstallDirectory( arguments.directory ) & "/manifest.json";
 	}
 
 	/**
@@ -382,9 +405,9 @@ component singleton {
 	){
 		var manifestPath            = getManifestPath( arguments.directory )
 		arguments.manifest.lastSync = dateTimeFormat( now(), "iso" )
-		fileWrite(
-			manifestPath,
-			serializeJSON( arguments.manifest, true )
+		variables.JSONService.writeJSONFile(
+			path: manifestPath,
+			json: arguments.manifest
 		)
 		return this
 	}
@@ -410,16 +433,13 @@ component singleton {
 	 * @directory The project directory where .ai structure will be created
 	 */
 	private function createAIDirectoryStructure( required string directory ){
-		var dirs = [
-			"#arguments.directory#/.ai",
-			"#arguments.directory#/.ai/guidelines",
-			"#arguments.directory#/.ai/guidelines/core",
-			"#arguments.directory#/.ai/guidelines/modules",
-			"#arguments.directory#/.ai/guidelines/custom",
-			"#arguments.directory#/.ai/skills",
-			"#arguments.directory#/.ai/skills/core",
-			"#arguments.directory#/.ai/skills/modules",
-			"#arguments.directory#/.ai/skills/custom"
+		var aiDir = getAIInstallDirectory( arguments.directory )
+		var dirs  = [
+			"#aiDir#",
+			"#aiDir#/guidelines",
+			"#aiDir#/guidelines/core",
+			"#aiDir#/guidelines/custom",
+			"#aiDir#/skills"
 		];
 
 		dirs.each( ( dir ) => {
@@ -427,33 +447,6 @@ component singleton {
 				directoryCreate( dir )
 			}
 		} )
-	}
-
-	/**
-	 * Update box.json with AI configuration
-	 *
-	 * @directory The project directory
-	 * @language Project language mode (boxlang, cfml, hybrid)
-	 * @agents Comma-separated list of agents
-	 */
-	private function updateBoxJsonAIConfig(
-		required string directory,
-		required string language,
-		required string agents
-	){
-		var packageDir = arguments.directory;
-		var boxJson    = variables.packageService.readPackageDescriptorRaw( packageDir );
-
-		// Add language at top level
-		boxJson.language = arguments.language;
-
-		// Add ai configuration section
-		boxJson.ai = {
-			"enabled" : true,
-			"agents"  : listToArray( arguments.agents )
-		};
-
-		variables.packageService.writePackageDescriptor( boxJson, packageDir );
 	}
 
 	/**
@@ -521,7 +514,7 @@ component singleton {
 		}
 
 		// Count guidelines by type and calculate sizes
-		var aiDir         = arguments.directory & "/.ai";
+		var aiDir         = getAIInstallDirectory( arguments.directory )
 		var guidelinesDir = aiDir & "/guidelines";
 		info.guidelines.each( ( guideline ) => {
 			var type = guideline.type ?: "module";
@@ -621,6 +614,71 @@ component singleton {
 		);
 
 		return stats;
+	}
+
+	/**
+	 * Generate or update the root .mcp.json file from the manifest's mcpServers.
+	 * This file follows the VS Code / Claude Desktop MCP configuration format:
+	 * { "mcpServers": { "name": { "type": "http", "url": "..." } } }
+	 *
+	 * - core/module servers: looked up by name from MCPRegistry to get their URL
+	 * - custom servers: URL-based → type "http"; command-based → type "stdio"
+	 *
+	 * @directory The project root directory
+	 * @manifest  The current manifest struct (must contain mcpServers)
+	 */
+	function generateMCPJson(
+		required string directory,
+		required struct manifest
+	){
+		var mcpJson  = { "mcpServers" : {} };
+		var allKnown = variables.mcpRegistry.getAllKnownServers();
+
+		// Process core and module servers (string names → look up definition)
+		var namedServers = [];
+		namedServers.append(
+			arguments.manifest.mcpServers.core ?: [],
+			true
+		);
+		namedServers.append(
+			arguments.manifest.mcpServers.module ?: [],
+			true
+		);
+
+		namedServers.each( ( serverName ) => {
+			if ( structKeyExists( allKnown, serverName ) ) {
+				mcpJson.mcpServers[ serverName ] = {
+					"type" : "http",
+					"url"  : allKnown[ serverName ].url
+				};
+			}
+		} );
+
+		// Process custom servers (objects with url or command)
+		( arguments.manifest.mcpServers.custom ?: [] ).each( ( targetServer ) => {
+			if ( structKeyExists( targetServer, "url" ) ) {
+				mcpJson.mcpServers[ targetServer.name ] = {
+					"type" : "http",
+					"url"  : targetServer.url
+				};
+			} else if ( structKeyExists( targetServer, "command" ) ) {
+				var entry = {
+					"type"    : "stdio",
+					"command" : targetServer.command
+				};
+				if ( structKeyExists( targetServer, "args" ) && targetServer.args.len() ) {
+					entry.args = targetServer.args;
+				}
+				mcpJson.mcpServers[ targetServer.name ] = entry;
+			}
+		} );
+
+		variables.JSONService.writeJSONFile(
+			path: arguments.directory & "/.mcp.json",
+			json: mcpJson
+		);
+
+		return this;
 	}
 
 	/**

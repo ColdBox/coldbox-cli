@@ -1,6 +1,6 @@
 /**
  * Registry for AI agent configurations
- * Manages agent-specific files (CLAUDE.md, .github/copilot-instructions.md, etc.)
+ * Manages agent-specific files (CLAUDE.md, AGENTS.md, .cursorrules, etc.)
  */
 component singleton {
 
@@ -22,7 +22,7 @@ component singleton {
 		]
 		AGENT_FILES = {
 			"claude"   : "CLAUDE.md",
-			"copilot"  : ".github/copilot-instructions.md",
+			"copilot"  : "AGENTS.md",
 			"cursor"   : ".cursorrules",
 			"codex"    : "AGENTS.md",
 			"gemini"   : "GEMINI.md",
@@ -57,12 +57,18 @@ component singleton {
 				value   : "opencode"
 			}
 		]
+
+		// Compiled once (singleton) — matches any public function declaration
+		FUNCTION_PATTERN = createObject( "java", "java.util.regex.Pattern" ).compile(
+			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
+		)
 	}
 
 	// Expose them as instance properties for easier access in commands
 	this.SUPPORTED_AGENTS = static.SUPPORTED_AGENTS
 	this.AGENT_OPTIONS    = static.AGENT_OPTIONS
 	this.AGENT_FILES      = static.AGENT_FILES
+	this.FUNCTION_PATTERN = static.FUNCTION_PATTERN
 
 	/**
 	 * Configure agents for a project
@@ -256,7 +262,7 @@ component singleton {
 			case "claude":
 				return "#arguments.directory#/CLAUDE.md"
 			case "copilot":
-				return "#arguments.directory#/.github/copilot-instructions.md"
+				return "#arguments.directory#/AGENTS.md"
 			case "cursor":
 				return "#arguments.directory#/.cursorrules"
 			case "codex":
@@ -384,15 +390,84 @@ component singleton {
 			"all"
 		)
 
-		// Add inline guidelines (core framework knowledge)
-		var inlineGuidelinesContent = generateInlineGuidelinesContent(
-			arguments.directory,
-			arguments.language
+		// Add guidelines inventory (module and additional guidelines only)
+		// Language-specific guideline file and description
+		var languageGuidelineFile = "`.ai/guidelines/core/boxlang.md`"
+		var languageGuidelineDesc = "BoxLang syntax and patterns"
+		if ( arguments.language == "cfml" ) {
+			languageGuidelineFile = "`.ai/guidelines/core/cfml.md`"
+			languageGuidelineDesc = "CFML syntax and patterns"
+		} else if ( arguments.language == "hybrid" ) {
+			languageGuidelineFile = "`.ai/guidelines/core/boxlang.md`"
+			languageGuidelineDesc = "BoxLang/CFML syntax and patterns (or `cfml.md` for CFML-only)"
+		}
+		content = replaceNoCase(
+			content,
+			"|LANGUAGE_GUIDELINE_FILE|",
+			languageGuidelineFile,
+			"all"
 		)
 		content = replaceNoCase(
 			content,
-			"|INLINE_GUIDELINES|",
-			inlineGuidelinesContent,
+			"|LANGUAGE_GUIDELINE_DESC|",
+			languageGuidelineDesc,
+			"all"
+		)
+
+		// Generate installed modules content
+		var installedModulesContent = generateInstalledModulesContent( arguments.directory, boxJson )
+		content                     = replaceNoCase(
+			content,
+			"|INSTALLED_MODULES|",
+			installedModulesContent,
+			"all"
+		)
+
+		// Generate handlers snapshot
+		var handlersSnapshotContent = generateHandlersSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|HANDLERS_SNAPSHOT|",
+			handlersSnapshotContent,
+			"all"
+		)
+
+		// Generate interceptors snapshot
+		var interceptorsSnapshotContent = generateInterceptorsSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|INTERCEPTORS_SNAPSHOT|",
+			interceptorsSnapshotContent,
+			"all"
+		)
+
+		// Generate layouts snapshot
+		var layoutsSnapshotContent = generateLayoutsSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|LAYOUTS_SNAPSHOT|",
+			layoutsSnapshotContent,
+			"all"
+		)
+
+		// Generate custom modules snapshot
+		var customModulesContent = generateCustomModulesSnapshot(
+			arguments.directory,
+			arguments.templateType
+		)
+		content = replaceNoCase(
+			content,
+			"|CUSTOM_MODULES_SNAPSHOT|",
+			customModulesContent,
 			"all"
 		)
 
@@ -592,7 +667,6 @@ component singleton {
 		var coreGuidelines = manifest.guidelines.filter( ( g ) => {
 			return g.type == "core" && !inlinedGuidelines.find( g.name )
 		} );
-		var moduleGuidelines = manifest.guidelines.filter( ( g ) => g.type == "module" );
 		var customGuidelines = manifest.guidelines.filter( ( g ) => g.type == "custom" );
 
 		// Core guidelines (only non-inlined ones)
@@ -606,17 +680,6 @@ component singleton {
 			content.append( "" );
 		}
 
-		// Module guidelines
-		if ( moduleGuidelines.len() ) {
-			content.append( "**Module Guidelines (Available on request):**" )
-			content.append( "" )
-			moduleGuidelines.each( ( guideline ) => {
-				var desc = structKeyExists( guideline, "description" ) ? guideline.description : "Module guideline"
-				content.append( "- **#guideline.name#** - #desc#" )
-			} )
-			content.append( "" )
-		}
-
 		// Custom guidelines
 		if ( customGuidelines.len() ) {
 			content.append( "**Custom Guidelines:**" )
@@ -626,6 +689,10 @@ component singleton {
 				content.append( "- **#guideline.name#** - #desc#" )
 			} )
 			content.append( "" )
+		}
+
+		if ( !content.len() ) {
+			return "No additional module guidelines installed."
 		}
 
 		return content.toList( chr( 10 ) )
@@ -647,45 +714,65 @@ component singleton {
 			return "No skills installed yet. Run 'coldbox ai install' to get started."
 		}
 
-		var content = []
+		// Prefix-to-category mapping for grouping skill names
+		var prefixMap = {
+			"coldbox"    : "ColdBox",
+			"boxlang"    : "BoxLang",
+			"testbox"    : "TestBox",
+			"commandbox" : "CommandBox",
+			"wirebox"    : "WireBox",
+			"cachebox"   : "CacheBox",
+			"logbox"     : "LogBox"
+		}
 
-		// Group skills by source
+		var content      = []
 		var coreSkills   = manifest.skills.filter( ( s ) => s.source == "core" )
 		var moduleSkills = manifest.skills.filter( ( s ) => s.source != "core" && s.source != "custom" )
 		var customSkills = manifest.skills.filter( ( s ) => s.source == "custom" )
 
-		// Core skills
-		if ( coreSkills.len() ) {
-			content.append( "**Core Skills (Available on request):**" )
-			content.append( "" )
-			coreSkills.each( ( skill ) => {
-				var desc = structKeyExists( skill, "description" ) ? skill.description : "Development skill"
-				content.append( "- **#skill.name#** - #desc#" )
+		// Helper: group skills by prefix and append formatted output to content
+		var appendGroupedSkills = ( skills, sectionLabel ) => {
+			if ( !skills.len() ) {
+				return;
+			}
+
+			// Build grouped struct keyed by category name
+			var groups = {}
+			skills.each( ( skill ) => {
+				var groupName = "Other"
+				for ( var prefix in prefixMap ) {
+					if ( skill.name.startsWith( prefix & "-" ) || skill.name == prefix ) {
+						groupName = prefixMap[ prefix ]
+						break
+					}
+				}
+				if ( !structKeyExists( groups, groupName ) ) {
+					groups[ groupName ] = []
+				}
+				groups[ groupName ].append( skill )
 			} )
+
+			content.append( "**#sectionLabel#:**" )
 			content.append( "" )
+
+			// Use for loops instead of .each() closures to avoid Lucee nested-closure scoping issues
+			var sortedGroupNames = groups.keyArray().sort( "textnocase" )
+			for ( var groupName in sortedGroupNames ) {
+				content.append( "_#groupName# (#groups[ groupName ].len()#):_" )
+				for ( var skill in groups[ groupName ] ) {
+					var desc = structKeyExists( skill, "description" ) && len( skill.description ) ? skill.description : "Development skill"
+					if ( len( desc ) > 80 ) desc = left( desc, 80 ) & "..."
+					content.append( "- **#skill.name#** - #desc#" )
+				}
+				content.append( "" )
+			}
 		}
 
-		// Module skills
-		if ( moduleSkills.len() ) {
-			content.append( "**Module Skills (Available on request):**" )
-			content.append( "" )
-			moduleSkills.each( ( skill ) => {
-				var desc = structKeyExists( skill, "description" ) ? skill.description : "Module skill"
-				content.append( "- **#skill.name#** - #desc#" )
-			} )
-			content.append( "" )
-		}
+		appendGroupedSkills( coreSkills, "Core Skills" )
+		appendGroupedSkills( moduleSkills, "Module Skills" )
+		appendGroupedSkills( customSkills, "Custom Skills" )
 
-		// Custom skills
-		if ( customSkills.len() ) {
-			content.append( "**Custom Skills:**" )
-			content.append( "" )
-			customSkills.each( ( skill ) => {
-				var desc = structKeyExists( skill, "description" ) ? skill.description : "Custom skill"
-				content.append( "- **#skill.name#** - #desc#" )
-			} )
-			content.append( "" )
-		}
+		content.append( "**To load a skill:** Use `read_file` on `.ai/skills/{skill-name}/SKILL.md` (e.g., `.ai/skills/coldbox-handler-development/SKILL.md`)." )
 
 		return content.toList( chr( 10 ) )
 	}
@@ -755,6 +842,297 @@ component singleton {
 		content.append( "**Using MCP Servers:** Query these servers when you need current documentation, API references, or code examples. They provide live, up-to-date information directly from official documentation sources." )
 
 		return content.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a list of installed project modules (excluding framework packages)
+	 *
+	 * @directory The project directory
+	 * @boxJson   The parsed box.json struct
+	 *
+	 * @return Formatted markdown bullet list of installed modules
+	 */
+	private function generateInstalledModulesContent(
+		required string directory,
+		required struct boxJson
+	){
+		// Packages to skip — framework internals that aren't actionable for the AI
+		var frameworkPackages = [
+			"coldbox",
+			"testbox",
+			"wirebox",
+			"cachebox",
+			"logbox"
+		]
+
+		var dependencies = arguments.boxJson.dependencies ?: {}
+		var lines        = []
+
+		for ( var pkg in dependencies ) {
+			// Skip framework packages and commandbox-* infrastructure packages
+			if ( frameworkPackages.findNoCase( pkg ) || pkg.startsWith( "commandbox-" ) ) {
+				continue;
+			}
+			var version = dependencies[ pkg ]
+			lines.append( "- **#pkg#** (#version#)" )
+		}
+
+		if ( !lines.len() ) {
+			return "No additional modules installed yet."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a snapshot of existing handlers and their public actions
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of handlers and their actions
+	 */
+	private function generateHandlersSnapshot(
+		required string directory,
+		required string templateType
+	){
+		var handlersRoot = arguments.templateType == "modern"
+		 ? "#arguments.directory#/app/handlers"
+		 : "#arguments.directory#/handlers"
+
+		if ( !directoryExists( handlersRoot ) ) {
+			return "No handlers found."
+		}
+
+		// Lifecycle / framework methods to exclude from the action list
+		var lifecycleMethods = [
+			"init",
+			"onmissingaction",
+			"onerror",
+			"onrequeststart",
+			"onrequestend",
+			"onapplicationstart",
+			"onsessionstart",
+			"onsessionend",
+			"onapplicationend"
+		]
+
+		var handlerFiles = directoryList(
+			handlersRoot,
+			false,
+			"path",
+			"*.cfc|*.bx"
+		)
+		var lines = []
+
+		for ( var handlerFile in handlerFiles ) {
+			var handlerName = listFirst( getFileFromPath( handlerFile ), "." )
+			var actions     = extractFunctionNames(
+				fileRead( handlerFile ),
+				lifecycleMethods
+			)
+
+			lines.append(
+				actions.len()
+				 ? "- **#handlerName#**: #actions.toList( ", " )#"
+				 : "- **#handlerName#**: _(no public actions)_"
+			)
+		}
+
+		if ( !lines.len() ) {
+			return "No handlers found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a snapshot of existing interceptors and their interception point methods
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of interceptors and their announced points
+	 */
+	private function generateInterceptorsSnapshot(
+		required string directory,
+		required string templateType
+	){
+		var interceptorsRoot = arguments.templateType == "modern"
+		 ? "#arguments.directory#/app/interceptors"
+		 : "#arguments.directory#/interceptors"
+
+		if ( !directoryExists( interceptorsRoot ) ) {
+			return "No interceptors found."
+		}
+
+		// Methods to exclude — framework inherited methods, not interception points
+		var excludedMethods = [
+			"init",
+			"configure",
+			"getproperty",
+			"setproperty",
+			"getproperties"
+		]
+
+		var interceptorFiles = directoryList(
+			interceptorsRoot,
+			false,
+			"path",
+			"*.cfc|*.bx"
+		)
+		var lines = []
+
+		for ( var interceptorFile in interceptorFiles ) {
+			var interceptorName = listFirst(
+				getFileFromPath( interceptorFile ),
+				"."
+			)
+			var points = extractFunctionNames(
+				fileRead( interceptorFile ),
+				excludedMethods
+			)
+
+			lines.append(
+				points.len()
+				 ? "- **#interceptorName#**: #points.toList( ", " )#"
+				 : "- **#interceptorName#**: _(no interception points declared)_"
+			)
+		}
+
+		if ( !lines.len() ) {
+			return "No interceptors found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Extract unique public function names from CFML/BoxLang source using the shared compiled pattern.
+	 * The matched names are filtered against the provided exclusion list.
+	 *
+	 * @source          Raw source code string to scan
+	 * @excludedMethods Array of method names (case-insensitive) to omit from results
+	 *
+	 * @return Ordered array of unique, non-excluded function names found in the source
+	 */
+	private array function extractFunctionNames(
+		required string source,
+		required array excludedMethods
+	){
+		var matcher = variables.FUNCTION_PATTERN.matcher( arguments.source )
+		var names   = []
+
+		while ( matcher.find() ) {
+			var fnName = matcher.group( 1 )
+			if ( !arguments.excludedMethods.findNoCase( fnName ) && !names.findNoCase( fnName ) ) {
+				names.append( fnName )
+			}
+		}
+
+		return names
+	}
+
+	/**
+	 * Generate a snapshot of available layouts
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of layout files
+	 */
+	private function generateLayoutsSnapshot(
+		required string directory,
+		required string templateType
+	){
+		var layoutsRoot = arguments.templateType == "modern"
+		 ? "#arguments.directory#/app/layouts"
+		 : "#arguments.directory#/layouts"
+
+		if ( !directoryExists( layoutsRoot ) ) {
+			return "No layouts found."
+		}
+
+		var layoutFiles = directoryList(
+			layoutsRoot,
+			false,
+			"path",
+			"*.cfm|*.bxm"
+		)
+		var lines = []
+
+		for ( var layoutFile in layoutFiles ) {
+			var layoutName = getFileFromPath( layoutFile )
+			lines.append( "- **#layoutName#**" )
+		}
+
+		if ( !lines.len() ) {
+			return "No layouts found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Generate a snapshot of application-level custom modules
+	 *
+	 * Modern template checks: /app/modules
+	 * Flat template checks:   /modules_app
+	 * Both check the alternate as a fallback if the primary is missing or empty.
+	 *
+	 * @directory    The project directory
+	 * @templateType "modern" or "flat"
+	 *
+	 * @return Formatted markdown bullet list of custom module names
+	 */
+	private function generateCustomModulesSnapshot(
+		required string directory,
+		required string templateType
+	){
+		// Build candidate paths (primary first, then fallback)
+		var candidates = arguments.templateType == "modern"
+		 ? [
+			"#arguments.directory#/app/modules",
+			"#arguments.directory#/modules_app"
+		]
+		 : [
+			"#arguments.directory#/modules_app",
+			"#arguments.directory#/app/modules"
+		]
+
+		var lines = []
+
+		for ( var modulesRoot in candidates ) {
+			if ( !directoryExists( modulesRoot ) ) {
+				continue;
+			}
+
+			// Each subdirectory is a module
+			var moduleDirs = directoryList( modulesRoot, false, "path" )
+			if ( !moduleDirs.len() ) {
+				continue;
+			}
+
+			var label = modulesRoot.replace( arguments.directory, "" ).replaceAll( "^[/\\]", "" )
+
+			for ( var moduleDir in moduleDirs ) {
+				if ( directoryExists( moduleDir ) ) {
+					var moduleName = getFileFromPath( moduleDir )
+					lines.append( "- **#moduleName#** (`#label#`)" )
+				}
+			}
+		}
+
+		if ( !lines.len() ) {
+			return "No custom modules found."
+		}
+
+		lines.sort( "textnocase" )
+		return lines.toList( chr( 10 ) )
 	}
 
 }
