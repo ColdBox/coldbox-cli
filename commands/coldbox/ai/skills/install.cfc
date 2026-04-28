@@ -231,7 +231,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		// If slug provided, resolve it to filter the list
 		var resolvedItems = [];
 		if ( arguments.slug.len() ) {
-			var slugs = listToArray( arguments.slug, " ," )
+			var slugs     = listToArray( arguments.slug, " ," )
 			resolvedItems = _resolveSlugs( slugs, arguments.language )
 		}
 
@@ -242,10 +242,14 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 
 		// Build skills list, filtering by resolved items if slug was provided
 		bxList.each( ( s ) => {
-			if ( !resolvedItems.len() || resolvedItems.filter( ( r ) => r.owner == bxRepo.owner && r.repo == bxRepo.repo && r.slug == s.slug ).len() ) {
+			if (
+				!resolvedItems.len() || resolvedItems
+					.filter( ( r ) => r.owner == bxRepo.owner && r.repo == bxRepo.repo && r.slug == s.slug )
+					.len()
+			) {
 				allSkills.append( {
 					display : "#bxRepo.owner#/#bxRepo.repo#/#s.slug#",
-					value : {
+					value   : {
 						owner : bxRepo.owner,
 						repo  : bxRepo.repo,
 						slug  : s.slug,
@@ -256,10 +260,14 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			}
 		} )
 		cbList.each( ( s ) => {
-			if ( !resolvedItems.len() || resolvedItems.filter( ( r ) => r.owner == cbRepo.owner && r.repo == cbRepo.repo && r.slug == s.slug ).len() ) {
+			if (
+				!resolvedItems.len() || resolvedItems
+					.filter( ( r ) => r.owner == cbRepo.owner && r.repo == cbRepo.repo && r.slug == s.slug )
+					.len()
+			) {
 				allSkills.append( {
 					display : "#cbRepo.owner#/#cbRepo.repo#/#s.slug#",
-					value : {
+					value   : {
 						owner : cbRepo.owner,
 						repo  : cbRepo.repo,
 						slug  : s.slug,
