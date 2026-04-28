@@ -154,22 +154,79 @@ component singleton {
 
 	/**
 	 * Refresh skills: re-download stale skills, prune orphaned module skills,
-	 * sync custom skills from filesystem.
+	 * sync custom skills from filesystem, and install newly-detected module skills.
 	 *
 	 * @directory The project directory
 	 * @manifest  The manifest struct to update (mutated in place)
+	 * @language  Project language mode (boxlang, cfml, hybrid)
 	 *
 	 * @return Struct {added[], updated[], removed[]}
 	 */
 	function refresh(
 		required string directory,
-		required struct manifest
+		required struct manifest,
+		string language = "boxlang"
 	){
 		var changes = {
 			"added"   : [],
 			"updated" : [],
 			"removed" : []
 		};
+
+		// ------------------------------------------------------------------
+		// 0. Install skills for newly-detected modules not yet in manifest
+		// ------------------------------------------------------------------
+		var desiredTargets = getSkillsMap( arguments.directory, arguments.language );
+		var moduleTargets  = desiredTargets.filter( (t) => t.type == "module" );
+
+		var newModuleTargets = moduleTargets.filter( (t) => {
+			return !arguments.manifest.skills.filter( (s) => s.source == t.source && s.type == "module" ).len();
+		} );
+
+		if ( newModuleTargets.len() ) {
+			variables.print.blueLine( "  📦  Installing #newModuleTargets.len()# new module skill(s)..." ).toConsole();
+			var batchItems = newModuleTargets.map( (t) => {
+				return {
+					owner  : t.owner,
+					repo   : t.repo,
+					skill  : t.slug,
+					source : t.source,
+					type   : t.type
+				};
+			} );
+
+			downloadSkillBatch( batchItems ).each( (result) => {
+				if ( result.keyExists( "error" ) && result.error ) {
+					return;
+				}
+				if ( ( result.skill.audit_status ?: "skipped" ) == "block" ) {
+					return;
+				}
+
+				var slug     = result.skill.skill_slug ?: result.skill.skill_dir.listLast( "/" );
+				var _t       = newModuleTargets.filter( (t) => t.slug == slug );
+				var tInfo    = _t.len() ? _t.first() : {};
+				var localName = resolveSkillName( result.content, tInfo.name ?: slug );
+
+				variables.print.blueLine( "  ⬇️  Installing: #localName#" ).toConsole();
+
+				installRemoteSkill(
+					directory   = directory,
+					name        = localName,
+					content     = result.content,
+					owner       = result.skill.owner,
+					repo        = result.skill.repo,
+					path        = result.skill.skill_dir,
+					sha         = result.skill.file_sha,
+					description = result.skill.description,
+					auditStatus = result.skill.audit_status ?: "skipped",
+					skillType   = "module",
+					source      = tInfo.source ?: "",
+					manifest    = manifest
+				);
+				changes.added.append( localName );
+			} );
+		}
 
 		// ------------------------------------------------------------------
 		// 1. Prune orphaned module skills (module removed from box.json)

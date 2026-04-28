@@ -178,7 +178,8 @@ component singleton {
 		result.guidelines.removed.append( guidelineChanges.removed, true );
 
 		// Refresh skills based on installed modules
-		var skillChanges = variables.skillManager.refresh( arguments.directory, manifest );
+		var language = manifest.language ?: "boxlang";
+		var skillChanges = variables.skillManager.refresh( arguments.directory, manifest, language );
 		result.skills.added.append( skillChanges.added, true );
 		result.skills.updated.append( skillChanges.updated, true );
 		result.skills.removed.append( skillChanges.removed, true );
