@@ -25,6 +25,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Auto-Install Module Skills on Refresh**
+  - When a module is added to `box.json`, `coldbox ai refresh` now automatically detects and installs its corresponding skill from the registry
+  - Mirrors the existing MCP server auto-detection behavior — ensures skills and servers are always in sync with project dependencies
+
+- **Auto-Recovery of Missing Skills**
+  - `coldbox ai refresh` now detects and reinstalls any missing core skills (boxlang, coldbox, testbox, commandbox) that may have been lost
+  - Previously, if a skill failed to reinstall, it would be removed from the manifest permanently; now it will be recovered on the next refresh
+
+- **Improved `coldbox ai skills install --list` Command**
+  - The `--list` flag now accepts an optional slug parameter to pre-filter the interactive skill list
+  - Examples:
+    - `coldbox ai skills install --list` → show all available skills
+    - `coldbox ai skills install --list coldbox/skills` → show only ColdBox skills
+    - `coldbox ai skills install --list coldbox/skills/coldbox-testing` → show only testing category skills
+
 - **`.mcp.json` Support**
   - New file in project root to track registered MCP documentation servers for AI integration
   - Updated `coldbox ai mcp` commands to read/write from this file for consistent MCP server management
