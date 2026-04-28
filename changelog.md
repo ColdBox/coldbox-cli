@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.11.0] - 2026-04-28
+
 ### Changed
 
 - **GitHub Copilot migrated to `AGENTS.md`**
@@ -374,7 +376,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.10.1...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.11.0...HEAD
+[8.11.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.10.1...v8.11.0
 [8.10.1]: https://github.com/ColdBox/coldbox-cli/compare/v8.10.0...v8.10.1
 [8.10.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.9.0...v8.10.0
 [8.9.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.8.0...v8.9.0
