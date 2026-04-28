@@ -174,18 +174,19 @@ component singleton {
 		};
 
 		// ------------------------------------------------------------------
-		// 0. Install skills for newly-detected modules not yet in manifest
+		// 0. Install missing desired skills (core + module) not yet in manifest
 		// ------------------------------------------------------------------
 		var desiredTargets = getSkillsMap( arguments.directory, arguments.language );
-		var moduleTargets  = desiredTargets.filter( (t) => t.type == "module" );
 
-		var newModuleTargets = moduleTargets.filter( (t) => {
-			return !arguments.manifest.skills.filter( (s) => s.source == t.source && s.type == "module" ).len();
+		var missingDesiredSkills = desiredTargets.filter( (t) => {
+			return !manifest.skills.filter( (s) => {
+				return (s.owner == t.owner && s.repo == t.repo && s.slug == t.slug);
+			} ).len();
 		} );
 
-		if ( newModuleTargets.len() ) {
-			variables.print.blueLine( "  📦  Installing #newModuleTargets.len()# new module skill(s)..." ).toConsole();
-			var batchItems = newModuleTargets.map( (t) => {
+		if ( missingDesiredSkills.len() ) {
+			variables.print.blueLine( "  📦  Installing #missingDesiredSkills.len()# missing skill(s)..." ).toConsole();
+			var batchItems = missingDesiredSkills.map( (t) => {
 				return {
 					owner  : t.owner,
 					repo   : t.repo,
@@ -204,7 +205,7 @@ component singleton {
 				}
 
 				var slug     = result.skill.skill_slug ?: result.skill.skill_dir.listLast( "/" );
-				var _t       = newModuleTargets.filter( (t) => t.slug == slug );
+				var _t       = missingDesiredSkills.filter( (t) => t.slug == slug );
 				var tInfo    = _t.len() ? _t.first() : {};
 				var localName = resolveSkillName( result.content, tInfo.name ?: slug );
 
@@ -220,7 +221,7 @@ component singleton {
 					sha         = result.skill.file_sha,
 					description = result.skill.description,
 					auditStatus = result.skill.audit_status ?: "skipped",
-					skillType   = "module",
+					skillType   = tInfo.type ?: "core",
 					source      = tInfo.source ?: "",
 					manifest    = manifest
 				);
