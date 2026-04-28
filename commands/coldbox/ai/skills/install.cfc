@@ -55,7 +55,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		// ------------------------------------------------------------------
 		// --list mode: interactive multi-select
 		// ------------------------------------------------------------------
-		if ( arguments.list && !arguments.slug.len() ) {
+		if ( arguments.list ) {
 			_runInteractiveInstall(
 				directory = arguments.directory,
 				manifest  = manifest,
@@ -231,7 +231,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		var cbList    = variables.skillManager.fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
 		var allSkills = []
 		bxList.each( ( s ) => allSkills.append( {
-			label : "#bxRepo.owner#/#bxRepo.repo#/#s.slug#",
+			display : "#bxRepo.owner#/#bxRepo.repo#/#s.slug#",
 			value : {
 				owner : bxRepo.owner,
 				repo  : bxRepo.repo,
@@ -241,7 +241,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			description : s.description ?: ""
 		} ) )
 		cbList.each( ( s ) => allSkills.append( {
-			label : "#cbRepo.owner#/#cbRepo.repo#/#s.slug#",
+			display : "#cbRepo.owner#/#cbRepo.repo#/#s.slug#",
 			value : {
 				owner : cbRepo.owner,
 				repo  : cbRepo.repo,
