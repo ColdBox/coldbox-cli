@@ -14,19 +14,30 @@ BoxLang is a modern, dynamic JVM language that compiles to Java bytecode. It com
 - **Modern class syntax** - Uses `class` instead of `component`
 - **Dynamic typing** - Optional type declarations with type inference
 - **Full Java interoperability** - Direct access to Java libraries and classes
-- **Lambda expressions** - Arrow function syntax `() => result`
+- **Closure expressions** - Arrow function syntax `() => result` carries the external state of its definition context
+- **Lambda expressions** - Arrow function syntax `() -> result` carries no external state, using only its parameters
 - **Streams API** - Functional data processing
 - **Low verbosity** - Minimal ceremony, highly readable code
-- **Multiple runtimes** - Web servers, CLI, AWS Lambda, Docker
+- **Multiple runtimes** - Web servers, CLI, AWS Lambda, Docker, and more
 
 ## Class Syntax
 
 ### Basic Class Structure
 
+Annotations are supported in Boxlang using the `@` symbol. The `@inject` annotation is used for dependency injection by a framework. The annotation can be applied to classes, properties and functions.  They can have no value, or the value within `( )` can be a boolean, integer, string, array or struct.
+
 ```boxlang
-class UserService {
-    property name="userDAO" inject;
-    property name="log" inject="logbox:logger:{this}";
+@singleton
+@anotherAnnotation( true )
+@anotherOne( "value" )
+@arrayAnnotation( [ "item1", "item2" ] )
+@structAnnotation( { key: "value" } )
+class{
+	@inject
+    property name="userDAO";
+
+	@inject( "logbox:logger:{this}" )
+    property name="log";
 
     function getAll() {
         return userDAO.findAll()
@@ -47,10 +58,12 @@ class UserService {
 
 ```boxlang
 // Auto-inject by name
-property name="userService" inject;
+@inject
+property name="userService";
 
 // Explicit injection
-property name="cache" inject="cachebox:default";
+@inject( "cachebox:default" )
+property name="cache";
 
 // Typed properties
 property name="count" type="numeric";
@@ -63,7 +76,7 @@ property name="status" type="string" default="pending";
 ### Constructors
 
 ```boxlang
-class User {
+class {
     property name="firstName";
     property name="lastName";
 
@@ -82,10 +95,12 @@ class User {
 
 ### Accessors
 
+Automatic getters and setters are supported by default. You can enable or disable them at the class level with the `@accessors` annotation, but they are on by default for all properties. You can also define custom getters and setters if you need custom logic.
+
+Implicit invokers are also on by default, allowing you to call getters and setters as if they were properties or functions without the `get`/`set` prefix.
+
 ```boxlang
-// Enable automatic getters/setters
-@accessors true
-class User {
+class {
     property name="firstName";
     property name="lastName";
     property name="email";
@@ -93,9 +108,14 @@ class User {
 
 // Usage
 user = new User()
+// Use setters and getters
 user.setFirstName( "Luis" )
 user.setLastName( "Majano" )
 var name = user.getFirstName()
+// Use implicit invokers
+user.firstName = "Luis"
+user.lastName = "Majano"
+var name = user.firstName
 ```
 
 ## Lambda Expressions
@@ -189,6 +209,12 @@ var result = stringBuffer.toString()
 // Using new operator
 var uuid = new java:java.util.UUID.randomUUID()
 var dateFormatter = new java:java.text.SimpleDateFormat( "yyyy-MM-dd" )
+
+// Importing Java classes
+import java.util.ArrayList
+var list = new ArrayList()
+list.add( "item1" )
+list.add( "item2" )
 ```
 
 ### Java Casting
@@ -199,16 +225,21 @@ var intValue = javaCast( "int", 42 )
 var longValue = javaCast( "long", 1000000 )
 var boolValue = javaCast( "boolean", true )
 
+// Use the castAs is prefferred.
+var intValue = 42 castAs int
+var longValue = 1000000 castAs long
+var boolValue = true castAs boolean
+
 // Array casting
-var javaArray = javaCast( "java.lang.Object[]", [ 1, 2, 3 ] )
+var javaArray = [ 1, 2, 3 ] castAs java.lang.Object[]
 ```
 
 ### Using Java Libraries
 
 ```boxlang
 // Import Java classes
-import java:java.util.ArrayList;
-import java:java.util.HashMap;
+import java:java.util.ArrayList
+import java:java.util.HashMap
 
 class DataProcessor {
     function processData() {
