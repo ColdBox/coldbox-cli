@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **VSCode Copilot MCP Mirroring**
+  - When Copilot is a configured agent, MCP server configuration is now mirrored to `.vscode/mcp.json` using the VSCode-specific schema (`"servers"` + `"inputs": []`)
+  - Ensures GitHub Copilot agents in VSCode can discover MCP servers registered via `coldbox ai mcp` commands
+  - `.vscode/mcp.json` is written alongside the root `.mcp.json` whenever `generateMCPJson()` runs (install, refresh, MCP add/remove)
+
 ## [8.11.0] - 2026-04-28
 
 ### Changed

@@ -678,6 +678,21 @@ component singleton {
 			json: mcpJson
 		);
 
+		// Mirror to .vscode/mcp.json when copilot is a configured agent
+		var agents = arguments.manifest.agents ?: []
+		if ( agents.findNoCase( "copilot" ) ) {
+			var vscodeMcpJson = {
+				"servers" : mcpJson.mcpServers,
+				"inputs"  : []
+			}
+			var vscodeDir = arguments.directory & "/.vscode";
+			directoryCreate( vscodeDir, true, true );
+			variables.JSONService.writeJSONFile(
+				path: vscodeDir & "/mcp.json",
+				json: vscodeMcpJson
+			)
+		}
+
 		return this;
 	}
 
