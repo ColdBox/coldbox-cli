@@ -1,6 +1,30 @@
 {
   "version": 1,
   "skills": {
+    "coldbox-docbox-annotations": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "docbox/docbox-annotations/SKILL.md",
+      "computedHash": "1499864b2714c8263f3c9e83dd33b07f2935e4aae72a1b6ed57e0a36d434daa4"
+    },
+    "coldbox-docbox-generation": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "docbox/docbox-generation/SKILL.md",
+      "computedHash": "a60a9ff8c0118eb7a84e0b534a213281a0cf1d906cdafcfe50598fe6a42c5906"
+    },
+    "coldbox-testing-coverage": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/testing-coverage/SKILL.md",
+      "computedHash": "2d3df4be2c592c0e1f0092f686c88e3a1fc178c4d6923076e851d054d8157963"
+    },
+    "coldbox-testing-fixtures": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/testing-fixtures/SKILL.md",
+      "computedHash": "233f1b55bbef3c352082b59d04a37b6d081be8a5ed120916379b8ae2945d8816"
+    },
     "commandbox-config-settings": {
       "source": "ortus-boxlang/skills",
       "sourceType": "github",
@@ -54,6 +78,60 @@
       "sourceType": "github",
       "skillPath": "commandbox/commandbox-usage/SKILL.md",
       "computedHash": "db689cb9f7f895a202ecae3986f24557ff0e57d4c614da6919678204e995dd87"
+    },
+    "testbox-assertions": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/assertions/SKILL.md",
+      "computedHash": "ec20bffbbe0eb45daa80b2b960c09048831932fd1562862e844e074fa2625134"
+    },
+    "testbox-bdd": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/bdd/SKILL.md",
+      "computedHash": "d49888ca485715b6afd8adfd3e0cb829fd667bf04917d341fb0783e830d386f2"
+    },
+    "testbox-cbmockdata": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/cbmockdata/SKILL.md",
+      "computedHash": "82f94da5d77b1d83803fd706670eaedf7c34a425ccb608afc13c00e5487a1b72"
+    },
+    "testbox-expectations": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/expectations/SKILL.md",
+      "computedHash": "2faeb1db2694c762290b3b3beaf6ac10a0bd03e77c6d1b503c6037997d8956fa"
+    },
+    "testbox-listeners": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/listeners/SKILL.md",
+      "computedHash": "1d64d706323d0becf39b42ff570697ea65afb66d6e3e7bd71633ab03bf203b31"
+    },
+    "testbox-mockbox": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/mockbox/SKILL.md",
+      "computedHash": "c20d9e2604700c482cf425cd97929e6920589cd9155a9a05f3b790b61370ba61"
+    },
+    "testbox-reporters": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/reporters/SKILL.md",
+      "computedHash": "2074b9c0f23ce3e2758cc8281ab77e7df9886480d8793b35e809616a1b7fdc96"
+    },
+    "testbox-runners": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/runners/SKILL.md",
+      "computedHash": "b40b6f5a82252fe2b2a4fefd5b0aae9a0162182604ee753f2862261cafa673dc"
+    },
+    "testbox-unit-xunit": {
+      "source": "coldbox/skills",
+      "sourceType": "github",
+      "skillPath": "testbox/unit/SKILL.md",
+      "computedHash": "651ccb284e555dc7926701d82f1431aa42f6688b9c9d8441c6a17cd7b6625400"
     }
   }
 }
