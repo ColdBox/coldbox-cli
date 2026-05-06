@@ -283,7 +283,7 @@ component singleton {
 		};
 
 		// Check if AI integration is installed
-		var aiDir = arguments.directory & "/.ai"
+		var aiDir = arguments.directory & "/" & static.AI_DIR
 		if ( !directoryExists( aiDir ) ) {
 			issues.errors.append( "AI integration not installed. Run 'coldbox ai install' first." )
 			// Build summary for early return

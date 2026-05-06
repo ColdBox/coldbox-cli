@@ -1,6 +1,6 @@
 /**
  * Uninstall AI integration from a ColdBox application
- * Removes the .ai directory and all AI configuration
+ * Removes the .agents directory and all AI configuration
  *
  * Examples:
  * coldbox ai uninstall
@@ -24,9 +24,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			showColdBoxBanner( "AI Integration Uninstaller" )
 		}
 
-		var aiDirectory = "#arguments.directory#/.ai"
+		var aiDirectory = "#arguments.directory#/.agents"
 
-		// Check if .ai directory exists
+		// Check if .agents directory exists
 		if ( !directoryExists( aiDirectory ) ) {
 			printWarn( "No AI integration found in this project." )
 			return
@@ -35,7 +35,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		// Confirm uninstall unless force flag is set
 		if ( !arguments.force ) {
 			print.line()
-			printWarn( "⚠️  This will permanently delete the .ai directory and all AI configuration." )
+			printWarn( "⚠️  This will permanently delete the .agents directory and all AI configuration." )
 			print.line()
 
 			var confirmed = confirm( "Are you sure you want to uninstall AI integration? [y/N]: " )
