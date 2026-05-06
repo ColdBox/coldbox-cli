@@ -186,17 +186,34 @@ component singleton {
 	}
 
 	/**
-	 * Detect the ColdBox template type (flat or modern) based on project structure
+	 * Detect the ColdBox template type (flat or modern) based on project structure.
+	 *
+	 * Returns "modern" only when both /app and /public directories exist AND a ColdBox
+	 * application configuration file is found inside /app/config/ (ColdBox.cfc or ColdBox.bx).
+	 * This prevents false positives for flat projects that happen to have /app and /public
+	 * directories for unrelated purposes (e.g. static assets, legacy folders, or Vite output).
 	 *
 	 * @directory The project directory
 	 *
-	 * @return string "modern" if app/ and public/ exist, "flat" otherwise
+	 * @return string "modern" if a ColdBox modern layout is detected, "flat" otherwise
 	 */
 	function detectTemplateType( required string directory ){
 		var hasAppFolder    = directoryExists( "#arguments.directory#/app" )
 		var hasPublicFolder = directoryExists( "#arguments.directory#/public" )
 
-		return ( hasAppFolder && hasPublicFolder ) ? "modern" : "flat"
+		if ( hasAppFolder && hasPublicFolder ) {
+			// Confirm it is a ColdBox modern layout by checking for the app config file
+			// inside /app/config/ — this prevents false-positive "modern" detection when
+			// a flat project happens to have both /app and /public for non-ColdBox reasons.
+			var hasColdBoxConfig = fileExists( "#arguments.directory#/app/config/ColdBox.cfc" )
+			 || fileExists( "#arguments.directory#/app/config/ColdBox.bx" )
+
+			if ( hasColdBoxConfig ) {
+				return "modern"
+			}
+		}
+
+		return "flat"
 	}
 
 	/**

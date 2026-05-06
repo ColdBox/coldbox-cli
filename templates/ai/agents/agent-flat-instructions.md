@@ -90,7 +90,7 @@ This project includes AI-powered development assistance with on-demand guideline
 ### Testing
 
 - Tests located in `/tests/specs/`
-- Integration tests extend `BaseTestCase` with `appMapping="/app"`
+- Integration tests extend `BaseTestCase` with `appMapping=""`
 - **Critical:** Always call `setup()` in `beforeEach()` for test isolation
 - Run tests: `box testbox run`
 
