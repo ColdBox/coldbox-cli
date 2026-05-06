@@ -183,6 +183,11 @@ component singleton {
 			"removed" : []
 		};
 
+		// Ensure customSkills key exists (backwards compatibility with old manifests)
+		if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
+			arguments.manifest[ "customSkills" ] = []
+		}
+
 		// ------------------------------------------------------------------
 		// 0. Install missing desired skills (core + module) not yet in manifest
 		// ------------------------------------------------------------------
@@ -466,9 +471,6 @@ component singleton {
 		// Remove custom skills whose files were deleted by the user
 		missingCustomSkills.each( ( name ) => {
 			variables.print.yellowLine( "  🧹  Removing deleted custom skill entry: #name#" ).toConsole()
-			if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
-				arguments.manifest[ "customSkills" ] = []
-			}
 			arguments.manifest.customSkills = arguments.manifest.customSkills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
@@ -476,9 +478,6 @@ component singleton {
 		// ------------------------------------------------------------------
 		// 5. Sync custom skills from .agents/skills-custom/ that aren't in manifest yet
 		// ------------------------------------------------------------------
-		if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
-			arguments.manifest[ "customSkills" ] = []
-		}
 		var customSkillsDir = getCustomSkillsDirectory( arguments.directory )
 		if ( directoryExists( customSkillsDir ) ) {
 			directoryList( customSkillsDir, false, "name" ).each( ( dirName ) => {
@@ -828,7 +827,7 @@ component singleton {
 
 	/**
 	 * Create a skill override (custom copy) in the .agents/skills-custom/{name}/ directory.
-	 * Sets type=custom, empty owner/repo so refresh skips it.
+	 * Records in manifest.customSkills (no owner/repo, so refresh skips it).
 	 *
 	 * @directory The project directory
 	 * @name      The name of the skill to override
@@ -881,29 +880,23 @@ component singleton {
 			manifest[ "customSkills" ] = []
 		}
 
-		// Find existing customSkills entry for this skill
-		var existingIndex = 0
-		for ( var i = 1; i <= manifest.customSkills.len(); i++ ) {
-			if ( manifest.customSkills[ i ].name == arguments.name ) {
-				existingIndex = i;
-				break
-			}
-		}
-
 		// Also remove from manifest.skills if it was there (migrating from old location)
 		manifest.skills = manifest.skills.filter( ( s ) => s.name != arguments.name )
 
-		var existingEntry = existingIndex ? manifest.customSkills[ existingIndex ] : {}
+		// Find existing customSkills entry for this skill (for preserving description)
+		var existing      = manifest.customSkills.filter( ( s ) => s.name == arguments.name )
+		var existingEntry = existing.len() ? existing[ 1 ] : {}
 		var skillEntry    = {
 			"name"        : arguments.name,
 			"description" : existingEntry.description ?: "",
 			"syncedAt"    : dateTimeFormat( now(), "iso" )
 		}
 
-		if ( existingIndex ) {
-			manifest.customSkills[ existingIndex ] = skillEntry
-		} else {
+		// Upsert into customSkills
+		if ( existingEntry.isEmpty() ) {
 			manifest.customSkills.append( skillEntry )
+		} else {
+			manifest.customSkills = manifest.customSkills.map( ( s ) => s.name == arguments.name ? skillEntry : s )
 		}
 
 		variables.aiService.saveManifest( arguments.directory, manifest )
