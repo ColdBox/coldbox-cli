@@ -176,20 +176,24 @@ This project includes AI-powered development assistance with guidelines, skills,
     /modules/          - Module-specific guidelines
     /custom/           - Your custom guidelines
     /overrides/        - Override core guidelines
-  /skills/             - Implementation cookbooks (how-to guides)
+  /skills/             - Framework/core implementation cookbooks (auto-managed, can be .gitignored)
     /{name}/           - One folder per skill (flat, no subdirectories)
-      SKILL.md         - Skill content (fetched from registry or created locally)
+      SKILL.md         - Skill content (fetched from registry)
+  /skills-custom/      - Project-specific skills (commit these to source control)
+    /{name}/           - One folder per custom skill
+      SKILL.md         - Custom skill content (project-authored or overrides)
   /mcp-servers/        - MCP server configurations
 ```
 
 ### Manifest
 
-The `.ai/manifest.json` file contains the complete AI integration configuration:
+The `.agents/manifest.json` file contains the complete AI integration configuration:
 
 - **language**: Project language mode (boxlang, cfml, hybrid)
 - **templateType**: Application template (modern, flat)
 - **guidelines**: Array of installed guideline names
-- **skills**: Array of installed skill names
+- **skills**: Array of core/framework skill names (auto-managed)
+- **customSkills**: Array of project-specific skill names (in `skills-custom/`)
 - **agents**: Array of configured AI agents
 - **mcpServers**: Configured MCP documentation servers (core, module, custom)
 - **activeAgent**: Currently active AI agent (if set)
@@ -199,7 +203,7 @@ The `.ai/manifest.json` file contains the complete AI integration configuration:
 
 ### Using Guidelines & Skills
 
-Guidelines and skills are stored locally in `.ai/` and loaded via `read_file` when needed:
+Guidelines and skills are stored locally in `.agents/` and loaded via `read_file` when needed:
 
 **Core Guidelines** (`.ai/guidelines/core/`) — framework fundamentals:
 - `read_file` on `.ai/guidelines/core/coldbox.md` — ColdBox conventions, handler/routing/DI reference
@@ -207,10 +211,12 @@ Guidelines and skills are stored locally in `.ai/` and loaded via `read_file` wh
 
 **Module/Custom Guidelines** — load by name on request from `.ai/guidelines/modules/` or `.ai/guidelines/custom/`.
 
-**Skills** (`.ai/skills/{name}/SKILL.md`) — step-by-step implementation patterns. Examples:
-- Implement a CRUD handler: `read_file` on `.ai/skills/coldbox-handler-development/SKILL.md`
-- Build a REST API: `read_file` on `.ai/skills/coldbox-rest-api-development/SKILL.md`
-- Write tests: `read_file` on `.ai/skills/coldbox-testing-handler/SKILL.md`
+**Skills** (`.agents/skills/{name}/SKILL.md`) — step-by-step implementation patterns. Examples:
+- Implement a CRUD handler: `read_file` on `.agents/skills/coldbox-handler-development/SKILL.md`
+- Build a REST API: `read_file` on `.agents/skills/coldbox-rest-api-development/SKILL.md`
+- Write tests: `read_file` on `.agents/skills/coldbox-testing-handler/SKILL.md`
+
+**Custom Skills** (`.agents/skills-custom/{name}/SKILL.md`) — project-specific patterns. Load by name from `.agents/skills-custom/`.
 
 **To load any skill or guideline:** use `read_file` on the path shown above or in the inventories below.
 
