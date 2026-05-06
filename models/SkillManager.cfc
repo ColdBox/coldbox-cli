@@ -1,16 +1,26 @@
 /**
- * Manages AI skills — remote-first, SHA-locked, flat storage.
+ * Manages AI skills — remote-first, SHA-locked storage.
  *
- * Skills are downloaded from skills.boxlang.io and stored at:
+ * Core/framework skills are downloaded from skills.boxlang.io and stored at:
  *   {project}/.agents/skills/{name}/SKILL.md
  *
- * The manifest records sha (from registry), owner, repo, path, and syncedAt.
+ * Project-authored (custom) skills are stored separately at:
+ *   {project}/.agents/skills-custom/{name}/SKILL.md
+ *
+ * This separation allows .gitignore to ignore the auto-managed skills/ folder while
+ * safely committing project-specific skills in skills-custom/.
+ *
+ * The manifest records sha (from registry), owner, repo, path, and syncedAt for
+ * core/framework skills in manifest.skills[].
+ * Custom skills are tracked in a separate manifest.customSkills[] array
+ * that is NOT SHA-hash-managed.
+ *
  * On refresh, stale skills (sha mismatch) are re-downloaded; orphaned module
  * skills (removed from box.json) are pruned automatically.
  *
  * Multi-directory lookup order for agent instructions:
- *   1. .ai/skills/{name}/SKILL.md    (coldbox-cli managed)
- *   2. .agents/skills/{name}/SKILL.md
+ *   1. .agents/skills/{name}/SKILL.md    (coldbox-cli managed)
+ *   2. .agents/skills-custom/{name}/SKILL.md  (project custom skills)
  *   3. .claude/skills/{name}/SKILL.md
  */
 component singleton {
@@ -172,6 +182,9 @@ component singleton {
 			"updated" : [],
 			"removed" : []
 		};
+
+		// Ensure customSkills key exists (backwards compatibility with old manifests)
+		ensureCustomSkillsSection( arguments.manifest )
 
 		// ------------------------------------------------------------------
 		// 0. Install missing desired skills (core + module) not yet in manifest
@@ -387,8 +400,19 @@ component singleton {
 				var slug  = skill.slug ?: ""
 				if ( ( skill.type ?: "" ) != "custom" && owner.len() && repo.len() && slug.len() ) {
 					missingRemoteSkills.append( skill )
-				} else {
-					missingCustomSkills.append( skill.name )
+				}
+			}
+		}
+
+		// Check for deleted custom skills (in customSkills manifest section)
+		if ( structKeyExists( arguments.manifest, "customSkills" ) ) {
+			for ( var customSkill in arguments.manifest.customSkills ) {
+				if ( !isStruct( customSkill ) || !structKeyExists( customSkill, "name" ) ) {
+					continue;
+				}
+				var customSkillFile = getCustomSkillFilePath( arguments.directory, customSkill.name )
+				if ( isNull( customSkillFile ) ) {
+					missingCustomSkills.append( customSkill.name )
 				}
 			}
 		}
@@ -448,22 +472,22 @@ component singleton {
 		// Remove custom skills whose files were deleted by the user
 		missingCustomSkills.each( ( name ) => {
 			variables.print.yellowLine( "  🧹  Removing deleted custom skill entry: #name#" ).toConsole()
-			manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
+			arguments.manifest.customSkills = arguments.manifest.customSkills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
 
 		// ------------------------------------------------------------------
-		// 5. Sync custom skills from .ai/skills/ that aren't in manifest yet
+		// 5. Sync custom skills from .agents/skills-custom/ that aren't in manifest yet
 		// ------------------------------------------------------------------
-		var skillsDir = getSkillsDirectory( arguments.directory )
-		if ( directoryExists( skillsDir ) ) {
-			directoryList( skillsDir, false, "name" ).each( ( dirName ) => {
-				var skillFilePath = skillsDir & "/" & dirName & "/SKILL.md"
+		var customSkillsDir = getCustomSkillsDirectory( arguments.directory )
+		if ( directoryExists( customSkillsDir ) ) {
+			directoryList( customSkillsDir, false, "name" ).each( ( dirName ) => {
+				var skillFilePath = customSkillsDir & "/" & dirName & "/SKILL.md"
 				if ( !fileExists( skillFilePath ) ) {
 					return;
 				}
 
-				var alreadyInManifest = manifest.skills.filter( ( s ) => s.name == dirName ).len() > 0
+				var alreadyInManifest = !arguments.manifest.customSkills.filter( ( s ) => s.name == dirName ).isEmpty()
 				if ( alreadyInManifest ) {
 					return;
 				}
@@ -474,15 +498,9 @@ component singleton {
 				var parsed      = variables.utility.parseFrontmatter( content )
 				var description = parsed.frontmatter.description ?: ""
 
-				manifest.skills.append( {
+				arguments.manifest.customSkills.append( {
 					"name"        : dirName,
-					"owner"       : "",
-					"repo"        : "",
-					"path"        : "",
-					"sha"         : "",
 					"description" : description,
-					"type"        : "custom",
-					"source"      : "custom",
 					"syncedAt"    : dateTimeFormat( now(), "iso" )
 				} )
 				changes.added.append( dirName )
@@ -664,8 +682,8 @@ component singleton {
 
 	/**
 	 * Return the absolute path to a skill's SKILL.md file, checking three locations:
-	 *   1. {directory}/.agents/skills/{name}/SKILL.md
-	 *   2. {directory}/.agents/skills/{name}/SKILL.md
+	 *   1. {directory}/.agents/skills/{name}/SKILL.md       (core/framework skills)
+	 *   2. {directory}/.agents/skills-custom/{name}/SKILL.md (project custom skills)
 	 *   3. {directory}/.claude/skills/{name}/SKILL.md
 	 *
 	 * @directory The project directory
@@ -677,9 +695,11 @@ component singleton {
 		required string directory,
 		required string name
 	){
-		var skillsDirectory = getSkillsDirectory( arguments.directory )
-		var candidates      = [
+		var skillsDirectory       = getSkillsDirectory( arguments.directory )
+		var customSkillsDirectory = getCustomSkillsDirectory( arguments.directory )
+		var candidates            = [
 			skillsDirectory & "/#arguments.name#/SKILL.md",
+			customSkillsDirectory & "/#arguments.name#/SKILL.md",
 			"#arguments.directory#/.claude/skills/#arguments.name#/SKILL.md"
 		]
 		for ( var candidate in candidates ) {
@@ -689,7 +709,24 @@ component singleton {
 	}
 
 	/**
-	 * Create a custom skill from template in the flat .ai/skills/{name}/ directory.
+	 * Return the absolute path to a custom skill's SKILL.md file.
+	 * Only checks {directory}/.agents/skills-custom/{name}/SKILL.md.
+	 *
+	 * @directory The project directory
+	 * @name      The skill name (directory name)
+	 *
+	 * @return Absolute path string, or null if not found
+	 */
+	function getCustomSkillFilePath(
+		required string directory,
+		required string name
+	){
+		var candidate = getCustomSkillsDirectory( arguments.directory ) & "/#arguments.name#/SKILL.md"
+		return fileExists( candidate ) ? candidate : javacast( "null", "" )
+	}
+
+	/**
+	 * Create a custom skill from template in the .agents/skills-custom/{name}/ directory.
 	 *
 	 * @directory The project directory
 	 * @name      The custom skill name
@@ -700,7 +737,7 @@ component singleton {
 		required string name,
 		string language = "boxlang"
 	){
-		var targetDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
+		var targetDir = getCustomSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 		var skillFile = "#targetDir#/SKILL.md"
 
 		if ( !directoryExists( targetDir ) ) {
@@ -719,22 +756,17 @@ component singleton {
 		fileWrite( skillFile, template )
 
 		var manifest = variables.aiService.loadManifest( arguments.directory );
-		manifest.skills.append( {
+		ensureCustomSkillsSection( manifest )
+		manifest.customSkills.append( {
 			"name"        : arguments.name,
-			"owner"       : "",
-			"repo"        : "",
-			"path"        : "",
-			"sha"         : "",
 			"description" : "",
-			"type"        : "custom",
-			"source"      : "custom",
 			"syncedAt"    : dateTimeFormat( now(), "iso" )
 		} )
 		variables.aiService.saveManifest( arguments.directory, manifest )
 	}
 
 	/**
-	 * Check if a skill exists in any of the three skill directories.
+	 * Check if a skill exists in any of the skill directories (skills/ or skills-custom/).
 	 *
 	 * @directory The project directory
 	 * @name      The skill name (directory name)
@@ -745,12 +777,13 @@ component singleton {
 		required string directory,
 		required string name
 	){
-		var skillDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
-		return directoryExists( skillDir )
+		var skillDir       = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
+		var customSkillDir = getCustomSkillsDirectory( arguments.directory ) & "/#arguments.name#"
+		return directoryExists( skillDir ) || directoryExists( customSkillDir )
 	}
 
 	/**
-	 * Remove a skill from the project (flat path).
+	 * Remove a skill from the project (checks skills/ then skills-custom/).
 	 *
 	 * @directory The project directory
 	 * @name      The skill name to remove
@@ -762,28 +795,38 @@ component singleton {
 		required string directory,
 		required string name
 	){
-		var skillDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
+		var skillDir       = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
+		var customSkillDir = getCustomSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 
-		if ( !directoryExists( skillDir ) ) {
+		if ( !directoryExists( skillDir ) && !directoryExists( customSkillDir ) ) {
 			throw(
 				type    = "SkillManager.SkillNotFound",
-				message = "Skill '#arguments.name#' not found at: #skillDir#"
+				message = "Skill '#arguments.name#' not found at: #skillDir# or #customSkillDir#"
 			)
 		}
 
-		// Delete the skill directory and all its contents
-		directoryDelete( skillDir, true )
-		// Remove from manifest
+		// Delete whichever directory exists
+		if ( directoryExists( skillDir ) ) {
+			directoryDelete( skillDir, true )
+		}
+		if ( directoryExists( customSkillDir ) ) {
+			directoryDelete( customSkillDir, true )
+		}
+
+		// Remove from manifest (both skills and customSkills sections)
 		var manifest    = variables.aiService.loadManifest( arguments.directory )
 		manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
+		if ( structKeyExists( manifest, "customSkills" ) ) {
+			manifest.customSkills = manifest.customSkills.filter( ( s ) => s.name != name )
+		}
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
 		return true
 	}
 
 	/**
-	 * Create a skill override (custom copy) in the flat .ai/skills/{name}/ directory.
-	 * Sets type=custom, empty owner/repo so refresh skips it.
+	 * Create a skill override (custom copy) in the .agents/skills-custom/{name}/ directory.
+	 * Records in manifest.customSkills (no owner/repo, so refresh skips it).
 	 *
 	 * @directory The project directory
 	 * @name      The name of the skill to override
@@ -798,7 +841,7 @@ component singleton {
 		if ( isNull( sourcePath ) ) {
 			throw(
 				type    = "SkillManager.SkillNotFound",
-				message = "Skill '#arguments.name#' not found in .ai/skills/, .agents/skills/, or .claude/skills/"
+				message = "Skill '#arguments.name#' not found in .agents/skills/, .agents/skills-custom/, or .claude/skills/"
 			)
 		}
 
@@ -826,36 +869,39 @@ component singleton {
 			"all"
 		)
 
-		var targetDir  = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
+		var targetDir  = getCustomSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 		var targetFile = "#targetDir#/SKILL.md"
 		if ( !directoryExists( targetDir ) ) directoryCreate( targetDir, true )
 		fileWrite( targetFile, content )
 
-		// Find existing manifest entry
+		// Ensure customSkills section exists
+		ensureCustomSkillsSection( manifest )
+
+		// Also remove from manifest.skills if it was there (migrating from old location)
+		var skillName   = arguments.name
+		manifest.skills = manifest.skills.filter( ( s ) => s.name != skillName )
+
+		// Find existing customSkills entry index for this skill (for preserving description and upsert)
 		var existingIndex = 0
-		for ( var i = 1; i <= manifest.skills.len(); i++ ) {
-			if ( manifest.skills[ i ].name == arguments.name ) {
+		for ( var i = 1; i <= manifest.customSkills.len(); i++ ) {
+			if ( manifest.customSkills[ i ].name == skillName ) {
 				existingIndex = i;
 				break
 			}
 		}
 
-		var skillEntry = {
-			"name"        : arguments.name,
-			"owner"       : "",
-			"repo"        : "",
-			"path"        : "",
-			"sha"         : "",
-			"description" : existingIndex ? ( manifest.skills[ existingIndex ].description ?: "" ) : "",
-			"type"        : "custom",
-			"source"      : "custom",
+		var existingDescription = existingIndex ? ( manifest.customSkills[ existingIndex ].description ?: "" ) : ""
+		var skillEntry          = {
+			"name"        : skillName,
+			"description" : existingDescription,
 			"syncedAt"    : dateTimeFormat( now(), "iso" )
 		}
 
+		// Upsert into customSkills
 		if ( existingIndex ) {
-			manifest.skills[ existingIndex ] = skillEntry
+			manifest.customSkills[ existingIndex ] = skillEntry
 		} else {
-			manifest.skills.append( skillEntry )
+			manifest.customSkills.append( skillEntry )
 		}
 
 		variables.aiService.saveManifest( arguments.directory, manifest )
@@ -883,6 +929,18 @@ component singleton {
 			if ( isNull( skillFile ) || skillFile.isEmpty() ) {
 				issues.warnings.append( "Missing skill file: #skill.name#" )
 				issues.recommendations.append( "Run 'coldbox ai skills refresh' to restore missing skills" )
+			}
+		}
+
+		// Also check custom skills
+		var customSkills = arguments.manifest.customSkills ?: []
+		for ( var customSkill in customSkills ) {
+			var customSkillFile = getCustomSkillFilePath( arguments.directory, customSkill.name )
+			if ( isNull( customSkillFile ) ) {
+				issues.warnings.append( "Missing custom skill file: #customSkill.name#" )
+				issues.recommendations.append(
+					"Restore or recreate '#customSkill.name#' in .agents/skills-custom/, or run 'coldbox ai skills refresh' to clean up the manifest entry"
+				)
 			}
 		}
 
@@ -1296,7 +1354,7 @@ component singleton {
 
 
 	/**
-	 * Gets the skills directory path (.agents/skills)
+	 * Gets the skills directory path (.agents/skills) for core/framework skills.
 	 *
 	 * @directory The target directory
 	 *
@@ -1304,6 +1362,30 @@ component singleton {
 	 */
 	string function getSkillsDirectory( required string directory ){
 		return variables.aiService.getAIInstallDirectory( arguments.directory ) & "/skills"
+	}
+
+	/**
+	 * Gets the custom skills directory path (.agents/skills-custom) for project-authored skills.
+	 * Custom skills in this directory are meant to be committed to source control.
+	 *
+	 * @directory The target directory
+	 *
+	 * @return The full path to the skills-custom directory
+	 */
+	string function getCustomSkillsDirectory( required string directory ){
+		return variables.aiService.getAIInstallDirectory( arguments.directory ) & "/skills-custom"
+	}
+
+	/**
+	 * Ensure manifest has a customSkills array (backwards compatibility).
+	 * Mutates manifest in place.
+	 *
+	 * @manifest The manifest struct to ensure has a customSkills key
+	 */
+	private function ensureCustomSkillsSection( required struct manifest ){
+		if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
+			arguments.manifest[ "customSkills" ] = []
+		}
 	}
 
 	/**
