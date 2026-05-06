@@ -70,6 +70,7 @@ component singleton {
 			"templateType"      : templateType,
 			"guidelines"        : [],
 			"skills"            : [],
+			"customSkills"      : [],
 			"agents"            : listToArray( arguments.agents ),
 			"mcpServers"        : {
 				"core"   : [],
@@ -258,6 +259,7 @@ component singleton {
 			"lastSync"          : manifest.lastSync ?: "never",
 			"guidelines"        : manifest.guidelines ?: [],
 			"skills"            : manifest.skills ?: [],
+			"customSkills"      : manifest.customSkills ?: [],
 			"agents"            : manifest.agents ?: [],
 			"mcpServers"        : manifest.mcpServers ?: {
 				"core"   : [],
@@ -439,7 +441,8 @@ component singleton {
 			"#aiDir#/guidelines",
 			"#aiDir#/guidelines/core",
 			"#aiDir#/guidelines/custom",
-			"#aiDir#/skills"
+			"#aiDir#/skills",
+			"#aiDir#/skills-custom"
 		];
 
 		dirs.each( ( dir ) => {
@@ -474,10 +477,10 @@ component singleton {
 				"onDemandSize" : 0
 			},
 			"skills" : {
-				"total"     : info.skills.len(),
+				"total"     : info.skills.len() + info.customSkills.len(),
 				"core"      : 0,
 				"module"    : 0,
-				"custom"    : 0,
+				"custom"    : info.customSkills.len(),
 				"override"  : 0,
 				"totalSize" : 0,
 				"avgSize"   : 0
@@ -565,20 +568,23 @@ component singleton {
 				stats.skills.override++;
 			} else if ( source == "core" ) {
 				stats.skills.core++;
-			} else if ( source == "custom" || type == "custom" ) {
-				stats.skills.custom++;
 			} else {
 				stats.skills.module++;
 			}
 		} );
 
-		// Skills size (all on-demand)
-		var skillsDir = aiDir & "/skills";
+		// Skills size (all on-demand) — includes both skills/ and skills-custom/
+		var skillsDir       = aiDir & "/skills";
+		var customSkillsDir = aiDir & "/skills-custom";
+		var skillsSize      = 0;
 		if ( directoryExists( skillsDir ) ) {
-			var skillsSize         = calculateDirectorySize( skillsDir );
-			stats.skills.totalSize = skillsSize;
-			stats.skills.avgSize   = stats.skills.total > 0 ? int( skillsSize / stats.skills.total ) : 0;
+			skillsSize += calculateDirectorySize( skillsDir );
 		}
+		if ( directoryExists( customSkillsDir ) ) {
+			skillsSize += calculateDirectorySize( customSkillsDir );
+		}
+		stats.skills.totalSize = skillsSize;
+		stats.skills.avgSize   = stats.skills.total > 0 ? int( skillsSize / stats.skills.total ) : 0;
 
 		// Count MCP servers
 		var mcpServers = manifest.mcpServers ?: {
@@ -607,10 +613,10 @@ component singleton {
 		// Inlined guidelines (part of base context, shown separately for clarity)
 		stats.contextEstimate.inlinedKB        = int( stats.guidelines.inlinedSize / 1024 );
 		// On-demand resources (not in base context, but available)
-		stats.contextEstimate.onDemandKB       = int( ( stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024 );
+		stats.contextEstimate.onDemandKB       = int( ( stats.guidelines.onDemandSize + skillsSize ) / 1024 );
 		// Total available if all resources were loaded
 		stats.contextEstimate.totalAvailableKB = int(
-			( stats.agents.filesSize + stats.guidelines.onDemandSize + stats.skills.totalSize ) / 1024
+			( stats.agents.filesSize + stats.guidelines.onDemandSize + skillsSize ) / 1024
 		);
 
 		return stats;

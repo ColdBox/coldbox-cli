@@ -710,7 +710,10 @@ component singleton {
 		var aiService = variables.wirebox.getInstance( "AIService@coldbox-cli" )
 		var manifest  = aiService.loadManifest( arguments.directory )
 
-		if ( !structKeyExists( manifest, "skills" ) || !manifest.skills.len() ) {
+		var hasSkills       = structKeyExists( manifest, "skills" ) && manifest.skills.len()
+		var hasCustomSkills = structKeyExists( manifest, "customSkills" ) && manifest.customSkills.len()
+
+		if ( !hasSkills && !hasCustomSkills ) {
 			return "No skills installed yet. Run 'coldbox ai install' to get started."
 		}
 
@@ -726,9 +729,9 @@ component singleton {
 		}
 
 		var content      = []
-		var coreSkills   = manifest.skills.filter( ( s ) => s.source == "core" )
-		var moduleSkills = manifest.skills.filter( ( s ) => s.source != "core" && s.source != "custom" )
-		var customSkills = manifest.skills.filter( ( s ) => s.source == "custom" )
+		var coreSkills   = hasSkills ? manifest.skills.filter( ( s ) => s.source == "core" ) : []
+		var moduleSkills = hasSkills ? manifest.skills.filter( ( s ) => s.source != "core" && s.source != "custom" ) : []
+		var customSkills = manifest.customSkills ?: []
 
 		// Helper: group skills by prefix and append formatted output to content
 		var appendGroupedSkills = ( skills, sectionLabel ) => {
@@ -772,7 +775,7 @@ component singleton {
 		appendGroupedSkills( moduleSkills, "Module Skills" )
 		appendGroupedSkills( customSkills, "Custom Skills" )
 
-		content.append( "**To load a skill:** Use `read_file` on `.ai/skills/{skill-name}/SKILL.md` (e.g., `.ai/skills/coldbox-handler-development/SKILL.md`)." )
+		content.append( "**To load a skill:** Use `read_file` on `.agents/skills/{skill-name}/SKILL.md` (e.g., `.agents/skills/coldbox-handler-development/SKILL.md`) for core skills, or `.agents/skills-custom/{skill-name}/SKILL.md` for custom project skills." )
 
 		return content.toList( chr( 10 ) )
 	}

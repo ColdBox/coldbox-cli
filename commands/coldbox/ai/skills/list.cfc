@@ -37,27 +37,31 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				printSuccess( "All skills are up to date." )
 				return
 			}
-			info.skills = info.skills.filter( ( s ) => staleNames.find( s.name ) > 0 )
+			info.skills       = info.skills.filter( ( s ) => staleNames.find( s.name ) > 0 )
+			info.customSkills = [] // custom skills have no remote SHA, cannot be outdated
 			printWarn( "#staleNames.len()# skill(s) have updates available:" )
 			print.line()
 		}
 
-		if ( info.skills.isEmpty() ) {
+		if ( info.skills.isEmpty() && info.customSkills.isEmpty() ) {
 			printWarn( "No skills installed. Run 'coldbox ai skills install --list' to browse the registry." )
 			return
 		}
 
-		// Group by owner/repo (custom skills get bucket "custom")
+		// Group by owner/repo (custom skills in their own bucket from customSkills manifest section)
 		var groups = {}
 		info.skills.each( ( skill ) => {
-			var bucket = ( skill.type ?: "" ) == "custom"
-			 ? "custom"
-			 : ( ( skill.owner ?: "" ) != "" ? "#skill.owner#/#skill.repo#" : "unknown" )
+			var bucket = ( skill.owner ?: "" ) != "" ? "#skill.owner#/#skill.repo#" : "unknown"
 			if ( !groups.keyExists( bucket ) ) {
 				groups[ bucket ] = []
 			}
 			groups[ bucket ].append( skill )
 		} )
+
+		// Add custom skills from manifest.customSkills
+		if ( info.customSkills.len() ) {
+			groups[ "custom" ] = info.customSkills
+		}
 
 		// Sort groups: custom last, then alphabetical
 		var groupKeys = groups
@@ -105,7 +109,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Summary
 		print.line()
-		printInfo( "Total: #info.skills.len()# skill(s) installed" )
+		printInfo( "Total: #info.skills.len() + info.customSkills.len()# skill(s) installed" )
 		print.line()
 
 		if ( !outdated ) {

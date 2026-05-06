@@ -1,6 +1,6 @@
 /**
  * Create a custom skill template
- * Scaffolds a new skill in .agents/skills/{name}/
+ * Scaffolds a new skill in .agents/skills-custom/{name}/
  *
  * Examples:
  * coldbox ai skills create api-development
@@ -44,7 +44,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Creating custom skill: #arguments.name# (#uCase( language )#)" )
 
 		// Check if already exists
-		var skillPath = skillManager.getSkillsDirectory( arguments.directory ) & "/#arguments.name#/SKILL.md"
+		var skillPath = skillManager.getCustomSkillsDirectory( arguments.directory ) & "/#arguments.name#/SKILL.md"
 		if ( fileExists( skillPath ) ) {
 			printError( "Skill '#arguments.name#' already exists at:" )
 			printError( "  #skillPath#" )
