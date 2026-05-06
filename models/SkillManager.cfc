@@ -184,9 +184,7 @@ component singleton {
 		};
 
 		// Ensure customSkills key exists (backwards compatibility with old manifests)
-		if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
-			arguments.manifest[ "customSkills" ] = []
-		}
+		ensureCustomSkillsSection( arguments.manifest )
 
 		// ------------------------------------------------------------------
 		// 0. Install missing desired skills (core + module) not yet in manifest
@@ -409,6 +407,9 @@ component singleton {
 		// Check for deleted custom skills (in customSkills manifest section)
 		if ( structKeyExists( arguments.manifest, "customSkills" ) ) {
 			for ( var customSkill in arguments.manifest.customSkills ) {
+				if ( !isStruct( customSkill ) || !structKeyExists( customSkill, "name" ) ) {
+					continue;
+				}
 				var customSkillFile = getCustomSkillFilePath( arguments.directory, customSkill.name )
 				if ( isNull( customSkillFile ) ) {
 					missingCustomSkills.append( customSkill.name )
@@ -486,7 +487,7 @@ component singleton {
 					return;
 				}
 
-				var alreadyInManifest = arguments.manifest.customSkills.filter( ( s ) => s.name == dirName ).len() > 0
+				var alreadyInManifest = !arguments.manifest.customSkills.filter( ( s ) => s.name == dirName ).isEmpty()
 				if ( alreadyInManifest ) {
 					return;
 				}
@@ -755,9 +756,7 @@ component singleton {
 		fileWrite( skillFile, template )
 
 		var manifest = variables.aiService.loadManifest( arguments.directory );
-		if ( !structKeyExists( manifest, "customSkills" ) ) {
-			manifest[ "customSkills" ] = []
-		}
+		ensureCustomSkillsSection( manifest )
 		manifest.customSkills.append( {
 			"name"        : arguments.name,
 			"description" : "",
@@ -876,27 +875,33 @@ component singleton {
 		fileWrite( targetFile, content )
 
 		// Ensure customSkills section exists
-		if ( !structKeyExists( manifest, "customSkills" ) ) {
-			manifest[ "customSkills" ] = []
-		}
+		ensureCustomSkillsSection( manifest )
 
 		// Also remove from manifest.skills if it was there (migrating from old location)
-		manifest.skills = manifest.skills.filter( ( s ) => s.name != arguments.name )
+		var skillName   = arguments.name
+		manifest.skills = manifest.skills.filter( ( s ) => s.name != skillName )
 
-		// Find existing customSkills entry for this skill (for preserving description)
-		var existing      = manifest.customSkills.filter( ( s ) => s.name == arguments.name )
-		var existingEntry = existing.len() ? existing[ 1 ] : {}
-		var skillEntry    = {
-			"name"        : arguments.name,
-			"description" : existingEntry.description ?: "",
+		// Find existing customSkills entry index for this skill (for preserving description and upsert)
+		var existingIndex = 0
+		for ( var i = 1; i <= manifest.customSkills.len(); i++ ) {
+			if ( manifest.customSkills[ i ].name == skillName ) {
+				existingIndex = i;
+				break
+			}
+		}
+
+		var existingDescription = existingIndex ? ( manifest.customSkills[ existingIndex ].description ?: "" ) : ""
+		var skillEntry          = {
+			"name"        : skillName,
+			"description" : existingDescription,
 			"syncedAt"    : dateTimeFormat( now(), "iso" )
 		}
 
 		// Upsert into customSkills
-		if ( existingEntry.isEmpty() ) {
-			manifest.customSkills.append( skillEntry )
+		if ( existingIndex ) {
+			manifest.customSkills[ existingIndex ] = skillEntry
 		} else {
-			manifest.customSkills = manifest.customSkills.map( ( s ) => s.name == arguments.name ? skillEntry : s )
+			manifest.customSkills.append( skillEntry )
 		}
 
 		variables.aiService.saveManifest( arguments.directory, manifest )
@@ -1369,6 +1374,18 @@ component singleton {
 	 */
 	string function getCustomSkillsDirectory( required string directory ){
 		return variables.aiService.getAIInstallDirectory( arguments.directory ) & "/skills-custom"
+	}
+
+	/**
+	 * Ensure manifest has a customSkills array (backwards compatibility).
+	 * Mutates manifest in place.
+	 *
+	 * @manifest The manifest struct to ensure has a customSkills key
+	 */
+	private function ensureCustomSkillsSection( required struct manifest ){
+		if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
+			arguments.manifest[ "customSkills" ] = []
+		}
 	}
 
 	/**

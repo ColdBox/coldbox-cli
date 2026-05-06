@@ -109,7 +109,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Summary
 		print.line()
-		printInfo( "Total: #info.skills.len() + info.customSkills.len()# skill(s) installed" )
+		printInfo( "Total: #(info.skills.len() + info.customSkills.len())# skill(s) installed" )
 		print.line()
 
 		if ( !outdated ) {
