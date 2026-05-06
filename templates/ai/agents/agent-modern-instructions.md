@@ -205,11 +205,11 @@ The `.agents/manifest.json` file contains the complete AI integration configurat
 
 Guidelines and skills are stored locally in `.agents/` and loaded via `read_file` when needed:
 
-**Core Guidelines** (`.ai/guidelines/core/`) — framework fundamentals:
-- `read_file` on `.ai/guidelines/core/coldbox.md` — ColdBox conventions, handler/routing/DI reference
-- `read_file` on `.ai/guidelines/core/boxlang.md` — BoxLang syntax, classes, lambdas (or `cfml.md` for CFML)
+**Core Guidelines** (`.agents/guidelines/core/`) — framework fundamentals:
+- `read_file` on `.agents/guidelines/core/coldbox.md` — ColdBox conventions, handler/routing/DI reference
+- `read_file` on `.agents/guidelines/core/boxlang.md` — BoxLang syntax, classes, lambdas (or `cfml.md` for CFML)
 
-**Module/Custom Guidelines** — load by name on request from `.ai/guidelines/modules/` or `.ai/guidelines/custom/`.
+**Module/Custom Guidelines** — load by name on request from `.agents/guidelines/modules/` or `.agents/guidelines/custom/`.
 
 **Skills** (`.agents/skills/{name}/SKILL.md`) — step-by-step implementation patterns. Examples:
 - Implement a CRUD handler: `read_file` on `.agents/skills/coldbox-handler-development/SKILL.md`
