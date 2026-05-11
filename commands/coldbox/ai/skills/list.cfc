@@ -9,7 +9,7 @@
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
-	property name="skillManager" inject="SkillManager@coldbox-cli";
+	property name="skillManager"       inject="SkillManager@coldbox-cli";
 	property name="progressBarGeneric" inject="progressBarGeneric";
 
 	/**
@@ -36,13 +36,13 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		if ( arguments.json ) {
-			var manifest = loadManifest( arguments.directory )
+			var manifest            = loadManifest( arguments.directory )
 			manifest[ "installed" ] = true
 
 			if ( arguments.outdated ) {
-				var integrity = skillManager.validateSkillIntegrity( arguments.directory, info )
-				manifest[ "outdated" ] = integrity.stale.len() > 0
-				manifest[ "outdatedCount" ] = integrity.stale.len()
+				var integrity                = skillManager.validateSkillIntegrity( arguments.directory, info )
+				manifest[ "outdated" ]       = integrity.stale.len() > 0
+				manifest[ "outdatedCount" ]  = integrity.stale.len()
 				manifest[ "outdatedSkills" ] = integrity.stale
 			}
 
@@ -148,7 +148,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// Summary
 		print.line()
-		printInfo( "Total: #(info.skills.len() + info.customSkills.len())# skill(s) installed" )
+		printInfo( "Total: #( info.skills.len() + info.customSkills.len() )# skill(s) installed" )
 		print.line()
 
 		if ( !outdated ) {

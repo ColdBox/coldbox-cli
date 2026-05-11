@@ -380,13 +380,13 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				var repoList = variables.skillManager.fetchRepoSkillList( slugOwner, slugRepo )
 				for ( var s in repoList ) {
 					resolved.append( {
-						owner  : slugOwner,
-						repo   : slugRepo,
-						slug   : s.slug,
-						name   : s.name,
+						owner       : slugOwner,
+						repo        : slugRepo,
+						slug        : s.slug,
+						name        : s.name,
 						description : s.description ?: "",
-						type   : "core",
-						source : ""
+						type        : "core",
+						source      : ""
 					} )
 				}
 			} else if ( parts.len() == 3 ) {
@@ -398,13 +398,13 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				if ( directMatch.len() ) {
 					var dm = directMatch.first()
 					resolved.append( {
-						owner  : slugOwner,
-						repo   : slugRepo,
-						slug   : dm.slug,
-						name   : dm.name,
+						owner       : slugOwner,
+						repo        : slugRepo,
+						slug        : dm.slug,
+						name        : dm.name,
 						description : dm.description ?: "",
-						type   : "core",
-						source : ""
+						type        : "core",
+						source      : ""
 					} )
 				} else {
 					// Fall back to category filter
@@ -412,13 +412,13 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 					if ( categoryMatches.len() ) {
 						for ( var cs in categoryMatches ) {
 							resolved.append( {
-								owner  : slugOwner,
-								repo   : slugRepo,
-								slug   : cs.slug,
-								name   : cs.name,
+								owner       : slugOwner,
+								repo        : slugRepo,
+								slug        : cs.slug,
+								name        : cs.name,
 								description : cs.description ?: "",
-								type   : "core",
-								source : ""
+								type        : "core",
+								source      : ""
 							} )
 						}
 					}
@@ -429,13 +429,13 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				// Registry stores skill_slug with ~ as separator (not /), so join accordingly
 				var skillSlug = parts.slice( 3 ).toList( "~" )
 				resolved.append( {
-					owner  : slugOwner,
-					repo   : slugRepo,
-					slug   : skillSlug,
-					name   : parts.last(),
+					owner       : slugOwner,
+					repo        : slugRepo,
+					slug        : skillSlug,
+					name        : parts.last(),
 					description : "",
-					type   : "core",
-					source : ""
+					type        : "core",
+					source      : ""
 				} )
 			}
 		}

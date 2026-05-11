@@ -8,8 +8,8 @@
 component extends="coldbox-cli.models.BaseAICommand" {
 
 	// DI
-	property name="skillManager" inject="SkillManager@coldbox-cli";
-	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
+	property name="skillManager"       inject="SkillManager@coldbox-cli";
+	property name="agentRegistry"      inject="AgentRegistry@coldbox-cli";
 	property name="progressBarGeneric" inject="progressBarGeneric";
 
 	/**
@@ -19,7 +19,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * @directory The target directory (defaults to current directory).
 	 */
 	function run(
-		string name = "",
+		string name      = "",
 		string directory = getCwd()
 	){
 		showColdBoxBanner( "Update AI Skills" )
@@ -34,16 +34,16 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		if ( arguments.name.len() ) {
 			_updateSingle(
-				name = arguments.name,
+				name      = arguments.name,
 				directory = arguments.directory,
-				manifest = manifest
+				manifest  = manifest
 			)
 			return
 		}
 
 		_updateAll(
 			directory = arguments.directory,
-			manifest = manifest
+			manifest  = manifest
 		)
 	}
 
@@ -56,7 +56,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		required struct manifest
 	){
 		var normalizedName = arguments.name.replaceAll( "\\s+", "-" )
-		var entries = arguments.manifest.skills.filter( ( s ) => s.name == normalizedName )
+		var entries        = arguments.manifest.skills.filter( ( s ) => s.name == normalizedName )
 
 		if ( entries.isEmpty() ) {
 			printError( "Skill '#normalizedName#' is not installed." )
@@ -79,18 +79,14 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Updating #normalizedName# (#entry.owner#/#entry.repo#/#entry.slug#)..." )
 		print.toConsole()
 
-		var result = variables.skillManager.downloadSkill(
-			entry.owner,
-			entry.repo,
-			entry.slug
-		)
+		var result = variables.skillManager.downloadSkill( entry.owner, entry.repo, entry.slug )
 
 		if ( result.keyExists( "error" ) && result.error ) {
-			printError( "Failed to download '#normalizedName#': #result.message ?: 'unknown error'#" )
+			printError( "Failed to download '#normalizedName#': #result.message ?: "unknown error"#" )
 			return
 		}
 
-		var skill = result.skill
+		var skill       = result.skill
 		var auditStatus = skill.audit_status ?: "skipped"
 		if ( auditStatus == "block" ) {
 			printError( "Update blocked for '#normalizedName#' by security audit." )
@@ -98,22 +94,28 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		}
 
 		variables.skillManager.installRemoteSkill(
-			directory = arguments.directory,
-			name = normalizedName,
-			content = result.content,
-			owner = skill.owner,
-			repo = skill.repo,
-			path = skill.skill_dir,
-			sha = skill.file_sha,
+			directory   = arguments.directory,
+			name        = normalizedName,
+			content     = result.content,
+			owner       = skill.owner,
+			repo        = skill.repo,
+			path        = skill.skill_dir,
+			sha         = skill.file_sha,
 			description = skill.description ?: "",
 			auditStatus = auditStatus,
-			skillType = entry.type ?: "core",
-			source = entry.source ?: "",
-			manifest = arguments.manifest
+			skillType   = entry.type ?: "core",
+			source      = entry.source ?: "",
+			manifest    = arguments.manifest
 		)
 
-		saveManifest( arguments.directory, arguments.manifest )
-		_regenerateAgents( arguments.directory, arguments.manifest )
+		saveManifest(
+			arguments.directory,
+			arguments.manifest
+		)
+		_regenerateAgents(
+			arguments.directory,
+			arguments.manifest
+		)
 
 		print.line()
 		printSuccess( "✓ Updated #normalizedName#" )
@@ -128,9 +130,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	){
 		var targets = arguments.manifest.skills.filter( ( s ) => {
 			return ( s.type ?: "" ) != "custom" &&
-				( s.owner ?: "" ).len() &&
-				( s.repo ?: "" ).len() &&
-				( s.slug ?: "" ).len()
+			( s.owner ?: "" ).len() &&
+			( s.repo ?: "" ).len() &&
+			( s.slug ?: "" ).len()
 		} )
 
 		if ( targets.isEmpty() ) {
@@ -150,29 +152,39 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var batchItems = targets.map( ( t ) => {
 			return {
 				owner : t.owner,
-				repo : t.repo,
+				repo  : t.repo,
 				skill : t.slug
 			}
 		} )
 
 		printInfo( "Downloading updated skills from registry..." )
-		variables.progressBarGeneric.update( percent = 0, currentCount = 0, totalCount = total )
+		variables.progressBarGeneric.update(
+			percent      = 0,
+			currentCount = 0,
+			totalCount   = total
+		)
 		var batchResults = variables.skillManager.downloadSkillBatch( batchItems )
-		variables.progressBarGeneric.update( percent = 100, currentCount = total, totalCount = total )
+		variables.progressBarGeneric.update(
+			percent      = 100,
+			currentCount = total,
+			totalCount   = total
+		)
 		variables.progressBarGeneric.clear()
 		print.line().toConsole()
 
-		var successCount = 0
-		var failCount = 0
+		var successCount   = 0
+		var failCount      = 0
 		var repoSkillCache = {}
 
 		batchResults.each( ( result ) => {
 			if ( result.keyExists( "error" ) && result.error ) {
-				var failedCoords = _extractBatchCoordinates( result )
+				var failedCoords  = _extractBatchCoordinates( result )
 				var failedMessage = _extractBatchMessage( result )
-				var targetMatch = targets.filter( ( t ) => {
-					return t.owner == failedCoords.owner && t.repo == failedCoords.repo && t.slug == failedCoords.slug
-				} ).first() ?: {}
+				var targetMatch   = targets
+					.filter( ( t ) => {
+						return t.owner == failedCoords.owner && t.repo == failedCoords.repo && t.slug == failedCoords.slug
+					} )
+					.first() ?: {}
 
 				if ( failedCoords.owner.len() && failedCoords.repo.len() && failedCoords.slug.len() ) {
 					var retry = variables.skillManager.downloadSkill(
@@ -199,7 +211,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 								if ( !( replacementRetry.keyExists( "error" ) && replacementRetry.error ) ) {
 									replacementRetry[ "_targetEntry" ] = targetMatch
-									result = replacementRetry
+									result                             = replacementRetry
 								} else {
 									var replacementLabel = "#targetMatch.owner#/#targetMatch.repo#/#replacement.slug#"
 									printWarn( "  ⚠ #replacementLabel#: #replacementRetry.message ?: retryMessage#" )
@@ -230,9 +242,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				}
 			}
 
-			var skill = result.skill
+			var skill       = result.skill
 			var auditStatus = skill.audit_status ?: "skipped"
-			var matchSlug = skill.skill_slug ?: skill.skill_dir.listLast( "/" )
+			var matchSlug   = skill.skill_slug ?: skill.skill_dir.listLast( "/" )
 
 			if ( auditStatus == "block" ) {
 				printWarn( "  ⚠ #matchSlug# blocked by security audit and skipped" )
@@ -240,25 +252,27 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				return
 			}
 
-			var matches = targets.filter( ( t ) => t.slug == matchSlug )
-			var matchEntry = result.keyExists( "_targetEntry" ) ? result._targetEntry : ( matches.isEmpty() ? {} : matches.first() )
+			var matches    = targets.filter( ( t ) => t.slug == matchSlug )
+			var matchEntry = result.keyExists( "_targetEntry" ) ? result._targetEntry : (
+				matches.isEmpty() ? {} : matches.first()
+			)
 			var localName = matchEntry.keyExists( "name" ) ? matchEntry.name : skill.skill_dir.listLast( "/" )
 
 			print.toConsole( "  Updating #localName#..." )
 
 			variables.skillManager.installRemoteSkill(
-				directory = directory,
-				name = localName,
-				content = result.content,
-				owner = skill.owner,
-				repo = skill.repo,
-				path = skill.skill_dir,
-				sha = skill.file_sha,
+				directory   = directory,
+				name        = localName,
+				content     = result.content,
+				owner       = skill.owner,
+				repo        = skill.repo,
+				path        = skill.skill_dir,
+				sha         = skill.file_sha,
 				description = skill.description ?: "",
 				auditStatus = auditStatus,
-				skillType = matchEntry.keyExists( "type" ) ? matchEntry.type : "core",
-				source = matchEntry.keyExists( "source" ) ? matchEntry.source : "",
-				manifest = manifest
+				skillType   = matchEntry.keyExists( "type" ) ? matchEntry.type : "core",
+				source      = matchEntry.keyExists( "source" ) ? matchEntry.source : "",
+				manifest    = manifest
 			)
 
 			print.greenLine( " ✓" )
@@ -287,8 +301,8 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		var skillPayload = arguments.result.keyExists( "skill" ) ? arguments.result.skill : {}
 
 		var owner = _extractBatchScalar( skillPayload.owner ?: skillPayload.OWNER ?: "" )
-		var repo = _extractBatchScalar( skillPayload.repo ?: skillPayload.REPO ?: "" )
-		var slug = _extractBatchScalar( skillPayload.skill ?: skillPayload.SKILL ?: "" )
+		var repo  = _extractBatchScalar( skillPayload.repo ?: skillPayload.REPO ?: "" )
+		var slug  = _extractBatchScalar( skillPayload.skill ?: skillPayload.SKILL ?: "" )
 
 		return {
 			owner : owner,
@@ -305,7 +319,9 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			return arguments.result.message
 		}
 
-		if ( arguments.result.keyExists( "messages" ) && isArray( arguments.result.messages ) && arguments.result.messages.len() ) {
+		if (
+			arguments.result.keyExists( "messages" ) && isArray( arguments.result.messages ) && arguments.result.messages.len()
+		) {
 			return arguments.result.messages[ 1 ]
 		}
 
@@ -316,13 +332,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 * Detect not-found errors from registry responses.
 	 */
 	private boolean function _isSkillNotFoundMessage( required string message ){
-		return findNoCase( "skill not found", arguments.message ?: "" ) > 0
+		return findNoCase(
+			"skill not found",
+			arguments.message ?: ""
+		) > 0
 	}
 
 	/**
 	 * Attempt to resolve a replacement slug for renamed skills in the same repo.
 	 */
-	private struct function _resolveReplacementSkill( required struct target, required struct repoSkillCache ){
+	private struct function _resolveReplacementSkill(
+		required struct target,
+		required struct repoSkillCache
+	){
 		var cacheKey = "#arguments.target.owner#/#arguments.target.repo#"
 		if ( !arguments.repoSkillCache.keyExists( cacheKey ) ) {
 			arguments.repoSkillCache[ cacheKey ] = variables.skillManager.fetchRepoSkillList(
@@ -355,7 +377,7 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		for ( var needle in needles ) {
 			var suffix = "-#needle#"
-			var fuzzy = repoSkills.filter( ( s ) => {
+			var fuzzy  = repoSkills.filter( ( s ) => {
 				var slug = ( s.slug ?: "" ).lcase()
 				return findNoCase( needle, slug ) > 0 || right( slug, suffix.len() ) == suffix
 			} )
