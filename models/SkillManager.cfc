@@ -636,16 +636,25 @@ component singleton {
 	 *
 	 * @directory The project directory
 	 * @manifest  The manifest struct
+	 * @onProgress Optional callback invoked per checked skill with (currentCount, totalCount, skillName)
 	 *
 	 * @return Struct: {valid[], stale[], missing[]}
 	 */
 	struct function validateSkillIntegrity(
 		required string directory,
-		required struct manifest
+		required struct manifest,
+		any onProgress = javacast( "null", "" )
 	){
 		var result = { valid : [], stale : [], missing : [] }
+		var total  = arguments.manifest.skills.len()
+		var count  = 0
 
 		for ( var skill in arguments.manifest.skills ) {
+			count++
+			if ( !isNull( arguments.onProgress ) && isCustomFunction( arguments.onProgress ) ) {
+				arguments.onProgress( currentCount = count, totalCount = total, skillName = skill.name ?: "" )
+			}
+
 			var skillFile = getSkillFilePath( arguments.directory, skill.name )
 			if ( isNull( skillFile ) ) {
 				result.missing.append( skill.name )
