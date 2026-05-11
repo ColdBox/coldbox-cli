@@ -5,6 +5,7 @@
  * coldbox ai skills list
  * coldbox ai skills list --outdated
  * coldbox ai skills list --verbose
+ * coldbox ai skills list --json
  */
 component extends="coldbox-cli.models.BaseAICommand" {
 
@@ -16,17 +17,36 @@ component extends="coldbox-cli.models.BaseAICommand" {
 	 *
 	 * @outdated  Only show skills that have a newer version available in the registry
 	 * @verbose   Show extra columns (SHA, last synced)
+	 * @json      Output results as JSON
 	 * @directory The target directory (defaults to current directory)
 	 */
 	function run(
 		boolean outdated = false,
 		boolean verbose  = false,
+		boolean json     = false,
 		string directory = getCwd()
 	){
-		showColdBoxBanner( "Installed AI Skills" )
+		if ( !arguments.json ) {
+			showColdBoxBanner( "Installed AI Skills" )
+		}
 
 		var info = ensureInstalled( arguments.directory )
 		if ( !info.installed ) {
+			return
+		}
+
+		if ( arguments.json ) {
+			var manifest = loadManifest( arguments.directory )
+			manifest.installed = true
+
+			if ( arguments.outdated ) {
+				var integrity = skillManager.validateSkillIntegrity( arguments.directory, info )
+				manifest.outdated = integrity.stale.len() > 0
+				manifest.outdatedCount = integrity.stale.len()
+				manifest.outdatedSkills = integrity.stale
+			}
+
+			print.line( formatterUtil.formatJSON( manifest ) )
 			return
 		}
 

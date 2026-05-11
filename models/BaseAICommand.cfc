@@ -7,6 +7,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 	// DI - All AI commands need these services
 	property name="aiService" inject="AIService@coldbox-cli";
+	property name="formatterUtil"	inject="Formatter";
 
 	/**
 	 * Ensures AI integration is installed and returns info
