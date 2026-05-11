@@ -235,18 +235,27 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			resolvedItems = _resolveSlugs( slugs, arguments.language )
 		}
 
-		// Fetch both repos in parallel
-		var bxList    = variables.skillManager.fetchRepoSkillList( bxRepo.owner, bxRepo.repo )
-		var cbList    = variables.skillManager.fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
 		var allSkills = []
 
-		// Build skills list, filtering by resolved items if slug was provided
-		bxList.each( ( s ) => {
-			if (
-				!resolvedItems.len() || resolvedItems
-					.filter( ( r ) => r.owner == bxRepo.owner && r.repo == bxRepo.repo && r.slug == s.slug )
-					.len()
-			) {
+		// If a slug filter is provided, the resolved list is the authoritative source
+		if ( arguments.slug.len() ) {
+			allSkills = resolvedItems.map( ( r ) => {
+				return {
+					display : "#r.owner#/#r.repo#/#r.slug#",
+					value   : {
+						owner : r.owner,
+						repo  : r.repo,
+						slug  : r.slug,
+						name  : r.name
+					},
+					description : r.description ?: ""
+				}
+			} )
+		} else {
+			var bxList = variables.skillManager.fetchRepoSkillList( bxRepo.owner, bxRepo.repo )
+			var cbList = variables.skillManager.fetchRepoSkillList( cbRepo.owner, cbRepo.repo )
+
+			bxList.each( ( s ) => {
 				allSkills.append( {
 					display : "#bxRepo.owner#/#bxRepo.repo#/#s.slug#",
 					value   : {
@@ -257,14 +266,8 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 					},
 					description : s.description ?: ""
 				} )
-			}
-		} )
-		cbList.each( ( s ) => {
-			if (
-				!resolvedItems.len() || resolvedItems
-					.filter( ( r ) => r.owner == cbRepo.owner && r.repo == cbRepo.repo && r.slug == s.slug )
-					.len()
-			) {
+			} )
+			cbList.each( ( s ) => {
 				allSkills.append( {
 					display : "#cbRepo.owner#/#cbRepo.repo#/#s.slug#",
 					value   : {
@@ -275,8 +278,8 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 					},
 					description : s.description ?: ""
 				} )
-			}
-		} )
+			} )
+		}
 
 		if ( allSkills.isEmpty() ) {
 			printError( "Could not retrieve skills from registry." )
@@ -297,8 +300,8 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		printInfo( "Installing #choices.len()# selected skill(s)..." )
 		print.line()
 
-		var resolvedItems = choices.map( ( c ) => c.value )
-		var batchItems    = resolvedItems.map( ( r ) => {
+		var selectedItems = choices.map( ( c ) => c.value )
+		var batchItems    = selectedItems.map( ( r ) => {
 			return {
 				owner : r.owner,
 				repo  : r.repo,
@@ -314,7 +317,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 			}
 			var skill     = result.skill
 			var matchSlug = skill.skill_slug ?: ""
-			var matchItem = resolvedItems.filter( ( r ) => r.slug == matchSlug ).first( {} )
+			var matchItem = selectedItems.filter( ( r ) => r.slug == matchSlug ).first( {} )
 			var localName = matchItem.name ?: skill.skill_dir.listLast( "/" )
 			localName     = variables.skillManager.installRemoteSkill(
 				directory   = arguments.directory,
@@ -381,6 +384,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 						repo   : slugRepo,
 						slug   : s.slug,
 						name   : s.name,
+						description : s.description ?: "",
 						type   : "core",
 						source : ""
 					} )
@@ -398,6 +402,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 						repo   : slugRepo,
 						slug   : dm.slug,
 						name   : dm.name,
+						description : dm.description ?: "",
 						type   : "core",
 						source : ""
 					} )
@@ -411,6 +416,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 								repo   : slugRepo,
 								slug   : cs.slug,
 								name   : cs.name,
+								description : cs.description ?: "",
 								type   : "core",
 								source : ""
 							} )
@@ -427,6 +433,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 					repo   : slugRepo,
 					slug   : skillSlug,
 					name   : parts.last(),
+					description : "",
 					type   : "core",
 					source : ""
 				} )
