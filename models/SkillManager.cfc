@@ -186,6 +186,9 @@ component singleton {
 		// Ensure customSkills key exists (backwards compatibility with old manifests)
 		ensureCustomSkillsSection( arguments.manifest )
 
+		// Ensure excludes key exists (backwards compatibility with old manifests)
+		ensureExcludesSection( arguments.manifest )
+
 		// ------------------------------------------------------------------
 		// 0. Install missing desired skills (core + module) not yet in manifest
 		// ------------------------------------------------------------------
@@ -195,6 +198,10 @@ component singleton {
 		);
 
 		var missingDesiredSkills = desiredTargets.filter( ( t ) => {
+			// Skip skills the user has explicitly excluded
+			if ( arguments.manifest.excludes.findNoCase( t.name ) ) {
+				return false
+			}
 			return !manifest.skills
 				.filter( ( s ) => {
 					return ( s.owner == t.owner && s.repo == t.repo && s.slug == t.slug );
@@ -828,6 +835,13 @@ component singleton {
 		if ( structKeyExists( manifest, "customSkills" ) ) {
 			manifest.customSkills = manifest.customSkills.filter( ( s ) => s.name != name )
 		}
+
+		// Track the explicit exclusion so refresh() does not auto-reinstall it
+		ensureExcludesSection( manifest )
+		if ( !manifest.excludes.findNoCase( arguments.name ) ) {
+			manifest.excludes.append( arguments.name )
+		}
+
 		variables.aiService.saveManifest( arguments.directory, manifest )
 
 		return true
@@ -1345,6 +1359,10 @@ component singleton {
 			arguments.manifest.skills.append( entry )
 		}
 
+		// If this skill was previously excluded, lift the exclusion now that it is being explicitly installed
+		ensureExcludesSection( arguments.manifest )
+		arguments.manifest.excludes = arguments.manifest.excludes.filter( ( ex ) => !ex.equalsIgnoreCase( resolvedName ) )
+
 		return resolvedName
 	}
 
@@ -1394,6 +1412,20 @@ component singleton {
 	private function ensureCustomSkillsSection( required struct manifest ){
 		if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
 			arguments.manifest[ "customSkills" ] = []
+		}
+	}
+
+	/**
+	 * Ensure manifest has an excludes array (backwards compatibility).
+	 * The excludes array holds skill names that the user explicitly removed and
+	 * should never be auto-reinstalled by refresh().
+	 * Mutates manifest in place.
+	 *
+	 * @manifest The manifest struct to ensure has an excludes key
+	 */
+	private function ensureExcludesSection( required struct manifest ){
+		if ( !structKeyExists( arguments.manifest, "excludes" ) ) {
+			arguments.manifest[ "excludes" ] = []
 		}
 	}
 
