@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Both commands were checking for a `.ai` directory instead of `.agents`, causing them to always report "not installed" even after a successful `coldbox ai install`
   - `AIService.diagnose()` now uses the `static.AI_DIR` constant (`.agents`) instead of the hardcoded `/.ai` path
   - `coldbox ai uninstall` now correctly checks, removes, and references the `.agents` directory
+- `coldbox ai skills add slug --list` was not working.
 
 ### Added
 
