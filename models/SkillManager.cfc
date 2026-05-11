@@ -200,7 +200,7 @@ component singleton {
 		var missingDesiredSkills = desiredTargets.filter( ( t ) => {
 			// Skip skills the user has explicitly excluded
 			if ( arguments.manifest.excludes.findNoCase( t.name ) ) {
-				return false
+				return false;
 			}
 			return !manifest.skills
 				.filter( ( s ) => {
@@ -1361,7 +1361,7 @@ component singleton {
 
 		// If this skill was previously excluded, lift the exclusion now that it is being explicitly installed
 		ensureExcludesSection( arguments.manifest )
-		arguments.manifest.excludes = arguments.manifest.excludes.filter( ( ex ) => !ex.equalsIgnoreCase( resolvedName ) )
+		arguments.manifest.excludes = arguments.manifest.excludes.filter( ( excludedName ) => !excludedName.equalsIgnoreCase( resolvedName ) )
 
 		return resolvedName
 	}
