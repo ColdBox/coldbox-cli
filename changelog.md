@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `AIService.diagnose()` now uses the `static.AI_DIR` constant (`.agents`) instead of the hardcoded `/.ai` path
   - `coldbox ai uninstall` now correctly checks, removes, and references the `.agents` directory
 - `coldbox ai skills add slug --list` was not working.
+- **`coldbox ai skills remove` reinstalling removed skills during refresh**
+  - When a skill was removed via `coldbox ai skills remove`, the subsequent agent config regeneration step (`refresh()`) would detect the skill as "missing" (because its module dependency was still present in `box.json`) and immediately reinstall it
+  - Removed skills are now tracked in a new `manifest.excludes[]` array so that `refresh()` will never auto-reinstall them
+  - Explicitly re-installing a previously excluded skill via `coldbox ai skills install` lifts the exclusion and restores normal auto-management
 
 ### Added
 
