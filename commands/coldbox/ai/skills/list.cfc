@@ -37,13 +37,13 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		if ( arguments.json ) {
 			var manifest = loadManifest( arguments.directory )
-			manifest.installed = true
+			manifest[ "installed" ] = true
 
 			if ( arguments.outdated ) {
 				var integrity = skillManager.validateSkillIntegrity( arguments.directory, info )
-				manifest.outdated = integrity.stale.len() > 0
-				manifest.outdatedCount = integrity.stale.len()
-				manifest.outdatedSkills = integrity.stale
+				manifest[ "outdated" ] = integrity.stale.len() > 0
+				manifest[ "outdatedCount" ] = integrity.stale.len()
+				manifest[ "outdatedSkills" ] = integrity.stale
 			}
 
 			print.line( formatterUtil.formatJSON( manifest ) )

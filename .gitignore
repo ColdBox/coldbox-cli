@@ -11,3 +11,7 @@ modules/**
 
 # Test App
 testapp/**
+
+# Skills
+.agents/**
+.claude/**
