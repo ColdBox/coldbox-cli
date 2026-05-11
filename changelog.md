@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ensures GitHub Copilot agents in VSCode can discover MCP servers registered via `coldbox ai mcp` commands
   - `.vscode/mcp.json` is written alongside the root `.mcp.json` whenever `generateMCPJson()` runs (install, refresh, MCP add/remove)
 - `coldbox ai skills list --json` flag to output the skills manifest in JSON format for easier parsing in scripts and CI pipelines
+- `coldbox ai skills update` command to re-download and overwrite all installed registry skills with per-skill feedback and progress updates
+- `coldbox ai skills update <name>` command to re-download and overwrite a single installed registry skill by local name
 
 ### Improvements
 
