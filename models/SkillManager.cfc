@@ -199,7 +199,7 @@ component singleton {
 
 		var missingDesiredSkills = desiredTargets.filter( ( t ) => {
 			// Skip skills the user has explicitly excluded
-			if ( arguments.manifest.excludes.findNoCase( t.name ) ) {
+			if ( manifest.excludes.findNoCase( t.name ) ) {
 				return false;
 			}
 			return !manifest.skills
