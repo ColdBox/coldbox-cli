@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - When Copilot is a configured agent, MCP server configuration is now mirrored to `.vscode/mcp.json` using the VSCode-specific schema (`"servers"` + `"inputs": []`)
   - Ensures GitHub Copilot agents in VSCode can discover MCP servers registered via `coldbox ai mcp` commands
   - `.vscode/mcp.json` is written alongside the root `.mcp.json` whenever `generateMCPJson()` runs (install, refresh, MCP add/remove)
+- `coldbox ai skills list --json` flag to output the skills manifest in JSON format for easier parsing in scripts and CI pipelines
 
 ### Improvements
 
