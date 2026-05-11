@@ -417,7 +417,10 @@ component singleton {
 				if ( !isStruct( customSkill ) || !structKeyExists( customSkill, "name" ) ) {
 					continue;
 				}
-				var customSkillFile = getCustomSkillFilePath( arguments.directory, customSkill.name )
+				var customSkillFile = getCustomSkillFilePath(
+					arguments.directory,
+					customSkill.name
+				)
 				if ( isNull( customSkillFile ) ) {
 					missingCustomSkills.append( customSkill.name )
 				}
@@ -659,7 +662,11 @@ component singleton {
 		for ( var skill in arguments.manifest.skills ) {
 			count++
 			if ( !isNull( arguments.onProgress ) && isCustomFunction( arguments.onProgress ) ) {
-				arguments.onProgress( currentCount = count, totalCount = total, skillName = skill.name ?: "" )
+				arguments.onProgress(
+					currentCount = count,
+					totalCount   = total,
+					skillName    = skill.name ?: ""
+				)
 			}
 
 			var skillFile = getSkillFilePath( arguments.directory, skill.name )
@@ -958,7 +965,10 @@ component singleton {
 		// Also check custom skills
 		var customSkills = arguments.manifest.customSkills ?: []
 		for ( var customSkill in customSkills ) {
-			var customSkillFile = getCustomSkillFilePath( arguments.directory, customSkill.name )
+			var customSkillFile = getCustomSkillFilePath(
+				arguments.directory,
+				customSkill.name
+			)
 			if ( isNull( customSkillFile ) ) {
 				issues.warnings.append( "Missing custom skill file: #customSkill.name#" )
 				issues.recommendations.append(
