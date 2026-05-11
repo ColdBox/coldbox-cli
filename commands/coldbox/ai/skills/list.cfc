@@ -9,6 +9,7 @@
 component extends="coldbox-cli.models.BaseAICommand" {
 
 	property name="skillManager" inject="SkillManager@coldbox-cli";
+	property name="progressBarGeneric" inject="progressBarGeneric";
 
 	/**
 	 * Run the command
@@ -31,7 +32,25 @@ component extends="coldbox-cli.models.BaseAICommand" {
 
 		// --outdated: validate integrity and keep only stale skills
 		if ( outdated ) {
-			var integrity  = skillManager.validateSkillIntegrity( arguments.directory, info )
+			printInfo( "Checking registry for skill updates..." )
+			print.line().toConsole()
+
+			var integrity = skillManager.validateSkillIntegrity(
+				arguments.directory,
+				info,
+				( currentCount, totalCount, skillName ) => {
+					var percent = totalCount > 0 ? int( ( currentCount / totalCount ) * 100 ) : 100
+					variables.progressBarGeneric.update(
+						percent      = percent,
+						currentCount = currentCount,
+						totalCount   = totalCount
+					)
+				}
+			)
+
+			variables.progressBarGeneric.clear()
+			print.line().toConsole()
+
 			var staleNames = integrity.stale
 			if ( staleNames.isEmpty() ) {
 				printSuccess( "All skills are up to date." )
