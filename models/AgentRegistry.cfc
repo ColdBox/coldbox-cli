@@ -157,7 +157,7 @@ component singleton {
 		required string newContent
 	){
 		var startMarker = static.MANAGED_SECTION_START
-		var endMarker = static.MANAGED_SECTION_END
+		var endMarker   = static.MANAGED_SECTION_END
 
 		// Nothing to preserve — first-time write
 		if ( !fileExists( filePath ) ) {
@@ -165,8 +165,8 @@ component singleton {
 		}
 
 		var existingContent = fileRead( filePath )
-		var startPos = findNoCase( startMarker, existingContent )
-		var endPos   = findNoCase( endMarker, existingContent )
+		var startPos        = findNoCase( startMarker, existingContent )
+		var endPos          = findNoCase( endMarker, existingContent )
 
 		// Old-format file (no marker pair) — write fresh content
 		if ( !startPos || !endPos || endPos <= startPos ) {
