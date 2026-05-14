@@ -139,13 +139,13 @@ component singleton {
 	 * Merges newly generated managed content with any user-authored content from an existing file.
 	 *
 	 * The managed section is delimited by COLDBOX-CLI:START and COLDBOX-CLI:END HTML comment
-	 * markers. On refresh, only the content between those markers is replaced; everything after
-	 * the end marker (i.e. the user's custom documentation) is preserved unchanged.
+	 * markers. On refresh, only the content between those markers is replaced; user-authored
+	 * content before the start marker and after the end marker is preserved unchanged.
 	 *
 	 * Behavior:
 	 * - File does not exist → return newContent as-is (first-time write).
-	 * - File exists but has no end marker → return newContent as-is (old format, no user section to preserve).
-	 * - File exists with end marker → replace managed section, keep user section intact.
+	 * - File exists but has no start/end marker pair → return newContent as-is.
+	 * - File exists with a start/end marker pair → replace managed section, preserve user sections.
 	 *
 	 * @filePath   Absolute path to the existing agent config file (may not exist yet).
 	 * @newContent Freshly generated content that includes both START and END markers.
@@ -156,6 +156,7 @@ component singleton {
 		required string filePath,
 		required string newContent
 	){
+		var startMarker = static.MANAGED_SECTION_START
 		var endMarker = static.MANAGED_SECTION_END
 
 		// Nothing to preserve — first-time write
@@ -164,37 +165,37 @@ component singleton {
 		}
 
 		var existingContent = fileRead( filePath )
+		var startPos = findNoCase( startMarker, existingContent )
+		var endPos   = findNoCase( endMarker, existingContent )
 
-		// Find the end marker in the existing file
-		var endPos = findNoCase( endMarker, existingContent )
-
-		// Old-format file (no markers) — write fresh content, no user section to preserve
-		if ( !endPos ) {
+		// Old-format file (no marker pair) — write fresh content
+		if ( !startPos || !endPos || endPos <= startPos ) {
 			return newContent
 		}
 
-		// Extract user content: everything that comes after the end marker
-		var userStartPos = endPos + len( endMarker )
-		var userContent  = mid(
+		// Preserve user-authored content around managed section
+		var userContentBeforeManaged = left( existingContent, startPos - 1 )
+		var userStartPos             = endPos + len( endMarker )
+		var userContentAfterManaged  = mid(
 			existingContent,
 			userStartPos,
 			len( existingContent ) - userStartPos + 1
 		)
 
-		// Find the end marker position in the newly generated content
-		var newEndPos = findNoCase( endMarker, newContent )
-		if ( !newEndPos ) {
-			// New template has no end marker — return new content plus preserved user section
-			return newContent & userContent
+		// Slice managed portion from the newly generated content
+		var newStartPos = findNoCase( startMarker, newContent )
+		var newEndPos   = findNoCase( endMarker, newContent )
+		if ( !newStartPos || !newEndPos || newEndPos <= newStartPos ) {
+			return newContent & userContentAfterManaged
 		}
 
-		// Slice off the managed portion of the new content (up to and including the end marker)
-		var managedContent = left(
+		var managedContent = mid(
 			newContent,
-			newEndPos + len( endMarker ) - 1
+			newStartPos,
+			newEndPos + len( endMarker ) - newStartPos
 		)
 
-		return managedContent & userContent
+		return userContentBeforeManaged & managedContent & userContentAfterManaged
 	}
 
 	/**
