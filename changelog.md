@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `coldbox create handler --boxlang` / `--noboxlang` now propagates language selection to auto-generated views so view extensions match the requested mode (`.bxm` for BoxLang, `.cfm` for CFML)
+
 ## [8.12.0] - 2026-05-11
 
 ### Fixed

@@ -214,7 +214,8 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 		boolean open,
 		boolean rest,
 		boolean force,
-		boolean resource
+		boolean resource,
+		boolean boxlang
 	){
 		var results       = { actions : "", tests : "" }
 		var actionContent = fileRead(
@@ -249,7 +250,8 @@ component aliases="coldbox create controller" extends="coldbox-cli.models.BaseCo
 						content  : "<h1>#camelCaseHandlerName#.#thisAction#</h1>",
 						directory: arguments.viewsDirectory,
 						force    : arguments.force,
-						open     : arguments.open
+						open     : arguments.open,
+						boxlang  : arguments.boxlang
 					)
 					.run();
 			}
