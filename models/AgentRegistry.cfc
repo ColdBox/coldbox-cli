@@ -164,9 +164,15 @@ component singleton {
 			return newContent
 		}
 
-		var existingContent = fileRead( filePath )
+		// Read existing content and locate markers
+		var existingContent = fileRead( filePath ).trim()
 		var startPos        = findNoCase( startMarker, existingContent )
 		var endPos          = findNoCase( endMarker, existingContent )
+
+		// If existing content is empty or markers are not properly found, return new content as-is
+		if ( !len( existingContent ) ) {
+			return newContent
+		}
 
 		// Old-format file (no marker pair) — write fresh content
 		if ( !startPos || !endPos || endPos <= startPos ) {
@@ -174,7 +180,7 @@ component singleton {
 		}
 
 		// Preserve user-authored content around managed section
-		var userContentBeforeManaged = left( existingContent, startPos - 1 )
+		var userContentBeforeManaged = startPos > 1 ? left( existingContent, startPos - 1 ) : ""
 		var userStartPos             = endPos + len( endMarker )
 		var userContentAfterManaged  = mid(
 			existingContent,
