@@ -109,6 +109,20 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 		var resolvedItems = _resolveSlugs( slugs, language )
 
 		if ( resolvedItems.isEmpty() ) {
+			// Try direct GitHub folder fallback (for skills not yet indexed in the registry)
+			var githubInstalled = _tryGitHubFolderInstall(
+				slugs     = slugs,
+				directory = arguments.directory,
+				manifest  = manifest,
+				force     = arguments.force
+			)
+			if ( githubInstalled ) {
+				saveManifest( arguments.directory, manifest )
+				_regenerateAgents( arguments.directory, manifest )
+				print.line()
+				printTip( "Run 'coldbox ai skills list' to see all installed skills." )
+				return
+			}
 			printError( "No matching skills found for the given slug(s) '#arguments.slug#'." )
 			return
 		} else {
@@ -409,20 +423,28 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				} else {
 					// Fall back to category filter
 					var categoryMatches = repoSkills.filter( ( s ) => s?.category == thirdPart )
-					if ( categoryMatches.len() ) {
-						for ( var cs in categoryMatches ) {
-							resolved.append( {
-								owner       : slugOwner,
-								repo        : slugRepo,
-								slug        : cs.slug,
-								name        : cs.name,
-								description : cs.description ?: "",
-								type        : "core",
-								source      : ""
-							} )
-						}
+
+					// Fallback: slug prefix match (e.g. folder~skill-name when thirdPart is a folder)
+					if ( categoryMatches.isEmpty() ) {
+						categoryMatches = repoSkills.filter( ( s ) => s.slug.listFirst( "~" ) == thirdPart )
 					}
-					// If neither a direct skill nor a category matched, resolved stays empty for this slug
+
+					// Fallback: path prefix match (e.g. folder/skill-name/SKILL.md)
+					if ( categoryMatches.isEmpty() ) {
+						categoryMatches = repoSkills.filter( ( s ) => s.path.startsWith( thirdPart & "/" ) )
+					}
+
+					for ( var cs in categoryMatches ) {
+						resolved.append( {
+							owner       : slugOwner,
+							repo        : slugRepo,
+							slug        : cs.slug,
+							name        : cs.name,
+							description : cs.description ?: "",
+							type        : "core",
+							source      : ""
+						} )
+					}
 				}
 			} else {
 				// Explicit 4+ part slug: owner/repo/category/skill-name
@@ -472,6 +494,123 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 				variables.agentRegistry.configureAgent( directory, agent, language )
 			} )
 		}
+	}
+
+	/**
+	 * Fallback: install skills by fetching a GitHub folder directly via the Contents API.
+	 * Used when the registry has no results for a 3-part slug (owner/repo/folder).
+	 *
+	 * @slugs     Array of slug strings (only 3-part ones are processed)
+	 * @directory Target project directory
+	 * @manifest  Manifest struct to update (mutated in place)
+	 * @force     Overwrite existing skills if true
+	 *
+	 * @return true if at least one skill was installed
+	 */
+	private boolean function _tryGitHubFolderInstall(
+		required array slugs,
+		required string directory,
+		required struct manifest,
+		required boolean force
+	){
+		var installed = false
+
+		for ( var slug in arguments.slugs ) {
+			var parts = slug.listToArray( "/" )
+			if ( parts.len() == 3 ) {
+				var owner  = parts[ 1 ]
+				var repo   = parts[ 2 ]
+				var folder = parts[ 3 ]
+
+				// Fetch folder listing from GitHub Contents API
+				var listResult = ""
+				cfhttp(
+					method  = "GET",
+					url     = "https://api.github.com/repos/#owner#/#repo#/contents/#folder#",
+					result  = "listResult",
+					timeout = 15
+				) {
+					cfhttpparam( type = "header", name = "User-Agent", value = "coldbox-cli" );
+					cfhttpparam( type = "header", name = "Accept", value = "application/vnd.github.v3+json" );
+				};
+
+				if ( val( listResult.statusCode ) > 0 && val( listResult.statusCode ) < 400 ) {
+					try {
+						var items = deserializeJSON( listResult.fileContent )
+						if ( isArray( items ) ) {
+							var dirs = items.filter( ( i ) => i.type == "dir" )
+
+							if ( dirs.len() > 0 ) {
+								printInfo( "Fetching #dirs.len()# skill(s) directly from GitHub: #owner#/#repo#/#folder#" )
+								print.line().toConsole()
+
+								var successCount = 0
+								for ( var item in dirs ) {
+									var skillResult = ""
+									cfhttp(
+										method  = "GET",
+										url     = "https://api.github.com/repos/#owner#/#repo#/contents/#item.path#/SKILL.md",
+										result  = "skillResult",
+										timeout = 15
+									) {
+										cfhttpparam( type = "header", name = "User-Agent", value = "coldbox-cli" );
+										cfhttpparam( type = "header", name = "Accept", value = "application/vnd.github.v3+json" );
+									};
+
+									if ( val( skillResult.statusCode ) > 0 && val( skillResult.statusCode ) < 400 ) {
+										var fileData = deserializeJSON( skillResult.fileContent )
+
+										if ( fileData.keyExists( "content" ) ) {
+											var rawContent = fileData.content.replace( chr( 10 ), "" ).replace( chr( 13 ), "" )
+											var content    = toString( binaryDecode( rawContent, "base64" ) )
+											var sha        = fileData.sha ?: ""
+											var skillName  = item.name
+											var canInstall = true
+
+											if ( !force ) {
+												var existing = variables.skillManager.getSkillFilePath( directory, skillName )
+												if ( !isNull( existing ) ) {
+													printInfo( "  → #skillName# already installed (use --force to overwrite)" )
+													canInstall = false
+												}
+											}
+
+											if ( canInstall ) {
+												variables.skillManager.installRemoteSkill(
+													directory   = directory,
+													name        = skillName,
+													content     = content,
+													owner       = owner,
+													repo        = repo,
+													path        = item.path,
+													sha         = sha,
+													description = "",
+													auditStatus = "skipped",
+													skillType   = "core",
+													source      = "",
+													manifest    = manifest
+												)
+												print.greenLine( "  + #skillName#" )
+												successCount++
+												installed = true
+											}
+										}
+									}
+								}
+
+								if ( successCount ) {
+									printSuccess( "Installed #successCount# skill(s) from GitHub." )
+								}
+							}
+						}
+					} catch ( any e ) {
+						printWarn( "GitHub folder fetch failed for '#slug#': #e.message#" )
+					}
+				}
+			}
+		}
+
+		return installed
 	}
 
 }
