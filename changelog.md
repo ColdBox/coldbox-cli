@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `coldbox create handler --boxlang` / `--noboxlang` now propagates language selection to auto-generated views so view extensions match the requested mode (`.bxm` for BoxLang, `.cfm` for CFML)
 - `coldbox create model --tests` now prefixes the right location of the models
+- `coldbox watch-reinit` now honors `server.json` webroot-based server discovery so running apps in subdirectory webroots are correctly found and reinitialized
 
 ## [8.12.0] - 2026-05-11
 
