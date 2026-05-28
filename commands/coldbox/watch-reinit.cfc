@@ -81,7 +81,7 @@ component {
 			name      : defaultServer.keyExists( "name" ) ? defaultServer.name : "",
 			directory : getCWD()
 		} );
-		var serverStatus  = serverService.isServerRunning( serverDetails.serverInfo );
+		var serverStatus = serverService.isServerRunning( serverDetails.serverInfo );
 
 		// Tabula rasa
 		command( "cls" ).run();
