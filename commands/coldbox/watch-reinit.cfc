@@ -76,8 +76,12 @@ component {
 			"removed" : "red",
 			"changed" : "yellow"
 		}
-		var serverDetails = serverService.resolveServerDetails( {} );
-		var serverStatus  = serverService.isServerRunning( serverDetails.serverInfo );
+		var defaultServer = serverService.getServerInfoByDiscovery( serverConfigFile = "server.json" );
+		var serverDetails = serverService.resolveServerDetails( {
+			name      : defaultServer.keyExists( "name" ) ? defaultServer.name : "",
+			directory : getCWD()
+		} );
+		var serverStatus = serverService.isServerRunning( serverDetails.serverInfo );
 
 		// Tabula rasa
 		command( "cls" ).run();

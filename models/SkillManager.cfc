@@ -482,7 +482,7 @@ component singleton {
 		// Remove custom skills whose files were deleted by the user
 		missingCustomSkills.each( ( name ) => {
 			variables.print.yellowLine( "  🧹  Removing deleted custom skill entry: #name#" ).toConsole()
-			arguments.manifest.customSkills = arguments.manifest.customSkills.filter( ( s ) => s.name != name )
+			manifest.customSkills = manifest.customSkills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
 
@@ -497,7 +497,7 @@ component singleton {
 					return;
 				}
 
-				var alreadyInManifest = !arguments.manifest.customSkills.filter( ( s ) => s.name == dirName ).isEmpty()
+				var alreadyInManifest = !manifest.customSkills.filter( ( s ) => s.name == dirName ).isEmpty()
 				if ( alreadyInManifest ) {
 					return;
 				}
@@ -508,7 +508,7 @@ component singleton {
 				var parsed      = variables.utility.parseFrontmatter( content )
 				var description = parsed.frontmatter.description ?: ""
 
-				arguments.manifest.customSkills.append( {
+				manifest.customSkills.append( {
 					"name"        : dirName,
 					"description" : description,
 					"syncedAt"    : dateTimeFormat( now(), "iso" )

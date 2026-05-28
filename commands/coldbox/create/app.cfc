@@ -13,7 +13,7 @@
  *
  *  - BoxLang (Default)
  *  - BoxLang Desktop
- *  - Modern (CFML + BoxLang Default)
+ *  - Tiered (CFML + BoxLang Default)
  *  - flat (CFML + BoxLang Flat)
  *  - rest (CFML + BoxLang RESTful API)
  *  - rest-hmvc (HMVC + REST)
@@ -21,7 +21,7 @@
  *  - vite (flat + vite)
  * .
  * {code:bash}
- * coldbox create app skeleton=modern
+ * coldbox create app skeleton=tiered
  * // Same as
  * coldbox create app --cfml
  * {code}
@@ -48,7 +48,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 			"flat"        : "cbtemplate-flat",
 			"boxlang"     : "cbtemplate-boxlang",
 			"desktop"     : "cbtemplate-boxlang-desktop",
-			"modern"      : "cbtemplate-modern",
+			"tiered"      : "cbtemplate-tiered",
 			"rest"        : "cbtemplate-rest",
 			"rest-hmvc"   : "cbtemplate-rest-hmvc",
 			"vite"        : "cbtemplate-vite",
@@ -75,7 +75,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 	 * @migrations          Run migration init after creation
 	 * @boxlang            Set the language to BoxLang
 	 * @docker              Include Docker files and setup Docker configuration
-	 * @vite 					Setup Vite for frontend asset building (For BoxLang or Modern apps only)
+	 * @vite 					Setup Vite for frontend asset building (For BoxLang or Tiered apps only)
 	 * @rest        Is this a REST API project? (For BoxLang apps only)
 	 * @cfml        Set the language to CFML explicitly (overrides boxlang)
 	 * @ai                  Enable AI integration for the application
@@ -117,7 +117,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 		if ( arguments.cfml ) {
 			arguments.boxlang = false;
 			if ( arguments.skeleton == variables.defaultSkeleton ) {
-				arguments.skeleton = "modern";
+				arguments.skeleton = "tiered";
 			}
 			printInfo( "⚡Language set to CFML" )
 		} else {
@@ -251,8 +251,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// VITE Setup
 		if ( arguments.vite ) {
-			if ( !arguments.skeleton.reFindNoCase( "(modern|boxlang)" ) ) {
-				printWarn( "⚠️  Vite setup is only supported for 'modern' or 'boxlang' skeletons. Skipping Vite setup." )
+			if ( !arguments.skeleton.reFindNoCase( "(tiered|boxlang)" ) ) {
+				printWarn( "⚠️  Vite setup is only supported for 'tiered' or 'boxlang' skeletons. Skipping Vite setup." )
 			} else {
 				printInfo( "🥊 Setting up Vite for your frontend build system" )
 				fileCopy(

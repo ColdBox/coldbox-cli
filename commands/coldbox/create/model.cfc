@@ -408,9 +408,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 		// Generate Tests
 		if ( arguments.tests ) {
+			var appPrefix   = getAppPrefixDot( getCWD() )
+			var modelPrefix = appPrefix.isEmpty() ? "models." & arguments.name : appPrefix & "models." & arguments.name
 			command( "coldbox create model-test" )
 				.params(
-					path   : arguments.name,
+					path   : modelPrefix,
 					force  : arguments.force,
 					open   : arguments.open,
 					methods: arguments.methods,

@@ -176,8 +176,8 @@ component extends="app" {
 				.options( [
 					{
 						accessKey : 1,
-						value     : "modern",
-						display   : "Modern Template - Security-first CFML and BoxLang template with /app outside webroot",
+						value     : "tiered",
+						display   : "Tiered Template - Security-first CFML and BoxLang template with /app outside webroot",
 						selected  : true
 					},
 					{

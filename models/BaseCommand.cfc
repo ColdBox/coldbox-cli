@@ -31,6 +31,19 @@ component accessors="true" {
 	}
 
 	/**
+	 * Detects the application layout and returns the appropriate path prefix.
+	 * In a modern layout (app/ and public/ directories exist), returns "app/".
+	 * In a flat layout, returns "".
+	 *
+	 * @cwd The current working directory
+	 *
+	 * @return string "app." for modern layout, "" for flat layout
+	 */
+	function getAppPrefixDot( required cwd ){
+		return variables.utility.detectTemplateType( cwd ) == "modern" ? "app." : "";
+	}
+
+	/**
 	 * Detects the application layout and returns the appropriate modules directory path.
 	 * In a modern layout (or BoxLang project), modules live under lib/modules.
 	 * In a flat layout, modules live under modules.
