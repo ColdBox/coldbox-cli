@@ -101,6 +101,7 @@ Each command extends `BaseCommand.cfc` (or `BaseAICommand.cfc` for AI commands) 
 - **Always lint markdown files after editing** - Run `npx markdownlint-cli -f {filename}` after any markdown file modifications
 - Markdown linting configuration is in `.markdownlint.json`
 - Fix any linting errors before committing changes
+- **Always update `changelog.md`** for every fix, update, or addition
 
 ## Development Workflows
 
