@@ -1033,7 +1033,7 @@ component singleton {
 		required string source,
 		required array excludedMethods
 	){
-		var matcher = variables.FUNCTION_PATTERN.matcher( arguments.source )
+		var matcher = static.FUNCTION_PATTERN.matcher( arguments.source )
 		var names   = []
 
 		while ( matcher.find() ) {
