@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ###
 
 - Invalid scope on `FUNCTION_PATTERN` variable in Agent Registry
+- `coldbox ai install` now registers the correct MCP server URL (`https://boxlang.ortusbooks.com/~gitbook/mcp`) for the BoxLang core language documentation entry instead of the BoxLang AI module URL
 
 ## [8.13.0] - 2026-05-28
 
