@@ -40,7 +40,7 @@ component singleton {
 			"boxlang" : {
 				"name"        : "boxlang",
 				"description" : "BoxLang Language Documentation",
-				"url"         : "https://ai.ortusbooks.com/~gitbook/mcp"
+				"url"         : "https://boxlang.ortusbooks.com/~gitbook/mcp"
 			},
 			"boxlang-ide" : {
 				"name"        : "boxlang-ide",
