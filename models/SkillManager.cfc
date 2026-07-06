@@ -32,6 +32,7 @@ component singleton {
 	property name="wirebox"        inject="wirebox";
 	property name="utility"        inject="Utility@coldbox-cli";
 	property name="aiService"      inject="AIService@coldbox-cli";
+	property name="agentRegistry"  inject="AgentRegistry@coldbox-cli";
 	property name="settings"       inject="box:modulesettings:coldbox-cli";
 
 	// =========================================================================
@@ -291,7 +292,7 @@ component singleton {
 
 		toRemove.each( ( name ) => {
 			variables.print.yellowLine( "  🗑️  Removing orphaned module skill: #name#" ).toConsole()
-			deleteSkillDir( directory, name )
+			deleteSkillDir( directory, name, manifest.agents ?: [] )
 			manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
@@ -828,19 +829,29 @@ component singleton {
 			)
 		}
 
+		// Remove from manifest (both skills and customSkills sections)
+		var manifest    = variables.aiService.loadManifest( arguments.directory )
+		manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
+		if ( structKeyExists( manifest, "customSkills" ) ) {
+			manifest.customSkills = manifest.customSkills.filter( ( s ) => s.name != name )
+		}
+
+		// Remove agent symlinks before deleting the canonical directory
+		var activeAgents = manifest.agents ?: []
+		if ( activeAgents.len() ) {
+			variables.agentRegistry.removeSkillSymlinks(
+				arguments.directory,
+				arguments.name,
+				activeAgents
+			)
+		}
+
 		// Delete whichever directory exists
 		if ( directoryExists( skillDir ) ) {
 			directoryDelete( skillDir, true )
 		}
 		if ( directoryExists( customSkillDir ) ) {
 			directoryDelete( customSkillDir, true )
-		}
-
-		// Remove from manifest (both skills and customSkills sections)
-		var manifest    = variables.aiService.loadManifest( arguments.directory )
-		manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
-		if ( structKeyExists( manifest, "customSkills" ) ) {
-			manifest.customSkills = manifest.customSkills.filter( ( s ) => s.name != name )
 		}
 
 		// Track the explicit exclusion so refresh() does not auto-reinstall it
@@ -1341,6 +1352,16 @@ component singleton {
 			arguments.content
 		)
 
+		// Create symlinks in each active agent's dedicated skills directory
+		var activeAgents = arguments.manifest.agents ?: []
+		if ( activeAgents.len() ) {
+			variables.agentRegistry.createSkillSymlinks(
+				arguments.directory,
+				resolvedName,
+				activeAgents
+			)
+		}
+
 		// Upsert manifest entry
 		var existingIndex = 0
 		for ( var i = 1; i <= arguments.manifest.skills.len(); i++ ) {
@@ -1440,15 +1461,26 @@ component singleton {
 	}
 
 	/**
-	 * Delete a skill directory under .ai/skills/ if it exists.
+	 * Delete a skill directory under .agents/skills/ if it exists,
+	 * and remove any agent symlinks pointing to it.
 	 *
 	 * @directory The project directory
 	 * @name      The skill name (directory name)
+	 * @agents    Optional array of active agent names (for symlink cleanup)
 	 */
 	private function deleteSkillDir(
 		required string directory,
-		required string name
+		required string name,
+		array agents = []
 	){
+		// Remove agent symlinks before deleting the canonical directory
+		if ( arguments.agents.len() ) {
+			variables.agentRegistry.removeSkillSymlinks(
+				arguments.directory,
+				arguments.name,
+				arguments.agents
+			)
+		}
 		var skillDir = getSkillsDirectory( arguments.directory ) & "/#arguments.name#"
 		if ( directoryExists( skillDir ) ) {
 			directoryDelete( skillDir, true )

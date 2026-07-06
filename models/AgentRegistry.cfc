@@ -28,6 +28,17 @@ component singleton {
 			"gemini"   : "GEMINI.md",
 			"opencode" : "AGENTS.md"
 		}
+		// Skills directories per agent (paths relative to the project root).
+		// Empty string means the agent has no dedicated skills directory and
+		// skills are only available at the canonical .agents/skills/ location.
+		AGENT_SKILLS_DIRS = {
+			"claude"   : ".claude/skills",
+			"copilot"  : ".github/instructions",
+			"cursor"   : ".cursor/rules",
+			"codex"    : "",
+			"gemini"   : "",
+			"opencode" : ""
+		}
 		// Demarcation markers that wrap the ColdBox CLI-managed section
 		MANAGED_SECTION_START = "<!-- COLDBOX-CLI:START -->"
 		MANAGED_SECTION_END   = "<!-- COLDBOX-CLI:END -->"
@@ -65,10 +76,11 @@ component singleton {
 	}
 
 	// Expose them as instance properties for easier access in commands
-	this.SUPPORTED_AGENTS = static.SUPPORTED_AGENTS
-	this.AGENT_OPTIONS    = static.AGENT_OPTIONS
-	this.AGENT_FILES      = static.AGENT_FILES
-	this.FUNCTION_PATTERN = static.FUNCTION_PATTERN
+	this.SUPPORTED_AGENTS    = static.SUPPORTED_AGENTS
+	this.AGENT_OPTIONS       = static.AGENT_OPTIONS
+	this.AGENT_FILES         = static.AGENT_FILES
+	this.AGENT_SKILLS_DIRS   = static.AGENT_SKILLS_DIRS
+	this.FUNCTION_PATTERN    = static.FUNCTION_PATTERN
 
 	/**
 	 * Configure agents for a project
@@ -129,6 +141,128 @@ component singleton {
 		} )
 
 		return issues;
+	}
+
+	/**
+	 * Get the absolute path to an agent's dedicated skills directory within a project.
+	 * Returns null when the agent has no dedicated skills directory.
+	 *
+	 * @directory The project directory
+	 * @agent     The agent name (claude, copilot, cursor, codex, gemini, opencode)
+	 *
+	 * @return Absolute path string, or null if the agent has no dedicated skills directory
+	 */
+	function getAgentSkillsDirectory(
+		required string directory,
+		required string agent
+	){
+		var relPath = static.AGENT_SKILLS_DIRS[ arguments.agent ] ?: ""
+		if ( !relPath.len() ) {
+			return javacast( "null", "" )
+		}
+		// Normalize trailing separator
+		var dir = arguments.directory
+		if ( right( dir, 1 ) == "/" || right( dir, 1 ) == "\" ) {
+			dir = left( dir, len( dir ) - 1 )
+		}
+		return "#dir#/#relPath#"
+	}
+
+	/**
+	 * Create symlinks for a skill in every active agent's dedicated skills directory.
+	 * Each symlink is a directory-level link that points back to the canonical
+	 * .agents/skills/{name} directory using a relative path, so it remains valid
+	 * after the project is cloned or moved.
+	 *
+	 * If symlink creation is not supported by the OS / JVM (e.g. Windows without
+	 * elevated privileges) the failure is silently swallowed with a yellow warning.
+	 *
+	 * @directory The project directory
+	 * @skillName The skill directory name
+	 * @agents    Array of active agent names
+	 */
+	function createSkillSymlinks(
+		required string directory,
+		required string skillName,
+		required array agents
+	){
+		var canonicalSkillDir = "#arguments.directory#/.agents/skills/#arguments.skillName#"
+		var Files             = createObject( "java", "java.nio.file.Files" )
+		var Paths             = createObject( "java", "java.nio.file.Paths" )
+		// Store loop variables outside closure to avoid scope issues
+		var dir       = arguments.directory
+		var skill     = arguments.skillName
+		var canonical = canonicalSkillDir
+
+		for ( var agent in arguments.agents ) {
+			var agentSkillsDir = getAgentSkillsDirectory( dir, agent )
+			if ( isNull( agentSkillsDir ) ) {
+				continue
+			}
+
+			var linkPath = "#agentSkillsDir#/#skill#"
+
+			// Skip if link/directory already exists
+			if ( directoryExists( linkPath ) || fileExists( linkPath ) ) {
+				continue
+			}
+
+			try {
+				// Create parent directory if needed
+				if ( !directoryExists( agentSkillsDir ) ) {
+					directoryCreate( agentSkillsDir, true )
+				}
+
+				// Compute a relative path from the link's parent dir → canonical dir
+				var agentDirPath  = Paths.get( agentSkillsDir )
+				var targetDirPath = Paths.get( canonical )
+				var relativePath  = agentDirPath.relativize( targetDirPath )
+
+				Files.createSymbolicLink( Paths.get( linkPath ), relativePath )
+			} catch ( any e ) {
+				variables.print
+					.yellowLine( "  ⚠️  Could not create symlink for agent '#agent#': #e.message#" )
+					.toConsole()
+			}
+		}
+	}
+
+	/**
+	 * Remove symlinks for a skill from every active agent's dedicated skills directory.
+	 * Only removes entries that are genuine symbolic links; real directories and files
+	 * are left untouched.
+	 *
+	 * @directory The project directory
+	 * @skillName The skill directory name
+	 * @agents    Array of active agent names
+	 */
+	function removeSkillSymlinks(
+		required string directory,
+		required string skillName,
+		required array agents
+	){
+		var Files = createObject( "java", "java.nio.file.Files" )
+		var Paths = createObject( "java", "java.nio.file.Paths" )
+		var dir   = arguments.directory
+		var skill = arguments.skillName
+
+		for ( var agent in arguments.agents ) {
+			var agentSkillsDir = getAgentSkillsDirectory( dir, agent )
+			if ( isNull( agentSkillsDir ) ) {
+				continue
+			}
+
+			var linkPath = "#agentSkillsDir#/#skill#"
+
+			try {
+				var path = Paths.get( linkPath )
+				if ( Files.isSymbolicLink( path ) ) {
+					Files.delete( path )
+				}
+			} catch ( any e ) {
+				// Silently ignore removal errors
+			}
+		}
 	}
 
 	// ========================================
