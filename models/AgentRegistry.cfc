@@ -19,7 +19,8 @@ component singleton {
 			"codex",
 			"gemini",
 			"kilo",
-			"opencode"
+			"opencode",
+			"pi"
 		]
 		AGENT_FILES = {
 			"claude"   : "CLAUDE.md",
@@ -28,7 +29,8 @@ component singleton {
 			"codex"    : "AGENTS.md",
 			"gemini"   : "GEMINI.md",
 			"kilo"     : "AGENTS.md",
-			"opencode" : "AGENTS.md"
+			"opencode" : "AGENTS.md",
+			"pi"       : "AGENTS.md"
 		}
 		// Skills directories per agent (paths relative to the project root).
 		// Empty string means the agent has no dedicated skills directory and
@@ -40,7 +42,8 @@ component singleton {
 			"codex"    : "",
 			"gemini"   : "",
 			"kilo"     : ".kilo/skills",
-			"opencode" : ""
+			"opencode" : "",
+			"pi"       : ".pi/skills"
 		}
 		// Demarcation markers that wrap the ColdBox CLI-managed section
 		MANAGED_SECTION_START = "<!-- COLDBOX-CLI:START -->"
@@ -73,6 +76,10 @@ component singleton {
 			{
 				display : "OpenCode - Open source AI assistant",
 				value   : "opencode"
+			},
+			{
+				display : "Pi - Minimal terminal coding agent",
+				value   : "pi"
 			}
 		]
 
@@ -488,6 +495,8 @@ component singleton {
 			case "kilo":
 				return "#arguments.directory#/AGENTS.md"
 			case "opencode":
+				return "#arguments.directory#/AGENTS.md"
+			case "pi":
 				return "#arguments.directory#/AGENTS.md"
 			default:
 				return "#arguments.directory#/AI_INSTRUCTIONS.md"

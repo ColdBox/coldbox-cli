@@ -174,6 +174,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 			{
 				"display" : "OpenCode - Open source AI assistant",
 				"value"   : "opencode"
+			},
+			{
+				"display" : "Pi - Minimal terminal coding agent",
+				"value"   : "pi"
 			}
 		]
 

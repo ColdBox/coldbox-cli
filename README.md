@@ -611,6 +611,7 @@ After `coldbox ai install`, your project will have a `.agents/` directory contai
 .cursor/rules/{skill-name}         → ../../.agents/skills/{skill-name}
 .github/instructions/{skill-name}  → ../../.agents/skills/{skill-name}
 .kilo/skills/{skill-name}          → ../../.agents/skills/{skill-name}
+.pi/skills/{skill-name}            → ../../.agents/skills/{skill-name}
 ```
 
 - **Guidelines**: Framework documentation and best practices (ColdBox, BoxLang, CFML, etc.)
@@ -638,6 +639,7 @@ coldbox ai agents refresh             # Regenerate all configurations
 | Gemini | `GEMINI.md` | N/A (uses `.agents/skills/` directly) |
 | Kilo Code | `AGENTS.md` (shared) | `.kilo/skills/` |
 | OpenCode | `AGENTS.md` (shared) | N/A (uses `.agents/skills/` directly) |
+| Pi | `AGENTS.md` (shared) | `.pi/skills/` |
 
 **Per-Agent Skill Discovery**: Each agent discovers skills through its own native skills directory via automatically managed directory symlinks:
 
