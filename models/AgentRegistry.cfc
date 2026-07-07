@@ -73,8 +73,8 @@ component singleton {
 		FUNCTION_PATTERN = createObject( "java", "java.util.regex.Pattern" ).compile(
 			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
 		)
-		Files             = createObject( "java", "java.nio.file.Files" )
-		Paths             = createObject( "java", "java.nio.file.Paths" )
+		Files = createObject( "java", "java.nio.file.Files" )
+		Paths = createObject( "java", "java.nio.file.Paths" )
 	}
 
 	// Expose them as instance properties for easier access in commands
@@ -108,8 +108,11 @@ component singleton {
 			}
 
 			var content    = fileRead( configPath )
-			var hasMarkers = findNoCase( static.MANAGED_SECTION_START, content ) > 0 &&
-				findNoCase( static.MANAGED_SECTION_END, content ) > 0
+			var hasMarkers = findNoCase(
+				static.MANAGED_SECTION_START,
+				content
+			) > 0 &&
+			findNoCase( static.MANAGED_SECTION_END, content ) > 0
 
 			if ( !hasMarkers ) {
 				conflicts.append( {
@@ -139,7 +142,12 @@ component singleton {
 		string conflictResolution = "overwrite"
 	){
 		return listToArray( arguments.agents ).map( ( agent ) => {
-			configureAgent( directory, agent, language, conflictResolution )
+			configureAgent(
+				directory,
+				agent,
+				language,
+				conflictResolution
+			)
 			return agent
 		} )
 	}
@@ -421,7 +429,11 @@ component singleton {
 
 		if ( arguments.agent == "claude" ) {
 			var agentsFilePath = getDirectoryFromPath( configPath ) & "AGENTS.md"
-			var mergedContent  = mergeUserContent( agentsFilePath, content, arguments.conflictResolution )
+			var mergedContent  = mergeUserContent(
+				agentsFilePath,
+				content,
+				arguments.conflictResolution
+			)
 			fileWrite( agentsFilePath, mergedContent )
 			fileWrite( configPath, "@AGENTS.md" )
 			return
@@ -429,7 +441,11 @@ component singleton {
 
 		fileWrite(
 			configPath,
-			mergeUserContent( configPath, content, arguments.conflictResolution )
+			mergeUserContent(
+				configPath,
+				content,
+				arguments.conflictResolution
+			)
 		)
 	}
 
@@ -1341,7 +1357,10 @@ component singleton {
 	 *
 	 * @return Relative path from the source to the target
 	 */
-	function relativize( required string fromPath, required string toPath ) {
+	function relativize(
+		required string fromPath,
+		required string toPath
+	){
 		// Normalize separators
 		arguments.fromPath = replace( arguments.fromPath, "\", "/", "all" )
 		arguments.toPath   = replace( arguments.toPath, "\", "/", "all" )
