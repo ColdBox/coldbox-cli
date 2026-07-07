@@ -27,12 +27,14 @@ component singleton {
 	 * @agents Comma-separated list of agents to configure (claude,copilot,codex,gemini,opencode)
 	 * @language Project language mode: boxlang, cfml, hybrid (default: boxlang)
 	 * @force Overwrite existing AI configuration
+	 * @conflictResolution How to handle existing agent files without markers: "overwrite", "merge", or "skip"
 	 */
 	function install(
 		required string directory,
-		string agents   = "claude",
-		string language = "boxlang",
-		boolean force   = false
+		string agents             = "claude",
+		string language           = "boxlang",
+		boolean force             = false,
+		string conflictResolution = "overwrite"
 	){
 		var result = {
 			"success"    : true,
@@ -113,7 +115,8 @@ component singleton {
 		result.agents = variables.agentRegistry.configureAgents(
 			arguments.directory,
 			arguments.agents,
-			arguments.language
+			arguments.language,
+			arguments.conflictResolution
 		);
 
 		result.manifest = manifest;
@@ -136,10 +139,14 @@ component singleton {
 	 * 4. Return a result struct with details on what was added, updated, or removed, along with a success status and message
 	 *
 	 * @directory The project directory
+	 * @conflictResolution How to handle existing agent files without markers: "overwrite", "merge", or "skip"
 	 *
 	 * @return Struct with success status, message, and lists of added/updated/removed guidelines and skills
 	 */
-	struct function refresh( required string directory ){
+	struct function refresh(
+		required string directory,
+		string conflictResolution = "overwrite"
+	){
 		var result = {
 			"success"    : true,
 			"message"    : "",
@@ -231,7 +238,12 @@ component singleton {
 		if ( structKeyExists( manifest, "agents" ) && manifest.agents.len() ) {
 			var language = manifest.language ?: "boxlang";
 			manifest.agents.each( ( agent ) => {
-				variables.agentRegistry.configureAgent( directory, agent, language );
+				variables.agentRegistry.configureAgent(
+					directory,
+					agent,
+					language,
+					conflictResolution
+				);
 				result.agents.append( agent );
 			} );
 		}

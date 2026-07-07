@@ -18,7 +18,9 @@ component singleton {
 			"cursor",
 			"codex",
 			"gemini",
-			"opencode"
+			"kilo",
+			"opencode",
+			"pi"
 		]
 		AGENT_FILES = {
 			"claude"   : "CLAUDE.md",
@@ -26,7 +28,22 @@ component singleton {
 			"cursor"   : ".cursorrules",
 			"codex"    : "AGENTS.md",
 			"gemini"   : "GEMINI.md",
-			"opencode" : "AGENTS.md"
+			"kilo"     : "AGENTS.md",
+			"opencode" : "AGENTS.md",
+			"pi"       : "AGENTS.md"
+		}
+		// Skills directories per agent (paths relative to the project root).
+		// Empty string means the agent has no dedicated skills directory and
+		// skills are only available at the canonical .agents/skills/ location.
+		AGENT_SKILLS_DIRS = {
+			"claude"   : ".claude/skills",
+			"copilot"  : ".github/instructions",
+			"cursor"   : ".cursor/rules",
+			"codex"    : "",
+			"gemini"   : "",
+			"kilo"     : ".kilo/skills",
+			"opencode" : "",
+			"pi"       : ".pi/skills"
 		}
 		// Demarcation markers that wrap the ColdBox CLI-managed section
 		MANAGED_SECTION_START = "<!-- COLDBOX-CLI:START -->"
@@ -53,8 +70,16 @@ component singleton {
 				value   : "gemini"
 			},
 			{
+				display : "Kilo Code - AI-powered development environment",
+				value   : "kilo"
+			},
+			{
 				display : "OpenCode - Open source AI assistant",
 				value   : "opencode"
+			},
+			{
+				display : "Pi - Minimal terminal coding agent",
+				value   : "pi"
 			}
 		]
 
@@ -62,13 +87,59 @@ component singleton {
 		FUNCTION_PATTERN = createObject( "java", "java.util.regex.Pattern" ).compile(
 			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
 		)
+		Files = createObject( "java", "java.nio.file.Files" )
+		Paths = createObject( "java", "java.nio.file.Paths" )
 	}
 
 	// Expose them as instance properties for easier access in commands
-	this.SUPPORTED_AGENTS = static.SUPPORTED_AGENTS
-	this.AGENT_OPTIONS    = static.AGENT_OPTIONS
-	this.AGENT_FILES      = static.AGENT_FILES
-	this.FUNCTION_PATTERN = static.FUNCTION_PATTERN
+	this.SUPPORTED_AGENTS  = static.SUPPORTED_AGENTS
+	this.AGENT_OPTIONS     = static.AGENT_OPTIONS
+	this.AGENT_FILES       = static.AGENT_FILES
+	this.AGENT_SKILLS_DIRS = static.AGENT_SKILLS_DIRS
+	this.FUNCTION_PATTERN  = static.FUNCTION_PATTERN
+
+	/**
+	 * Detect agent config files that exist but lack managed section markers.
+	 * These files may contain user-authored content that would be overwritten.
+	 *
+	 * @directory The project directory
+	 * @agents Comma-separated list of agents to check
+	 *
+	 * @return Array of structs: [{ agent, filePath, hasMarkers, fileSize }]
+	 */
+	function detectAgentFileConflicts(
+		required string directory,
+		required string agents
+	){
+		var conflicts = []
+		var agentList = listToArray( arguments.agents )
+
+		agentList.each( ( agent ) => {
+			var configPath = getAgentConfigPath( directory, agent )
+
+			if ( !fileExists( configPath ) ) {
+				return
+			}
+
+			var content    = fileRead( configPath )
+			var hasMarkers = findNoCase(
+				static.MANAGED_SECTION_START,
+				content
+			) > 0 &&
+			findNoCase( static.MANAGED_SECTION_END, content ) > 0
+
+			if ( !hasMarkers ) {
+				conflicts.append( {
+					"agent"      : agent,
+					"filePath"   : configPath,
+					"hasMarkers" : false,
+					"fileSize"   : getFileInfo( configPath ).size
+				} )
+			}
+		} )
+
+		return conflicts
+	}
 
 	/**
 	 * Configure agents for a project
@@ -76,14 +147,21 @@ component singleton {
 	 * @directory The project directory
 	 * @agents Comma-separated list of agents
 	 * @language Project language mode
+	 * @conflictResolution How to handle existing files without markers: "overwrite", "merge", or "skip"
 	 */
 	function configureAgents(
 		required string directory,
 		required string agents,
-		required string language
+		required string language,
+		string conflictResolution = "overwrite"
 	){
 		return listToArray( arguments.agents ).map( ( agent ) => {
-			configureAgent( directory, agent, language )
+			configureAgent(
+				directory,
+				agent,
+				language,
+				conflictResolution
+			)
 			return agent
 		} )
 	}
@@ -131,6 +209,131 @@ component singleton {
 		return issues;
 	}
 
+	/**
+	 * Get the absolute path to an agent's dedicated skills directory within a project.
+	 * Returns null when the agent has no dedicated skills directory.
+	 *
+	 * @directory The project directory
+	 * @agent     The agent name (claude, copilot, cursor, codex, gemini, opencode)
+	 *
+	 * @return Absolute path string, or empty
+	 */
+	function getAgentSkillsDirectory(
+		required string directory,
+		required string agent
+	){
+		var relPath = static.AGENT_SKILLS_DIRS[ arguments.agent ]
+		// If empty, then return it as it means the agent has no dedicated skills directory
+		if ( relPath.isEmpty() ) {
+			return relPath
+		}
+		// Normalize trailing separator
+		var dir = arguments.directory
+		if ( right( dir, 1 ) == "/" || right( dir, 1 ) == "\" ) {
+			dir = left( dir, len( dir ) - 1 )
+		}
+		return "#dir#/#relPath#"
+	}
+
+	/**
+	 * Create symlinks for a skill in every active agent's dedicated skills directory.
+	 * Each symlink is a directory-level link that points back to the canonical
+	 * .agents/skills/{name} directory using a relative path, so it remains valid
+	 * after the project is cloned or moved.
+	 *
+	 * If symlink creation is not supported by the OS / JVM (e.g. Windows without
+	 * elevated privileges) the failure is silently swallowed with a yellow warning.
+	 *
+	 * @directory The project directory
+	 * @skillName The skill directory name
+	 * @agents    Array of active agent names
+	 */
+	function createSkillSymlinks(
+		required string directory,
+		required string skillName,
+		required array agents
+	){
+		var fromSkillDirectory = "#arguments.directory#/.agents/skills/#arguments.skillName#"
+
+		for ( var agent in arguments.agents ) {
+			var agentSkillsDir = getAgentSkillsDirectory( arguments.directory, agent )
+
+			// Skip if agent has no dedicated skills directory, it uses the canonical one instead
+			if ( agentSkillsDir.isEmpty() ) {
+				continue;
+			}
+
+			// Create the symlink path for the agent's skills directory
+			var linkPath = "#agentSkillsDir#/#arguments.skillName#"
+
+			// Skip if link/directory already exists
+			if ( directoryExists( linkPath ) ) {
+				continue;
+			}
+
+			try {
+				// Create parent directories if needed
+				directoryCreate( agentSkillsDir, true, true )
+
+				// Compute a relative path from the link's parent dir → canonical dir
+				var relativeTarget = relativize(
+					getDirectoryFromPath( linkPath ),
+					fromSkillDirectory
+				)
+
+				static.Files.createSymbolicLink(
+					Paths.get( linkPath, [] ),
+					Paths.get( relativeTarget, [] ),
+					[]
+				)
+			} catch ( any e ) {
+				variables.print
+					.yellowLine( "  ⚠️  Could not create symlink for agent '#agent#': #e.message#" )
+					.toConsole()
+			}
+		}
+	}
+
+	/**
+	 * Remove symlinks for a skill from every active agent's dedicated skills directory.
+	 * Only removes entries that are genuine symbolic links; real directories and files
+	 * are left untouched.
+	 *
+	 * @directory The project directory
+	 * @skillName The skill directory name
+	 * @agents    Array of active agent names
+	 */
+	function removeSkillSymlinks(
+		required string directory,
+		required string skillName,
+		required array agents
+	){
+		var Files = createObject( "java", "java.nio.file.Files" )
+		var Paths = createObject( "java", "java.nio.file.Paths" )
+		var dir   = arguments.directory
+		var skill = arguments.skillName
+
+		for ( var agent in arguments.agents ) {
+			var agentSkillsDir = getAgentSkillsDirectory( dir, agent )
+			if ( isNull( agentSkillsDir ) ) {
+				continue;
+			}
+
+			var linkPath = "#agentSkillsDir#/#skill#"
+
+			try {
+				var path = Paths.get( linkPath, [] )
+				if ( Files.isSymbolicLink( path ) ) {
+					Files.delete( path )
+				}
+			} catch ( any e ) {
+				variables.print
+					.yellowLine( "  ⚠️  Could not remove symlink for agent '#agent#': #e.message#" )
+					.toConsole()
+			}
+		}
+	}
+
 	// ========================================
 	// Private Helpers
 	// ========================================
@@ -142,44 +345,51 @@ component singleton {
 	 * markers. On refresh, only the content between those markers is replaced; user-authored
 	 * content before the start marker and after the end marker is preserved unchanged.
 	 *
-	 * Behavior:
-	 * - File does not exist → return newContent as-is (first-time write).
-	 * - File exists but has no start/end marker pair → return newContent as-is.
-	 * - File exists with a start/end marker pair → replace managed section, preserve user sections.
+	 * Behavior when file has markers:
+	 * - Replace managed section, preserve user sections.
 	 *
-	 * @filePath   Absolute path to the existing agent config file (may not exist yet).
-	 * @newContent Freshly generated content that includes both START and END markers.
+	 * Behavior when file exists but has no markers (conflictResolution):
+	 * - "overwrite" → return newContent as-is (replace entire file).
+	 * - "merge" → prepend newContent (managed section on top), append existing content below.
+	 * - "skip" → return existingContent unchanged (leave file untouched).
+	 *
+	 * @filePath             Absolute path to the existing agent config file (may not exist yet).
+	 * @newContent           Freshly generated content that includes both START and END markers.
+	 * @conflictResolution   How to handle files without markers: "overwrite", "merge", or "skip".
 	 *
 	 * @return Combined content with updated managed section and preserved user section.
 	 */
 	private string function mergeUserContent(
 		required string filePath,
-		required string newContent
+		required string newContent,
+		string conflictResolution = "overwrite"
 	){
 		var startMarker = static.MANAGED_SECTION_START
 		var endMarker   = static.MANAGED_SECTION_END
 
-		// Nothing to preserve — first-time write
 		if ( !fileExists( filePath ) ) {
 			return newContent
 		}
 
-		// Read existing content and locate markers
 		var existingContent = fileRead( filePath ).trim()
 		var startPos        = findNoCase( startMarker, existingContent )
 		var endPos          = findNoCase( endMarker, existingContent )
 
-		// If existing content is empty or markers are not properly found, return new content as-is
 		if ( !len( existingContent ) ) {
 			return newContent
 		}
 
-		// Old-format file (no marker pair) — write fresh content
 		if ( !startPos || !endPos || endPos <= startPos ) {
-			return newContent
+			switch ( arguments.conflictResolution ) {
+				case "skip":
+					return existingContent
+				case "merge":
+					return newContent & chr( 10 ) & chr( 10 ) & existingContent
+				default:
+					return newContent
+			}
 		}
 
-		// Preserve user-authored content around managed section
 		var userContentBeforeManaged = startPos > 1 ? left( existingContent, startPos - 1 ) : ""
 		var userStartPos             = endPos + len( endMarker )
 		var userContentAfterManaged  = mid(
@@ -188,7 +398,6 @@ component singleton {
 			len( existingContent ) - userStartPos + 1
 		)
 
-		// Slice managed portion from the newly generated content
 		var newStartPos = findNoCase( startMarker, newContent )
 		var newEndPos   = findNoCase( endMarker, newContent )
 		if ( !newStartPos || !newEndPos || newEndPos <= newStartPos ) {
@@ -210,11 +419,13 @@ component singleton {
 	 * @directory The project directory
 	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 * @language Project language mode (boxlang, cfml, hybrid)
+	 * @conflictResolution How to handle existing files without markers: "overwrite", "merge", or "skip"
 	 */
 	function configureAgent(
 		required string directory,
 		required string agent,
-		required string language
+		required string language,
+		string conflictResolution = "overwrite"
 	){
 		var configPath   = getAgentConfigPath( arguments.directory, arguments.agent )
 		var templateType = variables.utility.detectTemplateType( arguments.directory )
@@ -225,25 +436,30 @@ component singleton {
 			arguments.directory
 		)
 
-		// Create directories if needed
 		var configDir = getDirectoryFromPath( configPath )
 		if ( !directoryExists( configDir ) ) {
 			directoryCreate( configDir )
 		}
 
-		// For Claude, write the full content to AGENTS.md and make CLAUDE.md point to it
 		if ( arguments.agent == "claude" ) {
 			var agentsFilePath = getDirectoryFromPath( configPath ) & "AGENTS.md"
-			var mergedContent  = mergeUserContent( agentsFilePath, content )
+			var mergedContent  = mergeUserContent(
+				agentsFilePath,
+				content,
+				arguments.conflictResolution
+			)
 			fileWrite( agentsFilePath, mergedContent )
 			fileWrite( configPath, "@AGENTS.md" )
 			return
 		}
 
-		// Write agent config file, preserving any user-authored content outside the managed section
 		fileWrite(
 			configPath,
-			mergeUserContent( configPath, content )
+			mergeUserContent(
+				configPath,
+				content,
+				arguments.conflictResolution
+			)
 		)
 	}
 
@@ -276,7 +492,11 @@ component singleton {
 				return "#arguments.directory#/AGENTS.md"
 			case "gemini":
 				return "#arguments.directory#/GEMINI.md"
+			case "kilo":
+				return "#arguments.directory#/AGENTS.md"
 			case "opencode":
+				return "#arguments.directory#/AGENTS.md"
+			case "pi":
 				return "#arguments.directory#/AGENTS.md"
 			default:
 				return "#arguments.directory#/AI_INSTRUCTIONS.md"
@@ -1033,7 +1253,7 @@ component singleton {
 		required string source,
 		required array excludedMethods
 	){
-		var matcher = variables.FUNCTION_PATTERN.matcher( arguments.source )
+		var matcher = static.FUNCTION_PATTERN.matcher( arguments.source )
 		var names   = []
 
 		while ( matcher.find() ) {
@@ -1143,6 +1363,53 @@ component singleton {
 
 		lines.sort( "textnocase" )
 		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Relativize a path from one location to another, we use this
+	 * since Lucee's reflection fails, BoxLang works.
+	 * TODO: Remove once we are in BoxLang CLI full.
+	 *
+	 * @fromPath The source path (absolute or relative)
+	 * @toPath   The target path (absolute or relative)
+	 *
+	 * @return Relative path from the source to the target
+	 */
+	function relativize(
+		required string fromPath,
+		required string toPath
+	){
+		// Normalize separators
+		arguments.fromPath = replace( arguments.fromPath, "\", "/", "all" )
+		arguments.toPath   = replace( arguments.toPath, "\", "/", "all" )
+
+		// Split into path segments
+		var fromParts = listToArray( arguments.fromPath, "/" )
+		var toParts   = listToArray( arguments.toPath, "/" )
+
+		// Find common prefix
+		var i = 1
+		while (
+			i <= arrayLen( fromParts ) &&
+			i <= arrayLen( toParts ) &&
+			fromParts[ i ] == toParts[ i ]
+		) {
+			i++
+		}
+
+		var relative = []
+
+		// Go up from the source
+		for ( var x = i; x <= arrayLen( fromParts ); x++ ) {
+			relative.append( ".." )
+		}
+
+		// Go down to the target
+		for ( var x = i; x <= arrayLen( toParts ); x++ ) {
+			relative.append( toParts[ x ] )
+		}
+
+		return arrayToList( relative, "/" )
 	}
 
 }

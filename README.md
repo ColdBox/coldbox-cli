@@ -605,15 +605,20 @@ After `coldbox ai install`, your project will have a `.agents/` directory contai
 │   │   └── SKILL.md   # Step-by-step implementation guide
 │   └── overrides/     # Override core/module skills
 └── manifest.json     # AI integration metadata (generated)
+
+# Agent-specific skill symlinks (auto-managed, relative links to .agents/skills/):
+.claude/skills/{skill-name}        → ../../.agents/skills/{skill-name}
+.cursor/rules/{skill-name}         → ../../.agents/skills/{skill-name}
+.github/instructions/{skill-name}  → ../../.agents/skills/{skill-name}
+.kilo/skills/{skill-name}          → ../../.agents/skills/{skill-name}
+.pi/skills/{skill-name}            → ../../.agents/skills/{skill-name}
 ```
 
 - **Guidelines**: Framework documentation and best practices (ColdBox, BoxLang, CFML, etc.)
-- **Skills**: Specialized coding cookbooks for implementing specific features
+- **Skills**: Specialized coding cookbooks for implementing specific features, canonically stored in `.agents/skills/` and exposed to each agent via symlinks in their native skills directories
 - **Manifest**: Tracks installed guidelines, skills, agents, and MCP servers
 
-#### Setup & Management
-
-```bash
+#### AI Agents
 
 Configure AI assistants for your project (Claude, GitHub Copilot, Cursor, etc.):
 
@@ -625,7 +630,20 @@ coldbox ai agents remove cursor       # Remove an agent
 coldbox ai agents refresh             # Regenerate all configurations
 ```
 
-**Supported Agents**: Claude (CLAUDE.md → AGENTS.md), GitHub Copilot (AGENTS.md, shared), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
+| Agent | Config File | Skills Directory |
+|-------|-------------|-----------------|
+| Claude | `CLAUDE.md` → writes to `AGENTS.md` | `.claude/skills/` |
+| GitHub Copilot | `AGENTS.md` (shared) | `.github/instructions/` |
+| Cursor | `.cursorrules` | `.cursor/rules/` |
+| Codex | `AGENTS.md` (shared) | N/A (uses `.agents/skills/` directly) |
+| Gemini | `GEMINI.md` | N/A (uses `.agents/skills/` directly) |
+| Kilo Code | `AGENTS.md` (shared) | `.kilo/skills/` |
+| OpenCode | `AGENTS.md` (shared) | N/A (uses `.agents/skills/` directly) |
+| Pi | `AGENTS.md` (shared) | `.pi/skills/` |
+
+**Per-Agent Skill Discovery**: Each agent discovers skills through its own native skills directory via automatically managed directory symlinks:
+
+When a skill is installed, the CLI creates a relative directory symlink in each active agent's dedicated skills directory (e.g. `.claude/skills/{name}` → `../../.agents/skills/{name}`). This lets every agent discover skills through its own expected path without duplicating content. Symlinks are automatically removed when a skill is removed or pruned during `coldbox ai refresh`.
 
 #### Guidelines
 
@@ -647,20 +665,25 @@ coldbox ai guidelines refresh                        # Update from modules
 
 #### Skills
 
-AI coding cookbooks with practical how-to examples:
+AI coding cookbooks with practical how-to examples. Skills are stored canonically at `.agents/skills/{name}/` and automatically exposed to each AI agent through relative directory symlinks in the agent's native skills directory.
 
 ```bash
 # View skills
 coldbox ai skills list                # List all installed skills
 coldbox ai skills list --verbose      # Show details
+coldbox ai skills list --json         # JSON output for scripting
 
 # Manage skills
-coldbox ai skills add creating-handlers async-programming
+coldbox ai skills install creating-handlers async-programming
 coldbox ai skills remove async-programming
+coldbox ai skills update              # Update all installed registry skills
+coldbox ai skills update {name}       # Update a single installed registry skill
 coldbox ai skills refresh             # Update from modules
 ```
 
 **Skill Categories**: Scaffolding, Testing, Configuration, Database, REST APIs, Security, Performance, and more
+
+**Automatic Symlinks**: When a skill is installed via `coldbox ai install`, `coldbox ai skills install`, or `coldbox ai refresh`, the skill is created at `.agents/skills/{name}/` and a relative directory symlink is created inside every active agent's dedicated skills directory (e.g. `.claude/skills/{name}` → `../../.agents/skills/{name}`). Symlinks are automatically cleaned up when a skill is removed (`coldbox ai skills remove`) or pruned during refresh. No duplication, no manual linking required.
 
 #### MCP Servers
 

@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Agent file conflict detection and resolution**
+  - `coldbox ai install` and `coldbox ai refresh` now detect existing agent configuration files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursorrules`) that were not created by ColdBox CLI and prompt the user to choose how to handle them:
+  - **Overwrite** — Replace all conflicting files with ColdBox CLI content (also applied automatically when using `--force`)
+  - **Merge** — Prepend the ColdBox CLI managed section at the top, preserving user content below
+  - **Skip** — Leave existing files untouched
+- **Kilo Code agent support** — New supported agent in `AgentRegistry` with `AGENTS.md` for instructions and `.kilo/skills/` for dedicated skills directory; skill symlinks created automatically for Kilo alongside other active agents
+- **Pi agent support** — New supported agent in `AgentRegistry` with `AGENTS.md` for instructions and `.pi/skills/` for dedicated skills directory; skill symlinks created automatically for Pi alongside other active agents
+- **Agent skill-directory symlinks**
+  - Each supported AI agent now has a dedicated skills directory registered in `AgentRegistry` (`AGENT_SKILLS_DIRS`):
+  - `claude` → `.claude/skills`
+  - `copilot` → `.github/instructions`
+  - `cursor` → `.cursor/rules`
+  - `kilo` → `.kilo/skills`
+  - `pi` → `.pi/skills`
+  - `codex`, `gemini`, `opencode` → no dedicated skills directory (use `.agents/skills` directly)
+  - When a skill is installed via `coldbox ai install`, `coldbox ai skills install`, or `coldbox ai refresh`, the skill directory is created at the canonical `.agents/skills/{name}/` location and a relative directory symlink is created inside every active agent's dedicated skills directory (e.g. `.claude/skills/{name}` → `../../.agents/skills/{name}`). This lets each agent discover skills through its own expected path without duplicating content.
+  - Symlinks are automatically removed when a skill is removed (`coldbox ai skills remove`) or pruned during refresh.
+
+### Fixed
+
+- Invalid scope on `FUNCTION_PATTERN` variable in Agent Registry
+- `coldbox ai install` now registers the correct MCP server URL (`https://boxlang.ortusbooks.com/~gitbook/mcp`) for the BoxLang core language documentation entry instead of the BoxLang AI module URL
+
 ## [8.13.0] - 2026-05-28
 
 ### Fixed

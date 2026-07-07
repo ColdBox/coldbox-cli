@@ -7,6 +7,7 @@ component extends="coldbox-cli.models.BaseCommand" {
 
 	// DI - All AI commands need these services
 	property name="aiService"     inject="AIService@coldbox-cli";
+	property name="agentRegistry" inject="AgentRegistry@coldbox-cli";
 	property name="formatterUtil" inject="Formatter";
 
 	/**
@@ -91,6 +92,67 @@ component extends="coldbox-cli.models.BaseCommand" {
 			arguments.directory,
 			arguments.manifest
 		)
+	}
+
+	/**
+	 * Detects existing agent configuration files that lack managed section markers
+	 * and prompts the user to choose how to handle them.
+	 *
+	 * Returns the conflict resolution strategy: "overwrite", "merge", or "skip".
+	 * If no conflicts exist or --force is used, returns "overwrite" without prompting.
+	 *
+	 * @directory The project directory
+	 * @agents Comma-separated list of agents to check
+	 * @force If true, skip prompting and return "overwrite"
+	 *
+	 * @return The conflict resolution strategy string
+	 */
+	function promptForConflictResolution(
+		required string directory,
+		required string agents,
+		boolean force = false
+	){
+		var conflicts = variables.agentRegistry.detectAgentFileConflicts(
+			arguments.directory,
+			arguments.agents
+		)
+
+		if ( !conflicts.len() || arguments.force ) {
+			return "overwrite"
+		}
+
+		print.line()
+		printWarn( "⚠️  Existing Agent Files Detected" )
+		print.line()
+
+		conflicts.each( ( conflict ) => {
+			print.indentedLine( "  • #conflict.agent#: #conflict.filePath#" )
+		} )
+
+		print.line()
+		print.indentedLine( "These files exist but were not created by ColdBox CLI." )
+		print.indentedLine( "Choose how to handle them:" )
+		print.line()
+
+		var resolutionOptions = [
+			{
+				"display" : "Overwrite - Replace all files with ColdBox CLI content",
+				"value"   : "overwrite"
+			},
+			{
+				"display" : "Merge - Keep existing content below managed section",
+				"value"   : "merge"
+			},
+			{
+				"display" : "Skip - Don't modify existing files",
+				"value"   : "skip"
+			}
+		]
+
+		return multiSelect( "How should we handle these files?" )
+			.options( resolutionOptions )
+			.required()
+			.ask()
 	}
 
 }

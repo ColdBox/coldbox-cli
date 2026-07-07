@@ -16,7 +16,9 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.line( "  • Cursor AI - AI-first code editor" )
 			.line( "  • Codex (OpenAI) - GPT-powered assistant" )
 			.line( "  • Gemini (Google) - Google's AI assistant" )
+			.line( "  • Kilo Code - AI-powered development environment" )
 			.line( "  • OpenCode - Open source AI assistant" )
+			.line( "  • Pi - Minimal terminal coding agent" )
 			.line()
 			.boldWhiteLine( "Commands:" )
 			.line()
@@ -48,6 +50,8 @@ component excludeFromHelp=true extends="coldbox-cli.models.BaseCommand" {
 			.line( "  Claude: CLAUDE.md" )
 			.line( "  Copilot: AGENTS.md (shared)" )
 			.line( "  Cursor: .cursorrules" )
+			.line( "  Kilo: AGENTS.md (shared)" )
+			.line( "  Pi: AGENTS.md (shared)" )
 			.line()
 	}
 

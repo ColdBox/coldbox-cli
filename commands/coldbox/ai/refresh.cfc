@@ -18,7 +18,17 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "Refreshing AI integration..." )
 		print.line().toConsole()
 
-		var result = variables.aiService.refresh( arguments.directory );
+		var manifest           = variables.aiService.loadManifest( arguments.directory )
+		var configuredAgents   = manifest.agents ?: []
+		var conflictResolution = promptForConflictResolution(
+			arguments.directory,
+			configuredAgents.toList()
+		)
+
+		var result = variables.aiService.refresh(
+			arguments.directory,
+			conflictResolution
+		);
 
 		if ( !result.success ) {
 			printError( result.message )
