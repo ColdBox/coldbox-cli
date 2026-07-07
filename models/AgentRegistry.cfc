@@ -73,6 +73,8 @@ component singleton {
 		FUNCTION_PATTERN = createObject( "java", "java.util.regex.Pattern" ).compile(
 			"(?i)(?:^|\s)(?:public\s+)?(?:\w+\s+)?function\s+(\w+)\s*\("
 		)
+		Files             = createObject( "java", "java.nio.file.Files" )
+		Paths             = createObject( "java", "java.nio.file.Paths" )
 	}
 
 	// Expose them as instance properties for easier access in commands
@@ -192,15 +194,16 @@ component singleton {
 	 * @directory The project directory
 	 * @agent     The agent name (claude, copilot, cursor, codex, gemini, opencode)
 	 *
-	 * @return Absolute path string, or null if the agent has no dedicated skills directory
+	 * @return Absolute path string, or empty
 	 */
 	function getAgentSkillsDirectory(
 		required string directory,
 		required string agent
 	){
-		var relPath = static.AGENT_SKILLS_DIRS[ arguments.agent ] ?: ""
-		if ( !relPath.len() ) {
-			return javacast( "null", "" )
+		var relPath = static.AGENT_SKILLS_DIRS[ arguments.agent ]
+		// If empty, then return it as it means the agent has no dedicated skills directory
+		if ( relPath.isEmpty() ) {
+			return relPath
 		}
 		// Normalize trailing separator
 		var dir = arguments.directory
@@ -228,39 +231,39 @@ component singleton {
 		required string skillName,
 		required array agents
 	){
-		var canonicalSkillDir = "#arguments.directory#/.agents/skills/#arguments.skillName#"
-		var Files             = createObject( "java", "java.nio.file.Files" )
-		var Paths             = createObject( "java", "java.nio.file.Paths" )
-		// Store loop variables outside closure to avoid scope issues
-		var dir               = arguments.directory
-		var skill             = arguments.skillName
-		var canonical         = canonicalSkillDir
+		var fromSkillDirectory = "#arguments.directory#/.agents/skills/#arguments.skillName#"
 
 		for ( var agent in arguments.agents ) {
-			var agentSkillsDir = getAgentSkillsDirectory( dir, agent )
-			if ( isNull( agentSkillsDir ) ) {
+			var agentSkillsDir = getAgentSkillsDirectory( arguments.directory, agent )
+
+			// Skip if agent has no dedicated skills directory, it uses the canonical one instead
+			if ( agentSkillsDir.isEmpty() ) {
 				continue;
 			}
 
-			var linkPath = "#agentSkillsDir#/#skill#"
+			// Create the symlink path for the agent's skills directory
+			var linkPath = "#agentSkillsDir#/#arguments.skillName#"
 
 			// Skip if link/directory already exists
-			if ( directoryExists( linkPath ) || fileExists( linkPath ) ) {
+			if ( directoryExists( linkPath ) ) {
 				continue;
 			}
 
 			try {
-				// Create parent directory if needed
-				if ( !directoryExists( agentSkillsDir ) ) {
-					directoryCreate( agentSkillsDir, true )
-				}
+				// Create parent directories if needed
+				directoryCreate( agentSkillsDir, true, true )
 
 				// Compute a relative path from the link's parent dir → canonical dir
-				var agentDirPath  = Paths.get( agentSkillsDir )
-				var targetDirPath = Paths.get( canonical )
-				var relativePath  = agentDirPath.relativize( targetDirPath )
+				var relativeTarget = relativize(
+					getDirectoryFromPath( linkPath ),
+					fromSkillDirectory
+				)
 
-				Files.createSymbolicLink( Paths.get( linkPath ), relativePath )
+				static.Files.createSymbolicLink(
+					Paths.get( linkPath, [] ),
+					Paths.get( relativeTarget, [] ),
+					[]
+				)
 			} catch ( any e ) {
 				variables.print
 					.yellowLine( "  ⚠️  Could not create symlink for agent '#agent#': #e.message#" )
@@ -297,7 +300,7 @@ component singleton {
 			var linkPath = "#agentSkillsDir#/#skill#"
 
 			try {
-				var path = Paths.get( linkPath )
+				var path = Paths.get( linkPath, [] )
 				if ( Files.isSymbolicLink( path ) ) {
 					Files.delete( path )
 				}
@@ -1326,6 +1329,50 @@ component singleton {
 
 		lines.sort( "textnocase" )
 		return lines.toList( chr( 10 ) )
+	}
+
+	/**
+	 * Relativize a path from one location to another, we use this
+	 * since Lucee's reflection fails, BoxLang works.
+	 * TODO: Remove once we are in BoxLang CLI full.
+	 *
+	 * @fromPath The source path (absolute or relative)
+	 * @toPath   The target path (absolute or relative)
+	 *
+	 * @return Relative path from the source to the target
+	 */
+	function relativize( required string fromPath, required string toPath ) {
+		// Normalize separators
+		arguments.fromPath = replace( arguments.fromPath, "\", "/", "all" )
+		arguments.toPath   = replace( arguments.toPath, "\", "/", "all" )
+
+		// Split into path segments
+		var fromParts = listToArray( arguments.fromPath, "/" )
+		var toParts   = listToArray( arguments.toPath, "/" )
+
+		// Find common prefix
+		var i = 1
+		while (
+			i <= arrayLen( fromParts ) &&
+			i <= arrayLen( toParts ) &&
+			fromParts[ i ] == toParts[ i ]
+		) {
+			i++
+		}
+
+		var relative = []
+
+		// Go up from the source
+		for ( var x = i; x <= arrayLen( fromParts ); x++ ) {
+			relative.append( ".." )
+		}
+
+		// Go down to the target
+		for ( var x = i; x <= arrayLen( toParts ); x++ ) {
+			relative.append( toParts[ x ] )
+		}
+
+		return arrayToList( relative, "/" )
 	}
 
 }

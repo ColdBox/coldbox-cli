@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Symlink creation method resolution** — Replaced `java.nio.file.Paths.get()` with `java.io.File.toPath()` in `AgentRegistry.createSkillSymlinks()` and `removeSkillSymlinks()` to fix "No matching Method for get(string) found" errors on some JVM/CFML engine combinations
 - Invalid scope on `FUNCTION_PATTERN` variable in Agent Registry
 - `coldbox ai install` now registers the correct MCP server URL (`https://boxlang.ortusbooks.com/~gitbook/mcp`) for the BoxLang core language documentation entry instead of the BoxLang AI module URL
 
