@@ -83,19 +83,61 @@ component singleton {
 	this.FUNCTION_PATTERN  = static.FUNCTION_PATTERN
 
 	/**
+	 * Detect agent config files that exist but lack managed section markers.
+	 * These files may contain user-authored content that would be overwritten.
+	 *
+	 * @directory The project directory
+	 * @agents Comma-separated list of agents to check
+	 *
+	 * @return Array of structs: [{ agent, filePath, hasMarkers, fileSize }]
+	 */
+	function detectAgentFileConflicts(
+		required string directory,
+		required string agents
+	){
+		var conflicts = []
+		var agentList = listToArray( arguments.agents )
+
+		agentList.each( ( agent ) => {
+			var configPath = getAgentConfigPath( directory, agent )
+
+			if ( !fileExists( configPath ) ) {
+				return
+			}
+
+			var content    = fileRead( configPath )
+			var hasMarkers = findNoCase( static.MANAGED_SECTION_START, content ) > 0 &&
+				findNoCase( static.MANAGED_SECTION_END, content ) > 0
+
+			if ( !hasMarkers ) {
+				conflicts.append( {
+					"agent"      : agent,
+					"filePath"   : configPath,
+					"hasMarkers" : false,
+					"fileSize"   : getFileInfo( configPath ).size
+				} )
+			}
+		} )
+
+		return conflicts
+	}
+
+	/**
 	 * Configure agents for a project
 	 *
 	 * @directory The project directory
 	 * @agents Comma-separated list of agents
 	 * @language Project language mode
+	 * @conflictResolution How to handle existing files without markers: "overwrite", "merge", or "skip"
 	 */
 	function configureAgents(
 		required string directory,
 		required string agents,
-		required string language
+		required string language,
+		string conflictResolution = "overwrite"
 	){
 		return listToArray( arguments.agents ).map( ( agent ) => {
-			configureAgent( directory, agent, language )
+			configureAgent( directory, agent, language, conflictResolution )
 			return agent
 		} )
 	}
@@ -278,44 +320,51 @@ component singleton {
 	 * markers. On refresh, only the content between those markers is replaced; user-authored
 	 * content before the start marker and after the end marker is preserved unchanged.
 	 *
-	 * Behavior:
-	 * - File does not exist → return newContent as-is (first-time write).
-	 * - File exists but has no start/end marker pair → return newContent as-is.
-	 * - File exists with a start/end marker pair → replace managed section, preserve user sections.
+	 * Behavior when file has markers:
+	 * - Replace managed section, preserve user sections.
 	 *
-	 * @filePath   Absolute path to the existing agent config file (may not exist yet).
-	 * @newContent Freshly generated content that includes both START and END markers.
+	 * Behavior when file exists but has no markers (conflictResolution):
+	 * - "overwrite" → return newContent as-is (replace entire file).
+	 * - "merge" → prepend newContent (managed section on top), append existing content below.
+	 * - "skip" → return existingContent unchanged (leave file untouched).
+	 *
+	 * @filePath             Absolute path to the existing agent config file (may not exist yet).
+	 * @newContent           Freshly generated content that includes both START and END markers.
+	 * @conflictResolution   How to handle files without markers: "overwrite", "merge", or "skip".
 	 *
 	 * @return Combined content with updated managed section and preserved user section.
 	 */
 	private string function mergeUserContent(
 		required string filePath,
-		required string newContent
+		required string newContent,
+		string conflictResolution = "overwrite"
 	){
 		var startMarker = static.MANAGED_SECTION_START
 		var endMarker   = static.MANAGED_SECTION_END
 
-		// Nothing to preserve — first-time write
 		if ( !fileExists( filePath ) ) {
 			return newContent
 		}
 
-		// Read existing content and locate markers
 		var existingContent = fileRead( filePath ).trim()
 		var startPos        = findNoCase( startMarker, existingContent )
 		var endPos          = findNoCase( endMarker, existingContent )
 
-		// If existing content is empty or markers are not properly found, return new content as-is
 		if ( !len( existingContent ) ) {
 			return newContent
 		}
 
-		// Old-format file (no marker pair) — write fresh content
 		if ( !startPos || !endPos || endPos <= startPos ) {
-			return newContent
+			switch ( arguments.conflictResolution ) {
+				case "skip":
+					return existingContent
+				case "merge":
+					return newContent & chr( 10 ) & chr( 10 ) & existingContent
+				default:
+					return newContent
+			}
 		}
 
-		// Preserve user-authored content around managed section
 		var userContentBeforeManaged = startPos > 1 ? left( existingContent, startPos - 1 ) : ""
 		var userStartPos             = endPos + len( endMarker )
 		var userContentAfterManaged  = mid(
@@ -324,7 +373,6 @@ component singleton {
 			len( existingContent ) - userStartPos + 1
 		)
 
-		// Slice managed portion from the newly generated content
 		var newStartPos = findNoCase( startMarker, newContent )
 		var newEndPos   = findNoCase( endMarker, newContent )
 		if ( !newStartPos || !newEndPos || newEndPos <= newStartPos ) {
@@ -346,11 +394,13 @@ component singleton {
 	 * @directory The project directory
 	 * @agent The agent name (claude, copilot, cursor, etc.)
 	 * @language Project language mode (boxlang, cfml, hybrid)
+	 * @conflictResolution How to handle existing files without markers: "overwrite", "merge", or "skip"
 	 */
 	function configureAgent(
 		required string directory,
 		required string agent,
-		required string language
+		required string language,
+		string conflictResolution = "overwrite"
 	){
 		var configPath   = getAgentConfigPath( arguments.directory, arguments.agent )
 		var templateType = variables.utility.detectTemplateType( arguments.directory )
@@ -361,25 +411,22 @@ component singleton {
 			arguments.directory
 		)
 
-		// Create directories if needed
 		var configDir = getDirectoryFromPath( configPath )
 		if ( !directoryExists( configDir ) ) {
 			directoryCreate( configDir )
 		}
 
-		// For Claude, write the full content to AGENTS.md and make CLAUDE.md point to it
 		if ( arguments.agent == "claude" ) {
 			var agentsFilePath = getDirectoryFromPath( configPath ) & "AGENTS.md"
-			var mergedContent  = mergeUserContent( agentsFilePath, content )
+			var mergedContent  = mergeUserContent( agentsFilePath, content, arguments.conflictResolution )
 			fileWrite( agentsFilePath, mergedContent )
 			fileWrite( configPath, "@AGENTS.md" )
 			return
 		}
 
-		// Write agent config file, preserving any user-authored content outside the managed section
 		fileWrite(
 			configPath,
-			mergeUserContent( configPath, content )
+			mergeUserContent( configPath, content, arguments.conflictResolution )
 		)
 	}
 

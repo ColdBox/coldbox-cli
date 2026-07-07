@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Agent file conflict detection and resolution** — `coldbox ai install` and `coldbox ai refresh` now detect existing agent configuration files (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.cursorrules`) that were not created by ColdBox CLI and prompt the user to choose how to handle them:
+  - **Overwrite** — Replace all conflicting files with ColdBox CLI content (also applied automatically when using `--force`)
+  - **Merge** — Prepend the ColdBox CLI managed section at the top, preserving user content below
+  - **Skip** — Leave existing files untouched
 - **Agent skill-directory symlinks** — Each supported AI agent now has a dedicated skills directory registered in `AgentRegistry` (`AGENT_SKILLS_DIRS`):
   - `claude` → `.claude/skills`
   - `copilot` → `.github/instructions`

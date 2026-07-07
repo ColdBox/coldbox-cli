@@ -52,12 +52,19 @@ component extends="coldbox-cli.models.BaseAICommand" {
 		printInfo( "🤖  Agent(s): #arguments.agent#" )
 		printInfo( "🔤  Language: #arguments.language#" )
 
+		var conflictResolution = promptForConflictResolution(
+			arguments.directory,
+			arguments.agent,
+			arguments.force
+		)
+
 		try {
 			var result = variables.aiService.install(
-				directory = arguments.directory,
-				agents    = arguments.agent,
-				language  = arguments.language,
-				force     = arguments.force
+				directory          = arguments.directory,
+				agents             = arguments.agent,
+				language           = arguments.language,
+				force              = arguments.force,
+				conflictResolution = conflictResolution
 			)
 
 			if ( !result.success ) {
