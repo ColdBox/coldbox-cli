@@ -168,6 +168,10 @@ component extends="coldbox-cli.models.BaseAICommand" {
 				"value"   : "gemini"
 			},
 			{
+				"display" : "Kilo Code - AI-powered development environment",
+				"value"   : "kilo"
+			},
+			{
 				"display" : "OpenCode - Open source AI assistant",
 				"value"   : "opencode"
 			}

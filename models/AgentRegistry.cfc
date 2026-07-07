@@ -18,6 +18,7 @@ component singleton {
 			"cursor",
 			"codex",
 			"gemini",
+			"kilo",
 			"opencode"
 		]
 		AGENT_FILES = {
@@ -26,6 +27,7 @@ component singleton {
 			"cursor"   : ".cursorrules",
 			"codex"    : "AGENTS.md",
 			"gemini"   : "GEMINI.md",
+			"kilo"     : "AGENTS.md",
 			"opencode" : "AGENTS.md"
 		}
 		// Skills directories per agent (paths relative to the project root).
@@ -37,6 +39,7 @@ component singleton {
 			"cursor"   : ".cursor/rules",
 			"codex"    : "",
 			"gemini"   : "",
+			"kilo"     : ".kilo/skills",
 			"opencode" : ""
 		}
 		// Demarcation markers that wrap the ColdBox CLI-managed section
@@ -62,6 +65,10 @@ component singleton {
 			{
 				display : "Gemini (Google) - Google's AI assistant",
 				value   : "gemini"
+			},
+			{
+				display : "Kilo Code - AI-powered development environment",
+				value   : "kilo"
 			},
 			{
 				display : "OpenCode - Open source AI assistant",
@@ -478,6 +485,8 @@ component singleton {
 				return "#arguments.directory#/AGENTS.md"
 			case "gemini":
 				return "#arguments.directory#/GEMINI.md"
+			case "kilo":
+				return "#arguments.directory#/AGENTS.md"
 			case "opencode":
 				return "#arguments.directory#/AGENTS.md"
 			default:

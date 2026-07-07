@@ -607,9 +607,10 @@ After `coldbox ai install`, your project will have a `.agents/` directory contai
 └── manifest.json     # AI integration metadata (generated)
 
 # Agent-specific skill symlinks (auto-managed, relative links to .agents/skills/):
-.claude/skills/{skill-name}   → ../../.agents/skills/{skill-name}
-.cursor/rules/{skill-name}    → ../../.agents/skills/{skill-name}
-.github/instructions/{skill-name} → ../../.agents/skills/{skill-name}
+.claude/skills/{skill-name}        → ../../.agents/skills/{skill-name}
+.cursor/rules/{skill-name}         → ../../.agents/skills/{skill-name}
+.github/instructions/{skill-name}  → ../../.agents/skills/{skill-name}
+.kilo/skills/{skill-name}          → ../../.agents/skills/{skill-name}
 ```
 
 - **Guidelines**: Framework documentation and best practices (ColdBox, BoxLang, CFML, etc.)
@@ -628,18 +629,17 @@ coldbox ai agents remove cursor       # Remove an agent
 coldbox ai agents refresh             # Regenerate all configurations
 ```
 
-**Supported Agents**: Claude (CLAUDE.md → AGENTS.md), GitHub Copilot (AGENTS.md, shared), Cursor (.cursorrules), Codex (AGENTS.md), Gemini (GEMINI.md), OpenCode (AGENTS.md)
+| Agent | Config File | Skills Directory |
+|-------|-------------|-----------------|
+| Claude | `CLAUDE.md` → writes to `AGENTS.md` | `.claude/skills/` |
+| GitHub Copilot | `AGENTS.md` (shared) | `.github/instructions/` |
+| Cursor | `.cursorrules` | `.cursor/rules/` |
+| Codex | `AGENTS.md` (shared) | N/A (uses `.agents/skills/` directly) |
+| Gemini | `GEMINI.md` | N/A (uses `.agents/skills/` directly) |
+| Kilo Code | `AGENTS.md` (shared) | `.kilo/skills/` |
+| OpenCode | `AGENTS.md` (shared) | N/A (uses `.agents/skills/` directly) |
 
 **Per-Agent Skill Discovery**: Each agent discovers skills through its own native skills directory via automatically managed directory symlinks:
-
-| Agent | Skills Directory |
-|-------|-----------------|
-| Claude | `.claude/skills/` |
-| GitHub Copilot | `.github/instructions/` |
-| Cursor | `.cursor/rules/` |
-| Codex | N/A (uses `.agents/skills/` directly) |
-| Gemini | N/A (uses `.agents/skills/` directly) |
-| OpenCode | N/A (uses `.agents/skills/` directly) |
 
 When a skill is installed, the CLI creates a relative directory symlink in each active agent's dedicated skills directory (e.g. `.claude/skills/{name}` → `../../.agents/skills/{name}`). This lets every agent discover skills through its own expected path without duplicating content. Symlinks are automatically removed when a skill is removed or pruned during `coldbox ai refresh`.
 

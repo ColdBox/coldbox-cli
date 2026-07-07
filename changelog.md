@@ -16,11 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Overwrite** — Replace all conflicting files with ColdBox CLI content (also applied automatically when using `--force`)
   - **Merge** — Prepend the ColdBox CLI managed section at the top, preserving user content below
   - **Skip** — Leave existing files untouched
+- **Kilo Code agent support** — New supported agent in `AgentRegistry` with `AGENTS.md` for instructions and `.kilo/skills/` for dedicated skills directory; skill symlinks created automatically for Kilo alongside other active agents
 - **Agent skill-directory symlinks**
   - Each supported AI agent now has a dedicated skills directory registered in `AgentRegistry` (`AGENT_SKILLS_DIRS`):
   - `claude` → `.claude/skills`
   - `copilot` → `.github/instructions`
   - `cursor` → `.cursor/rules`
+  - `kilo` → `.kilo/skills`
   - `codex`, `gemini`, `opencode` → no dedicated skills directory (use `.agents/skills` directly)
   - When a skill is installed via `coldbox ai install`, `coldbox ai skills install`, or `coldbox ai refresh`, the skill directory is created at the canonical `.agents/skills/{name}/` location and a relative directory symlink is created inside every active agent's dedicated skills directory (e.g. `.claude/skills/{name}` → `../../.agents/skills/{name}`). This lets each agent discover skills through its own expected path without duplicating content.
   - Symlinks are automatically removed when a skill is removed (`coldbox ai skills remove`) or pruned during refresh.
