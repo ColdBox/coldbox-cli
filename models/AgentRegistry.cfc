@@ -197,14 +197,14 @@ component singleton {
 		for ( var agent in arguments.agents ) {
 			var agentSkillsDir = getAgentSkillsDirectory( dir, agent )
 			if ( isNull( agentSkillsDir ) ) {
-				continue
+				continue;
 			}
 
 			var linkPath = "#agentSkillsDir#/#skill#"
 
 			// Skip if link/directory already exists
 			if ( directoryExists( linkPath ) || fileExists( linkPath ) ) {
-				continue
+				continue;
 			}
 
 			try {
@@ -249,7 +249,7 @@ component singleton {
 		for ( var agent in arguments.agents ) {
 			var agentSkillsDir = getAgentSkillsDirectory( dir, agent )
 			if ( isNull( agentSkillsDir ) ) {
-				continue
+				continue;
 			}
 
 			var linkPath = "#agentSkillsDir#/#skill#"
@@ -260,7 +260,9 @@ component singleton {
 					Files.delete( path )
 				}
 			} catch ( any e ) {
-				// Silently ignore removal errors
+				variables.print
+					.yellowLine( "  ⚠️  Could not remove symlink for agent '#agent#': #e.message#" )
+					.toConsole()
 			}
 		}
 	}
