@@ -76,11 +76,11 @@ component singleton {
 	}
 
 	// Expose them as instance properties for easier access in commands
-	this.SUPPORTED_AGENTS    = static.SUPPORTED_AGENTS
-	this.AGENT_OPTIONS       = static.AGENT_OPTIONS
-	this.AGENT_FILES         = static.AGENT_FILES
-	this.AGENT_SKILLS_DIRS   = static.AGENT_SKILLS_DIRS
-	this.FUNCTION_PATTERN    = static.FUNCTION_PATTERN
+	this.SUPPORTED_AGENTS  = static.SUPPORTED_AGENTS
+	this.AGENT_OPTIONS     = static.AGENT_OPTIONS
+	this.AGENT_FILES       = static.AGENT_FILES
+	this.AGENT_SKILLS_DIRS = static.AGENT_SKILLS_DIRS
+	this.FUNCTION_PATTERN  = static.FUNCTION_PATTERN
 
 	/**
 	 * Configure agents for a project
@@ -190,9 +190,9 @@ component singleton {
 		var Files             = createObject( "java", "java.nio.file.Files" )
 		var Paths             = createObject( "java", "java.nio.file.Paths" )
 		// Store loop variables outside closure to avoid scope issues
-		var dir       = arguments.directory
-		var skill     = arguments.skillName
-		var canonical = canonicalSkillDir
+		var dir               = arguments.directory
+		var skill             = arguments.skillName
+		var canonical         = canonicalSkillDir
 
 		for ( var agent in arguments.agents ) {
 			var agentSkillsDir = getAgentSkillsDirectory( dir, agent )

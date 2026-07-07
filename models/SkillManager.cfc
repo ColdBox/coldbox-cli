@@ -292,7 +292,11 @@ component singleton {
 
 		toRemove.each( ( name ) => {
 			variables.print.yellowLine( "  🗑️  Removing orphaned module skill: #name#" ).toConsole()
-			deleteSkillDir( directory, name, manifest.agents ?: [] )
+			deleteSkillDir(
+				directory,
+				name,
+				manifest.agents ?: []
+			)
 			manifest.skills = manifest.skills.filter( ( s ) => s.name != name )
 			changes.removed.append( name )
 		} )
