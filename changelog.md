@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Closure argument scope issue in GuideLine Manager when refreshing the project.
+
 ## [8.14.0] - 2026-07-07
 
 ### Added
