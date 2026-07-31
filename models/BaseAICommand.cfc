@@ -3,7 +3,7 @@
  * Provides common functionality for checking installation status,
  * reading/writing manifests, and consistent error handling
  */
-component extends="coldbox-cli.models.BaseCommand" {
+component extends="BaseCommand" {
 
 	// DI - All AI commands need these services
 	property name="aiService"     inject="AIService@coldbox-cli";

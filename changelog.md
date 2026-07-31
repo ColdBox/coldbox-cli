@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Inheritance issue on base commands not working on bx-cli
 - Closure argument scope issue in GuideLine Manager when refreshing the project.
 
 ## [8.14.0] - 2026-07-07
