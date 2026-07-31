@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.14.1] - 2026-07-31
+
 ### Fixed
 
 - Wrong scope on `static FILES and PATHS` on AgentRegistry.cfc causing symlinks to not be created on some systems
@@ -445,7 +447,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.14.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.14.1...HEAD
+[8.14.1]: https://github.com/ColdBox/coldbox-cli/compare/v8.14.0...v8.14.1
 [8.14.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.13.0...v8.14.0
 [8.13.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.12.0...v8.13.0
 [8.12.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.11.0...v8.12.0
