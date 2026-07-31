@@ -177,7 +177,7 @@ component singleton {
 
 		missingCoreGuidelines.each( ( name ) => {
 			variables.print.yellowLine( "  🔄  Reinstalling missing core guideline: #name#" ).toConsole()
-			installCoreGuidelineInternal( arguments.directory, name, manifest )
+			installCoreGuidelineInternal( directory, name, manifest )
 			changes.updated.append( name )
 		} )
 

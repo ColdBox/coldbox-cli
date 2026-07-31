@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Wrong scope on `static FILES and PATHS` on AgentRegistry.cfc causing symlinks to not be created on some systems
+- Inheritance issue on base commands not working on bx-cli
+- Closure argument scope issue in GuideLine Manager when refreshing the project.
+
 ## [8.14.0] - 2026-07-07
 
 ### Added

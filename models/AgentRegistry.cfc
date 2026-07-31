@@ -282,8 +282,8 @@ component singleton {
 				)
 
 				static.Files.createSymbolicLink(
-					Paths.get( linkPath, [] ),
-					Paths.get( relativeTarget, [] ),
+					static.Paths.get( linkPath, [] ),
+					static.Paths.get( relativeTarget, [] ),
 					[]
 				)
 			} catch ( any e ) {
@@ -308,8 +308,6 @@ component singleton {
 		required string skillName,
 		required array agents
 	){
-		var Files = createObject( "java", "java.nio.file.Files" )
-		var Paths = createObject( "java", "java.nio.file.Paths" )
 		var dir   = arguments.directory
 		var skill = arguments.skillName
 
@@ -322,9 +320,9 @@ component singleton {
 			var linkPath = "#agentSkillsDir#/#skill#"
 
 			try {
-				var path = Paths.get( linkPath, [] )
-				if ( Files.isSymbolicLink( path ) ) {
-					Files.delete( path )
+				var path = static.Paths.get( linkPath, [] )
+				if ( static.Files.isSymbolicLink( path ) ) {
+					static.Files.delete( path )
 				}
 			} catch ( any e ) {
 				variables.print
