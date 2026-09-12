@@ -247,6 +247,68 @@ function configure() {
 // Or with custom entrypoint: /shop/products
 ```
 
+### Route Middleware (8.2+)
+
+Attach middleware scoped to a single route, or share it by name across routes with a middleware group:
+
+```boxlang
+// A closure, a WireBox ID, or any object with a preProcess()/postProcess() method
+route( "/admin/:action" )
+    .middleware( "RequireLogin" )
+    .to( "admin.index" )
+
+// Named, reusable groups
+middlewareGroup( "api", [ "RequireApiKey", "RateLimiter" ] )
+
+group( { pattern="/api", middleware=[ "api" ] }, () => {
+    route( "/users" ).to( "users.index" )                              // runs "api"
+    route( "/health" ).withoutMiddleware( "api" ).to( "health.index" ) // opts out
+} )
+```
+
+### Route-Level Caching (8.2+)
+
+`.withCache()` declares event caching (and optionally HTTP caching headers) on the route instead of the handler action, and takes precedence over any `cache="true"` annotation on the matched handler:
+
+```boxlang
+route( "/products/:id" )
+    .withCache( timeout=30, etag=true, cacheControl={ "max-age": 60 } )
+    .to( "products.show" )
+```
+
+### Server-Sent Events (8.2+, BoxLang only)
+
+```boxlang
+route( "/ticker" ).toSSE( "tickerHandler.stream" )
+```
+
+In the handler, `event.sse()` hands the callback an `SSEEmitter`:
+
+```boxlang
+function stream( event, rc, prc ) {
+    event.sse( ( emitter ) => {
+        while ( emitter.isOpen() ) {
+            emitter.send( { "ts": now() }, "tick" )
+            sleep( 1000 )
+        }
+    } )
+}
+```
+
+### AI Routing (8.1+) and AI Gateway Routing (8.2+, BoxLang + bx-ai only)
+
+```boxlang
+// toAi() auto-scaffolds invoke/stream/batch/info sub-routes for an IAiRunnable
+route( "/api/chat" ).toAi( "MyChatAgent" )
+
+// toMCP() exposes a registered BoxLang MCP server over HTTP
+route( "/mcp/filesystem" ).toMCP( "FileSystemServer" )
+
+// toAiGateway() mounts inbound events, URL verification, and human-in-the-loop
+// approval endpoints for a BoxLang AI Gateway
+route( "/gateways" ).withSSL().toAiGateway( session="SupportAgentSession" )
+```
+
 ## Interceptors (AOP)
 
 Interceptors provide aspect-oriented programming for cross-cutting concerns.
