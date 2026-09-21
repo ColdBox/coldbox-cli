@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Updated guidelines
+- Added `cbgenesis` skeleton to `coldbox create app`, mapping to the `cbGenesis` ForgeBox template — the official production-ready ColdBox starter (auth, RBAC, admin panel, ORM + migrations, Vite UI, real test suite)
+
 ## [8.14.1] - 2026-07-31
 
 ### Fixed

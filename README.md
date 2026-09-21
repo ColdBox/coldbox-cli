@@ -30,43 +30,48 @@ This is the official ColdBox CLI for CommandBox.  It is a collection of commands
 - [ColdBox CLI Versions](#coldbox-cli-versions)
 - [Installation](#installation)
 - [Usage](#usage)
- 	- [📱 Application Creation](#-application-creation)
-  		- [🧙‍♂️ Interactive App Wizard](#️-interactive-app-wizard)
- 	- [Application Templates](#application-templates)
-  		- [🥊 BoxLang Templates (Recommended)](#-boxlang-templates-recommended)
-  		- [📜 Legacy CFML Templates](#-legacy-cfml-templates)
-  		- [🚀 Template Features](#-template-features)
-  		- [⚡ Vite Integration](#-vite-integration)
-  		- [🐳 Docker Integration](#-docker-integration)
- 	- [🎯 Handlers (Controllers)](#-handlers-controllers)
- 	- [📊 Models \& Services](#-models--services)
- 	- [🎨 Views \& Layouts](#-views--layouts)
- 	- [🔧 Resources \& CRUD](#-resources--crud)
- 	- [📦 Modules](#-modules)
- 	- [🧪 Testing](#-testing)
- 	- [🗄️ ORM \& Database](#️-orm--database)
- 	- [🔗 Interceptors](#-interceptors)
- 	- [🔄 Development Workflow](#-development-workflow)
- 	- [🎛️ Global Options](#️-global-options)
-  		- [Application-Specific Flags](#application-specific-flags)
-  		- [Language Generation Control](#language-generation-control)
- 	- [💡 BoxLang Support](#-boxlang-support)
-  		- [🔍 Automatic Detection](#-automatic-detection)
-  		- [⚙️ Configuration Examples](#️-configuration-examples)
-   			- [Method 1: Language Property (Recommended)](#method-1-language-property-recommended)
-   			- [Method 2: TestBox Runner Setting](#method-2-testbox-runner-setting)
-  		- [🚀 Usage Examples](#-usage-examples)
-  		- [📝 Generated Code Differences](#-generated-code-differences)
- 	- [🤖 AI Integration](#-ai-integration)
-  		- [Setup \& Management](#setup--management)
-  		- [AI Agents](#ai-agents)
-  		- [Guidelines](#guidelines)
-  		- [Skills](#skills)
-  		- [MCP Servers](#mcp-servers)
-  		- [AI Context Management](#ai-context-management)
- 	- [📖 Getting Help](#-getting-help)
+	- [📱 Application Creation](#-application-creation)
+		- [🧙‍♂️ Interactive App Wizard](#️-interactive-app-wizard)
+	- [Application Templates](#application-templates)
+		- [🚀 cbGenesis — The Official ColdBox Starter](#-cbgenesis--the-official-coldbox-starter)
+		- [🥊 BoxLang Templates (Recommended)](#-boxlang-templates-recommended)
+		- [📜 Legacy CFML Templates](#-legacy-cfml-templates)
+		- [🚀 Template Features](#-template-features)
+		- [⚡ Vite Integration](#-vite-integration)
+		- [🐳 Docker Integration](#-docker-integration)
+	- [🎯 Handlers (Controllers)](#-handlers-controllers)
+	- [📊 Models \& Services](#-models--services)
+	- [🎨 Views \& Layouts](#-views--layouts)
+	- [🔧 Resources \& CRUD](#-resources--crud)
+	- [📦 Modules](#-modules)
+	- [🧪 Testing](#-testing)
+	- [🗄️ ORM \& Database](#️-orm--database)
+	- [🔗 Interceptors](#-interceptors)
+	- [🔄 Development Workflow](#-development-workflow)
+	- [🎛️ Global Options](#️-global-options)
+		- [Application-Specific Flags](#application-specific-flags)
+		- [Language Generation Control](#language-generation-control)
+	- [💡 BoxLang Support](#-boxlang-support)
+		- [🔍 Automatic Detection](#-automatic-detection)
+		- [⚙️ Configuration Examples](#️-configuration-examples)
+			- [Method 1: Language Property (Recommended)](#method-1-language-property-recommended)
+			- [Method 2: TestBox Runner Setting](#method-2-testbox-runner-setting)
+	- [🗂️ App Layout Detection](#️-app-layout-detection)
+		- [Modern Layout (e.g. `boxlang`, `cbgenesis` templates)](#modern-layout-eg-boxlang-cbgenesis-templates)
+		- [Flat Layout (e.g. `flat`, legacy templates)](#flat-layout-eg-flat-legacy-templates)
+		- [🚀 Usage Examples](#-usage-examples)
+		- [📝 Generated Code Differences](#-generated-code-differences)
+	- [🤖 AI Integration](#-ai-integration)
+		- [Setup \& Management](#setup--management)
+		- [AI Directory Structure](#ai-directory-structure)
+		- [AI Agents](#ai-agents)
+		- [Guidelines](#guidelines)
+		- [Skills](#skills)
+		- [MCP Servers](#mcp-servers)
+		- [AI Context Management](#ai-context-management)
+	- [📖 Getting Help](#-getting-help)
 - [Credits \& Contributions](#credits--contributions)
- 	- [The Daily Bread](#the-daily-bread)
+	- [The Daily Bread](#the-daily-bread)
 
 ## License
 
@@ -106,9 +111,9 @@ coldbox create app myApp --boxlang   # Force BoxLang (default)
 coldbox create app myApp --cfml
 
 # Create with specific templates
-coldbox create app myApp skeleton=modern
+coldbox create app myApp skeleton=tiered
 coldbox create app myApp skeleton=rest
-coldbox create app myApp skeleton=flat
+coldbox create app myApp skeleton=cbgenesis
 
 # Create with additional features
 coldbox create app myApp --migrations     # Database migrations support
@@ -155,11 +160,36 @@ Are you going to require Database Migrations? [y/n]: y
 
 The CLI supports multiple application templates (skeletons), or you can use your own via any FORGEBOX ID, GitHub repo, local path, zip or URL. **BoxLang templates are now the primary focus** for modern development:
 
+#### 🚀 cbGenesis — The Official ColdBox Starter
+
+**[cbGenesis](https://cbgenesis.coldbox.org)** is the official production-ready ColdBox starter for BoxLang: authentication, RBAC, and an admin panel ready to build on, so you spend day one building features instead of scaffolding auth.
+
+```bash
+coldbox create app myApp skeleton=cbgenesis
+```
+
+**Batteries included — already wired up and tested, not a TODO in the README:**
+
+- 🔐 **Auth & RBAC** — Session auth via cbauth, Google SSO via cbSSO, passkeys, `@secured` handler annotations, and a `resource:action` permission model
+- 🎟️ **JWT & API Tokens** — First-class token auth alongside sessions; issue, list, and revoke tokens from the user profile
+- 🛡️ **Security by Convention** — CSRF token rotation, IP-based rate limiting on auth endpoints, `BaseSecureHandler` enforcement
+- 🖥️ **Admin Panel** — Dashboard, users, roles & permissions, and audit log UI included
+- 🗄️ **ORM + Migrations** — Hibernate ORM via cborm with `BaseEntity`/`BaseService` conventions, cfmigrations, and qb
+- 🎨 **Alpine.js + Bootstrap 5 UI** — Server-rendered BXM views with Alpine components, compiled by Vite with hot module reload
+- ✅ **A Real Test Suite** — TestBox unit specs for every entity and service, plus integration specs over real HTTP
+- 🐳 **Production Ready** — Docker support, a go-live checklist, and a choice of CommandBox or the BoxLang MiniServer
+
+> **Requirements**: BoxLang 1.16+, Java 21+, Node 18+.
+> Migrations, Docker, and Vite are already configured — no feature flags needed.
+> **Docs**: [cbgenesis.coldbox.org](https://cbgenesis.coldbox.org) · **GitHub**: [coldbox-templates/cbGenesis](https://github.com/coldbox-templates/cbGenesis)
+
 #### 🥊 BoxLang Templates (Recommended)
 
 - `boxlang` (default) - A modern ColdBox app using BoxLang as the primary language with latest features
-- `modern` - A modern ColdBox app supporting both BoxLang and CFML with contemporary architecture
+- `desktop` - A BoxLang desktop application template
+- `tiered` - A security-first template supporting both BoxLang and CFML with `/app` outside the webroot
 - `rest` - A ColdBox REST API template optimized for BoxLang development
+- `cbgenesis` - ⭐ The official production-ready starter: auth, RBAC, admin panel, ORM + migrations, Vite UI, and a real test suite (featured above)
 
 #### 📜 Legacy CFML Templates
 
@@ -170,7 +200,7 @@ The CLI supports multiple application templates (skeletons), or you can use your
 
 #### 🚀 Template Features
 
-Modern templates (`boxlang`, `modern`) support additional features via flags:
+Modern templates (`boxlang`, `tiered`) support additional features via flags:
 
 - `--vite` - Integrates Vite for modern frontend asset building and hot reloading
 - `--rest` - Configures the application as a REST API service
@@ -185,8 +215,8 @@ The CLI now supports Vite integration for modern frontend development with hot m
 # Create app with Vite support
 coldbox create app myApp --vite
 
-# Available for BoxLang and Modern templates
-coldbox create app myApp skeleton=modern --vite
+# Available for BoxLang and Tiered templates
+coldbox create app myApp skeleton=tiered --vite
 ```
 
 **Vite Features Included**:
@@ -495,7 +525,7 @@ The CLI automatically detects whether your project uses a **modern** or **flat**
 | **Modern** | Both `app/` and `public/` directories exist | `/app/models`, `/app/handlers`, etc. | `/tests/` |
 | **Flat** | Default (no `app/` + `public/`) | `/models`, `/handlers`, etc. | `/tests/` |
 
-#### Modern Layout (e.g. `boxlang`, `modern` templates)
+#### Modern Layout (e.g. `boxlang`, `cbgenesis` templates)
 
 ```text
 /app             - Application source code
@@ -631,7 +661,7 @@ coldbox ai agents refresh             # Regenerate all configurations
 ```
 
 | Agent | Config File | Skills Directory |
-|-------|-------------|-----------------|
+| ------- | ------------- | ----------------- |
 | Claude | `CLAUDE.md` → writes to `AGENTS.md` | `.claude/skills/` |
 | GitHub Copilot | `AGENTS.md` (shared) | `.github/instructions/` |
 | Cursor | `.cursorrules` | `.cursor/rules/` |
