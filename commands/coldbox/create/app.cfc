@@ -19,6 +19,7 @@
  *  - rest-hmvc (HMVC + REST)
  *  - supersimple (bare bones)
  *  - vite (flat + vite)
+ *  - cbgenesis (cbGenesis)
  * .
  * {code:bash}
  * coldbox create app skeleton=tiered
@@ -52,7 +53,8 @@ component extends="coldbox-cli.models.BaseCommand" {
 			"rest"        : "cbtemplate-rest",
 			"rest-hmvc"   : "cbtemplate-rest-hmvc",
 			"vite"        : "cbtemplate-vite",
-			"supersimple" : "cbtemplate-supersimple"
+			"supersimple" : "cbtemplate-supersimple",
+			"cbgenesis"   : "cbGenesis"
 		};
 
 		variables.defaultAppName  = "My ColdBox App";
