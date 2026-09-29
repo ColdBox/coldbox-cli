@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `coldbox create app skeleton=cbgenesis` now prompts to refresh and install the latest AI skills via `coldbox ai refresh`, since the template ships pre-configured with AI integration (the `--ai` install flow is skipped for this skeleton)
+
+### Fixed
+
+- `coldbox create app` no longer deletes `resources/assets`, `resources/docker`, `resources/rest`, or `resources/vite` when scaffolding from the `cbgenesis` skeleton — that template ships Vite and Docker pre-integrated, so the template cleanups were removing functional parts of the app
+
 ## [8.15.0] - 2026-09-21
 
 ### Added
