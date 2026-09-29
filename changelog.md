@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.16.0] - 2026-09-29
+
 ### Added
 
 - `coldbox create app skeleton=cbgenesis` now prompts to refresh and install the latest AI skills via `coldbox ai refresh`, since the template ships pre-configured with AI integration (the `--ai` install flow is skipped for this skeleton)
@@ -462,7 +464,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Eclipse support
 
-[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.15.0...HEAD
+[unreleased]: https://github.com/ColdBox/coldbox-cli/compare/v8.16.0...HEAD
+[8.16.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.15.0...v8.16.0
 [8.15.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.14.1...v8.15.0
 [8.14.1]: https://github.com/ColdBox/coldbox-cli/compare/v8.14.0...v8.14.1
 [8.14.0]: https://github.com/ColdBox/coldbox-cli/compare/v8.13.0...v8.14.0
