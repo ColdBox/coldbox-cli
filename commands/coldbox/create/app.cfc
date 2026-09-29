@@ -397,39 +397,51 @@ component extends="coldbox-cli.models.BaseCommand" {
 			}
 		}
 
-		// REST Cleanup
-		if ( directoryExists( arguments.directory & "resources/rest" ) ) {
-			directoryDelete(
-				arguments.directory & "resources/rest",
-				true
-			)
-		}
+		// Template Cleanups: The cbGenesis template ships pre-integrated (Vite, Docker, etc.),
+		// so none of these cleanups apply to it.
+		if ( arguments.skeleton != "cbGenesis" ) {
+			// REST Cleanup
+			if ( directoryExists( arguments.directory & "resources/rest" ) ) {
+				directoryDelete(
+					arguments.directory & "resources/rest",
+					true
+				)
+			}
 
-		// Vite Cleanup
-		if ( !arguments.vite && directoryExists( arguments.directory & "resources/assets" ) ) {
-			directoryDelete(
-				arguments.directory & "resources/assets",
-				true
-			)
-		}
+			// Vite Cleanup
+			if ( !arguments.vite && directoryExists( arguments.directory & "resources/assets" ) ) {
+				directoryDelete(
+					arguments.directory & "resources/assets",
+					true
+				)
+			}
 
-		if ( directoryExists( arguments.directory & "resources/vite" ) ) {
-			directoryDelete(
-				arguments.directory & "resources/vite",
-				true
-			)
-		}
+			if ( directoryExists( arguments.directory & "resources/vite" ) ) {
+				directoryDelete(
+					arguments.directory & "resources/vite",
+					true
+				)
+			}
 
-		// Docker Cleanup
-		if ( directoryExists( arguments.directory & "resources/docker" ) ) {
-			directoryDelete(
-				arguments.directory & "resources/docker",
-				true
-			)
+			// Docker Cleanup
+			if ( directoryExists( arguments.directory & "resources/docker" ) ) {
+				directoryDelete(
+					arguments.directory & "resources/docker",
+					true
+				)
+			}
 		}
 
 		// AI Integration Setup
-		if ( arguments.ai ) {
+		if ( arguments.skeleton == "cbGenesis" ) {
+			// cbGenesis ships pre-configured with AI, so offer a refresh instead of a full install
+			if (
+				confirm( "🤖 cbGenesis comes pre-configured with AI. Would you like to refresh and install the latest AI skills? [y/n]" )
+			) {
+				printInfo( "🤖 Refreshing AI integration..." )
+				command( "coldbox ai refresh" ).params( directory = arguments.directory ).run()
+			}
+		} else if ( arguments.ai ) {
 			printInfo( "🤖 Setting up AI integration..." )
 
 			// Determine language from skeleton and flags
