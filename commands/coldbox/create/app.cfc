@@ -435,11 +435,11 @@ component extends="coldbox-cli.models.BaseCommand" {
 		// AI Integration Setup
 		if ( arguments.skeleton == "cbGenesis" ) {
 			// cbGenesis ships pre-configured with AI, so offer a refresh instead of a full install
-			if ( confirm( "🤖 cbGenesis comes pre-configured with AI. Would you like to refresh and install the latest AI skills? [y/n]" ) ) {
+			if (
+				confirm( "🤖 cbGenesis comes pre-configured with AI. Would you like to refresh and install the latest AI skills? [y/n]" )
+			) {
 				printInfo( "🤖 Refreshing AI integration..." )
-				command( "coldbox ai refresh" )
-					.params( directory = arguments.directory )
-					.run()
+				command( "coldbox ai refresh" ).params( directory = arguments.directory ).run()
 			}
 		} else if ( arguments.ai ) {
 			printInfo( "🤖 Setting up AI integration..." )
