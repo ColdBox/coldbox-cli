@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `coldbox ai refresh` now migrates legacy string entries in `manifest.customSkills` before syncing custom skills
+
 ## [8.16.0] - 2026-09-29
 
 ### Added
