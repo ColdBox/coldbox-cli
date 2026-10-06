@@ -1447,7 +1447,20 @@ component singleton {
 	private function ensureCustomSkillsSection( required struct manifest ){
 		if ( !structKeyExists( arguments.manifest, "customSkills" ) ) {
 			arguments.manifest[ "customSkills" ] = []
+			return
 		}
+
+		// Older manifests stored custom skill names as strings.
+		arguments.manifest.customSkills = arguments.manifest.customSkills.map( ( customSkill ) => {
+			if ( isString( customSkill ) ) {
+				return {
+					"name"        : customSkill,
+					"description" : "",
+					"syncedAt"    : ""
+				}
+			}
+			return customSkill
+		} )
 	}
 
 	/**
