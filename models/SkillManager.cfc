@@ -1452,7 +1452,7 @@ component singleton {
 
 		// Older manifests stored custom skill names as strings.
 		arguments.manifest.customSkills = arguments.manifest.customSkills.map( ( customSkill ) => {
-			if ( isString( customSkill ) ) {
+			if ( isSimpleValue( customSkill ) ) {
 				return {
 					"name"        : customSkill,
 					"description" : "",
