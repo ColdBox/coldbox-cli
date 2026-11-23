@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `coldbox ai install` now auto-detects the `bxorm` and `bx-ai` MCP servers from the `bx-orm` and `bx-ai` box.json dependencies (ForgeBox slugs) [#88](https://github.com/coldbox/coldbox-cli/issues/88)
 - `coldbox ai skills install owner/repo/category/folder` now installs every skill nested in that folder (e.g. `ortus-boxlang/skills/boxlang-modules/bx-orm` installs all 7 bx-orm skills) instead of failing with "Skill not found" [#89](https://github.com/coldbox/coldbox-cli/issues/89)
+- `coldbox ai install` and `coldbox ai refresh` now install BoxLang module skills from `ortus-boxlang/skills` `boxlang-modules/*` for matching box.json dependencies (e.g. `bx-orm` installs all `bx-orm-*` skills), including in projects without ColdBox or TestBox [#90](https://github.com/coldbox/coldbox-cli/issues/90)
 
 ## [8.17.0] - 2026-10-06
 
