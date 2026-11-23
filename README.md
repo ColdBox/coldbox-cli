@@ -716,6 +716,8 @@ coldbox ai skills refresh             # Update from modules
 
 **Skill Categories**: Scaffolding, Testing, Configuration, Database, REST APIs, Security, Performance, and more
 
+**Module Skills**: `coldbox ai install` and `coldbox ai refresh` add skills for the modules in your `box.json` (`dependencies` and `devDependencies`). ColdBox modules (e.g. `cborm`, `cbsecurity`) come from `coldbox/skills/modules`, and BoxLang modules (e.g. `bx-orm`, `bx-ai`, `bx-pdf`) come from `ortus-boxlang/skills/boxlang-modules`.
+
 **Automatic Symlinks**: When a skill is installed via `coldbox ai install`, `coldbox ai skills install`, or `coldbox ai refresh`, the skill is created at `.agents/skills/{name}/` and a relative directory symlink is created inside every active agent's dedicated skills directory (e.g. `.claude/skills/{name}` → `../../.agents/skills/{name}`). Symlinks are automatically cleaned up when a skill is removed (`coldbox ai skills remove`) or pruned during refresh. No duplication, no manual linking required.
 
 #### MCP Servers
