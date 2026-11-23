@@ -705,6 +705,9 @@ coldbox ai skills list --json         # JSON output for scripting
 
 # Manage skills
 coldbox ai skills install creating-handlers async-programming
+coldbox ai skills install ortus-boxlang/skills/boxlang-developer                 # Whole category
+coldbox ai skills install ortus-boxlang/skills/boxlang-modules/bx-orm            # Every skill in a nested folder
+coldbox ai skills install ortus-boxlang/skills/boxlang-modules/bx-orm/bx-orm-entities  # Single skill
 coldbox ai skills remove async-programming
 coldbox ai skills update              # Update all installed registry skills
 coldbox ai skills update {name}       # Update a single installed registry skill
@@ -712,6 +715,8 @@ coldbox ai skills refresh             # Update from modules
 ```
 
 **Skill Categories**: Scaffolding, Testing, Configuration, Database, REST APIs, Security, Performance, and more
+
+**Module Skills**: `coldbox ai install` and `coldbox ai refresh` add skills for the modules in your `box.json` (`dependencies` and `devDependencies`). ColdBox modules (e.g. `cborm`, `cbsecurity`) come from `coldbox/skills/modules`, and BoxLang modules (e.g. `bx-orm`, `bx-ai`, `bx-pdf`) come from `ortus-boxlang/skills/boxlang-modules`.
 
 **Automatic Symlinks**: When a skill is installed via `coldbox ai install`, `coldbox ai skills install`, or `coldbox ai refresh`, the skill is created at `.agents/skills/{name}/` and a relative directory symlink is created inside every active agent's dedicated skills directory (e.g. `.claude/skills/{name}` → `../../.agents/skills/{name}`). Symlinks are automatically cleaned up when a skill is removed (`coldbox ai skills remove`) or pruned during refresh. No duplication, no manual linking required.
 
@@ -738,7 +743,7 @@ coldbox ai mcp remove cbsecurity --force   # Force remove a module server
 **MCP Server Types**:
 
 - **Core** (auto-configured): coldbox, boxlang, testbox, wirebox, cachebox, logbox, commandbox
-- **Module** (auto-detected from `box.json`): cbsecurity, quick, cfmigrations, cbvalidation, cbwire, and 20+ more
+- **Module** (auto-detected from `box.json`): bx-orm, bx-ai, cborm, cbsecurity, quick, cfmigrations, cbvalidation, cbwire, and 20+ more
 - **Custom**: Any URL-based or stdio MCP server you add manually
 - **cbMCP** (local app): Your running ColdBox application exposed as an MCP server via `coldbox ai mcp install`
 

@@ -45,6 +45,7 @@ component singleton {
 	 * - boxlang-developer/* installed when language != cfml
 	 * - coldbox/testbox/* per box.json deps
 	 * - coldbox/skills/modules/{slug} per installed module
+	 * - ortus-boxlang/skills/boxlang-modules/{slug}/* per installed BoxLang module
 	 *
 	 * @directory The project directory
 	 * @language  Project language mode (boxlang, cfml, hybrid)
@@ -1244,12 +1245,32 @@ component singleton {
 				} )
 		}
 
-		// ColdBox / TestBox / modules from coldbox/skills
+		// Project dependencies from box.json (dependencies + devDependencies)
 		var boxJson         = variables.packageService.readPackageDescriptor( arguments.directory )
 		var allDependencies = {}
 		allDependencies.append( boxJson.dependencies ?: {} )
 		allDependencies.append( boxJson.devDependencies ?: {} )
 
+		// BoxLang module skills: ortus-boxlang/skills/boxlang-modules/{module}[/{skill}]
+		// Registry slugs look like boxlang-modules~bx-orm~bx-orm-entities or boxlang-modules~bx-pdf,
+		// so the second segment is the module's ForgeBox slug.
+		bxRepoList
+			.filter( ( s ) => s?.category == "boxlang-modules" )
+			.each( ( s ) => {
+				var moduleSlug = listGetAt( s.slug, 2, "~" )
+				if ( allDependencies.keyExists( moduleSlug ) ) {
+					targets.append( {
+						owner  : bxRepo.owner,
+						repo   : bxRepo.repo,
+						slug   : s.slug,
+						name   : s.name,
+						type   : "module",
+						source : moduleSlug
+					} )
+				}
+			} )
+
+		// ColdBox / TestBox / modules from coldbox/skills
 		var depsLower  = allDependencies.keyList().lcase()
 		var hasColdBox = depsLower.listFindNoCase( "coldbox" )
 		var hasTestBox = depsLower.listFindNoCase( "testbox" )
