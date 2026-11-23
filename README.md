@@ -705,6 +705,9 @@ coldbox ai skills list --json         # JSON output for scripting
 
 # Manage skills
 coldbox ai skills install creating-handlers async-programming
+coldbox ai skills install ortus-boxlang/skills/boxlang-developer                 # Whole category
+coldbox ai skills install ortus-boxlang/skills/boxlang-modules/bx-orm            # Every skill in a nested folder
+coldbox ai skills install ortus-boxlang/skills/boxlang-modules/bx-orm/bx-orm-entities  # Single skill
 coldbox ai skills remove async-programming
 coldbox ai skills update              # Update all installed registry skills
 coldbox ai skills update {name}       # Update a single installed registry skill
