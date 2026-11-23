@@ -5,12 +5,14 @@
  *   owner/repo                        — install all skills for the repo
  *   owner/repo/category               — install all skills in a category
  *   owner/repo/category/skill         — install a single skill
+ *   owner/repo/category/folder        — install all skills nested in a folder
  *   (space-separated list of any above for batch installs)
  *
  * Examples:
  *   coldbox ai skills install ortus-boxlang/skills
  *   coldbox ai skills install ortus-boxlang/skills/boxlang-developer
  *   coldbox ai skills install ortus-boxlang/skills/boxlang-developer/boxlang-syntax
+ *   coldbox ai skills install ortus-boxlang/skills/boxlang-modules/bx-orm
  *   coldbox ai skills install --list
  *   coldbox ai skills install --all
  *   coldbox ai skills install --force ortus-boxlang/skills/boxlang-developer/boxlang-syntax
@@ -24,7 +26,7 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 	/**
 	 * Run the command
 	 *
-	 * @slug      Skill slug(s) to install (owner/repo, owner/repo/category, or owner/repo/category/skill).
+	 * @slug      Skill slug(s) to install (owner/repo, owner/repo/category, owner/repo/category/skill, or owner/repo/category/folder).
 	 *            Accepts a comma-separated or space-after-quote list.
 	 * @list      Show available skills and prompt for selection instead of installing directly.
 	 * @all       Install all available skills for the default repos (ColdBox + BoxLang).
@@ -425,18 +427,54 @@ component extends="coldbox-cli.models.BaseAICommand" aliases="coldbox ai skills 
 					// If neither a direct skill nor a category matched, resolved stays empty for this slug
 				}
 			} else {
-				// Explicit 4+ part slug: owner/repo/category/skill-name
+				// 4+ part slug: owner/repo/category/skill-name or owner/repo/category/folder
 				// Registry stores skill_slug with ~ as separator (not /), so join accordingly
-				var skillSlug = parts.slice( 3 ).toList( "~" )
-				resolved.append( {
-					owner       : slugOwner,
-					repo        : slugRepo,
-					slug        : skillSlug,
-					name        : parts.last(),
-					description : "",
-					type        : "core",
-					source      : ""
-				} )
+				var skillSlug  = parts.slice( 3 ).toList( "~" )
+				var repoSkills = variables.skillManager.fetchRepoSkillList( slugOwner, slugRepo )
+				var exactMatch = repoSkills.filter( ( s ) => s.slug == skillSlug )
+
+				if ( exactMatch.len() ) {
+					var em = exactMatch.first()
+					resolved.append( {
+						owner       : slugOwner,
+						repo        : slugRepo,
+						slug        : em.slug,
+						name        : em.name,
+						description : em.description ?: "",
+						type        : "core",
+						source      : ""
+					} )
+					continue;
+				}
+
+				// Not a skill: treat it as a folder and install every skill nested under it
+				var folderPrefix  = skillSlug & "~"
+				var folderMatches = repoSkills.filter( ( s ) => left( s.slug, len( folderPrefix ) ) == folderPrefix )
+
+				if ( folderMatches.len() ) {
+					for ( var fs in folderMatches ) {
+						resolved.append( {
+							owner       : slugOwner,
+							repo        : slugRepo,
+							slug        : fs.slug,
+							name        : fs.name,
+							description : fs.description ?: "",
+							type        : "core",
+							source      : ""
+						} )
+					}
+				} else {
+					// Neither matched: pass it through so the registry reports the error
+					resolved.append( {
+						owner       : slugOwner,
+						repo        : slugRepo,
+						slug        : skillSlug,
+						name        : parts.last(),
+						description : "",
+						type        : "core",
+						source      : ""
+					} )
+				}
 			}
 		}
 
