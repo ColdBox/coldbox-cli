@@ -738,7 +738,7 @@ coldbox ai mcp remove cbsecurity --force   # Force remove a module server
 **MCP Server Types**:
 
 - **Core** (auto-configured): coldbox, boxlang, testbox, wirebox, cachebox, logbox, commandbox
-- **Module** (auto-detected from `box.json`): cbsecurity, quick, cfmigrations, cbvalidation, cbwire, and 20+ more
+- **Module** (auto-detected from `box.json`): bx-orm, bx-ai, cborm, cbsecurity, quick, cfmigrations, cbvalidation, cbwire, and 20+ more
 - **Custom**: Any URL-based or stdio MCP server you add manually
 - **cbMCP** (local app): Your running ColdBox application exposed as an MCP server via `coldbox ai mcp install`
 

@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `coldbox ai install` now auto-detects the `bxorm` and `bx-ai` MCP servers from the `bx-orm` and `bx-ai` box.json dependencies (ForgeBox slugs) [#88](https://github.com/coldbox/coldbox-cli/issues/88)
+
 ## [8.17.0] - 2026-10-06
 
 ### Fixed

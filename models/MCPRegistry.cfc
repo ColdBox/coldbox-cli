@@ -219,6 +219,7 @@ component singleton {
 			"logbox"                : "logbox",
 			"commandbox"            : "commandbox",
 			// ORM & Database
+			"bx-orm"                : "bxorm",
 			"bxorm"                 : "bxorm",
 			"cborm"                 : "cborm",
 			"qb"                    : "qb",
@@ -238,6 +239,8 @@ component singleton {
 			"cbelasticsearch"       : "cbelasticsearch",
 			"cbfs"                  : "cbfs",
 			"cfconfig"              : "cfconfig",
+			// BoxLang modules
+			"bx-ai"                 : "bx-ai",
 			// Modern
 			"cbwire"                : "cbwire",
 			"cbq"                   : "cbq",
